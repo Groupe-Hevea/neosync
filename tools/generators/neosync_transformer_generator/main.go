@@ -8,7 +8,7 @@ import (
 	"strings"
 	"text/template"
 
-	transformers "github.com/nucleuscloud/neosync/worker/pkg/benthos/transformers"
+	transformers "github.com/Groupe-Hevea/neosync/worker/pkg/benthos/transformers"
 )
 
 func main() {
@@ -89,8 +89,8 @@ import (
 	"strings"
 	"fmt"
 	{{- if eq .HasSeedParam true}}
-	transformer_utils "github.com/nucleuscloud/neosync/worker/pkg/benthos/transformers/utils"
-	"github.com/nucleuscloud/neosync/worker/pkg/rng"
+	transformer_utils "github.com/Groupe-Hevea/neosync/worker/pkg/benthos/transformers/utils"
+	"github.com/Groupe-Hevea/neosync/worker/pkg/rng"
 	{{ end }}
 )
 

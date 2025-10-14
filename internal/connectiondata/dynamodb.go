@@ -11,8 +11,8 @@ import (
 	"connectrpc.com/connect"
 	"github.com/aws/aws-sdk-go-v2/service/dynamodb"
 	dynamotypes "github.com/aws/aws-sdk-go-v2/service/dynamodb/types"
-	mgmtv1alpha1 "github.com/nucleuscloud/neosync/backend/gen/go/protos/mgmt/v1alpha1"
-	aws_manager "github.com/nucleuscloud/neosync/internal/aws"
+	mgmtv1alpha1 "github.com/Groupe-Hevea/neosync/backend/gen/go/protos/mgmt/v1alpha1"
+	aws_manager "github.com/Groupe-Hevea/neosync/internal/aws"
 )
 
 type AwsDynamodbConnectionDataService struct {

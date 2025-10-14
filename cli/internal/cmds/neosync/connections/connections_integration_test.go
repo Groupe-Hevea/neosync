@@ -4,10 +4,10 @@ import (
 	"context"
 	"testing"
 
-	mgmtv1alpha1 "github.com/nucleuscloud/neosync/backend/gen/go/protos/mgmt/v1alpha1"
-	integrationtests_test "github.com/nucleuscloud/neosync/backend/pkg/integration-test"
-	tcneosyncapi "github.com/nucleuscloud/neosync/backend/pkg/integration-test"
-	"github.com/nucleuscloud/neosync/internal/testutil"
+	mgmtv1alpha1 "github.com/Groupe-Hevea/neosync/backend/gen/go/protos/mgmt/v1alpha1"
+	integrationtests_test "github.com/Groupe-Hevea/neosync/backend/pkg/integration-test"
+	tcneosyncapi "github.com/Groupe-Hevea/neosync/backend/pkg/integration-test"
+	"github.com/Groupe-Hevea/neosync/internal/testutil"
 	"github.com/stretchr/testify/require"
 )
 

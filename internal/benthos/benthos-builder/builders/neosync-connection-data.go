@@ -4,14 +4,14 @@ import (
 	"context"
 	"errors"
 
-	mgmtv1alpha1 "github.com/nucleuscloud/neosync/backend/gen/go/protos/mgmt/v1alpha1"
-	"github.com/nucleuscloud/neosync/backend/gen/go/protos/mgmt/v1alpha1/mgmtv1alpha1connect"
-	"github.com/nucleuscloud/neosync/backend/pkg/sqlmanager"
-	sqlmanager_shared "github.com/nucleuscloud/neosync/backend/pkg/sqlmanager/shared"
-	bb_internal "github.com/nucleuscloud/neosync/internal/benthos/benthos-builder/internal"
-	bb_shared "github.com/nucleuscloud/neosync/internal/benthos/benthos-builder/shared"
-	"github.com/nucleuscloud/neosync/internal/runconfigs"
-	neosync_benthos "github.com/nucleuscloud/neosync/worker/pkg/benthos"
+	mgmtv1alpha1 "github.com/Groupe-Hevea/neosync/backend/gen/go/protos/mgmt/v1alpha1"
+	"github.com/Groupe-Hevea/neosync/backend/gen/go/protos/mgmt/v1alpha1/mgmtv1alpha1connect"
+	"github.com/Groupe-Hevea/neosync/backend/pkg/sqlmanager"
+	sqlmanager_shared "github.com/Groupe-Hevea/neosync/backend/pkg/sqlmanager/shared"
+	bb_internal "github.com/Groupe-Hevea/neosync/internal/benthos/benthos-builder/internal"
+	bb_shared "github.com/Groupe-Hevea/neosync/internal/benthos/benthos-builder/shared"
+	"github.com/Groupe-Hevea/neosync/internal/runconfigs"
+	neosync_benthos "github.com/Groupe-Hevea/neosync/worker/pkg/benthos"
 )
 
 type neosyncConnectionDataBuilder struct {

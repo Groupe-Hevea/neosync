@@ -6,8 +6,8 @@ import (
 	"net/url"
 	"strings"
 
-	mgmtv1alpha1 "github.com/nucleuscloud/neosync/backend/gen/go/protos/mgmt/v1alpha1"
-	nucleuserrors "github.com/nucleuscloud/neosync/internal/errors"
+	mgmtv1alpha1 "github.com/Groupe-Hevea/neosync/backend/gen/go/protos/mgmt/v1alpha1"
+	nucleuserrors "github.com/Groupe-Hevea/neosync/internal/errors"
 	"github.com/spf13/viper"
 )
 

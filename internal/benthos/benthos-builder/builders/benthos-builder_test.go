@@ -7,20 +7,20 @@ import (
 
 	"connectrpc.com/connect"
 	"github.com/google/uuid"
-	mgmtv1alpha1 "github.com/nucleuscloud/neosync/backend/gen/go/protos/mgmt/v1alpha1"
-	"github.com/nucleuscloud/neosync/backend/gen/go/protos/mgmt/v1alpha1/mgmtv1alpha1connect"
-	sqlmanager_shared "github.com/nucleuscloud/neosync/backend/pkg/sqlmanager/shared"
-	bb_internal "github.com/nucleuscloud/neosync/internal/benthos/benthos-builder/internal"
-	"github.com/nucleuscloud/neosync/internal/gotypeutil"
-	rc "github.com/nucleuscloud/neosync/internal/runconfigs"
-	"github.com/nucleuscloud/neosync/internal/testutil"
-	"github.com/nucleuscloud/neosync/worker/pkg/workflows/datasync/activities/shared"
+	mgmtv1alpha1 "github.com/Groupe-Hevea/neosync/backend/gen/go/protos/mgmt/v1alpha1"
+	"github.com/Groupe-Hevea/neosync/backend/gen/go/protos/mgmt/v1alpha1/mgmtv1alpha1connect"
+	sqlmanager_shared "github.com/Groupe-Hevea/neosync/backend/pkg/sqlmanager/shared"
+	bb_internal "github.com/Groupe-Hevea/neosync/internal/benthos/benthos-builder/internal"
+	"github.com/Groupe-Hevea/neosync/internal/gotypeutil"
+	rc "github.com/Groupe-Hevea/neosync/internal/runconfigs"
+	"github.com/Groupe-Hevea/neosync/internal/testutil"
+	"github.com/Groupe-Hevea/neosync/worker/pkg/workflows/datasync/activities/shared"
 	"github.com/redpanda-data/benthos/v4/public/bloblang"
 	"github.com/stretchr/testify/mock"
 	"github.com/stretchr/testify/require"
 
-	neosync_benthos "github.com/nucleuscloud/neosync/worker/pkg/benthos"
-	neosync_benthos_transformers "github.com/nucleuscloud/neosync/worker/pkg/benthos/transformers"
+	neosync_benthos "github.com/Groupe-Hevea/neosync/worker/pkg/benthos"
+	neosync_benthos_transformers "github.com/Groupe-Hevea/neosync/worker/pkg/benthos/transformers"
 )
 
 const (

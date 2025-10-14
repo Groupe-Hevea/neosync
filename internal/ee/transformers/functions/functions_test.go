@@ -4,9 +4,9 @@ import (
 	"context"
 	"testing"
 
-	mgmtv1alpha1 "github.com/nucleuscloud/neosync/backend/gen/go/protos/mgmt/v1alpha1"
-	presidioapi "github.com/nucleuscloud/neosync/internal/ee/presidio"
-	"github.com/nucleuscloud/neosync/internal/testutil"
+	mgmtv1alpha1 "github.com/Groupe-Hevea/neosync/backend/gen/go/protos/mgmt/v1alpha1"
+	presidioapi "github.com/Groupe-Hevea/neosync/internal/ee/presidio"
+	"github.com/Groupe-Hevea/neosync/internal/testutil"
 	"github.com/stretchr/testify/mock"
 	"github.com/stretchr/testify/require"
 )

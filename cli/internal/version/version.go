@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"runtime"
 
-	"github.com/nucleuscloud/neosync/backend/pkg/utils"
+	"github.com/Groupe-Hevea/neosync/backend/pkg/utils"
 	"google.golang.org/grpc/metadata"
 )
 

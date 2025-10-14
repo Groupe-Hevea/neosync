@@ -16,7 +16,7 @@ We use Posthog to capture usage analytics. This is helpful for us to understand 
 
 Today, they are only captured in a very minimal sense within Neosync app. We have plans to also start capturing analytics in the CLI.
 
-You can see what information is captured by checking out the [posthog-provider](https://github.com/nucleuscloud/neosync/blob/main/frontend/apps/web/components/providers/posthog-provider.tsx) component that wraps each page's React components.
+You can see what information is captured by checking out the [posthog-provider](https://github.com/Groupe-Hevea/neosync/blob/main/frontend/apps/web/components/providers/posthog-provider.tsx) component that wraps each page's React components.
 
 Analytics are used simply to get a better view into how people use Neosync.
 
@@ -24,7 +24,7 @@ Analytics are used simply to get a better view into how people use Neosync.
 
 Unify is similar to Posthog in that it is also used to capture user information. We send the same usage information to Unify that we send to Posthog.
 
-You can see what information is captured by checking out the [unify-provider](https://github.com/nucleuscloud/neosync/blob/main/frontend/apps/web/components/providers/unify-provider.tsx) component that wraps each page's React components.
+You can see what information is captured by checking out the [unify-provider](https://github.com/Groupe-Hevea/neosync/blob/main/frontend/apps/web/components/providers/unify-provider.tsx) component that wraps each page's React components.
 
 ### Disabling Analytics
 

@@ -16,11 +16,11 @@ import (
 	"connectrpc.com/connect"
 	"github.com/aws/aws-sdk-go-v2/aws"
 	"github.com/aws/aws-sdk-go-v2/service/s3"
-	mgmtv1alpha1 "github.com/nucleuscloud/neosync/backend/gen/go/protos/mgmt/v1alpha1"
-	sqlmanager_shared "github.com/nucleuscloud/neosync/backend/pkg/sqlmanager/shared"
-	aws_manager "github.com/nucleuscloud/neosync/internal/aws"
-	nucleuserrors "github.com/nucleuscloud/neosync/internal/errors"
-	neosynctypes "github.com/nucleuscloud/neosync/internal/neosync-types"
+	mgmtv1alpha1 "github.com/Groupe-Hevea/neosync/backend/gen/go/protos/mgmt/v1alpha1"
+	sqlmanager_shared "github.com/Groupe-Hevea/neosync/backend/pkg/sqlmanager/shared"
+	aws_manager "github.com/Groupe-Hevea/neosync/internal/aws"
+	nucleuserrors "github.com/Groupe-Hevea/neosync/internal/errors"
+	neosynctypes "github.com/Groupe-Hevea/neosync/internal/neosync-types"
 )
 
 type AwsS3ConnectionDataService struct {

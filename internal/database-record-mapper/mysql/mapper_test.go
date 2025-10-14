@@ -3,7 +3,7 @@ package mysql
 import (
 	"testing"
 
-	neosynctypes "github.com/nucleuscloud/neosync/internal/neosync-types"
+	neosynctypes "github.com/Groupe-Hevea/neosync/internal/neosync-types"
 	"github.com/stretchr/testify/require"
 )
 

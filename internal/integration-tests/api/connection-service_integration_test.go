@@ -5,8 +5,8 @@ import (
 
 	"connectrpc.com/connect"
 	"github.com/google/uuid"
-	mgmtv1alpha1 "github.com/nucleuscloud/neosync/backend/gen/go/protos/mgmt/v1alpha1"
-	integrationtests_test "github.com/nucleuscloud/neosync/backend/pkg/integration-test"
+	mgmtv1alpha1 "github.com/Groupe-Hevea/neosync/backend/gen/go/protos/mgmt/v1alpha1"
+	integrationtests_test "github.com/Groupe-Hevea/neosync/backend/pkg/integration-test"
 	"github.com/stretchr/testify/require"
 )
 

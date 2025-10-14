@@ -17,7 +17,7 @@ Getting the CLI installed into a Github Action is task in itself, however. This 
 
 ## Neosync CLI Github Action
 
-We've built the [Setup Neosync CLI Action](https://github.com/nucleuscloud/setup-neosync-cli-action) Github Action that can be easily dropped into any job to immediately get setup with the Neosync CLI.
+We've built the [Setup Neosync CLI Action](https://github.com/Groupe-Hevea/setup-neosync-cli-action) Github Action that can be easily dropped into any job to immediately get setup with the Neosync CLI.
 The README for that action gives detailed instructions on how to get that set up. Afterwards, any `neosync` command can be run in subsequent jobs.
 
 ## Setup a Github Action to sync remote data to a CI Postgres Database
@@ -68,7 +68,7 @@ jobs:
           PGPASSWORD=postgres psql -h localhost -U postgres -d neosync -c 'SELECT * from neosync.employees;'
 ​
       - name: Set up Neosync CLI
-        uses: nucleuscloud/setup-neosync-cli-action@v1
+        uses: Groupe-Hevea/setup-neosync-cli-action@v1
 ​
       - name: Neosync sync command
         run: neosync sync --api-key ${{ secrets.NEOSYNC_API_KEY }} --connection-id <connection-uuid> --destination-driver postgres --destination-connection-url "postgresql://postgres:postgres@localhost:5432/neosync?sslmode=disable"

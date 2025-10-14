@@ -4,8 +4,8 @@ import (
 	"fmt"
 	"testing"
 
-	transformer_utils "github.com/nucleuscloud/neosync/worker/pkg/benthos/transformers/utils"
-	"github.com/nucleuscloud/neosync/worker/pkg/rng"
+	transformer_utils "github.com/Groupe-Hevea/neosync/worker/pkg/benthos/transformers/utils"
+	"github.com/Groupe-Hevea/neosync/worker/pkg/rng"
 	"github.com/redpanda-data/benthos/v4/public/bloblang"
 	"github.com/stretchr/testify/require"
 )

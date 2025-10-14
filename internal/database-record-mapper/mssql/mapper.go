@@ -8,9 +8,9 @@ import (
 	"time"
 
 	mssql "github.com/microsoft/go-mssqldb"
-	"github.com/nucleuscloud/neosync/internal/database-record-mapper/builder"
-	neosynctypes "github.com/nucleuscloud/neosync/internal/neosync-types"
-	neosync_types "github.com/nucleuscloud/neosync/internal/types"
+	"github.com/Groupe-Hevea/neosync/internal/database-record-mapper/builder"
+	neosynctypes "github.com/Groupe-Hevea/neosync/internal/neosync-types"
+	neosync_types "github.com/Groupe-Hevea/neosync/internal/types"
 )
 
 type MSSQLMapper struct{}

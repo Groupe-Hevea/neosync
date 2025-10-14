@@ -9,10 +9,10 @@ import (
 	"strings"
 
 	"github.com/itchyny/gojq"
-	mgmtv1alpha1 "github.com/nucleuscloud/neosync/backend/gen/go/protos/mgmt/v1alpha1"
-	"github.com/nucleuscloud/neosync/backend/gen/go/protos/mgmt/v1alpha1/mgmtv1alpha1connect"
-	presidioapi "github.com/nucleuscloud/neosync/internal/ee/presidio"
-	transformer_executor "github.com/nucleuscloud/neosync/worker/pkg/benthos/transformer_executor"
+	mgmtv1alpha1 "github.com/Groupe-Hevea/neosync/backend/gen/go/protos/mgmt/v1alpha1"
+	"github.com/Groupe-Hevea/neosync/backend/gen/go/protos/mgmt/v1alpha1/mgmtv1alpha1connect"
+	presidioapi "github.com/Groupe-Hevea/neosync/internal/ee/presidio"
+	transformer_executor "github.com/Groupe-Hevea/neosync/worker/pkg/benthos/transformer_executor"
 )
 
 type AnonymizeJsonError struct {

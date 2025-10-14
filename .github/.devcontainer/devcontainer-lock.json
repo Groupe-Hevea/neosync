@@ -65,19 +65,19 @@
       "resolved": "ghcr.io/mpriscella/features/kind@sha256:103487a6bd74424f2285b6f9594f0a8bbb31d0544eb3563b64e40bc303e0d83e",
       "integrity": "sha256:103487a6bd74424f2285b6f9594f0a8bbb31d0544eb3563b64e40bc303e0d83e"
     },
-    "ghcr.io/nucleuscloud/devcontainer-features/ctlptl:0": {
+    "ghcr.io/Groupe-Hevea/devcontainer-features/ctlptl:0": {
       "version": "0.1.1",
-      "resolved": "ghcr.io/nucleuscloud/devcontainer-features/ctlptl@sha256:bdef53d7a128103e9b40c440fd96fc8d63c23bddfd75ccae30cf99caace5f821",
+      "resolved": "ghcr.io/Groupe-Hevea/devcontainer-features/ctlptl@sha256:bdef53d7a128103e9b40c440fd96fc8d63c23bddfd75ccae30cf99caace5f821",
       "integrity": "sha256:bdef53d7a128103e9b40c440fd96fc8d63c23bddfd75ccae30cf99caace5f821"
     },
-    "ghcr.io/nucleuscloud/devcontainer-features/helmfile:0": {
+    "ghcr.io/Groupe-Hevea/devcontainer-features/helmfile:0": {
       "version": "0.1.0",
-      "resolved": "ghcr.io/nucleuscloud/devcontainer-features/helmfile@sha256:5ec7aa2ccdd75f10e012b09d9638d38c8994a7c7355415b0329c652a9a5f73e7",
+      "resolved": "ghcr.io/Groupe-Hevea/devcontainer-features/helmfile@sha256:5ec7aa2ccdd75f10e012b09d9638d38c8994a7c7355415b0329c652a9a5f73e7",
       "integrity": "sha256:5ec7aa2ccdd75f10e012b09d9638d38c8994a7c7355415b0329c652a9a5f73e7"
     },
-    "ghcr.io/nucleuscloud/devcontainer-features/sqlc:1": {
+    "ghcr.io/Groupe-Hevea/devcontainer-features/sqlc:1": {
       "version": "1.0.1",
-      "resolved": "ghcr.io/nucleuscloud/devcontainer-features/sqlc@sha256:b036ca226ac9479cd3b896be6bdba67dd2eda1b79c9779247bd45c73e9177e0e",
+      "resolved": "ghcr.io/Groupe-Hevea/devcontainer-features/sqlc@sha256:b036ca226ac9479cd3b896be6bdba67dd2eda1b79c9779247bd45c73e9177e0e",
       "integrity": "sha256:b036ca226ac9479cd3b896be6bdba67dd2eda1b79c9779247bd45c73e9177e0e"
     },
     "ghcr.io/rio/features/kustomize:1": {

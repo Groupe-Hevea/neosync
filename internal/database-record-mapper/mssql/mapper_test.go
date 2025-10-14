@@ -5,7 +5,7 @@ import (
 	"time"
 
 	mssql "github.com/microsoft/go-mssqldb"
-	neosynctypes "github.com/nucleuscloud/neosync/internal/neosync-types"
+	neosynctypes "github.com/Groupe-Hevea/neosync/internal/neosync-types"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )

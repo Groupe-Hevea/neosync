@@ -5,11 +5,11 @@ import (
 	"slices"
 
 	"github.com/jackc/pgx/v5"
-	sqlmanager_shared "github.com/nucleuscloud/neosync/backend/pkg/sqlmanager/shared"
+	sqlmanager_shared "github.com/Groupe-Hevea/neosync/backend/pkg/sqlmanager/shared"
 
-	runconfigs "github.com/nucleuscloud/neosync/internal/runconfigs"
+	runconfigs "github.com/Groupe-Hevea/neosync/internal/runconfigs"
 
-	selectbuilder "github.com/nucleuscloud/neosync/worker/pkg/select-query-builder"
+	selectbuilder "github.com/Groupe-Hevea/neosync/worker/pkg/select-query-builder"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )

@@ -6,12 +6,12 @@ import (
 
 	"github.com/google/uuid"
 	"github.com/jackc/pgx/v5/stdlib"
-	mgmtv1alpha1 "github.com/nucleuscloud/neosync/backend/gen/go/protos/mgmt/v1alpha1"
-	"github.com/nucleuscloud/neosync/internal/ee/rbac"
-	"github.com/nucleuscloud/neosync/internal/ee/rbac/enforcer"
-	neomigrate "github.com/nucleuscloud/neosync/internal/migrate"
-	"github.com/nucleuscloud/neosync/internal/testutil"
-	testcontainers_postgres "github.com/nucleuscloud/neosync/internal/testutil/testcontainers/postgres"
+	mgmtv1alpha1 "github.com/Groupe-Hevea/neosync/backend/gen/go/protos/mgmt/v1alpha1"
+	"github.com/Groupe-Hevea/neosync/internal/ee/rbac"
+	"github.com/Groupe-Hevea/neosync/internal/ee/rbac/enforcer"
+	neomigrate "github.com/Groupe-Hevea/neosync/internal/migrate"
+	"github.com/Groupe-Hevea/neosync/internal/testutil"
+	testcontainers_postgres "github.com/Groupe-Hevea/neosync/internal/testutil/testcontainers/postgres"
 	"github.com/stretchr/testify/require"
 )
 

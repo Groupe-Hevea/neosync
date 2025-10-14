@@ -4,7 +4,7 @@ import (
 	"fmt"
 
 	"github.com/lib/pq"
-	"github.com/nucleuscloud/neosync/internal/gotypeutil"
+	"github.com/Groupe-Hevea/neosync/internal/gotypeutil"
 )
 
 type NeosyncArray struct {

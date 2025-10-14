@@ -4,7 +4,7 @@ import (
 	"database/sql"
 	"testing"
 
-	mssql_queries "github.com/nucleuscloud/neosync/backend/pkg/mssql-querier"
+	mssql_queries "github.com/Groupe-Hevea/neosync/backend/pkg/mssql-querier"
 	"github.com/stretchr/testify/require"
 )
 

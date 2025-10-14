@@ -7,8 +7,8 @@ package transformers
 import (
 	"fmt"
 	
-	transformer_utils "github.com/nucleuscloud/neosync/worker/pkg/benthos/transformers/utils"
-	"github.com/nucleuscloud/neosync/worker/pkg/rng"
+	transformer_utils "github.com/Groupe-Hevea/neosync/worker/pkg/benthos/transformers/utils"
+	"github.com/Groupe-Hevea/neosync/worker/pkg/rng"
 	
 )
 

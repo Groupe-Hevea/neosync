@@ -4,7 +4,7 @@ import (
 	"context"
 
 	"github.com/auth0/go-auth0/management"
-	"github.com/nucleuscloud/neosync/internal/authmgmt"
+	"github.com/Groupe-Hevea/neosync/internal/authmgmt"
 )
 
 var _ authmgmt.Interface = &Auth0MgmtClient{} // ensures it always conforms to the interface

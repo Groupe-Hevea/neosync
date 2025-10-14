@@ -28,7 +28,7 @@ brew install neosync
 You may also install directly from our brew repository:
 
 ```console
-brew install nucleuscloud/tap/neosync
+brew install Groupe-Hevea/tap/neosync
 ```
 
 From then on, you can let Homebrew keep Nucleus up to date by running the following command.
@@ -39,7 +39,7 @@ brew upgrade
 
 ## MacOS/Linux Direct Download
 
-Navigate to Neosync [releases](https://github.com/nucleuscloud/neosync/releases) page of the CLI repository in the Nucleus Github. From there you can choose which binary to download based on your machine's architecture.
+Navigate to Neosync [releases](https://github.com/Groupe-Hevea/neosync/releases) page of the CLI repository in the Nucleus Github. From there you can choose which binary to download based on your machine's architecture.
 
 After you've downloaded and untarred the tarball, move it into your local bin to make it easy to run. If you're using Windows 10/11, see the Windows section below for more details.
 
@@ -88,7 +88,7 @@ Now that you've successfully downloaded the Neosync CLI, you're ready to start b
 
 ## Windows 10/11 Direct Download
 
-Navigate to Neosync [releases](https://github.com/nucleuscloud/neosync/releases) page of the CLI repository in the Neosync Github. From there you can choose which binary to download based on your machine's architecture for Windows. Some examples are listed below.
+Navigate to Neosync [releases](https://github.com/Groupe-Hevea/neosync/releases) page of the CLI repository in the Neosync Github. From there you can choose which binary to download based on your machine's architecture for Windows. Some examples are listed below.
 
 After the download has completed, unzip the contents into a new folder. The most important file is neosync.exe. This can be left here, but a more appropriate place to move it would be to a folder such as: `C:\Neosync` or `C:\Apps\Neosync`
 
@@ -136,7 +136,7 @@ A Docker image is published that matches each official release of Neosync CLI. E
 
 These images wrap the Neosync executable, allowing you to run Neosync subcommands by passing in their names and arguments as part of `docker run`.
 
-The list of images can be found on [Github](https://github.com/nucleuscloud/neosync/pkgs/container/neosync%2Fcli).
+The list of images can be found on [Github](https://github.com/Groupe-Hevea/neosync/pkgs/container/neosync%2Fcli).
 
 ### Configuration
 
@@ -145,11 +145,11 @@ The container will need further configuration so that Neosync can access configu
 See the example below for how to login to the CLI, and then view a list of environments in a Neosync account.
 
 ```console
-docker run -it --rm -p 4242:4242 --mount source=neosynccfg,target=/root/.config/.neosync ghcr.io/nucleuscloud/neosync/cli:latest login
+docker run -it --rm -p 4242:4242 --mount source=neosynccfg,target=/root/.config/.neosync ghcr.io/Groupe-Hevea/neosync/cli:latest login
 ```
 
 ```console
-docker run -it --rm --mount source=neosynccfg,target=/root/.config/.neosync ghcr.io/nucleuscloud/neosync/cli:latest accounts ls
+docker run -it --rm --mount source=neosynccfg,target=/root/.config/.neosync ghcr.io/Groupe-Hevea/neosync/cli:latest accounts ls
 ```
 
 The command above will print out a list of environments that are in the account associated with the logged in credentials. Note that the port mapping isn't required here, as that is only necessary during the login flow.

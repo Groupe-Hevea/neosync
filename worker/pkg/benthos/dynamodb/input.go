@@ -9,10 +9,10 @@ import (
 	"github.com/aws/aws-sdk-go-v2/config"
 	"github.com/aws/aws-sdk-go-v2/service/dynamodb"
 	"github.com/aws/aws-sdk-go-v2/service/dynamodb/types"
-	awsmanager "github.com/nucleuscloud/neosync/internal/aws"
-	database_record_mapper "github.com/nucleuscloud/neosync/internal/database-record-mapper/builder"
-	dynamodbmapper "github.com/nucleuscloud/neosync/internal/database-record-mapper/dynamodb"
-	neosync_benthos_metadata "github.com/nucleuscloud/neosync/worker/pkg/benthos/metadata"
+	awsmanager "github.com/Groupe-Hevea/neosync/internal/aws"
+	database_record_mapper "github.com/Groupe-Hevea/neosync/internal/database-record-mapper/builder"
+	dynamodbmapper "github.com/Groupe-Hevea/neosync/internal/database-record-mapper/dynamodb"
+	neosync_benthos_metadata "github.com/Groupe-Hevea/neosync/worker/pkg/benthos/metadata"
 	"github.com/redpanda-data/benthos/v4/public/service"
 )
 

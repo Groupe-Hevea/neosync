@@ -93,7 +93,7 @@ spec:
 
       containers:
         - name: user-container
-          image: '{{ .Values.image.repository | default "ghcr.io/nucleuscloud/neosync/worker" }}:{{ .Values.image.tag | default .Chart.AppVersion  }}'
+          image: '{{ .Values.image.repository | default "ghcr.io/Groupe-Hevea/neosync/worker" }}:{{ .Values.image.tag | default .Chart.AppVersion  }}'
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           ports:
             - containerPort: {{ .Values.containerPort }}

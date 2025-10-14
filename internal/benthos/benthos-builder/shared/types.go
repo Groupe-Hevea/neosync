@@ -3,9 +3,9 @@ package benthosbuilder_shared
 import (
 	"fmt"
 
-	mgmtv1alpha1 "github.com/nucleuscloud/neosync/backend/gen/go/protos/mgmt/v1alpha1"
-	sqlmanager_shared "github.com/nucleuscloud/neosync/backend/pkg/sqlmanager/shared"
-	rc "github.com/nucleuscloud/neosync/internal/runconfigs"
+	mgmtv1alpha1 "github.com/Groupe-Hevea/neosync/backend/gen/go/protos/mgmt/v1alpha1"
+	sqlmanager_shared "github.com/Groupe-Hevea/neosync/backend/pkg/sqlmanager/shared"
+	rc "github.com/Groupe-Hevea/neosync/internal/runconfigs"
 )
 
 // Holds the environment variable name and the connection id that should replace it at runtime when the Sync activity is launched

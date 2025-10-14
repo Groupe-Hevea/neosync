@@ -234,7 +234,7 @@ If this type of subsetting is not sufficient for your usecase, please reach out 
 
 Even though DynamoDB is AWS proprietary, they ship a [Docker image](https://hub.docker.com/r/amazon/dynamodb-local) that can be used to try out DynamoDB in an offline, self-hosted format.
 
-Neosync provides a Docker [compose.yml](https://github.com/nucleuscloud/neosync/blob/main/compose/compose-db-dynamo.yml) that can be used in conjunction with our main `compose` or dev compose to stand up two local instances inside of the `neosync-network` docker network. In order to enable this in the `compose.dev.yaml` file, you just need to uncomment the `  - path: ./compose/compose-db-dynamo.yml` line, like so:
+Neosync provides a Docker [compose.yml](https://github.com/Groupe-Hevea/neosync/blob/main/compose/compose-db-dynamo.yml) that can be used in conjunction with our main `compose` or dev compose to stand up two local instances inside of the `neosync-network` docker network. In order to enable this in the `compose.dev.yaml` file, you just need to uncomment the `  - path: ./compose/compose-db-dynamo.yml` line, like so:
 
 ```yaml
 include:

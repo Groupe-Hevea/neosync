@@ -8,8 +8,8 @@ import (
 
 	"github.com/doug-martin/goqu/v9"
 	"github.com/lib/pq"
-	neosynctypes "github.com/nucleuscloud/neosync/internal/neosync-types"
-	neosync_benthos "github.com/nucleuscloud/neosync/worker/pkg/benthos"
+	neosynctypes "github.com/Groupe-Hevea/neosync/internal/neosync-types"
+	neosync_benthos "github.com/Groupe-Hevea/neosync/worker/pkg/benthos"
 	"github.com/redpanda-data/benthos/v4/public/service"
 	"github.com/stretchr/testify/require"
 )

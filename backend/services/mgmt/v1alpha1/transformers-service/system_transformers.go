@@ -6,10 +6,10 @@ import (
 	"slices"
 
 	"connectrpc.com/connect"
-	mgmtv1alpha1 "github.com/nucleuscloud/neosync/backend/gen/go/protos/mgmt/v1alpha1"
-	ee_transformers "github.com/nucleuscloud/neosync/internal/ee/transformers"
-	nucleuserrors "github.com/nucleuscloud/neosync/internal/errors"
-	"github.com/nucleuscloud/neosync/internal/gotypeutil"
+	mgmtv1alpha1 "github.com/Groupe-Hevea/neosync/backend/gen/go/protos/mgmt/v1alpha1"
+	ee_transformers "github.com/Groupe-Hevea/neosync/internal/ee/transformers"
+	nucleuserrors "github.com/Groupe-Hevea/neosync/internal/errors"
+	"github.com/Groupe-Hevea/neosync/internal/gotypeutil"
 )
 
 var (

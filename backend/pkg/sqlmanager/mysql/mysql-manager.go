@@ -12,9 +12,9 @@ import (
 	"sync"
 
 	"github.com/doug-martin/goqu/v9"
-	mysql_queries "github.com/nucleuscloud/neosync/backend/gen/go/db/dbschemas/mysql"
-	sqlmanager_shared "github.com/nucleuscloud/neosync/backend/pkg/sqlmanager/shared"
-	"github.com/nucleuscloud/neosync/internal/neosyncdb"
+	mysql_queries "github.com/Groupe-Hevea/neosync/backend/gen/go/db/dbschemas/mysql"
+	sqlmanager_shared "github.com/Groupe-Hevea/neosync/backend/pkg/sqlmanager/shared"
+	"github.com/Groupe-Hevea/neosync/internal/neosyncdb"
 	"golang.org/x/sync/errgroup"
 )
 

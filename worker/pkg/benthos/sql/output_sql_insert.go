@@ -13,10 +13,10 @@ import (
 	_ "github.com/doug-martin/goqu/v9/dialect/postgres"
 	"github.com/jackc/pgx/v5/pgconn"
 	"github.com/lib/pq"
-	mysql_queries "github.com/nucleuscloud/neosync/backend/gen/go/db/dbschemas/mysql"
-	sqlmanager_shared "github.com/nucleuscloud/neosync/backend/pkg/sqlmanager/shared"
-	neosync_benthos "github.com/nucleuscloud/neosync/worker/pkg/benthos"
-	querybuilder "github.com/nucleuscloud/neosync/worker/pkg/query-builder"
+	mysql_queries "github.com/Groupe-Hevea/neosync/backend/gen/go/db/dbschemas/mysql"
+	sqlmanager_shared "github.com/Groupe-Hevea/neosync/backend/pkg/sqlmanager/shared"
+	neosync_benthos "github.com/Groupe-Hevea/neosync/worker/pkg/benthos"
+	querybuilder "github.com/Groupe-Hevea/neosync/worker/pkg/query-builder"
 	"github.com/redpanda-data/benthos/v4/public/service"
 )
 

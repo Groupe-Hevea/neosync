@@ -3,7 +3,7 @@ package builder
 import (
 	"fmt"
 
-	neosync_types "github.com/nucleuscloud/neosync/internal/types"
+	neosync_types "github.com/Groupe-Hevea/neosync/internal/types"
 )
 
 type DatabaseRecordMapper[T any] interface {

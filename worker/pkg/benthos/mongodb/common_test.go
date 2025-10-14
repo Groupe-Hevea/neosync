@@ -4,7 +4,7 @@ import (
 	"math/big"
 	"testing"
 
-	neosync_types "github.com/nucleuscloud/neosync/internal/types"
+	neosync_types "github.com/Groupe-Hevea/neosync/internal/types"
 	"github.com/stretchr/testify/require"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"

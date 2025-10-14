@@ -3,14 +3,14 @@ package databaserecordmapper
 import (
 	"fmt"
 
-	mgmtv1alpha1 "github.com/nucleuscloud/neosync/backend/gen/go/protos/mgmt/v1alpha1"
-	sqlmanager_shared "github.com/nucleuscloud/neosync/backend/pkg/sqlmanager/shared"
-	"github.com/nucleuscloud/neosync/internal/database-record-mapper/builder"
-	"github.com/nucleuscloud/neosync/internal/database-record-mapper/dynamodb"
-	"github.com/nucleuscloud/neosync/internal/database-record-mapper/mongodb"
-	"github.com/nucleuscloud/neosync/internal/database-record-mapper/mssql"
-	"github.com/nucleuscloud/neosync/internal/database-record-mapper/mysql"
-	"github.com/nucleuscloud/neosync/internal/database-record-mapper/postgres"
+	mgmtv1alpha1 "github.com/Groupe-Hevea/neosync/backend/gen/go/protos/mgmt/v1alpha1"
+	sqlmanager_shared "github.com/Groupe-Hevea/neosync/backend/pkg/sqlmanager/shared"
+	"github.com/Groupe-Hevea/neosync/internal/database-record-mapper/builder"
+	"github.com/Groupe-Hevea/neosync/internal/database-record-mapper/dynamodb"
+	"github.com/Groupe-Hevea/neosync/internal/database-record-mapper/mongodb"
+	"github.com/Groupe-Hevea/neosync/internal/database-record-mapper/mssql"
+	"github.com/Groupe-Hevea/neosync/internal/database-record-mapper/mysql"
+	"github.com/Groupe-Hevea/neosync/internal/database-record-mapper/postgres"
 )
 
 func NewDatabaseRecordMapper(dbType string) (builder.DatabaseRecordMapper[any], error) {

@@ -7,10 +7,10 @@ import (
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 
-	migrate_cmd "github.com/nucleuscloud/neosync/backend/internal/cmds/mgmt/migrate"
-	run_cmd "github.com/nucleuscloud/neosync/backend/internal/cmds/mgmt/run"
-	serve "github.com/nucleuscloud/neosync/backend/internal/cmds/mgmt/serve"
-	neosynclogger "github.com/nucleuscloud/neosync/backend/pkg/logger"
+	migrate_cmd "github.com/Groupe-Hevea/neosync/backend/internal/cmds/mgmt/migrate"
+	run_cmd "github.com/Groupe-Hevea/neosync/backend/internal/cmds/mgmt/run"
+	serve "github.com/Groupe-Hevea/neosync/backend/internal/cmds/mgmt/serve"
+	neosynclogger "github.com/Groupe-Hevea/neosync/backend/pkg/logger"
 )
 
 func Execute() {

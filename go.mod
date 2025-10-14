@@ -1,4 +1,4 @@
-module github.com/nucleuscloud/neosync
+module github.com/Groupe-Hevea/neosync
 
 go 1.24.1
 

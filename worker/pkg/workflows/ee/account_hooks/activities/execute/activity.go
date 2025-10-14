@@ -16,10 +16,10 @@ import (
 	"time"
 
 	"connectrpc.com/connect"
-	mgmtv1alpha1 "github.com/nucleuscloud/neosync/backend/gen/go/protos/mgmt/v1alpha1"
-	"github.com/nucleuscloud/neosync/backend/gen/go/protos/mgmt/v1alpha1/mgmtv1alpha1connect"
-	accounthook_events "github.com/nucleuscloud/neosync/internal/ee/events"
-	temporallogger "github.com/nucleuscloud/neosync/worker/internal/temporal-logger"
+	mgmtv1alpha1 "github.com/Groupe-Hevea/neosync/backend/gen/go/protos/mgmt/v1alpha1"
+	"github.com/Groupe-Hevea/neosync/backend/gen/go/protos/mgmt/v1alpha1/mgmtv1alpha1connect"
+	accounthook_events "github.com/Groupe-Hevea/neosync/internal/ee/events"
+	temporallogger "github.com/Groupe-Hevea/neosync/worker/internal/temporal-logger"
 	"go.temporal.io/sdk/activity"
 	"go.temporal.io/sdk/log"
 )

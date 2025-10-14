@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"testing"
 
-	"github.com/nucleuscloud/neosync/worker/pkg/rng"
+	"github.com/Groupe-Hevea/neosync/worker/pkg/rng"
 	"github.com/stretchr/testify/mock"
 	"github.com/stretchr/testify/require"
 )

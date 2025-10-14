@@ -10,31 +10,31 @@ resolve-type-alias: False
 issue-845-fix: True
 
 packages:
-  github.com/nucleuscloud/neosync/backend/internal/auth/jwt:
+  github.com/Groupe-Hevea/neosync/backend/internal/auth/jwt:
     interfaces:
       JwtValidator:
-  github.com/nucleuscloud/neosync/backend/internal/auth/client:
+  github.com/Groupe-Hevea/neosync/backend/internal/auth/client:
     interfaces:
       Interface:
-  github.com/nucleuscloud/neosync/internal/authmgmt:
+  github.com/Groupe-Hevea/neosync/internal/authmgmt:
     interfaces:
       Interface:
-  github.com/nucleuscloud/neosync/backend/internal/auth/clientcred_token_provider:
+  github.com/Groupe-Hevea/neosync/backend/internal/auth/clientcred_token_provider:
     interfaces:
       tokenProvider:
-  github.com/nucleuscloud/neosync/backend/internal/auth/authmw:
+  github.com/Groupe-Hevea/neosync/backend/internal/auth/authmw:
     interfaces:
       AuthClient:
-  github.com/nucleuscloud/neosync/internal/neosyncdb:
+  github.com/Groupe-Hevea/neosync/internal/neosyncdb:
     # config:
     interfaces:
       DBTX:
-  github.com/nucleuscloud/neosync/backend/gen/go/db:
+  github.com/Groupe-Hevea/neosync/backend/gen/go/db:
     # config:
     interfaces:
       Querier:
       DBTX:
-  github.com/nucleuscloud/neosync/backend/gen/go/protos/mgmt/v1alpha1/mgmtv1alpha1connect:
+  github.com/Groupe-Hevea/neosync/backend/gen/go/protos/mgmt/v1alpha1/mgmtv1alpha1connect:
     # config:
     interfaces:
       UserAccountServiceClient:
@@ -44,38 +44,38 @@ packages:
       AuthServiceClient:
       TransformersServiceClient:
       AccountHookServiceClient:
-  github.com/nucleuscloud/neosync/internal/temporal/clientmanager:
+  github.com/Groupe-Hevea/neosync/internal/temporal/clientmanager:
     interfaces:
       DB:
       Interface:
       ConfigProvider:
-  github.com/nucleuscloud/neosync/backend/gen/go/db/dbschemas/postgresql:
+  github.com/Groupe-Hevea/neosync/backend/gen/go/db/dbschemas/postgresql:
     # config:
     interfaces:
       Querier:
       DBTX:
-  github.com/nucleuscloud/neosync/backend/gen/go/db/dbschemas/mysql:
+  github.com/Groupe-Hevea/neosync/backend/gen/go/db/dbschemas/mysql:
     # config:
     interfaces:
       Querier:
       DBTX:
-  github.com/nucleuscloud/neosync/backend/pkg/mssql-querier:
+  github.com/Groupe-Hevea/neosync/backend/pkg/mssql-querier:
     # config:
     interfaces:
       Querier:
-  github.com/nucleuscloud/neosync/backend/pkg/sqlconnect:
+  github.com/Groupe-Hevea/neosync/backend/pkg/sqlconnect:
     interfaces:
       SqlConnector:
       SqlDbContainer:
-  github.com/nucleuscloud/neosync/backend/pkg/sqlmanager:
+  github.com/Groupe-Hevea/neosync/backend/pkg/sqlmanager:
     interfaces:
       SqlDatabase:
       SqlManagerClient:
-  github.com/nucleuscloud/neosync/internal/aws:
+  github.com/Groupe-Hevea/neosync/internal/aws:
     interfaces:
       NeosyncAwsManagerClient:
       dynamoDBAPIV2:
-  github.com/nucleuscloud/neosync/internal/benthos-stream:
+  github.com/Groupe-Hevea/neosync/internal/benthos-stream:
     interfaces:
       BenthosStreamClient:
       BenthosStreamManagerClient:
@@ -86,24 +86,24 @@ packages:
       outpkg: promapiv1mock
     interfaces:
       API:
-  github.com/nucleuscloud/neosync/backend/internal/loki:
+  github.com/Groupe-Hevea/neosync/backend/internal/loki:
     interfaces:
       LokiHttpClient:
-  github.com/nucleuscloud/neosync/backend/pkg/mongoconnect:
+  github.com/Groupe-Hevea/neosync/backend/pkg/mongoconnect:
     interfaces:
       Interface:
       DbContainer:
-  github.com/nucleuscloud/neosync/internal/gcp:
+  github.com/Groupe-Hevea/neosync/internal/gcp:
     interfaces:
       ManagerInterface:
       ClientInterface:
-  github.com/nucleuscloud/neosync/internal/connection-manager:
+  github.com/Groupe-Hevea/neosync/internal/connection-manager:
     interfaces:
       ConnectionProvider:
-  github.com/nucleuscloud/neosync/worker/pkg/benthos/dynamodb:
+  github.com/Groupe-Hevea/neosync/worker/pkg/benthos/dynamodb:
     interfaces:
       dynamoDBAPIV2:
-  github.com/nucleuscloud/neosync/internal/billing:
+  github.com/Groupe-Hevea/neosync/internal/billing:
     interfaces:
       Interface:
   github.com/jackc/pgx/v5:
@@ -113,41 +113,41 @@ packages:
       outpkg: pgxmock
     interfaces:
       Tx:
-  github.com/nucleuscloud/neosync/internal/ee/presidio:
+  github.com/Groupe-Hevea/neosync/internal/ee/presidio:
     interfaces:
       AnalyzeInterface:
       AnonymizeInterface:
       EntityInterface:
-  github.com/nucleuscloud/neosync/backend/internal/userdata:
+  github.com/Groupe-Hevea/neosync/backend/internal/userdata:
     interfaces:
       Interface:
       EntityEnforcer:
-  github.com/nucleuscloud/neosync/internal/ee/transformers/functions:
+  github.com/Groupe-Hevea/neosync/internal/ee/transformers/functions:
     interfaces:
       NeosyncOperatorApi:
-  github.com/nucleuscloud/neosync/worker/pkg/benthos/transformer_executor:
+  github.com/Groupe-Hevea/neosync/worker/pkg/benthos/transformer_executor:
     interfaces:
       UserDefinedTransformerResolver:
-  github.com/nucleuscloud/neosync/backend/pkg/sqldbtx:
+  github.com/Groupe-Hevea/neosync/backend/pkg/sqldbtx:
     interfaces:
       DBTX:
-  github.com/nucleuscloud/neosync/internal/encrypt/sym:
+  github.com/Groupe-Hevea/neosync/internal/encrypt/sym:
     interfaces:
       Interface:
-  github.com/nucleuscloud/neosync/internal/ee/slack:
+  github.com/Groupe-Hevea/neosync/internal/ee/slack:
     interfaces:
       Interface:
-  github.com/nucleuscloud/neosync/internal/connectiondata:
+  github.com/Groupe-Hevea/neosync/internal/connectiondata:
     interfaces:
       ConnectionDataBuilder:
       ConnectionDataService:
       SampleDataStream:
-  github.com/nucleuscloud/neosync/worker/pkg/workflows/ee/piidetect/workflows/table/activities:
+  github.com/Groupe-Hevea/neosync/worker/pkg/workflows/ee/piidetect/workflows/table/activities:
     interfaces:
       OpenAiCompletionsClient:
-  github.com/nucleuscloud/neosync/worker/pkg/workflows/tablesync/shared:
+  github.com/Groupe-Hevea/neosync/worker/pkg/workflows/tablesync/shared:
     interfaces:
       BlockAllocator:
-  github.com/nucleuscloud/neosync/worker/pkg/rng:
+  github.com/Groupe-Hevea/neosync/worker/pkg/rng:
     interfaces:
       Rand:

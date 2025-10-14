@@ -102,7 +102,7 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
           values: {
             name: registerEvent.details.email,
             stage: 'App sign up',
-            owner: 'evis@nucleuscloud.com',
+            owner: 'evis@Groupe-Hevea.com',
             associated_people: [
               {
                 target_object: 'people',

@@ -3,7 +3,7 @@ package userdata
 import (
 	"context"
 
-	"github.com/nucleuscloud/neosync/internal/ee/rbac"
+	"github.com/Groupe-Hevea/neosync/internal/ee/rbac"
 )
 
 type UserEntityEnforcer struct {

@@ -37,8 +37,8 @@ servicePort: 80
 containerPort: 8080
 
 auth:
-  baseUrl: https://auth.nucleuscloud.dev/
-  audience: https://api.nucleuscloud.com
+  baseUrl: https://auth.Groupe-Hevea.dev/
+  audience: https://api.Groupe-Hevea.com
 
 temporal:
   url: temporal.temporal:7233

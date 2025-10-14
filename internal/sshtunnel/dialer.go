@@ -11,7 +11,7 @@ import (
 	"time"
 
 	"github.com/cenkalti/backoff/v5"
-	"github.com/nucleuscloud/neosync/internal/backoffutil"
+	"github.com/Groupe-Hevea/neosync/internal/backoffutil"
 	"golang.org/x/crypto/ssh"
 )
 

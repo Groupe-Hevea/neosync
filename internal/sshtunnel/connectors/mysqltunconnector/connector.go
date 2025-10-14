@@ -10,7 +10,7 @@ import (
 
 	"github.com/go-sql-driver/mysql"
 	"github.com/google/uuid"
-	"github.com/nucleuscloud/neosync/internal/sshtunnel"
+	"github.com/Groupe-Hevea/neosync/internal/sshtunnel"
 )
 
 type Connector struct {

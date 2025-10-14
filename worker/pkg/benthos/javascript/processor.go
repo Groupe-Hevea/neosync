@@ -7,10 +7,10 @@ import (
 	"sync"
 
 	"github.com/dop251/goja"
-	"github.com/nucleuscloud/neosync/internal/benthos_slogger"
-	"github.com/nucleuscloud/neosync/internal/javascript"
-	javascript_vm "github.com/nucleuscloud/neosync/internal/javascript/vm"
-	"github.com/nucleuscloud/neosync/worker/pkg/benthos/transformers"
+	"github.com/Groupe-Hevea/neosync/internal/benthos_slogger"
+	"github.com/Groupe-Hevea/neosync/internal/javascript"
+	javascript_vm "github.com/Groupe-Hevea/neosync/internal/javascript/vm"
+	"github.com/Groupe-Hevea/neosync/worker/pkg/benthos/transformers"
 
 	"github.com/redpanda-data/benthos/v4/public/service"
 )

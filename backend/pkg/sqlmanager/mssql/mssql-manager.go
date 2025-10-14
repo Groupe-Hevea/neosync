@@ -10,12 +10,12 @@ import (
 	"strings"
 
 	"github.com/doug-martin/goqu/v9"
-	mysql_queries "github.com/nucleuscloud/neosync/backend/gen/go/db/dbschemas/mysql"
-	mssql_queries "github.com/nucleuscloud/neosync/backend/pkg/mssql-querier"
-	sqlmanager_shared "github.com/nucleuscloud/neosync/backend/pkg/sqlmanager/shared"
-	ee_sqlmanager_mssql "github.com/nucleuscloud/neosync/internal/ee/mssql-manager"
-	"github.com/nucleuscloud/neosync/internal/gotypeutil"
-	"github.com/nucleuscloud/neosync/internal/neosyncdb"
+	mysql_queries "github.com/Groupe-Hevea/neosync/backend/gen/go/db/dbschemas/mysql"
+	mssql_queries "github.com/Groupe-Hevea/neosync/backend/pkg/mssql-querier"
+	sqlmanager_shared "github.com/Groupe-Hevea/neosync/backend/pkg/sqlmanager/shared"
+	ee_sqlmanager_mssql "github.com/Groupe-Hevea/neosync/internal/ee/mssql-manager"
+	"github.com/Groupe-Hevea/neosync/internal/gotypeutil"
+	"github.com/Groupe-Hevea/neosync/internal/neosyncdb"
 	"golang.org/x/sync/errgroup"
 )
 

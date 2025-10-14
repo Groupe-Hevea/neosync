@@ -1,7 +1,7 @@
 # Configure the API Docker Image
 image:
   # -- The default image repository
-  repository: ghcr.io/nucleuscloud/neosync/api
+  repository: ghcr.io/Groupe-Hevea/neosync/api
   # -- Overrides the image tag whose default is {{ printf "v%s" .Chart.AppVersion }}
   tag:
   # -- Overrides the default K8s pull policy

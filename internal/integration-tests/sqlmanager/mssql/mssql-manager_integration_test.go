@@ -11,11 +11,11 @@ import (
 	"testing"
 
 	_ "github.com/microsoft/go-mssqldb"
-	mssql_queries "github.com/nucleuscloud/neosync/backend/pkg/mssql-querier"
-	mssql "github.com/nucleuscloud/neosync/backend/pkg/sqlmanager/mssql"
-	sqlmanager_shared "github.com/nucleuscloud/neosync/backend/pkg/sqlmanager/shared"
-	"github.com/nucleuscloud/neosync/internal/testutil"
-	tcmssql "github.com/nucleuscloud/neosync/internal/testutil/testcontainers/sqlserver"
+	mssql_queries "github.com/Groupe-Hevea/neosync/backend/pkg/mssql-querier"
+	mssql "github.com/Groupe-Hevea/neosync/backend/pkg/sqlmanager/mssql"
+	sqlmanager_shared "github.com/Groupe-Hevea/neosync/backend/pkg/sqlmanager/shared"
+	"github.com/Groupe-Hevea/neosync/internal/testutil"
+	tcmssql "github.com/Groupe-Hevea/neosync/internal/testutil/testcontainers/sqlserver"
 	"golang.org/x/sync/errgroup"
 
 	"github.com/stretchr/testify/require"

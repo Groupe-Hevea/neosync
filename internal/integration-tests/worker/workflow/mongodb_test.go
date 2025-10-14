@@ -7,16 +7,16 @@ import (
 	"time"
 
 	"connectrpc.com/connect"
-	mgmtv1alpha1 "github.com/nucleuscloud/neosync/backend/gen/go/protos/mgmt/v1alpha1"
-	"github.com/nucleuscloud/neosync/backend/gen/go/protos/mgmt/v1alpha1/mgmtv1alpha1connect"
+	mgmtv1alpha1 "github.com/Groupe-Hevea/neosync/backend/gen/go/protos/mgmt/v1alpha1"
+	"github.com/Groupe-Hevea/neosync/backend/gen/go/protos/mgmt/v1alpha1/mgmtv1alpha1connect"
 	"github.com/stretchr/testify/require"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"golang.org/x/sync/errgroup"
 
-	tcneosyncapi "github.com/nucleuscloud/neosync/backend/pkg/integration-test"
-	"github.com/nucleuscloud/neosync/internal/gotypeutil"
-	tcmongodb "github.com/nucleuscloud/neosync/internal/testutil/testcontainers/mongodb"
+	tcneosyncapi "github.com/Groupe-Hevea/neosync/backend/pkg/integration-test"
+	"github.com/Groupe-Hevea/neosync/internal/gotypeutil"
+	tcmongodb "github.com/Groupe-Hevea/neosync/internal/testutil/testcontainers/mongodb"
 )
 
 func createMongodbSyncJob(

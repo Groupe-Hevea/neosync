@@ -17,8 +17,8 @@ import (
 	"github.com/aws/aws-sdk-go-v2/service/dynamodb/types"
 	"github.com/cenkalti/backoff/v4"
 
-	neosync_types "github.com/nucleuscloud/neosync/internal/types"
-	neosync_benthos_metadata "github.com/nucleuscloud/neosync/worker/pkg/benthos/metadata"
+	neosync_types "github.com/Groupe-Hevea/neosync/internal/types"
+	neosync_benthos_metadata "github.com/Groupe-Hevea/neosync/worker/pkg/benthos/metadata"
 	"github.com/redpanda-data/benthos/v4/public/service"
 )
 

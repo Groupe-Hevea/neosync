@@ -18,7 +18,7 @@ The Neosync Go SDK is publicly available and can be added to any Go project. Wit
 
 You can add the Neosync Go SDK using:
 
-`go get github.com/nucleuscloud/neosync`.
+`go get github.com/Groupe-Hevea/neosync`.
 
 ## Prerequisites
 
@@ -50,8 +50,8 @@ import (
 	"net/http"
 
 	"connectrpc.com/connect"
-	mgmtv1alpha1 "github.com/nucleuscloud/neosync/backend/gen/go/protos/mgmt/v1alpha1"
-	"github.com/nucleuscloud/neosync/backend/gen/go/protos/mgmt/v1alpha1/mgmtv1alpha1connect"
+	mgmtv1alpha1 "github.com/Groupe-Hevea/neosync/backend/gen/go/protos/mgmt/v1alpha1"
+	"github.com/Groupe-Hevea/neosync/backend/gen/go/protos/mgmt/v1alpha1/mgmtv1alpha1connect"
 )
 
 func main() {
@@ -100,8 +100,8 @@ In this section, we're going to walk through two examples that show you how to m
 
 Neosync is made up of a number of different services that live inside of the same process. In order to connect to the Neosync API and use the services, we make two packages available:
 
-- `github.com/nucleuscloud/neosync/backend/gen/go/protos/mgmt/v1alpha1`
-- `github.com/nucleuscloud/neosync/backend/gen/go/protos/mgmt/v1alpha1/mgmtv1alpha1connect`
+- `github.com/Groupe-Hevea/neosync/backend/gen/go/protos/mgmt/v1alpha1`
+- `github.com/Groupe-Hevea/neosync/backend/gen/go/protos/mgmt/v1alpha1/mgmtv1alpha1connect`
 
 The first package is made up of the generated types. This includes all of the request, response, and DTO types.
 
@@ -142,8 +142,8 @@ import (
 	"net/http"
 
 	"connectrpc.com/connect"
-	mgmtv1alpha1 "github.com/nucleuscloud/neosync/backend/gen/go/protos/mgmt/v1alpha1"
-	"github.com/nucleuscloud/neosync/backend/gen/go/protos/mgmt/v1alpha1/mgmtv1alpha1connect"
+	mgmtv1alpha1 "github.com/Groupe-Hevea/neosync/backend/gen/go/protos/mgmt/v1alpha1"
+	"github.com/Groupe-Hevea/neosync/backend/gen/go/protos/mgmt/v1alpha1/mgmtv1alpha1connect"
 )
 
 // define our User struct and use json tags to structure our json
@@ -296,8 +296,8 @@ import (
 	"net/http"
 
 	"connectrpc.com/connect"
-	mgmtv1alpha1 "github.com/nucleuscloud/neosync/backend/gen/go/protos/mgmt/v1alpha1"
-	"github.com/nucleuscloud/neosync/backend/gen/go/protos/mgmt/v1alpha1/mgmtv1alpha1connect"
+	mgmtv1alpha1 "github.com/Groupe-Hevea/neosync/backend/gen/go/protos/mgmt/v1alpha1"
+	"github.com/Groupe-Hevea/neosync/backend/gen/go/protos/mgmt/v1alpha1/mgmtv1alpha1connect"
 )
 
 // define our User struct and use json tags to structure our json

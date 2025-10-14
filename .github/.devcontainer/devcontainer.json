@@ -16,7 +16,7 @@
 		/* K8s */
 		"ghcr.io/mpriscella/features/kind:1": {},
 		"ghcr.io/lentzi90/features/tilt:0": {},
-		"ghcr.io/nucleuscloud/devcontainer-features/ctlptl:0": {},
+		"ghcr.io/Groupe-Hevea/devcontainer-features/ctlptl:0": {},
 		"ghcr.io/devcontainers-contrib/features/kubectl-asdf:2": {
 			"version": "1.28.2"
 		},
@@ -28,7 +28,7 @@
 		"ghcr.io/rio/features/kustomize:1": {
 			"version": "5.1.1" // https://github.com/rio/features/issues/37
 		},
-		"ghcr.io/nucleuscloud/devcontainer-features/helmfile:0": {},
+		"ghcr.io/Groupe-Hevea/devcontainer-features/helmfile:0": {},
 		"ghcr.io/dhoeric/features/k9s:1": {},
 		/* Protobuf */
 		"ghcr.io/marcozac/devcontainer-features/buf:1": {},
@@ -36,7 +36,7 @@
 		/* Golang */
 		"ghcr.io/devcontainers/features/go:1": {},
 		"ghcr.io/guiyomh/features/golangci-lint:0": {},
-		"ghcr.io/nucleuscloud/devcontainer-features/sqlc:1": {},
+		"ghcr.io/Groupe-Hevea/devcontainer-features/sqlc:1": {},
 		"ghcr.io/brokeyourbike/devcontainer-features/mockery-go:0.2.0": {},
 		/* NodeJS/Browser */
 		"ghcr.io/devcontainers/features/node:1": {},

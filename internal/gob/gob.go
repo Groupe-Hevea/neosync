@@ -5,7 +5,7 @@ import (
 	"time"
 
 	dynamotypes "github.com/aws/aws-sdk-go-v2/service/dynamodb/types"
-	neosynctypes "github.com/nucleuscloud/neosync/internal/neosync-types"
+	neosynctypes "github.com/Groupe-Hevea/neosync/internal/neosync-types"
 )
 
 // need to register all the types that are used in the connection data service

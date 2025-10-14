@@ -7,7 +7,7 @@ import (
 	"os"
 	"text/template"
 
-	transformers "github.com/nucleuscloud/neosync/worker/pkg/benthos/transformers"
+	transformers "github.com/Groupe-Hevea/neosync/worker/pkg/benthos/transformers"
 )
 
 func main() {

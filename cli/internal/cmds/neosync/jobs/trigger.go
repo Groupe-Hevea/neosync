@@ -7,10 +7,10 @@ import (
 
 	"connectrpc.com/connect"
 	"github.com/google/uuid"
-	mgmtv1alpha1 "github.com/nucleuscloud/neosync/backend/gen/go/protos/mgmt/v1alpha1"
-	"github.com/nucleuscloud/neosync/backend/gen/go/protos/mgmt/v1alpha1/mgmtv1alpha1connect"
-	"github.com/nucleuscloud/neosync/cli/internal/auth"
-	cli_logger "github.com/nucleuscloud/neosync/cli/internal/logger"
+	mgmtv1alpha1 "github.com/Groupe-Hevea/neosync/backend/gen/go/protos/mgmt/v1alpha1"
+	"github.com/Groupe-Hevea/neosync/backend/gen/go/protos/mgmt/v1alpha1/mgmtv1alpha1connect"
+	"github.com/Groupe-Hevea/neosync/cli/internal/auth"
+	cli_logger "github.com/Groupe-Hevea/neosync/cli/internal/logger"
 	"github.com/spf13/cobra"
 )
 

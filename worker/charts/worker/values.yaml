@@ -1,7 +1,7 @@
 # image Configure the Worker Docker Image
 image:
   # -- The default image repository
-  repository: ghcr.io/nucleuscloud/neosync/worker
+  repository: ghcr.io/Groupe-Hevea/neosync/worker
   # -- Overrides the image tag whose default is {{ printf "v%s" .Chart.AppVersion }}
   tag:
   # -- Overrides the default K8s pull policy

@@ -1,12 +1,12 @@
 <p align="center">
-  <!-- <img alt="neosyncbanner" src="https://assets.nucleuscloud.com/neosync/docs/neosync-header.svg" > -->
+  <!-- <img alt="neosyncbanner" src="https://assets.Groupe-Hevea.com/neosync/docs/neosync-header.svg" > -->
   <picture>
   <source
-    srcset="https://assets.nucleuscloud.com/neosync/docs/neosync-header.svg"
+    srcset="https://assets.Groupe-Hevea.com/neosync/docs/neosync-header.svg"
     media="(prefers-color-scheme: light)"
   />
   <source
-    srcset="https://assets.nucleuscloud.com/neosync/docs/neosync-header-dark.svg"
+    srcset="https://assets.Groupe-Hevea.com/neosync/docs/neosync-header-dark.svg"
     media="(prefers-color-scheme: dark), (prefers-color-scheme: no-preference)"
   />
   <img src="https://github-readme-stats.vercel.app/api?username=anuraghazra&show_icons=true" />
@@ -33,11 +33,11 @@ Open Source Data Anonymization and Synthetic Data Orchestration
     <img alt='PRs Welcome' src='https://img.shields.io/badge/PRs-welcome-brightgreen.svg?style=shields'/>
   </a>
   <img src="https://img.shields.io/github/license/lightdash/lightdash" />
-  <!-- <a href="https://codecov.io/gh/nucleuscloud/neosync">
-    <img alt="CodeCov" src="https://codecov.io/gh/nucleuscloud/neosync/graph/badge.svg?token=A35QDLRU04"/>
+  <!-- <a href="https://codecov.io/gh/Groupe-Hevea/neosync">
+    <img alt="CodeCov" src="https://codecov.io/gh/Groupe-Hevea/neosync/graph/badge.svg?token=A35QDLRU04"/>
     </a> -->
-  <a href="https://github.com/nucleuscloud/neosync/actions/workflows/go.yml/">
-    <img alt="Go Tests" src="https://github.com/nucleuscloud/neosync/actions/workflows/go.yml/badge.svg"/>
+  <a href="https://github.com/Groupe-Hevea/neosync/actions/workflows/go.yml/">
+    <img alt="Go Tests" src="https://github.com/Groupe-Hevea/neosync/actions/workflows/go.yml/badge.svg"/>
   </a>
   <a href="https://x.com/neosynccloud">
     <img alt="Follow X" src="https://img.shields.io/twitter/follow/neosynccloud?label=Follow"/>
@@ -118,7 +118,7 @@ We love contributions big and small. Here are just a few ways that you can contr
 
 - Join our [Discord](https://discord.com/invite/MFAMgnp4HF) channel and ask us any questions there
 - Open a PR (see our instructions on [developing with Neosync locally](https://docs.neosync.dev/guides/neosync-local-dev))
-- Submit a [feature request](https://github.com/nucleuscloud/neosync/issues/new?assignees=&labels=enhancement%2C+feature&template=feature_request.md) or [bug report](https://github.com/nucleuscloud/neosync/issues/new?assignees=&labels=bug&template=bug_report.md)
+- Submit a [feature request](https://github.com/Groupe-Hevea/neosync/issues/new?assignees=&labels=enhancement%2C+feature&template=feature_request.md) or [bug report](https://github.com/Groupe-Hevea/neosync/issues/new?assignees=&labels=bug&template=bug_report.md)
 
 ## Licensing
 

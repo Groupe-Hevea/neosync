@@ -6,15 +6,15 @@ import (
 	"fmt"
 	"log/slog"
 
-	mgmtv1alpha1 "github.com/nucleuscloud/neosync/backend/gen/go/protos/mgmt/v1alpha1"
-	"github.com/nucleuscloud/neosync/backend/pkg/sqlmanager"
-	sqlmanager_mssql "github.com/nucleuscloud/neosync/backend/pkg/sqlmanager/mssql"
-	sqlmanager_shared "github.com/nucleuscloud/neosync/backend/pkg/sqlmanager/shared"
-	tabledependency "github.com/nucleuscloud/neosync/backend/pkg/table-dependency"
-	connectionmanager "github.com/nucleuscloud/neosync/internal/connection-manager"
-	"github.com/nucleuscloud/neosync/internal/ee/license"
-	ee_sqlmanager_mssql "github.com/nucleuscloud/neosync/internal/ee/mssql-manager"
-	shared "github.com/nucleuscloud/neosync/internal/schema-manager/shared"
+	mgmtv1alpha1 "github.com/Groupe-Hevea/neosync/backend/gen/go/protos/mgmt/v1alpha1"
+	"github.com/Groupe-Hevea/neosync/backend/pkg/sqlmanager"
+	sqlmanager_mssql "github.com/Groupe-Hevea/neosync/backend/pkg/sqlmanager/mssql"
+	sqlmanager_shared "github.com/Groupe-Hevea/neosync/backend/pkg/sqlmanager/shared"
+	tabledependency "github.com/Groupe-Hevea/neosync/backend/pkg/table-dependency"
+	connectionmanager "github.com/Groupe-Hevea/neosync/internal/connection-manager"
+	"github.com/Groupe-Hevea/neosync/internal/ee/license"
+	ee_sqlmanager_mssql "github.com/Groupe-Hevea/neosync/internal/ee/mssql-manager"
+	shared "github.com/Groupe-Hevea/neosync/internal/schema-manager/shared"
 )
 
 type MssqlSchemaManager struct {

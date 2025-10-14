@@ -9,17 +9,17 @@ import (
 	"log/slog"
 
 	"connectrpc.com/connect"
-	mgmtv1alpha1 "github.com/nucleuscloud/neosync/backend/gen/go/protos/mgmt/v1alpha1"
-	"github.com/nucleuscloud/neosync/backend/pkg/sqlconnect"
-	sql_manager "github.com/nucleuscloud/neosync/backend/pkg/sqlmanager"
-	sqlmanager_mysql "github.com/nucleuscloud/neosync/backend/pkg/sqlmanager/mysql"
-	sqlmanager_postgres "github.com/nucleuscloud/neosync/backend/pkg/sqlmanager/postgres"
-	sqlmanager_shared "github.com/nucleuscloud/neosync/backend/pkg/sqlmanager/shared"
-	connectionmanager "github.com/nucleuscloud/neosync/internal/connection-manager"
-	database_record_mapper "github.com/nucleuscloud/neosync/internal/database-record-mapper"
-	nucleuserrors "github.com/nucleuscloud/neosync/internal/errors"
-	"github.com/nucleuscloud/neosync/internal/neosyncdb"
-	querybuilder "github.com/nucleuscloud/neosync/worker/pkg/query-builder"
+	mgmtv1alpha1 "github.com/Groupe-Hevea/neosync/backend/gen/go/protos/mgmt/v1alpha1"
+	"github.com/Groupe-Hevea/neosync/backend/pkg/sqlconnect"
+	sql_manager "github.com/Groupe-Hevea/neosync/backend/pkg/sqlmanager"
+	sqlmanager_mysql "github.com/Groupe-Hevea/neosync/backend/pkg/sqlmanager/mysql"
+	sqlmanager_postgres "github.com/Groupe-Hevea/neosync/backend/pkg/sqlmanager/postgres"
+	sqlmanager_shared "github.com/Groupe-Hevea/neosync/backend/pkg/sqlmanager/shared"
+	connectionmanager "github.com/Groupe-Hevea/neosync/internal/connection-manager"
+	database_record_mapper "github.com/Groupe-Hevea/neosync/internal/database-record-mapper"
+	nucleuserrors "github.com/Groupe-Hevea/neosync/internal/errors"
+	"github.com/Groupe-Hevea/neosync/internal/neosyncdb"
+	querybuilder "github.com/Groupe-Hevea/neosync/worker/pkg/query-builder"
 )
 
 type SQLConnectionDataService struct {

@@ -4,12 +4,12 @@ import (
 	"context"
 
 	"connectrpc.com/connect"
-	db_queries "github.com/nucleuscloud/neosync/backend/gen/go/db"
-	mgmtv1alpha1 "github.com/nucleuscloud/neosync/backend/gen/go/protos/mgmt/v1alpha1"
-	"github.com/nucleuscloud/neosync/backend/internal/userdata"
-	pg_models "github.com/nucleuscloud/neosync/backend/sql/postgresql/models"
-	"github.com/nucleuscloud/neosync/internal/ee/rbac"
-	"github.com/nucleuscloud/neosync/internal/neosyncdb"
+	db_queries "github.com/Groupe-Hevea/neosync/backend/gen/go/db"
+	mgmtv1alpha1 "github.com/Groupe-Hevea/neosync/backend/gen/go/protos/mgmt/v1alpha1"
+	"github.com/Groupe-Hevea/neosync/backend/internal/userdata"
+	pg_models "github.com/Groupe-Hevea/neosync/backend/sql/postgresql/models"
+	"github.com/Groupe-Hevea/neosync/internal/ee/rbac"
+	"github.com/Groupe-Hevea/neosync/internal/neosyncdb"
 )
 
 func (s *Service) GetAccountOnboardingConfig(

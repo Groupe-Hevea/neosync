@@ -6,7 +6,7 @@ import (
 	"testing"
 	"time"
 
-	sym_encrypt "github.com/nucleuscloud/neosync/internal/encrypt/sym"
+	sym_encrypt "github.com/Groupe-Hevea/neosync/internal/encrypt/sym"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
 )

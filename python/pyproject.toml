@@ -6,7 +6,7 @@ build-backend = "hatchling.build"
 name = "neosync"
 dynamic = ["version"]
 authors = [
-  { name = "Neosync Dev Team", email="devops@nucleuscloud.com"}
+  { name = "Neosync Dev Team", email="infra@allopneus.com"}
 ]
 description = "Neosync Python SDK"
 requires-python = ">=3.8"
@@ -42,8 +42,8 @@ keywords = [
 ]
 
 [project.urls]
-Homepage = "https://github.com/nucleuscloud/neosync"
-Issues = "https://github.com/nucleuscloud/neosync/issues"
+Homepage = "https://github.com/Groupe-Hevea/neosync"
+Issues = "https://github.com/Groupe-Hevea/neosync/issues"
 Documentation = "https://docs.neosync.dev/api/python"
 
 

@@ -6,9 +6,9 @@ import (
 	"log/slog"
 
 	"github.com/casbin/casbin/v2"
-	mgmtv1alpha1 "github.com/nucleuscloud/neosync/backend/gen/go/protos/mgmt/v1alpha1"
-	nucleuserrors "github.com/nucleuscloud/neosync/internal/errors"
-	"github.com/nucleuscloud/neosync/internal/neosyncdb"
+	mgmtv1alpha1 "github.com/Groupe-Hevea/neosync/backend/gen/go/protos/mgmt/v1alpha1"
+	nucleuserrors "github.com/Groupe-Hevea/neosync/internal/errors"
+	"github.com/Groupe-Hevea/neosync/internal/neosyncdb"
 )
 
 // Interface used by rbac engine to make necessary calls to the database

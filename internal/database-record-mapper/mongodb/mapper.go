@@ -5,8 +5,8 @@ import (
 	"fmt"
 	"math/big"
 
-	"github.com/nucleuscloud/neosync/internal/database-record-mapper/builder"
-	neosync_types "github.com/nucleuscloud/neosync/internal/types"
+	"github.com/Groupe-Hevea/neosync/internal/database-record-mapper/builder"
+	neosync_types "github.com/Groupe-Hevea/neosync/internal/types"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 )

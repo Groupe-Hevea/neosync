@@ -4,8 +4,8 @@ import (
 	"errors"
 	"testing"
 
-	"github.com/nucleuscloud/neosync/internal/testutil"
-	accounthook_workflow "github.com/nucleuscloud/neosync/worker/pkg/workflows/ee/account_hooks/workflow"
+	"github.com/Groupe-Hevea/neosync/internal/testutil"
+	accounthook_workflow "github.com/Groupe-Hevea/neosync/worker/pkg/workflows/ee/account_hooks/workflow"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
 	"github.com/stretchr/testify/require"

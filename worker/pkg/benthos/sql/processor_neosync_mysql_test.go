@@ -6,7 +6,7 @@ import (
 	"testing"
 
 	"github.com/doug-martin/goqu/v9"
-	neosync_benthos "github.com/nucleuscloud/neosync/worker/pkg/benthos"
+	neosync_benthos "github.com/Groupe-Hevea/neosync/worker/pkg/benthos"
 	"github.com/redpanda-data/benthos/v4/public/service"
 	"github.com/stretchr/testify/require"
 )

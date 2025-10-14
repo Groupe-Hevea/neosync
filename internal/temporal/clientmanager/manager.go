@@ -8,7 +8,7 @@ import (
 	"strings"
 	"sync"
 
-	nucleuserrors "github.com/nucleuscloud/neosync/internal/errors"
+	nucleuserrors "github.com/Groupe-Hevea/neosync/internal/errors"
 	"go.temporal.io/api/enums/v1"
 	"go.temporal.io/api/serviceerror"
 	workflowpb "go.temporal.io/api/workflow/v1"

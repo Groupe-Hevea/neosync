@@ -4,7 +4,7 @@ import (
 	"context"
 
 	"github.com/jackc/pgx/v5/pgtype"
-	db_queries "github.com/nucleuscloud/neosync/backend/gen/go/db"
+	db_queries "github.com/Groupe-Hevea/neosync/backend/gen/go/db"
 )
 
 type CreateAccountApiKeyRequest struct {

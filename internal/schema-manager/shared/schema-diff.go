@@ -3,7 +3,7 @@ package schemamanager_shared
 import (
 	"sort"
 
-	sqlmanager_shared "github.com/nucleuscloud/neosync/backend/pkg/sqlmanager/shared"
+	sqlmanager_shared "github.com/Groupe-Hevea/neosync/backend/pkg/sqlmanager/shared"
 )
 
 type ExistsInSource struct {

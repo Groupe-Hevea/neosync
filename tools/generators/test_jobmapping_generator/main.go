@@ -13,7 +13,7 @@ import (
 	"text/template"
 
 	"github.com/antlr4-go/antlr/v4"
-	parser "github.com/nucleuscloud/go-antlrv4-parser/tsql"
+	parser "github.com/Groupe-Hevea/go-antlrv4-parser/tsql"
 	pg_query "github.com/pganalyze/pg_query_go/v5"
 )
 
@@ -156,7 +156,7 @@ func formatJobMappings(pkgName, sqlFile string, tables []*Table, generateTypeMap
 package {{ .PackageName }}
 
 import (
-	mgmtv1alpha1 "github.com/nucleuscloud/neosync/backend/gen/go/protos/mgmt/v1alpha1"
+	mgmtv1alpha1 "github.com/Groupe-Hevea/neosync/backend/gen/go/protos/mgmt/v1alpha1"
 )
 
 func GetDefaultSyncJobMappings(schema string)[]*mgmtv1alpha1.JobMapping {

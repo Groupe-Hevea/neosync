@@ -12,7 +12,7 @@ import (
 	"strings"
 	"text/template"
 
-	transformers_utils "github.com/nucleuscloud/neosync/worker/pkg/benthos/transformers"
+	transformers_utils "github.com/Groupe-Hevea/neosync/worker/pkg/benthos/transformers"
 )
 
 type TransformerInfo struct {

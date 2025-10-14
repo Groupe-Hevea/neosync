@@ -5,10 +5,10 @@ import (
 	"errors"
 	"strings"
 
-	bb_internal "github.com/nucleuscloud/neosync/internal/benthos/benthos-builder/internal"
-	"github.com/nucleuscloud/neosync/internal/runconfigs"
-	neosync_benthos "github.com/nucleuscloud/neosync/worker/pkg/benthos"
-	"github.com/nucleuscloud/neosync/worker/pkg/workflows/datasync/activities/shared"
+	bb_internal "github.com/Groupe-Hevea/neosync/internal/benthos/benthos-builder/internal"
+	"github.com/Groupe-Hevea/neosync/internal/runconfigs"
+	neosync_benthos "github.com/Groupe-Hevea/neosync/worker/pkg/benthos"
+	"github.com/Groupe-Hevea/neosync/worker/pkg/workflows/datasync/activities/shared"
 )
 
 type gcpCloudStorageSyncBuilder struct {
