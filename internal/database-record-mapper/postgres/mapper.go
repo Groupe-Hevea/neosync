@@ -10,10 +10,10 @@ import (
 	"strings"
 	"time"
 
-	"github.com/jackc/pgx/v5/pgtype"
 	"github.com/Groupe-Hevea/neosync/internal/database-record-mapper/builder"
 	neosynctypes "github.com/Groupe-Hevea/neosync/internal/neosync-types"
 	neosync_types "github.com/Groupe-Hevea/neosync/internal/types"
+	"github.com/jackc/pgx/v5/pgtype"
 )
 
 type PostgresMapper struct{}

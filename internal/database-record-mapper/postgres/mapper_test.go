@@ -5,8 +5,8 @@ import (
 	"encoding/json"
 	"testing"
 
-	"github.com/jackc/pgx/v5/pgtype"
 	neosynctypes "github.com/Groupe-Hevea/neosync/internal/neosync-types"
+	"github.com/jackc/pgx/v5/pgtype"
 	"github.com/stretchr/testify/require"
 )
 

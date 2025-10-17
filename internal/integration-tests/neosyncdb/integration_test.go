@@ -5,7 +5,6 @@ import (
 	"testing"
 	"time"
 
-	"github.com/jackc/pgx/v5/pgtype"
 	db_queries "github.com/Groupe-Hevea/neosync/backend/gen/go/db"
 	mgmtv1alpha1 "github.com/Groupe-Hevea/neosync/backend/gen/go/protos/mgmt/v1alpha1"
 	pg_models "github.com/Groupe-Hevea/neosync/backend/sql/postgresql/models"
@@ -14,6 +13,7 @@ import (
 	"github.com/Groupe-Hevea/neosync/internal/neosyncdb"
 	"github.com/Groupe-Hevea/neosync/internal/testutil"
 	tcpostgres "github.com/Groupe-Hevea/neosync/internal/testutil/testcontainers/postgres"
+	"github.com/jackc/pgx/v5/pgtype"
 	"github.com/stretchr/testify/require"
 	"github.com/stretchr/testify/suite"
 	"golang.org/x/sync/errgroup"

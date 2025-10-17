@@ -10,7 +10,6 @@ import (
 	"time"
 
 	"connectrpc.com/connect"
-	"github.com/google/uuid"
 	mgmtv1alpha1 "github.com/Groupe-Hevea/neosync/backend/gen/go/protos/mgmt/v1alpha1"
 	"github.com/Groupe-Hevea/neosync/backend/gen/go/protos/mgmt/v1alpha1/mgmtv1alpha1connect"
 	"github.com/Groupe-Hevea/neosync/backend/pkg/sqlconnect"
@@ -28,6 +27,7 @@ import (
 	pool_sql_provider "github.com/Groupe-Hevea/neosync/internal/connection-manager/pool/providers/sql"
 	"github.com/Groupe-Hevea/neosync/internal/connection-manager/providers/sqlprovider"
 	"github.com/Groupe-Hevea/neosync/internal/runconfigs"
+	"github.com/google/uuid"
 	"github.com/spf13/cobra"
 	"golang.org/x/sync/errgroup"
 	"gopkg.in/yaml.v2"

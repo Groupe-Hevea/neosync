@@ -8,10 +8,10 @@ import (
 	"net/mail"
 	"strings"
 
-	"github.com/google/uuid"
 	mgmtv1alpha1 "github.com/Groupe-Hevea/neosync/backend/gen/go/protos/mgmt/v1alpha1"
 	transformer_utils "github.com/Groupe-Hevea/neosync/worker/pkg/benthos/transformers/utils"
 	"github.com/Groupe-Hevea/neosync/worker/pkg/rng"
+	"github.com/google/uuid"
 	"github.com/redpanda-data/benthos/v4/public/bloblang"
 )
 

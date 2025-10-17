@@ -7,10 +7,10 @@ import (
 	"strings"
 	"time"
 
-	mssql "github.com/microsoft/go-mssqldb"
 	"github.com/Groupe-Hevea/neosync/internal/database-record-mapper/builder"
 	neosynctypes "github.com/Groupe-Hevea/neosync/internal/neosync-types"
 	neosync_types "github.com/Groupe-Hevea/neosync/internal/types"
+	mssql "github.com/microsoft/go-mssqldb"
 )
 
 type MSSQLMapper struct{}

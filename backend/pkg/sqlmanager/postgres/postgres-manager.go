@@ -7,10 +7,10 @@ import (
 	"strings"
 	"sync"
 
-	"github.com/doug-martin/goqu/v9"
 	pg_queries "github.com/Groupe-Hevea/neosync/backend/gen/go/db/dbschemas/postgresql"
 	sqlmanager_shared "github.com/Groupe-Hevea/neosync/backend/pkg/sqlmanager/shared"
 	"github.com/Groupe-Hevea/neosync/internal/neosyncdb"
+	"github.com/doug-martin/goqu/v9"
 	"golang.org/x/sync/errgroup"
 )
 
@@ -154,7 +154,10 @@ func (p *PostgresManager) GetColumnsByTables(
 			Comment:            sqlmanager_shared.Ptr(row.ColumnComment),
 		}
 		shouldIncludeOrdinalPosition := true
-		col.Fingerprint = sqlmanager_shared.BuildTableColumnFingerprint(col, shouldIncludeOrdinalPosition)
+		col.Fingerprint = sqlmanager_shared.BuildTableColumnFingerprint(
+			col,
+			shouldIncludeOrdinalPosition,
+		)
 		result = append(result, col)
 	}
 	return result, nil
@@ -357,10 +360,14 @@ func (p *PostgresManager) GetDataTypesByTables(
 	functions := []*sqlmanager_shared.DataType{}
 	errgrp.Go(func() error {
 		for schema, tables := range schemaTablesMap {
-			rows, err := p.querier.GetCustomFunctionsBySchemaAndTables(ctx, p.db, &pg_queries.GetCustomFunctionsBySchemaAndTablesParams{
-				Schema: schema,
-				Tables: tables,
-			})
+			rows, err := p.querier.GetCustomFunctionsBySchemaAndTables(
+				ctx,
+				p.db,
+				&pg_queries.GetCustomFunctionsBySchemaAndTablesParams{
+					Schema: schema,
+					Tables: tables,
+				},
+			)
 			if err != nil && !neosyncdb.IsNoRows(err) {
 				return err
 			} else if err != nil && neosyncdb.IsNoRows(err) {
@@ -372,7 +379,11 @@ func (p *PostgresManager) GetDataTypesByTables(
 					Name:       row.FunctionName,
 					Definition: row.Definition,
 				}
-				function.Fingerprint = sqlmanager_shared.BuildFingerprint(function.Schema, function.Name, function.Definition)
+				function.Fingerprint = sqlmanager_shared.BuildFingerprint(
+					function.Schema,
+					function.Name,
+					function.Definition,
+				)
 				functions = append(functions, function)
 			}
 		}
@@ -391,7 +402,9 @@ func (p *PostgresManager) GetDataTypesByTables(
 	}, nil
 }
 
-func (p *PostgresManager) GetAllSchemas(ctx context.Context) ([]*sqlmanager_shared.DatabaseSchemaNameRow, error) {
+func (p *PostgresManager) GetAllSchemas(
+	ctx context.Context,
+) ([]*sqlmanager_shared.DatabaseSchemaNameRow, error) {
 	rows, err := p.querier.GetAllSchemas(ctx, p.db)
 	if err != nil {
 		return nil, err

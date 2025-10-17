@@ -9,8 +9,6 @@ import (
 	"testing"
 	"time"
 
-	"github.com/cenkalti/backoff/v5"
-	gssh "github.com/gliderlabs/ssh"
 	"github.com/Groupe-Hevea/neosync/internal/sshtunnel"
 	"github.com/Groupe-Hevea/neosync/internal/sshtunnel/connectors/mssqltunconnector"
 	"github.com/Groupe-Hevea/neosync/internal/sshtunnel/connectors/mysqltunconnector"
@@ -19,6 +17,8 @@ import (
 	tcmysql "github.com/Groupe-Hevea/neosync/internal/testutil/testcontainers/mysql"
 	tcpostgres "github.com/Groupe-Hevea/neosync/internal/testutil/testcontainers/postgres"
 	testcontainers_sqlserver "github.com/Groupe-Hevea/neosync/internal/testutil/testcontainers/sqlserver"
+	"github.com/cenkalti/backoff/v5"
+	gssh "github.com/gliderlabs/ssh"
 	"github.com/stretchr/testify/require"
 	"golang.org/x/crypto/ssh"
 )

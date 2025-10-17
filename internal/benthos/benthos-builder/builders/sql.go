@@ -129,7 +129,10 @@ func (b *sqlSyncBuilder) BuildSourceConfigs(
 			return nil, err
 		}
 		logger.Debug(
-			fmt.Sprintf("adding %d extra passthrough mappings due to unmapped columns", len(extraMappings)),
+			fmt.Sprintf(
+				"adding %d extra passthrough mappings due to unmapped columns",
+				len(extraMappings),
+			),
 		)
 		existingSourceMappings = append(existingSourceMappings, extraMappings...)
 	}

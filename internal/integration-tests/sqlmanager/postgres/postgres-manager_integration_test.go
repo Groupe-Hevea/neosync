@@ -8,14 +8,14 @@ import (
 	"slices"
 	"testing"
 
-	"github.com/doug-martin/goqu/v9"
-	_ "github.com/doug-martin/goqu/v9/dialect/postgres"
-	_ "github.com/jackc/pgx/v5/stdlib"
 	pg_queries "github.com/Groupe-Hevea/neosync/backend/gen/go/db/dbschemas/postgresql"
 	postgres "github.com/Groupe-Hevea/neosync/backend/pkg/sqlmanager/postgres"
 	sqlmanager_shared "github.com/Groupe-Hevea/neosync/backend/pkg/sqlmanager/shared"
 	"github.com/Groupe-Hevea/neosync/internal/testutil"
 	tcpostgres "github.com/Groupe-Hevea/neosync/internal/testutil/testcontainers/postgres"
+	"github.com/doug-martin/goqu/v9"
+	_ "github.com/doug-martin/goqu/v9/dialect/postgres"
+	_ "github.com/jackc/pgx/v5/stdlib"
 	"github.com/stretchr/testify/require"
 	"golang.org/x/sync/errgroup"
 )

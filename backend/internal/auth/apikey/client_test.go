@@ -9,12 +9,12 @@ import (
 	"time"
 
 	"connectrpc.com/connect"
-	"github.com/jackc/pgx/v5"
-	"github.com/jackc/pgx/v5/pgtype"
 	db_queries "github.com/Groupe-Hevea/neosync/backend/gen/go/db"
 	pkg_utils "github.com/Groupe-Hevea/neosync/backend/pkg/utils"
 	"github.com/Groupe-Hevea/neosync/internal/apikey"
 	"github.com/Groupe-Hevea/neosync/internal/neosyncdb"
+	"github.com/jackc/pgx/v5"
+	"github.com/jackc/pgx/v5/pgtype"
 	"github.com/stretchr/testify/mock"
 	"github.com/zeebo/assert"
 )

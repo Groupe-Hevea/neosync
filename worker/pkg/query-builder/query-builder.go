@@ -4,9 +4,9 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/doug-martin/goqu/v9"
 	mgmtv1alpha1 "github.com/Groupe-Hevea/neosync/backend/gen/go/protos/mgmt/v1alpha1"
 	sqlmanager_shared "github.com/Groupe-Hevea/neosync/backend/pkg/sqlmanager/shared"
+	"github.com/doug-martin/goqu/v9"
 
 	// import the dialect
 	_ "github.com/doug-martin/goqu/v9/dialect/mysql"

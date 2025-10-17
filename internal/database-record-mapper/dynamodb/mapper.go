@@ -4,10 +4,10 @@ import (
 	"errors"
 	"fmt"
 
-	"github.com/aws/aws-sdk-go-v2/service/dynamodb/types"
 	"github.com/Groupe-Hevea/neosync/internal/database-record-mapper/builder"
 	"github.com/Groupe-Hevea/neosync/internal/gotypeutil"
 	neosync_types "github.com/Groupe-Hevea/neosync/internal/types"
+	"github.com/aws/aws-sdk-go-v2/service/dynamodb/types"
 )
 
 type DynamoDBMapper struct{}

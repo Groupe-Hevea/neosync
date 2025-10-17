@@ -16,12 +16,21 @@ import (
 // Minimal interface that includes the config and value
 // To be used deep in the transformers so we don't have to be aware of the account id at the benthos level
 type TransformPiiTextApi interface {
-	Transform(ctx context.Context, config *mgmtv1alpha1.TransformPiiText, value string) (string, error)
+	Transform(
+		ctx context.Context,
+		config *mgmtv1alpha1.TransformPiiText,
+		value string,
+	) (string, error)
 }
 
 // Full interface that includes the account id
 type AccountTransformPiiTextApi interface {
-	Transform(ctx context.Context, accountId string, config *mgmtv1alpha1.TransformPiiText, value string) (string, error)
+	Transform(
+		ctx context.Context,
+		accountId string,
+		config *mgmtv1alpha1.TransformPiiText,
+		value string,
+	) (string, error)
 }
 
 type AccountAwareAnonymizationPiiTextApi struct {
@@ -52,20 +61,22 @@ func (a *AccountAwareAnonymizationPiiTextApi) Transform(
 		return "", fmt.Errorf("unable to marshal value: %w", err)
 	}
 
-	resp, err := a.anonApi.AnonymizeSingle(ctx, connect.NewRequest(&mgmtv1alpha1.AnonymizeSingleRequest{
-		InputData: string(bits),
-		AccountId: a.accountId,
-		TransformerMappings: []*mgmtv1alpha1.TransformerMapping{
-			{
-				Expression: ".input",
-				Transformer: &mgmtv1alpha1.TransformerConfig{
-					Config: &mgmtv1alpha1.TransformerConfig_TransformPiiTextConfig{
-						TransformPiiTextConfig: config,
+	resp, err := a.anonApi.AnonymizeSingle(
+		ctx,
+		connect.NewRequest(&mgmtv1alpha1.AnonymizeSingleRequest{
+			InputData: string(bits),
+			AccountId: a.accountId,
+			TransformerMappings: []*mgmtv1alpha1.TransformerMapping{
+				{
+					Expression: ".input",
+					Transformer: &mgmtv1alpha1.TransformerConfig{
+						Config: &mgmtv1alpha1.TransformerConfig_TransformPiiTextConfig{
+							TransformPiiTextConfig: config,
+						},
 					},
 				},
 			},
-		},
-	}))
+		}))
 
 	if err != nil {
 		return "", fmt.Errorf("unable to anonymize text: %w", err)
@@ -302,7 +313,11 @@ func (t *TransformPiiText) Transform(value, opts any) (any, error) {
 	return transformPiiText(t.api, config, &valueStr)
 }
 
-func transformPiiText(api TransformPiiTextApi, config *mgmtv1alpha1.TransformPiiText, value any) (*string, error) {
+func transformPiiText(
+	api TransformPiiTextApi,
+	config *mgmtv1alpha1.TransformPiiText,
+	value any,
+) (*string, error) {
 	if value == nil {
 		return nil, nil
 	}
@@ -368,7 +383,11 @@ func convertToPiiAnonymizerMap(raw any) (map[string]*mgmtv1alpha1.PiiAnonymizer,
 	for entity, anonymizer := range entityAnonymizersRawMap {
 		anonymizerConfig, err := convertToPiiAnonymizer(anonymizer)
 		if err != nil {
-			return nil, fmt.Errorf("invalid entity_anonymizer config for entity %s: %w", entity, err)
+			return nil, fmt.Errorf(
+				"invalid entity_anonymizer config for entity %s: %w",
+				entity,
+				err,
+			)
 		}
 		entityAnonymizers[entity] = anonymizerConfig
 	}

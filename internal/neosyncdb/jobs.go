@@ -4,10 +4,10 @@ import (
 	"context"
 	"fmt"
 
-	"github.com/jackc/pgx/v5/pgtype"
 	db_queries "github.com/Groupe-Hevea/neosync/backend/gen/go/db"
 	mgmtv1alpha1 "github.com/Groupe-Hevea/neosync/backend/gen/go/protos/mgmt/v1alpha1"
 	pg_models "github.com/Groupe-Hevea/neosync/backend/sql/postgresql/models"
+	"github.com/jackc/pgx/v5/pgtype"
 )
 
 type CreateJobConnectionDestination struct {

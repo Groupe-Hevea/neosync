@@ -37,7 +37,7 @@ func New(
 	analyzeclient presidioapi.AnalyzeInterface,
 	anonymizeclient presidioapi.AnonymizeInterface,
 	db *neosyncdb.NeosyncDb,
-	license license.EEInterface,
+	licenseClient license.EEInterface,
 ) *Service {
 	return &Service{
 		cfg:                cfg,
@@ -48,6 +48,6 @@ func New(
 		analyze:            analyzeclient,
 		anonymize:          anonymizeclient,
 		db:                 db,
-		license:            license,
+		license:            licenseClient,
 	}
 }

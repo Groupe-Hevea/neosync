@@ -9,7 +9,6 @@ import (
 	"testing"
 
 	"connectrpc.com/connect"
-	"github.com/google/uuid"
 	mgmtv1alpha1 "github.com/Groupe-Hevea/neosync/backend/gen/go/protos/mgmt/v1alpha1"
 	"github.com/Groupe-Hevea/neosync/backend/gen/go/protos/mgmt/v1alpha1/mgmtv1alpha1connect"
 	"github.com/Groupe-Hevea/neosync/backend/pkg/sqlconnect"
@@ -18,6 +17,7 @@ import (
 	"github.com/Groupe-Hevea/neosync/internal/connection-manager/providers/sqlprovider"
 	continuation_token "github.com/Groupe-Hevea/neosync/internal/continuation-token"
 	"github.com/Groupe-Hevea/neosync/internal/testutil"
+	"github.com/google/uuid"
 
 	benthosstream "github.com/Groupe-Hevea/neosync/internal/benthos-stream"
 	"github.com/Groupe-Hevea/neosync/worker/pkg/workflows/datasync/activities/shared"

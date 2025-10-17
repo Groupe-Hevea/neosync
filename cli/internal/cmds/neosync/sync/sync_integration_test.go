@@ -6,11 +6,11 @@ import (
 	"testing"
 
 	"connectrpc.com/connect"
-	"github.com/aws/aws-sdk-go-v2/service/dynamodb"
-	dyntypes "github.com/aws/aws-sdk-go-v2/service/dynamodb/types"
 	mgmtv1alpha1 "github.com/Groupe-Hevea/neosync/backend/gen/go/protos/mgmt/v1alpha1"
 	tcneosyncapi "github.com/Groupe-Hevea/neosync/backend/pkg/integration-test"
 	"github.com/Groupe-Hevea/neosync/cli/internal/output"
+	"github.com/aws/aws-sdk-go-v2/service/dynamodb"
+	dyntypes "github.com/aws/aws-sdk-go-v2/service/dynamodb/types"
 
 	connectionmanager "github.com/Groupe-Hevea/neosync/internal/connection-manager"
 	"github.com/Groupe-Hevea/neosync/internal/testutil"

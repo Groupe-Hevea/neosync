@@ -129,7 +129,10 @@ func ParseBloblangSpec(benthosSpec *BenthosSpec) (*ParsedBenthosSpec, error) {
 		}
 	}
 	if !foundRegister {
-		return nil, fmt.Errorf("RegisterFunctionV2 not found in file: %s", filepath.Base(benthosSpec.SourceFile))
+		return nil, fmt.Errorf(
+			"RegisterFunctionV2 not found in file: %s",
+			filepath.Base(benthosSpec.SourceFile),
+		)
 	}
 
 	categoryRegex := regexp.MustCompile(`\.Category\("([^"]*)"\)`)

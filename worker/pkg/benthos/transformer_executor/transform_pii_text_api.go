@@ -27,7 +27,11 @@ func newFromExecConfig(
 	}
 }
 
-func (p *piiTextApi) Transform(ctx context.Context, config *mgmtv1alpha1.TransformPiiText, value string) (string, error) {
+func (p *piiTextApi) Transform(
+	ctx context.Context,
+	config *mgmtv1alpha1.TransformPiiText,
+	value string,
+) (string, error) {
 	return ee_transformer_fns.TransformPiiText(
 		ctx,
 		p.execConfig.analyze,

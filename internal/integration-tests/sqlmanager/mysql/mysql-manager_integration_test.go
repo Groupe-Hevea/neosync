@@ -6,12 +6,12 @@ import (
 	"fmt"
 	"testing"
 
-	_ "github.com/go-sql-driver/mysql"
 	mysql_queries "github.com/Groupe-Hevea/neosync/backend/gen/go/db/dbschemas/mysql"
 	mysql "github.com/Groupe-Hevea/neosync/backend/pkg/sqlmanager/mysql"
 	sqlmanager_shared "github.com/Groupe-Hevea/neosync/backend/pkg/sqlmanager/shared"
 	"github.com/Groupe-Hevea/neosync/internal/testutil"
 	tcmysql "github.com/Groupe-Hevea/neosync/internal/testutil/testcontainers/mysql"
+	_ "github.com/go-sql-driver/mysql"
 	"github.com/stretchr/testify/require"
 	"golang.org/x/sync/errgroup"
 )

@@ -5,10 +5,10 @@ import (
 	"encoding/json"
 	"fmt"
 
-	"github.com/doug-martin/goqu/v9"
 	"github.com/Groupe-Hevea/neosync/internal/gotypeutil"
 	neosynctypes "github.com/Groupe-Hevea/neosync/internal/neosync-types"
 	neosync_benthos "github.com/Groupe-Hevea/neosync/worker/pkg/benthos"
+	"github.com/doug-martin/goqu/v9"
 	"github.com/redpanda-data/benthos/v4/public/service"
 )
 

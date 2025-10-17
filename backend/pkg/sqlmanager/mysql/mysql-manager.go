@@ -11,10 +11,10 @@ import (
 	"strings"
 	"sync"
 
-	"github.com/doug-martin/goqu/v9"
 	mysql_queries "github.com/Groupe-Hevea/neosync/backend/gen/go/db/dbschemas/mysql"
 	sqlmanager_shared "github.com/Groupe-Hevea/neosync/backend/pkg/sqlmanager/shared"
 	"github.com/Groupe-Hevea/neosync/internal/neosyncdb"
+	"github.com/doug-martin/goqu/v9"
 	"golang.org/x/sync/errgroup"
 )
 
@@ -253,7 +253,10 @@ func (m *MysqlManager) GetColumnsByTables(
 			Comment:             row.Comment,
 		}
 		shouldIncludeOrdinalPosition := false
-		col.Fingerprint = sqlmanager_shared.BuildTableColumnFingerprint(col, shouldIncludeOrdinalPosition)
+		col.Fingerprint = sqlmanager_shared.BuildTableColumnFingerprint(
+			col,
+			shouldIncludeOrdinalPosition,
+		)
 		columns = append(columns, col)
 	}
 	return columns, nil
@@ -1428,12 +1431,12 @@ func (m *MysqlManager) GetTableRowCount(
 	if whereClause != nil && *whereClause != "" {
 		query = query.Where(goqu.L(*whereClause))
 	}
-	sql, _, err := query.ToSQL()
+	sqlStr, _, err := query.ToSQL()
 	if err != nil {
 		return 0, err
 	}
 	var count int64
-	err = m.pool.QueryRowContext(ctx, sql).Scan(&count)
+	err = m.pool.QueryRowContext(ctx, sqlStr).Scan(&count)
 	if err != nil {
 		return 0, err
 	}

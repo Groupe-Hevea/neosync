@@ -6,10 +6,10 @@ import (
 	"sync"
 	"testing"
 
-	"github.com/dop251/goja"
-	goja_require "github.com/dop251/goja_nodejs/require"
 	javascript_functions "github.com/Groupe-Hevea/neosync/internal/javascript/functions"
 	"github.com/Groupe-Hevea/neosync/internal/testutil"
+	"github.com/dop251/goja"
+	goja_require "github.com/dop251/goja_nodejs/require"
 
 	"github.com/stretchr/testify/require"
 )

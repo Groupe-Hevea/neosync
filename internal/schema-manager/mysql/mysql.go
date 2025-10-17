@@ -159,7 +159,12 @@ func getDatabaseDataForSchemaDiff(
 			return fmt.Errorf("failed to retrieve database table triggers: %w", err)
 		}
 		for _, tabletrigger := range tabletriggers {
-			key := fmt.Sprintf("%s.%s.%s", tabletrigger.Schema, tabletrigger.Table, tabletrigger.TriggerName)
+			key := fmt.Sprintf(
+				"%s.%s.%s",
+				tabletrigger.Schema,
+				tabletrigger.Table,
+				tabletrigger.TriggerName,
+			)
 			triggers[key] = tabletrigger
 		}
 		return nil
@@ -186,7 +191,12 @@ func getDatabaseDataForSchemaDiff(
 			defer mu.Unlock()
 			for _, tableconstraint := range tableconstraints {
 				for _, nonFkConstraint := range tableconstraint.NonForeignKeyConstraints {
-					key := fmt.Sprintf("%s.%s.%s", nonFkConstraint.SchemaName, nonFkConstraint.TableName, nonFkConstraint.ConstraintName)
+					key := fmt.Sprintf(
+						"%s.%s.%s",
+						nonFkConstraint.SchemaName,
+						nonFkConstraint.TableName,
+						nonFkConstraint.ConstraintName,
+					)
 					nonFkConstraints[key] = nonFkConstraint
 				}
 				for _, fkConstraint := range tableconstraint.ForeignKeyConstraints {
@@ -315,7 +325,10 @@ func (d *MysqlSchemaManager) BuildSchemaDiffStatements(
 	}
 	// only way to update function is to drop and recreate
 	for _, function := range diff.ExistsInBoth.Different.Functions {
-		dropFunctionStatements = append(dropFunctionStatements, sqlmanager_mysql.BuildDropFunctionStatement(function.Schema, function.Name))
+		dropFunctionStatements = append(
+			dropFunctionStatements,
+			sqlmanager_mysql.BuildDropFunctionStatement(function.Schema, function.Name),
+		)
 	}
 
 	return []*sqlmanager_shared.InitSchemaStatements{

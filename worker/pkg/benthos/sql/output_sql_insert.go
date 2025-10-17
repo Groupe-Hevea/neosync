@@ -9,14 +9,14 @@ import (
 	"strings"
 	"sync"
 
-	_ "github.com/doug-martin/goqu/v9/dialect/mysql"
-	_ "github.com/doug-martin/goqu/v9/dialect/postgres"
-	"github.com/jackc/pgx/v5/pgconn"
-	"github.com/lib/pq"
 	mysql_queries "github.com/Groupe-Hevea/neosync/backend/gen/go/db/dbschemas/mysql"
 	sqlmanager_shared "github.com/Groupe-Hevea/neosync/backend/pkg/sqlmanager/shared"
 	neosync_benthos "github.com/Groupe-Hevea/neosync/worker/pkg/benthos"
 	querybuilder "github.com/Groupe-Hevea/neosync/worker/pkg/query-builder"
+	_ "github.com/doug-martin/goqu/v9/dialect/mysql"
+	_ "github.com/doug-martin/goqu/v9/dialect/postgres"
+	"github.com/jackc/pgx/v5/pgconn"
+	"github.com/lib/pq"
 	"github.com/redpanda-data/benthos/v4/public/service"
 )
 
@@ -274,7 +274,9 @@ func (s *pooledInsertOutput) WriteBatch(ctx context.Context, batch service.Messa
 
 	// postgres upsert for tables with deferrable constraints
 	// fixes ON CONFLICT does not support deferrable unique constraints/exclusion constraints as arbiters (SQLSTATE 55000)
-	if s.onConflictDoUpdate && s.hasDeferrableConstraint && s.driver == sqlmanager_shared.PostgresDriver {
+	if s.onConflictDoUpdate &&
+		s.hasDeferrableConstraint &&
+		s.driver == sqlmanager_shared.PostgresDriver {
 		return s.postgresUpsert(ctx, db, rows)
 	}
 
@@ -378,7 +380,8 @@ func (s *pooledInsertOutput) postgresUpsert(
 		_, err = db.ExecContext(ctx, insertQuery, args...)
 		if err != nil {
 			// skip foreign key violations
-			if s.skipForeignKeyViolations && neosync_benthos.IsForeignKeyViolationError(err.Error()) {
+			if s.skipForeignKeyViolations &&
+				neosync_benthos.IsForeignKeyViolationError(err.Error()) {
 				continue
 			}
 			if isPostgresUniqueViolation(err) {

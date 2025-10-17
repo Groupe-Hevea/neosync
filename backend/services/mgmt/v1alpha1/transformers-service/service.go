@@ -24,13 +24,13 @@ func New(
 	db *neosyncdb.NeosyncDb,
 	recognizerclient presidioapi.EntityInterface,
 	userdataclient userdata.Interface,
-	license license.EEInterface,
+	licenseClient license.EEInterface,
 ) *Service {
 	return &Service{
 		cfg:            cfg,
 		db:             db,
 		entityclient:   recognizerclient,
 		userdataclient: userdataclient,
-		license:        license,
+		license:        licenseClient,
 	}
 }

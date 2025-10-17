@@ -1008,7 +1008,7 @@ var Address_Address1s = []string{
 }
 
 var Address_Address1Map = map[int64][2]int{
-	6: {0, 1},
+	6:  {0, 1},
 	11: {2, 2},
 	12: {3, 10},
 	13: {11, 23},

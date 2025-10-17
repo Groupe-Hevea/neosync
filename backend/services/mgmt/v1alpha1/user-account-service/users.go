@@ -9,7 +9,6 @@ import (
 	"time"
 
 	"connectrpc.com/connect"
-	"github.com/jackc/pgx/v5/pgtype"
 	db_queries "github.com/Groupe-Hevea/neosync/backend/gen/go/db"
 	mgmtv1alpha1 "github.com/Groupe-Hevea/neosync/backend/gen/go/protos/mgmt/v1alpha1"
 	auth_apikey "github.com/Groupe-Hevea/neosync/backend/internal/auth/apikey"
@@ -24,6 +23,7 @@ import (
 	"github.com/Groupe-Hevea/neosync/internal/ee/rbac"
 	nucleuserrors "github.com/Groupe-Hevea/neosync/internal/errors"
 	"github.com/Groupe-Hevea/neosync/internal/neosyncdb"
+	"github.com/jackc/pgx/v5/pgtype"
 	"github.com/stripe/stripe-go/v81"
 	"golang.org/x/sync/errgroup"
 	"google.golang.org/protobuf/types/known/timestamppb"

@@ -112,7 +112,10 @@ func BuildTableColumnFingerprint(column *TableColumn, shouldIncludeOrdinalPositi
 func BuildCompositeDataTypeFingerprint(composite *CompositeDataType) string {
 	attributeStrings := []string{}
 	for _, attr := range composite.Attributes {
-		attributeStrings = append(attributeStrings, fmt.Sprintf("%s.%s.%d", attr.Name, attr.Datatype, attr.Id))
+		attributeStrings = append(
+			attributeStrings,
+			fmt.Sprintf("%s.%s.%d", attr.Name, attr.Datatype, attr.Id),
+		)
 	}
 	return BuildFingerprint(
 		composite.Schema,
@@ -132,7 +135,10 @@ func BuildEnumDataTypeFingerprint(enum *EnumDataType) string {
 func BuildDomainDataTypeFingerprint(domain *DomainDataType) string {
 	constraintStrings := []string{}
 	for _, constraint := range domain.Constraints {
-		constraintStrings = append(constraintStrings, fmt.Sprintf("%s.%s", constraint.Name, constraint.Definition))
+		constraintStrings = append(
+			constraintStrings,
+			fmt.Sprintf("%s.%s", constraint.Name, constraint.Definition),
+		)
 	}
 	sort.Strings(constraintStrings)
 	return BuildFingerprint(

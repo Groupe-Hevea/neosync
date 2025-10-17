@@ -6,7 +6,6 @@ import (
 	"fmt"
 	"math"
 
-	"github.com/jackc/pgx/v5/pgtype"
 	db_queries "github.com/Groupe-Hevea/neosync/backend/gen/go/db"
 	mgmtv1alpha1 "github.com/Groupe-Hevea/neosync/backend/gen/go/protos/mgmt/v1alpha1"
 	"github.com/Groupe-Hevea/neosync/backend/gen/go/protos/mgmt/v1alpha1/mgmtv1alpha1connect"
@@ -16,6 +15,7 @@ import (
 	"github.com/Groupe-Hevea/neosync/internal/ee/rbac"
 	nucleuserrors "github.com/Groupe-Hevea/neosync/internal/errors"
 	"github.com/Groupe-Hevea/neosync/internal/neosyncdb"
+	"github.com/jackc/pgx/v5/pgtype"
 )
 
 type Service struct {

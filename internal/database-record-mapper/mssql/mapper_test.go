@@ -4,8 +4,8 @@ import (
 	"testing"
 	"time"
 
-	mssql "github.com/microsoft/go-mssqldb"
 	neosynctypes "github.com/Groupe-Hevea/neosync/internal/neosync-types"
+	mssql "github.com/microsoft/go-mssqldb"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )

@@ -11,7 +11,6 @@ import (
 	"time"
 
 	"connectrpc.com/connect"
-	"github.com/google/uuid"
 	mgmtv1alpha1 "github.com/Groupe-Hevea/neosync/backend/gen/go/protos/mgmt/v1alpha1"
 	"github.com/Groupe-Hevea/neosync/backend/gen/go/protos/mgmt/v1alpha1/mgmtv1alpha1connect"
 	"github.com/Groupe-Hevea/neosync/cli/internal/auth"
@@ -19,6 +18,7 @@ import (
 	"github.com/Groupe-Hevea/neosync/cli/internal/userconfig"
 	"github.com/Groupe-Hevea/neosync/cli/internal/version"
 	http_client "github.com/Groupe-Hevea/neosync/internal/http/client"
+	"github.com/google/uuid"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 	"github.com/toqueteos/webbrowser"

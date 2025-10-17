@@ -5,11 +5,11 @@ import (
 	"fmt"
 	"sync"
 
-	_ "github.com/doug-martin/goqu/v9/dialect/mysql"
-	_ "github.com/doug-martin/goqu/v9/dialect/postgres"
 	"github.com/Groupe-Hevea/neosync/backend/pkg/sqldbtx"
 	neosync_benthos "github.com/Groupe-Hevea/neosync/worker/pkg/benthos"
 	querybuilder "github.com/Groupe-Hevea/neosync/worker/pkg/query-builder"
+	_ "github.com/doug-martin/goqu/v9/dialect/mysql"
+	_ "github.com/doug-martin/goqu/v9/dialect/postgres"
 	"github.com/redpanda-data/benthos/v4/public/service"
 )
 

@@ -9,7 +9,6 @@ import (
 	"time"
 
 	"connectrpc.com/connect"
-	"github.com/jackc/pgx/v5/pgtype"
 	db_queries "github.com/Groupe-Hevea/neosync/backend/gen/go/db"
 	mgmtv1alpha1 "github.com/Groupe-Hevea/neosync/backend/gen/go/protos/mgmt/v1alpha1"
 	logger_interceptor "github.com/Groupe-Hevea/neosync/backend/internal/connect/interceptors/logger"
@@ -24,6 +23,7 @@ import (
 	"github.com/Groupe-Hevea/neosync/internal/neosyncdb"
 	datasync_workflow "github.com/Groupe-Hevea/neosync/worker/pkg/workflows/datasync/workflow"
 	piidetect_job_workflow "github.com/Groupe-Hevea/neosync/worker/pkg/workflows/ee/piidetect/workflows/job"
+	"github.com/jackc/pgx/v5/pgtype"
 
 	temporalclient "go.temporal.io/sdk/client"
 	"golang.org/x/sync/errgroup"

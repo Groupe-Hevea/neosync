@@ -134,7 +134,10 @@ func transformFullName(
 			newlastname, _ := generateRandomLastName(randomizer, &minLast, minLast)
 			fullname := fmt.Sprintf("%s %s", newfirstname, newlastname)
 			if len(fullname) < len(name) {
-				fullname += transformer_utils.GetRandomCharacterString(randomizer, int64(len(name)-len(fullname)))
+				fullname += transformer_utils.GetRandomCharacterString(
+					randomizer,
+					int64(len(name)-len(fullname)),
+				)
 			} else if len(fullname) > len(name) {
 				fullname = fullname[:len(name)]
 			}

@@ -57,7 +57,7 @@ func New(
 	mongoconnmanager connectionmanager.Interface[neosync_benthos_mongodb.MongoClient],
 	meter metric.Meter,
 	benthosStreamManager benthosstream.BenthosStreamManagerClient,
-	temporalclient temporalclient.Client,
+	tclient temporalclient.Client,
 	anonymizationClient mgmtv1alpha1connect.AnonymizationServiceClient,
 	redisclient redis.UniversalClient,
 ) *Activity {
@@ -68,7 +68,7 @@ func New(
 		mongoconnmanager:     mongoconnmanager,
 		meter:                meter,
 		benthosStreamManager: benthosStreamManager,
-		temporalclient:       temporalclient,
+		temporalclient:       tclient,
 		anonymizationClient:  anonymizationClient,
 		redisclient:          redisclient,
 	}

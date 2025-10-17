@@ -4,8 +4,8 @@ import (
 	"fmt"
 	"slices"
 
-	"github.com/jackc/pgx/v5"
 	sqlmanager_shared "github.com/Groupe-Hevea/neosync/backend/pkg/sqlmanager/shared"
+	"github.com/jackc/pgx/v5"
 
 	runconfigs "github.com/Groupe-Hevea/neosync/internal/runconfigs"
 

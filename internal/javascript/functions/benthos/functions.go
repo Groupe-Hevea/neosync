@@ -9,8 +9,8 @@ import (
 	"runtime/debug"
 	"strings"
 
-	"github.com/dop251/goja"
 	javascript_functions "github.com/Groupe-Hevea/neosync/internal/javascript/functions"
+	"github.com/dop251/goja"
 )
 
 const (

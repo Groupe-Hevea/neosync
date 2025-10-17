@@ -3,8 +3,8 @@ package neosyncdb
 import (
 	"context"
 
-	"github.com/jackc/pgx/v5/pgtype"
 	db_queries "github.com/Groupe-Hevea/neosync/backend/gen/go/db"
+	"github.com/jackc/pgx/v5/pgtype"
 )
 
 type CreateAccountApiKeyRequest struct {

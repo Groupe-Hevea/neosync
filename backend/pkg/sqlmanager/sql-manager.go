@@ -48,17 +48,33 @@ type SqlDatabase interface {
 		ctx context.Context,
 		tables []*sqlmanager_shared.SchemaTable,
 	) (*sqlmanager_shared.SchemaTableDataTypeResponse, error)
-	GetSchemaTableTriggers(ctx context.Context, tables []*sqlmanager_shared.SchemaTable) ([]*sqlmanager_shared.TableTrigger, error)
-	GetSchemaInitStatements(ctx context.Context, tables []*sqlmanager_shared.SchemaTable) ([]*sqlmanager_shared.InitSchemaStatements, error)
-	GetSequencesByTables(ctx context.Context, schema string, tables []string) ([]*sqlmanager_shared.DataType, error)
+	GetSchemaTableTriggers(
+		ctx context.Context,
+		tables []*sqlmanager_shared.SchemaTable,
+	) ([]*sqlmanager_shared.TableTrigger, error)
+	GetSchemaInitStatements(
+		ctx context.Context,
+		tables []*sqlmanager_shared.SchemaTable,
+	) ([]*sqlmanager_shared.InitSchemaStatements, error)
+	GetSequencesByTables(
+		ctx context.Context,
+		schema string,
+		tables []string,
+	) ([]*sqlmanager_shared.DataType, error)
 	// returns a map of schema.table to all constraints for that table
 	GetTableConstraintsByTables(
 		ctx context.Context,
 		schema string,
 		tables []string,
 	) (map[string]*sqlmanager_shared.AllTableConstraints, error)
-	GetColumnsByTables(ctx context.Context, tables []*sqlmanager_shared.SchemaTable) ([]*sqlmanager_shared.TableColumn, error)
-	GetDataTypesByTables(ctx context.Context, tables []*sqlmanager_shared.SchemaTable) (*sqlmanager_shared.AllTableDataTypes, error)
+	GetColumnsByTables(
+		ctx context.Context,
+		tables []*sqlmanager_shared.SchemaTable,
+	) ([]*sqlmanager_shared.TableColumn, error)
+	GetDataTypesByTables(
+		ctx context.Context,
+		tables []*sqlmanager_shared.SchemaTable,
+	) (*sqlmanager_shared.AllTableDataTypes, error)
 
 	// Connection level methods for managing database connections and executing statements
 	BatchExec(

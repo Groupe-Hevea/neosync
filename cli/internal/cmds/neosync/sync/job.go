@@ -3,8 +3,8 @@ package sync_cmd
 import (
 	"fmt"
 
-	"github.com/google/uuid"
 	mgmtv1alpha1 "github.com/Groupe-Hevea/neosync/backend/gen/go/protos/mgmt/v1alpha1"
+	"github.com/google/uuid"
 )
 
 func toJob(

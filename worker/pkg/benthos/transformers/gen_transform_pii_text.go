@@ -84,27 +84,27 @@ func (o *TransformPiiTextOpts) BuildBloblangString(
 	}
 	if o.defaultAnonymizer != nil {
 		fnStr = append(fnStr, "default_anonymizer:%s")
-		json, err := json.Marshal(o.defaultAnonymizer)
+		jsonBytes, err := json.Marshal(o.defaultAnonymizer)
 		if err != nil {
 			return "", fmt.Errorf("unable to marshal default_anonymizer: %w", err)
 		}
-		params = append(params, string(json))
+		params = append(params, string(jsonBytes))
 	}
 	if o.denyRecognizers != nil {
 		fnStr = append(fnStr, "deny_recognizers:%s")
-		json, err := json.Marshal(o.denyRecognizers)
+		jsonBytes, err := json.Marshal(o.denyRecognizers)
 		if err != nil {
 			return "", fmt.Errorf("unable to marshal deny_recognizers: %w", err)
 		}
-		params = append(params, string(json))
+		params = append(params, string(jsonBytes))
 	}
 	if o.entityAnonymizers != nil {
 		fnStr = append(fnStr, "entity_anonymizers:%s")
-		json, err := json.Marshal(o.entityAnonymizers)
+		jsonBytes, err := json.Marshal(o.entityAnonymizers)
 		if err != nil {
 			return "", fmt.Errorf("unable to marshal entity_anonymizers: %w", err)
 		}
-		params = append(params, string(json))
+		params = append(params, string(jsonBytes))
 	}
 
 	template := fmt.Sprintf("transform_pii_text(%s)", strings.Join(fnStr, ","))

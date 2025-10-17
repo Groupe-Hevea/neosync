@@ -15,7 +15,6 @@ import (
 	"connectrpc.com/grpchealth"
 	"connectrpc.com/grpcreflect"
 	"connectrpc.com/otelconnect"
-	"github.com/go-logr/logr"
 	mysql_queries "github.com/Groupe-Hevea/neosync/backend/gen/go/db/dbschemas/mysql"
 	pg_queries "github.com/Groupe-Hevea/neosync/backend/gen/go/db/dbschemas/postgresql"
 	"github.com/Groupe-Hevea/neosync/backend/gen/go/protos/mgmt/v1alpha1/mgmtv1alpha1connect"
@@ -39,6 +38,7 @@ import (
 	neosync_redis "github.com/Groupe-Hevea/neosync/internal/redis"
 	"github.com/Groupe-Hevea/neosync/worker/pkg/workflows/datasync/activities/shared"
 	schemainit_workflow_register "github.com/Groupe-Hevea/neosync/worker/pkg/workflows/schemainit/workflow/register"
+	"github.com/go-logr/logr"
 	"github.com/openai/openai-go"
 	"github.com/openai/openai-go/option"
 

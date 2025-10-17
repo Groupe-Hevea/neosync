@@ -318,14 +318,20 @@ func (b *SchemaDifferencesBuilder) buildTableNonForeignKeyConstraintDifferences(
 }
 
 func (b *SchemaDifferencesBuilder) buildTableTriggerDifferences() {
-	existsInSource, existsInBoth, existsInDestination := buildDifferencesByFingerprint(b.source.Triggers, b.destination.Triggers)
+	existsInSource, existsInBoth, existsInDestination := buildDifferencesByFingerprint(
+		b.source.Triggers,
+		b.destination.Triggers,
+	)
 	b.diff.ExistsInSource.Triggers = existsInSource
 	b.diff.ExistsInBoth.Different.Triggers = existsInBoth
 	b.diff.ExistsInDestination.Triggers = existsInDestination
 }
 
 func (b *SchemaDifferencesBuilder) buildSchemaFunctionDifferences() {
-	existsInSource, existsInBoth, existsInDestination := buildDifferencesByFingerprint(b.source.Functions, b.destination.Functions)
+	existsInSource, existsInBoth, existsInDestination := buildDifferencesByFingerprint(
+		b.source.Functions,
+		b.destination.Functions,
+	)
 	b.diff.ExistsInSource.Functions = existsInSource
 	b.diff.ExistsInBoth.Different.Functions = existsInBoth
 	b.diff.ExistsInDestination.Functions = existsInDestination
@@ -343,11 +349,14 @@ func (b *SchemaDifferencesBuilder) buildTableEnumDifferences() {
 					changedValues[destEnum.Values[idx]] = srcValue
 				}
 			}
-			b.diff.ExistsInBoth.Different.Enums = append(b.diff.ExistsInBoth.Different.Enums, &EnumDiff{
-				Enum:          srcEnum,
-				NewValues:     newValues,
-				ChangedValues: changedValues,
-			})
+			b.diff.ExistsInBoth.Different.Enums = append(
+				b.diff.ExistsInBoth.Different.Enums,
+				&EnumDiff{
+					Enum:          srcEnum,
+					NewValues:     newValues,
+					ChangedValues: changedValues,
+				},
+			)
 		} else {
 			b.diff.ExistsInSource.Enums = append(b.diff.ExistsInSource.Enums, srcEnum)
 		}
@@ -397,13 +406,16 @@ func (b *SchemaDifferencesBuilder) buildTableCompositeDifferences() {
 				}
 			}
 
-			b.diff.ExistsInBoth.Different.Composites = append(b.diff.ExistsInBoth.Different.Composites, &CompositeDiff{
-				Composite:                srcComposite,
-				ChangedAttributeDatatype: changedAttributesDatatype,
-				NewAttributes:            newAttributes,
-				RemovedAttributes:        removedAttributes,
-				ChangedAttributeName:     changedAttributesName,
-			})
+			b.diff.ExistsInBoth.Different.Composites = append(
+				b.diff.ExistsInBoth.Different.Composites,
+				&CompositeDiff{
+					Composite:                srcComposite,
+					ChangedAttributeDatatype: changedAttributesDatatype,
+					NewAttributes:            newAttributes,
+					RemovedAttributes:        removedAttributes,
+					ChangedAttributeName:     changedAttributesName,
+				},
+			)
 		} else {
 			b.diff.ExistsInSource.Composites = append(b.diff.ExistsInSource.Composites, srcComposite)
 		}
@@ -411,7 +423,10 @@ func (b *SchemaDifferencesBuilder) buildTableCompositeDifferences() {
 
 	for key, destComposite := range b.destination.Composites {
 		if _, ok := b.source.Composites[key]; !ok {
-			b.diff.ExistsInDestination.Composites = append(b.diff.ExistsInDestination.Composites, destComposite)
+			b.diff.ExistsInDestination.Composites = append(
+				b.diff.ExistsInDestination.Composites,
+				destComposite,
+			)
 		}
 	}
 }
@@ -439,7 +454,10 @@ func (b *SchemaDifferencesBuilder) buildTableDomainDifferences() {
 			for _, constraint := range srcConstraints {
 				if destConstraint, ok := destConstraints[constraint.Name]; ok {
 					if constraint.Definition != destConstraint.Definition {
-						domain.RemovedConstraints = append(domain.RemovedConstraints, constraint.Name)
+						domain.RemovedConstraints = append(
+							domain.RemovedConstraints,
+							constraint.Name,
+						)
 					}
 				} else {
 					domain.NewConstraints[constraint.Name] = constraint.Definition
@@ -452,7 +470,10 @@ func (b *SchemaDifferencesBuilder) buildTableDomainDifferences() {
 				}
 			}
 
-			b.diff.ExistsInBoth.Different.Domains = append(b.diff.ExistsInBoth.Different.Domains, domain)
+			b.diff.ExistsInBoth.Different.Domains = append(
+				b.diff.ExistsInBoth.Different.Domains,
+				domain,
+			)
 		} else {
 			b.diff.ExistsInSource.Domains = append(b.diff.ExistsInSource.Domains, srcDomain)
 		}
@@ -460,7 +481,10 @@ func (b *SchemaDifferencesBuilder) buildTableDomainDifferences() {
 
 	for key, destDomain := range b.destination.Domains {
 		if _, ok := b.source.Domains[key]; !ok {
-			b.diff.ExistsInDestination.Domains = append(b.diff.ExistsInDestination.Domains, destDomain)
+			b.diff.ExistsInDestination.Domains = append(
+				b.diff.ExistsInDestination.Domains,
+				destDomain,
+			)
 		}
 	}
 }

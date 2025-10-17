@@ -4,9 +4,9 @@ import (
 	context "context"
 	"testing"
 
-	"github.com/google/uuid"
 	mgmtv1alpha1 "github.com/Groupe-Hevea/neosync/backend/gen/go/protos/mgmt/v1alpha1"
 	"github.com/Groupe-Hevea/neosync/backend/pkg/sqlmanager"
+	"github.com/google/uuid"
 	"github.com/stretchr/testify/require"
 	testmssql "github.com/testcontainers/testcontainers-go/modules/mssql"
 

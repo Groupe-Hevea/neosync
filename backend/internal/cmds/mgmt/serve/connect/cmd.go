@@ -16,10 +16,6 @@ import (
 	"connectrpc.com/grpchealth"
 	"connectrpc.com/grpcreflect"
 	"connectrpc.com/otelconnect"
-	"github.com/auth0/go-jwt-middleware/v2/validator"
-	"github.com/go-logr/logr"
-	"github.com/grafana/pyroscope-go"
-	"github.com/jackc/pgx/v5/stdlib"
 	db_queries "github.com/Groupe-Hevea/neosync/backend/gen/go/db"
 	"github.com/Groupe-Hevea/neosync/backend/gen/go/protos/mgmt/v1alpha1/mgmtv1alpha1connect"
 	connectionmanager "github.com/Groupe-Hevea/neosync/internal/connection-manager"
@@ -28,6 +24,10 @@ import (
 	http_client "github.com/Groupe-Hevea/neosync/internal/http/client"
 	neosynctypes "github.com/Groupe-Hevea/neosync/internal/neosync-types"
 	pyroscope_env "github.com/Groupe-Hevea/neosync/internal/pyroscope"
+	"github.com/auth0/go-jwt-middleware/v2/validator"
+	"github.com/go-logr/logr"
+	"github.com/grafana/pyroscope-go"
+	"github.com/jackc/pgx/v5/stdlib"
 	"go.opentelemetry.io/otel/exporters/otlp/otlpmetric/otlpmetricgrpc"
 	"go.opentelemetry.io/otel/exporters/otlp/otlptrace/otlptracegrpc"
 	"go.opentelemetry.io/otel/exporters/stdout/stdoutmetric"
@@ -722,7 +722,9 @@ func serve(ctx context.Context) error {
 		}
 	}
 
-	isPresidioEnabled := cascadelicense.IsValid() && presAnalyzeClient != nil && presAnonClient != nil
+	isPresidioEnabled := cascadelicense.IsValid() &&
+		presAnalyzeClient != nil &&
+		presAnonClient != nil
 
 	transformerService := v1alpha1_transformerservice.New(&v1alpha1_transformerservice.Config{
 		IsPresidioEnabled: isPresidioEnabled,

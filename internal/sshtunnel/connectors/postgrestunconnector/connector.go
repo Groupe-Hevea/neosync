@@ -7,11 +7,11 @@ import (
 	"log/slog"
 	"net"
 
+	pgxslog "github.com/Groupe-Hevea/neosync/internal/pgx-slog"
+	"github.com/Groupe-Hevea/neosync/internal/sshtunnel"
 	"github.com/jackc/pgx/v5"
 	"github.com/jackc/pgx/v5/stdlib"
 	"github.com/jackc/pgx/v5/tracelog"
-	pgxslog "github.com/Groupe-Hevea/neosync/internal/pgx-slog"
-	"github.com/Groupe-Hevea/neosync/internal/sshtunnel"
 )
 
 type Connector struct {

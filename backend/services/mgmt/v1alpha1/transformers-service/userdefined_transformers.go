@@ -6,7 +6,6 @@ import (
 	"regexp"
 
 	"connectrpc.com/connect"
-	"github.com/dop251/goja"
 	db_queries "github.com/Groupe-Hevea/neosync/backend/gen/go/db"
 	mgmtv1alpha1 "github.com/Groupe-Hevea/neosync/backend/gen/go/protos/mgmt/v1alpha1"
 	logger_interceptor "github.com/Groupe-Hevea/neosync/backend/internal/connect/interceptors/logger"
@@ -16,6 +15,7 @@ import (
 	"github.com/Groupe-Hevea/neosync/internal/ee/rbac"
 	nucleuserrors "github.com/Groupe-Hevea/neosync/internal/errors"
 	"github.com/Groupe-Hevea/neosync/internal/neosyncdb"
+	"github.com/dop251/goja"
 )
 
 func (s *Service) GetUserDefinedTransformers(

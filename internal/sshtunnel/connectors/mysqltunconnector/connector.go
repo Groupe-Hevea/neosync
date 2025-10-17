@@ -8,9 +8,9 @@ import (
 	"net"
 	"strings"
 
+	"github.com/Groupe-Hevea/neosync/internal/sshtunnel"
 	"github.com/go-sql-driver/mysql"
 	"github.com/google/uuid"
-	"github.com/Groupe-Hevea/neosync/internal/sshtunnel"
 )
 
 type Connector struct {

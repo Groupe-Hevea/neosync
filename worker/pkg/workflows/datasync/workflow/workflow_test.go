@@ -8,7 +8,6 @@ import (
 	"testing"
 	"time"
 
-	"github.com/google/uuid"
 	benthosbuilder "github.com/Groupe-Hevea/neosync/internal/benthos/benthos-builder"
 	benthosbuilder_shared "github.com/Groupe-Hevea/neosync/internal/benthos/benthos-builder/shared"
 	runconfigs "github.com/Groupe-Hevea/neosync/internal/runconfigs"
@@ -21,6 +20,7 @@ import (
 	syncrediscleanup_activity "github.com/Groupe-Hevea/neosync/worker/pkg/workflows/datasync/activities/sync-redis-clean-up"
 	accounthook_workflow "github.com/Groupe-Hevea/neosync/worker/pkg/workflows/ee/account_hooks/workflow"
 	tablesync_workflow "github.com/Groupe-Hevea/neosync/worker/pkg/workflows/tablesync/workflow"
+	"github.com/google/uuid"
 	"go.uber.org/atomic"
 
 	syncactivityopts_activity "github.com/Groupe-Hevea/neosync/worker/pkg/workflows/datasync/activities/sync-activity-opts"

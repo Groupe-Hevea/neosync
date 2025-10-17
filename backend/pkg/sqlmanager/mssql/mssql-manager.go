@@ -9,13 +9,13 @@ import (
 	"slices"
 	"strings"
 
-	"github.com/doug-martin/goqu/v9"
 	mysql_queries "github.com/Groupe-Hevea/neosync/backend/gen/go/db/dbschemas/mysql"
 	mssql_queries "github.com/Groupe-Hevea/neosync/backend/pkg/mssql-querier"
 	sqlmanager_shared "github.com/Groupe-Hevea/neosync/backend/pkg/sqlmanager/shared"
 	ee_sqlmanager_mssql "github.com/Groupe-Hevea/neosync/internal/ee/mssql-manager"
 	"github.com/Groupe-Hevea/neosync/internal/gotypeutil"
 	"github.com/Groupe-Hevea/neosync/internal/neosyncdb"
+	"github.com/doug-martin/goqu/v9"
 	"golang.org/x/sync/errgroup"
 )
 
@@ -63,7 +63,9 @@ func (m *Manager) GetDatabaseSchema(
 	return output, nil
 }
 
-func toDatabaseSchemaRow(row *mssql_queries.GetDatabaseSchemaRow) *sqlmanager_shared.DatabaseSchemaRow {
+func toDatabaseSchemaRow(
+	row *mssql_queries.GetDatabaseSchemaRow,
+) *sqlmanager_shared.DatabaseSchemaRow {
 	charMaxLength := -1
 	if row.CharacterMaximumLength.Valid {
 		charMaxLength = int(row.CharacterMaximumLength.Int32)
@@ -120,7 +122,11 @@ func toDatabaseSchemaRow(row *mssql_queries.GetDatabaseSchemaRow) *sqlmanager_sh
 		IdentityGeneration:     identityGeneration,
 		IdentitySeed:           identitySeed,
 		IdentityIncrement:      identityIncrement,
-		UpdateAllowed:          isColumnUpdateAllowed(row.IsIdentity, row.IsComputed, row.GeneratedAlwaysType),
+		UpdateAllowed: isColumnUpdateAllowed(
+			row.IsIdentity,
+			row.IsComputed,
+			row.GeneratedAlwaysType,
+		),
 	}
 }
 
@@ -422,12 +428,12 @@ func (m *Manager) GetTableRowCount(
 	if whereClause != nil && *whereClause != "" {
 		query = query.Where(goqu.L(*whereClause))
 	}
-	sql, _, err := query.ToSQL()
+	sqlStr, _, err := query.ToSQL()
 	if err != nil {
 		return 0, fmt.Errorf("unable to build table row count statement for mssql: %w", err)
 	}
 	var count int64
-	err = m.db.QueryRowContext(ctx, sql).Scan(&count)
+	err = m.db.QueryRowContext(ctx, sqlStr).Scan(&count)
 	if err != nil {
 		return 0, fmt.Errorf("unable to query table row count for mssql: %w", err)
 	}
@@ -473,11 +479,11 @@ func BuildMssqlDeleteStatement(
 ) (string, error) {
 	dialect := goqu.Dialect("sqlserver")
 	ds := dialect.Delete(goqu.S(schema).Table(table))
-	sql, _, err := ds.ToSQL()
+	sqlStr, _, err := ds.ToSQL()
 	if err != nil {
 		return "", err
 	}
-	return sql + ";", nil
+	return sqlStr + ";", nil
 }
 
 // Resets current identity value back to the initial count

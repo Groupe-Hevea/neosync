@@ -80,7 +80,11 @@ type redisProc struct {
 	retryPeriod time.Duration
 }
 
-func newRedisProcFromConfig(conf *service.ParsedConfig, res *service.Resources, client redis.UniversalClient) (*redisProc, error) {
+func newRedisProcFromConfig(
+	conf *service.ParsedConfig,
+	res *service.Resources,
+	client redis.UniversalClient,
+) (*redisProc, error) {
 	retries, err := conf.FieldInt("retries")
 	if err != nil {
 		return nil, err
@@ -312,7 +316,10 @@ func (r *redisProc) execRaw(
 	return nil
 }
 
-func (r *redisProc) ProcessBatch(ctx context.Context, inBatch service.MessageBatch) ([]service.MessageBatch, error) {
+func (r *redisProc) ProcessBatch(
+	ctx context.Context,
+	inBatch service.MessageBatch,
+) ([]service.MessageBatch, error) {
 	if r.client == nil {
 		return nil, errors.New("missing redis client. this operation requires redis")
 	}

@@ -10,8 +10,6 @@ import (
 	"sync"
 
 	"connectrpc.com/connect"
-	"github.com/aws/aws-sdk-go-v2/service/dynamodb"
-	"github.com/google/uuid"
 	db_queries "github.com/Groupe-Hevea/neosync/backend/gen/go/db"
 	mgmtv1alpha1 "github.com/Groupe-Hevea/neosync/backend/gen/go/protos/mgmt/v1alpha1"
 	logger_interceptor "github.com/Groupe-Hevea/neosync/backend/internal/connect/interceptors/logger"
@@ -25,6 +23,8 @@ import (
 	nucleuserrors "github.com/Groupe-Hevea/neosync/internal/errors"
 	"github.com/Groupe-Hevea/neosync/internal/neosyncdb"
 	"github.com/Groupe-Hevea/neosync/internal/sshtunnel"
+	"github.com/aws/aws-sdk-go-v2/service/dynamodb"
+	"github.com/google/uuid"
 	"golang.org/x/crypto/ssh"
 	"golang.org/x/sync/errgroup"
 

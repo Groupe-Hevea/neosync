@@ -7,9 +7,9 @@ import (
 	"runtime/debug"
 	"strings"
 
-	"github.com/dop251/goja"
 	javascript_functions "github.com/Groupe-Hevea/neosync/internal/javascript/functions"
 	"github.com/Groupe-Hevea/neosync/worker/pkg/benthos/transformers"
+	"github.com/dop251/goja"
 )
 
 const (
@@ -158,7 +158,10 @@ func getNeosyncTransformers(
 ) ([]*javascript_functions.FunctionDefinition, error) {
 	neosyncTransformers := transformers.GetNeosyncTransformers()
 	if transformPiiTextApi != nil {
-		neosyncTransformers = append(neosyncTransformers, transformers.NewTransformPiiText(transformPiiTextApi))
+		neosyncTransformers = append(
+			neosyncTransformers,
+			transformers.NewTransformPiiText(transformPiiTextApi),
+		)
 	}
 	fns := make([]*javascript_functions.FunctionDefinition, 0, len(neosyncTransformers))
 	for _, f := range neosyncTransformers {

@@ -10,12 +10,12 @@ import (
 	"sync"
 	"testing"
 
-	_ "github.com/microsoft/go-mssqldb"
 	mssql_queries "github.com/Groupe-Hevea/neosync/backend/pkg/mssql-querier"
 	mssql "github.com/Groupe-Hevea/neosync/backend/pkg/sqlmanager/mssql"
 	sqlmanager_shared "github.com/Groupe-Hevea/neosync/backend/pkg/sqlmanager/shared"
 	"github.com/Groupe-Hevea/neosync/internal/testutil"
 	tcmssql "github.com/Groupe-Hevea/neosync/internal/testutil/testcontainers/sqlserver"
+	_ "github.com/microsoft/go-mssqldb"
 	"golang.org/x/sync/errgroup"
 
 	"github.com/stretchr/testify/require"

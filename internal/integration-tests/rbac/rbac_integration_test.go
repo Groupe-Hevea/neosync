@@ -4,14 +4,14 @@ import (
 	"context"
 	"testing"
 
-	"github.com/google/uuid"
-	"github.com/jackc/pgx/v5/stdlib"
 	mgmtv1alpha1 "github.com/Groupe-Hevea/neosync/backend/gen/go/protos/mgmt/v1alpha1"
 	"github.com/Groupe-Hevea/neosync/internal/ee/rbac"
 	"github.com/Groupe-Hevea/neosync/internal/ee/rbac/enforcer"
 	neomigrate "github.com/Groupe-Hevea/neosync/internal/migrate"
 	"github.com/Groupe-Hevea/neosync/internal/testutil"
 	testcontainers_postgres "github.com/Groupe-Hevea/neosync/internal/testutil/testcontainers/postgres"
+	"github.com/google/uuid"
+	"github.com/jackc/pgx/v5/stdlib"
 	"github.com/stretchr/testify/require"
 )
 

@@ -6,11 +6,11 @@ import (
 	"log/slog"
 	"sync"
 
-	"github.com/dop251/goja"
 	"github.com/Groupe-Hevea/neosync/internal/benthos_slogger"
 	"github.com/Groupe-Hevea/neosync/internal/javascript"
 	javascript_vm "github.com/Groupe-Hevea/neosync/internal/javascript/vm"
 	"github.com/Groupe-Hevea/neosync/worker/pkg/benthos/transformers"
+	"github.com/dop251/goja"
 
 	"github.com/redpanda-data/benthos/v4/public/service"
 )

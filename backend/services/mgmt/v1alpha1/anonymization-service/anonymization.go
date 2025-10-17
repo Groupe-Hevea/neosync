@@ -8,7 +8,6 @@ import (
 	"time"
 
 	"connectrpc.com/connect"
-	"github.com/google/uuid"
 	mgmtv1alpha1 "github.com/Groupe-Hevea/neosync/backend/gen/go/protos/mgmt/v1alpha1"
 	"github.com/Groupe-Hevea/neosync/backend/gen/go/protos/mgmt/v1alpha1/mgmtv1alpha1connect"
 	logger_interceptor "github.com/Groupe-Hevea/neosync/backend/internal/connect/interceptors/logger"
@@ -16,6 +15,7 @@ import (
 	nucleuserrors "github.com/Groupe-Hevea/neosync/internal/errors"
 	jsonanonymizer "github.com/Groupe-Hevea/neosync/internal/json-anonymizer"
 	"github.com/Groupe-Hevea/neosync/internal/neosyncdb"
+	"github.com/google/uuid"
 	"go.opentelemetry.io/otel/attribute"
 	"go.opentelemetry.io/otel/metric"
 	"go.opentelemetry.io/otel/trace"
@@ -190,7 +190,8 @@ func (s *Service) AnonymizeSingle(
 	if err != nil {
 		return nil, err
 	}
-	if !s.license.IsValid() || (s.cfg.IsNeosyncCloud && account.AccountType == int16(neosyncdb.AccountType_Personal)) {
+	if !s.license.IsValid() ||
+		(s.cfg.IsNeosyncCloud && account.AccountType == int16(neosyncdb.AccountType_Personal)) {
 		for _, mapping := range req.Msg.GetTransformerMappings() {
 			if mapping.GetTransformer().GetTransformPiiTextConfig() != nil {
 				return nil, nucleuserrors.NewForbidden(

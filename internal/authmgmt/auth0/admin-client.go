@@ -3,8 +3,8 @@ package auth0
 import (
 	"context"
 
-	"github.com/auth0/go-auth0/management"
 	"github.com/Groupe-Hevea/neosync/internal/authmgmt"
+	"github.com/auth0/go-auth0/management"
 )
 
 var _ authmgmt.Interface = &Auth0MgmtClient{} // ensures it always conforms to the interface

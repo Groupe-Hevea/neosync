@@ -5,13 +5,13 @@ import (
 	"fmt"
 
 	"connectrpc.com/connect"
-	"github.com/jackc/pgx/v5/pgtype"
 	mgmtv1alpha1 "github.com/Groupe-Hevea/neosync/backend/gen/go/protos/mgmt/v1alpha1"
 	auth_apikey "github.com/Groupe-Hevea/neosync/backend/internal/auth/apikey"
 	"github.com/Groupe-Hevea/neosync/internal/apikey"
 	"github.com/Groupe-Hevea/neosync/internal/ee/license"
 	nucleuserrors "github.com/Groupe-Hevea/neosync/internal/errors"
 	"github.com/Groupe-Hevea/neosync/internal/neosyncdb"
+	"github.com/jackc/pgx/v5/pgtype"
 )
 
 type UserAccountServiceClient interface {

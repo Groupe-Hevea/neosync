@@ -8,7 +8,6 @@ import (
 	"testing"
 
 	"connectrpc.com/connect"
-	"github.com/google/uuid"
 	db_queries "github.com/Groupe-Hevea/neosync/backend/gen/go/db"
 	mgmtv1alpha1 "github.com/Groupe-Hevea/neosync/backend/gen/go/protos/mgmt/v1alpha1"
 	"github.com/Groupe-Hevea/neosync/backend/gen/go/protos/mgmt/v1alpha1/mgmtv1alpha1connect"
@@ -18,6 +17,7 @@ import (
 	"github.com/Groupe-Hevea/neosync/internal/apikey"
 	"github.com/Groupe-Hevea/neosync/internal/neosyncdb"
 	"github.com/Groupe-Hevea/neosync/internal/testutil"
+	"github.com/google/uuid"
 	"github.com/stretchr/testify/mock"
 	"github.com/stretchr/testify/require"
 )

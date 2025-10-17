@@ -8,7 +8,6 @@ import (
 	"os"
 	"testing"
 
-	_ "github.com/microsoft/go-mssqldb"
 	mysql_queries "github.com/Groupe-Hevea/neosync/backend/gen/go/db/dbschemas/mysql"
 	pg_queries "github.com/Groupe-Hevea/neosync/backend/gen/go/db/dbschemas/postgresql"
 	mgmtv1alpha1 "github.com/Groupe-Hevea/neosync/backend/gen/go/protos/mgmt/v1alpha1"
@@ -18,6 +17,7 @@ import (
 	connectionmanager "github.com/Groupe-Hevea/neosync/internal/connection-manager"
 	"github.com/Groupe-Hevea/neosync/internal/testutil"
 	tcpostgres "github.com/Groupe-Hevea/neosync/internal/testutil/testcontainers/postgres"
+	_ "github.com/microsoft/go-mssqldb"
 	"github.com/stretchr/testify/suite"
 	testmssql "github.com/testcontainers/testcontainers-go/modules/mssql"
 )

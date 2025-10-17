@@ -7,7 +7,6 @@ import (
 	"net/http"
 
 	"connectrpc.com/connect"
-	"github.com/jackc/pgx/v5/stdlib"
 	db_queries "github.com/Groupe-Hevea/neosync/backend/gen/go/db"
 	mysql_queries "github.com/Groupe-Hevea/neosync/backend/gen/go/db/dbschemas/mysql"
 	pg_queries "github.com/Groupe-Hevea/neosync/backend/gen/go/db/dbschemas/postgresql"
@@ -41,6 +40,7 @@ import (
 	"github.com/Groupe-Hevea/neosync/internal/neosyncdb"
 	"github.com/Groupe-Hevea/neosync/internal/testutil"
 	tcpostgres "github.com/Groupe-Hevea/neosync/internal/testutil/testcontainers/postgres"
+	"github.com/jackc/pgx/v5/stdlib"
 )
 
 var (
