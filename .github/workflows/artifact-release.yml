@@ -60,7 +60,7 @@ jobs:
         with:
           # list of Docker images to use as base name for tags
           images: |
-            ghcr.io/Groupe-Hevea/neosync/api
+            ghcr.io/groupe-hevea/neosync/api
           # generate Docker tags based on the following events/attributes
           tags: |
             type=ref,event=branch
@@ -131,7 +131,7 @@ jobs:
         with:
           # list of Docker images to use as base name for tags
           images: |
-            ghcr.io/Groupe-Hevea/neosync/app
+            ghcr.io/groupe-hevea/neosync/app
           # generate Docker tags based on the following events/attributes
           tags: |
             type=ref,event=branch
@@ -197,7 +197,7 @@ jobs:
         with:
           # list of Docker images to use as base name for tags
           images: |
-            ghcr.io/Groupe-Hevea/neosync/worker
+            ghcr.io/groupe-hevea/neosync/worker
           # generate Docker tags based on the following events/attributes
           tags: |
             type=ref,event=branch
