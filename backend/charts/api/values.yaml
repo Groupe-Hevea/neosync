@@ -1,7 +1,7 @@
 # Configure the API Docker Image
 image:
   # -- The default image repository
-  repository: ghcr.io/Groupe-Hevea/neosync/api
+  repository: ghcr.io/groupe-hevea/neosync/api
   # -- Overrides the image tag whose default is {{ printf "v%s" .Chart.AppVersion }}
   tag:
   # -- Overrides the default K8s pull policy
@@ -91,15 +91,15 @@ resources:
   ## Sets the CPU and Memory baseline. These are low-usage defaults. Change these depending on your needs.
   requests:
     # -- Sets the CPU amount to be requested
-    cpu: "100m"
+    cpu: '100m'
     # -- Sets the Memory amount to be requested
-    memory: "128Mi"
+    memory: '128Mi'
   ## Sets the max CPU and Memory. These are low-usage defaults. Change these depending on your needs.
   limits:
     # -- Sets the max CPU amount
-    cpu: "500m"
+    cpu: '500m'
     # -- Sets the max Memory amount
-    memory: "512Mi"
+    memory: '512Mi'
 
 # Configure autoscaling of the container
 autoscaling:
