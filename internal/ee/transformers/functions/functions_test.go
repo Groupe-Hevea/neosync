@@ -34,12 +34,23 @@ func Test_TransformPiiText(t *testing.T) {
 		mockText := "bar"
 		mockanon.On("PostAnonymizeWithResponse", mock.Anything, mock.Anything).
 			Return(&presidioapi.PostAnonymizeResponse{
-				JSON200: &presidioapi.AnonymizeResponse{Text: &mockText, Items: &[]presidioapi.OperatorResult{}},
+				JSON200: &presidioapi.AnonymizeResponse{
+					Text:  &mockText,
+					Items: &[]presidioapi.OperatorResult{},
+				},
 			}, nil)
 
 		config := &mgmtv1alpha1.TransformPiiText{}
 
-		actual, err := TransformPiiText(ctx, mockanalyze, mockanon, mockneosync, config, "foo", testutil.GetTestLogger(t))
+		actual, err := TransformPiiText(
+			ctx,
+			mockanalyze,
+			mockanon,
+			mockneosync,
+			config,
+			"foo",
+			testutil.GetTestLogger(t),
+		)
 		require.NoError(t, err)
 		require.Equal(t, mockText, actual)
 	})

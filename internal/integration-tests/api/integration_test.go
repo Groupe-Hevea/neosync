@@ -18,7 +18,11 @@ type IntegrationTestSuite struct {
 // TODO update service integration tests to not use testify suite
 func (s *IntegrationTestSuite) SetupSuite() {
 	s.ctx = context.Background()
-	api, err := tcneosyncapi.NewNeosyncApiTestClient(s.ctx, s.T(), tcneosyncapi.WithMigrationsDirectory("../../../backend/sql/postgresql/schema"))
+	api, err := tcneosyncapi.NewNeosyncApiTestClient(
+		s.ctx,
+		s.T(),
+		tcneosyncapi.WithMigrationsDirectory("../../../backend/sql/postgresql/schema"),
+	)
 	if err != nil {
 		s.T().Fatalf("unable to create neosync api test client: %v", err)
 	}

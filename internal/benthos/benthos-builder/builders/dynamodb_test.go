@@ -15,11 +15,15 @@ func Test_getWhereFromSourceTableOption(t *testing.T) {
 	actual = getWhereFromSourceTableOption(&mgmtv1alpha1.DynamoDBSourceTableOption{})
 	require.Nil(t, actual)
 
-	actual = getWhereFromSourceTableOption(&mgmtv1alpha1.DynamoDBSourceTableOption{WhereClause: nil})
+	actual = getWhereFromSourceTableOption(
+		&mgmtv1alpha1.DynamoDBSourceTableOption{WhereClause: nil},
+	)
 	require.Nil(t, actual)
 
 	where := "foo"
-	actual = getWhereFromSourceTableOption(&mgmtv1alpha1.DynamoDBSourceTableOption{WhereClause: &where})
+	actual = getWhereFromSourceTableOption(
+		&mgmtv1alpha1.DynamoDBSourceTableOption{WhereClause: &where},
+	)
 	require.NotNil(t, actual)
 	require.Equal(t, where, *actual)
 }
@@ -72,7 +76,13 @@ func Test_toDynamoDbSourceTableOptionMap(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			result := toDynamoDbSourceTableOptionMap(tt.input)
-			require.True(t, reflect.DeepEqual(result, tt.expected), "expected %v, got %v", tt.expected, result)
+			require.True(
+				t,
+				reflect.DeepEqual(result, tt.expected),
+				"expected %v, got %v",
+				tt.expected,
+				result,
+			)
 		})
 	}
 }

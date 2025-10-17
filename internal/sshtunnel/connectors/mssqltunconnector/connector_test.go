@@ -10,7 +10,9 @@ import (
 
 func Test_New(t *testing.T) {
 	t.Run("valid", func(t *testing.T) {
-		connector, cleanup, err := New("sqlserver://sa:myStr0ngP%40assword@localhost?database=master")
+		connector, cleanup, err := New(
+			"sqlserver://sa:myStr0ngP%40assword@localhost?database=master",
+		)
 		require.NoError(t, err)
 		require.NotNil(t, cleanup)
 		require.NotNil(t, connector)
@@ -24,13 +26,19 @@ func Test_New(t *testing.T) {
 	})
 
 	t.Run("WithDialer", func(t *testing.T) {
-		connector, cleanup, err := New("sqlserver://sa:myStr0ngP%40assword@localhost?database=master", WithDialer(&net.Dialer{}))
+		connector, cleanup, err := New(
+			"sqlserver://sa:myStr0ngP%40assword@localhost?database=master",
+			WithDialer(&net.Dialer{}),
+		)
 		require.NoError(t, err)
 		require.NotNil(t, cleanup)
 		require.NotNil(t, connector)
 	})
 	t.Run("WithTls", func(t *testing.T) {
-		connector, cleanup, err := New("sqlserver://sa:myStr0ngP%40assword@localhost?database=master", WithTLSConfig(&tls.Config{}))
+		connector, cleanup, err := New(
+			"sqlserver://sa:myStr0ngP%40assword@localhost?database=master",
+			WithTLSConfig(&tls.Config{}),
+		)
 		require.NoError(t, err)
 		require.NotNil(t, cleanup)
 		require.NotNil(t, connector)

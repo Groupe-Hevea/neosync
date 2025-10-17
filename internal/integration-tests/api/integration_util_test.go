@@ -40,7 +40,12 @@ func requireConnectError(t testing.TB, err error, expectedCode connect.Code) {
 	t.Helper()
 	connectErr, ok := err.(*connect.Error)
 	require.True(t, ok, fmt.Sprintf("error was not connect error %T", err))
-	require.Equal(t, expectedCode, connectErr.Code(), fmt.Sprintf("%d: %s", connectErr.Code(), connectErr.Message()))
+	require.Equal(
+		t,
+		expectedCode,
+		connectErr.Code(),
+		fmt.Sprintf("%d: %s", connectErr.Code(), connectErr.Message()),
+	)
 }
 
 func (s *IntegrationTestSuite) setAccountCreatedAt(
@@ -52,10 +57,14 @@ func (s *IntegrationTestSuite) setAccountCreatedAt(
 	if err != nil {
 		return err
 	}
-	_, err = s.NeosyncQuerier.SetAccountCreatedAt(ctx, s.Pgcontainer.DB, db_queries.SetAccountCreatedAtParams{
-		CreatedAt: pgtype.Timestamp{Time: createdAt, Valid: true},
-		AccountId: accountUuid,
-	})
+	_, err = s.NeosyncQuerier.SetAccountCreatedAt(
+		ctx,
+		s.Pgcontainer.DB,
+		db_queries.SetAccountCreatedAtParams{
+			CreatedAt: pgtype.Timestamp{Time: createdAt, Valid: true},
+			AccountId: accountUuid,
+		},
+	)
 	return err
 }
 

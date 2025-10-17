@@ -563,32 +563,72 @@ func (d *PostgresSchemaManager) ReconcileDestinationSchema(
 		statementBlocks = append(statementBlocks, statement)
 		if statement.Label == sqlmanager_shared.CreateTablesLabel {
 			statementBlocks = append(
-			statementBlocks,
-			schemaStatementsByLabel[sqlmanager_shared.DropTriggersLabel]...,
-		)
-			statementBlocks = append(statementBlocks, schemaStatementsByLabel[sqlmanager_shared.DropFunctionsLabel]...)
-			statementBlocks = append(statementBlocks, schemaStatementsByLabel[sqlmanager_shared.DropForeignKeyConstraintsLabel]...)
-			statementBlocks = append(statementBlocks, schemaStatementsByLabel[sqlmanager_shared.DropNonForeignKeyConstraintsLabel]...)
-			statementBlocks = append(statementBlocks, schemaStatementsByLabel[sqlmanager_shared.DropColumnsLabel]...)
-			statementBlocks = append(statementBlocks, schemaStatementsByLabel[sqlmanager_shared.DropDatatypesLabel]...)
-			statementBlocks = append(statementBlocks, schemaStatementsByLabel[sqlmanager_shared.UpdateDatatypesLabel]...)
-			statementBlocks = append(statementBlocks, schemaStatementsByLabel[sqlmanager_shared.AddColumnsLabel]...)
-			statementBlocks = append(statementBlocks, schemaStatementsByLabel[sqlmanager_shared.RenameColumnsLabel]...)
-			statementBlocks = append(statementBlocks, schemaStatementsByLabel[sqlmanager_shared.UpdateColumnsLabel]...)
-			statementBlocks = append(statementBlocks, schemaStatementsByLabel[sqlmanager_shared.UpdateFunctionsLabel]...)
+				statementBlocks,
+				schemaStatementsByLabel[sqlmanager_shared.DropTriggersLabel]...,
+			)
+			statementBlocks = append(
+				statementBlocks,
+				schemaStatementsByLabel[sqlmanager_shared.DropFunctionsLabel]...,
+			)
+			statementBlocks = append(
+				statementBlocks,
+				schemaStatementsByLabel[sqlmanager_shared.DropForeignKeyConstraintsLabel]...,
+			)
+			statementBlocks = append(
+				statementBlocks,
+				schemaStatementsByLabel[sqlmanager_shared.DropNonForeignKeyConstraintsLabel]...,
+			)
+			statementBlocks = append(
+				statementBlocks,
+				schemaStatementsByLabel[sqlmanager_shared.DropColumnsLabel]...,
+			)
+			statementBlocks = append(
+				statementBlocks,
+				schemaStatementsByLabel[sqlmanager_shared.DropDatatypesLabel]...,
+			)
+			statementBlocks = append(
+				statementBlocks,
+				schemaStatementsByLabel[sqlmanager_shared.UpdateDatatypesLabel]...,
+			)
+			statementBlocks = append(
+				statementBlocks,
+				schemaStatementsByLabel[sqlmanager_shared.AddColumnsLabel]...,
+			)
+			statementBlocks = append(
+				statementBlocks,
+				schemaStatementsByLabel[sqlmanager_shared.RenameColumnsLabel]...,
+			)
+			statementBlocks = append(
+				statementBlocks,
+				schemaStatementsByLabel[sqlmanager_shared.UpdateColumnsLabel]...,
+			)
+			statementBlocks = append(
+				statementBlocks,
+				schemaStatementsByLabel[sqlmanager_shared.UpdateFunctionsLabel]...,
+			)
 		}
 	}
 
 	for _, block := range statementBlocks {
-		d.logger.Info(fmt.Sprintf("[%s] found %d statements to execute during schema initialization", block.Label, len(block.Statements)))
+		d.logger.Info(
+			fmt.Sprintf(
+				"[%s] found %d statements to execute during schema initialization",
+				block.Label,
+				len(block.Statements),
+			),
+		)
 		if len(block.Statements) == 0 {
 			continue
 		}
-		err = d.destdb.Db().BatchExec(ctx, shared.BatchSizeConst, block.Statements, &sqlmanager_shared.BatchExecOpts{})
+		err = d.destdb.Db().
+			BatchExec(ctx, shared.BatchSizeConst, block.Statements, &sqlmanager_shared.BatchExecOpts{})
 		if err != nil {
-			d.logger.Error(fmt.Sprintf("unable to exec postgres %s statements: %s", block.Label, err.Error()))
+			d.logger.Error(
+				fmt.Sprintf("unable to exec postgres %s statements: %s", block.Label, err.Error()),
+			)
 			for _, stmt := range block.Statements {
-				err = d.destdb.Db().BatchExec(ctx, 1, []string{stmt}, &sqlmanager_shared.BatchExecOpts{})
+				err = d.destdb.Db().
+					BatchExec(ctx, 1, []string{stmt}, &sqlmanager_shared.BatchExecOpts{})
 				if err != nil {
 					initErrors = append(initErrors, &shared.InitSchemaError{
 						Statement: stmt,
@@ -601,8 +641,12 @@ func (d *PostgresSchemaManager) ReconcileDestinationSchema(
 	return initErrors, nil
 }
 
-func (d *PostgresSchemaManager) TruncateTables(ctx context.Context, schemaDiff *shared.SchemaDifferences) error {
-	if !d.destOpts.GetTruncateTable().GetTruncateBeforeInsert() && !d.destOpts.GetTruncateTable().GetCascade() {
+func (d *PostgresSchemaManager) TruncateTables(
+	ctx context.Context,
+	schemaDiff *shared.SchemaDifferences,
+) error {
+	if !d.destOpts.GetTruncateTable().GetTruncateBeforeInsert() &&
+		!d.destOpts.GetTruncateTable().GetCascade() {
 		d.logger.Info("skipping truncate as it is not enabled")
 		return nil
 	}
@@ -623,7 +667,10 @@ func (d *PostgresSchemaManager) TruncateTables(ctx context.Context, schemaDiff *
 	return d.TruncateData(ctx, uniqueTables, uniqueSchemas)
 }
 
-func (d *PostgresSchemaManager) InitializeSchema(ctx context.Context, uniqueTables map[string]struct{}) ([]*shared.InitSchemaError, error) {
+func (d *PostgresSchemaManager) InitializeSchema(
+	ctx context.Context,
+	uniqueTables map[string]struct{},
+) ([]*shared.InitSchemaError, error) {
 	initErrors := []*shared.InitSchemaError{}
 	if !d.destOpts.GetInitTableSchema() {
 		d.logger.Info("skipping schema init as it is not enabled")
@@ -641,14 +688,24 @@ func (d *PostgresSchemaManager) InitializeSchema(ctx context.Context, uniqueTabl
 	}
 
 	for _, block := range initblocks {
-		d.logger.Info(fmt.Sprintf("[%s] found %d statements to execute during schema initialization", block.Label, len(block.Statements)))
+		d.logger.Info(
+			fmt.Sprintf(
+				"[%s] found %d statements to execute during schema initialization",
+				block.Label,
+				len(block.Statements),
+			),
+		)
 		if len(block.Statements) == 0 {
 			continue
 		}
-		err = d.destdb.Db().BatchExec(ctx, shared.BatchSizeConst, block.Statements, &sqlmanager_shared.BatchExecOpts{})
+		err = d.destdb.Db().
+			BatchExec(ctx, shared.BatchSizeConst, block.Statements, &sqlmanager_shared.BatchExecOpts{})
 		if err != nil {
-			d.logger.Error(fmt.Sprintf("unable to exec pg %s statements: %s", block.Label, err.Error()))
-			if block.Label != sqlmanager_shared.SchemasLabel && block.Label != sqlmanager_shared.ExtensionsLabel {
+			d.logger.Error(
+				fmt.Sprintf("unable to exec pg %s statements: %s", block.Label, err.Error()),
+			)
+			if block.Label != sqlmanager_shared.SchemasLabel &&
+				block.Label != sqlmanager_shared.ExtensionsLabel {
 				return nil, fmt.Errorf("unable to exec pg %s statements: %w", block.Label, err)
 			}
 			for _, stmt := range block.Statements {
@@ -665,8 +722,13 @@ func (d *PostgresSchemaManager) InitializeSchema(ctx context.Context, uniqueTabl
 	return initErrors, nil
 }
 
-func (d *PostgresSchemaManager) TruncateData(ctx context.Context, uniqueTables map[string]struct{}, uniqueSchemas []string) error {
-	if !d.destOpts.GetTruncateTable().GetTruncateBeforeInsert() && !d.destOpts.GetTruncateTable().GetCascade() {
+func (d *PostgresSchemaManager) TruncateData(
+	ctx context.Context,
+	uniqueTables map[string]struct{},
+	uniqueSchemas []string,
+) error {
+	if !d.destOpts.GetTruncateTable().GetTruncateBeforeInsert() &&
+		!d.destOpts.GetTruncateTable().GetCascade() {
 		d.logger.Info("skipping truncate as it is not enabled")
 		return nil
 	}
@@ -680,8 +742,14 @@ func (d *PostgresSchemaManager) TruncateData(ctx context.Context, uniqueTables m
 			}
 			tableTruncateStmts = append(tableTruncateStmts, stmt)
 		}
-		d.logger.Info(fmt.Sprintf("executing %d sql statements that will truncate cascade tables", len(tableTruncateStmts)))
-		err := d.destdb.Db().BatchExec(ctx, shared.BatchSizeConst, tableTruncateStmts, &sqlmanager_shared.BatchExecOpts{})
+		d.logger.Info(
+			fmt.Sprintf(
+				"executing %d sql statements that will truncate cascade tables",
+				len(tableTruncateStmts),
+			),
+		)
+		err := d.destdb.Db().
+			BatchExec(ctx, shared.BatchSizeConst, tableTruncateStmts, &sqlmanager_shared.BatchExecOpts{})
 		if err != nil {
 			return fmt.Errorf("unable to exec truncate cascade statements: %w", err)
 		}
@@ -707,7 +775,8 @@ func (d *PostgresSchemaManager) TruncateData(ctx context.Context, uniqueTables m
 			return fmt.Errorf("unable to exec ordered truncate statements: %w", err)
 		}
 	}
-	if d.destOpts.GetTruncateTable().GetTruncateBeforeInsert() || d.destOpts.GetTruncateTable().GetCascade() {
+	if d.destOpts.GetTruncateTable().GetTruncateBeforeInsert() ||
+		d.destOpts.GetTruncateTable().GetCascade() {
 		// reset serial counts
 		// identity counts are automatically reset with truncate identity restart clause
 		schemaTableMap := map[string][]string{}
@@ -723,14 +792,21 @@ func (d *PostgresSchemaManager) TruncateData(ctx context.Context, uniqueTables m
 			}
 			resetSeqStmts := []string{}
 			for _, seq := range sequences {
-				resetSeqStmts = append(resetSeqStmts, sqlmanager_postgres.BuildPgResetSequenceSql(seq.Schema, seq.Name))
+				resetSeqStmts = append(
+					resetSeqStmts,
+					sqlmanager_postgres.BuildPgResetSequenceSql(seq.Schema, seq.Name),
+				)
 			}
 			if len(resetSeqStmts) > 0 {
-				err = d.destdb.Db().BatchExec(ctx, 10, resetSeqStmts, &sqlmanager_shared.BatchExecOpts{})
+				err = d.destdb.Db().
+					BatchExec(ctx, 10, resetSeqStmts, &sqlmanager_shared.BatchExecOpts{})
 				if err != nil {
 					// handle not found errors
 					if !strings.Contains(err.Error(), `does not exist`) {
-						return fmt.Errorf("unable to exec postgres sequence reset statements: %w", err)
+						return fmt.Errorf(
+							"unable to exec postgres sequence reset statements: %w",
+							err,
+						)
 					}
 				}
 			}

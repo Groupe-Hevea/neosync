@@ -32,7 +32,11 @@ func Test_PostgresManager(t *testing.T) {
 	t.Parallel()
 
 	ctx := context.Background()
-	containers, err := tcpostgres.NewPostgresTestSyncContainer(ctx, []tcpostgres.Option{}, []tcpostgres.Option{})
+	containers, err := tcpostgres.NewPostgresTestSyncContainer(
+		ctx,
+		[]tcpostgres.Option{},
+		[]tcpostgres.Option{},
+	)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -140,7 +144,10 @@ func Test_PostgresManager(t *testing.T) {
 			{
 				Columns:     []string{"b"},
 				NotNullable: []bool{false},
-				ForeignKey:  &sqlmanager_shared.ForeignKey{Table: buildTable(schema, "t1"), Columns: []string{"a"}},
+				ForeignKey: &sqlmanager_shared.ForeignKey{
+					Table:   buildTable(schema, "t1"),
+					Columns: []string{"a"},
+				},
 			},
 		})
 
@@ -151,7 +158,10 @@ func Test_PostgresManager(t *testing.T) {
 			{
 				Columns:     []string{"b"},
 				NotNullable: []bool{false},
-				ForeignKey:  &sqlmanager_shared.ForeignKey{Table: buildTable(schema, "t3"), Columns: []string{"a"}},
+				ForeignKey: &sqlmanager_shared.ForeignKey{
+					Table:   buildTable(schema, "t3"),
+					Columns: []string{"a"},
+				},
 			},
 		})
 
@@ -162,7 +172,10 @@ func Test_PostgresManager(t *testing.T) {
 			{
 				Columns:     []string{"b"},
 				NotNullable: []bool{false},
-				ForeignKey:  &sqlmanager_shared.ForeignKey{Table: buildTable(schema, "t2"), Columns: []string{"a"}},
+				ForeignKey: &sqlmanager_shared.ForeignKey{
+					Table:   buildTable(schema, "t2"),
+					Columns: []string{"a"},
+				},
 			},
 		})
 	})
@@ -180,7 +193,10 @@ func Test_PostgresManager(t *testing.T) {
 			{
 				Columns:     []string{"b"},
 				NotNullable: []bool{false},
-				ForeignKey:  &sqlmanager_shared.ForeignKey{Table: buildTable(schema, "t1"), Columns: []string{"a"}},
+				ForeignKey: &sqlmanager_shared.ForeignKey{
+					Table:   buildTable(schema, "t1"),
+					Columns: []string{"a"},
+				},
 			},
 		})
 
@@ -192,7 +208,10 @@ func Test_PostgresManager(t *testing.T) {
 			{
 				Columns:     []string{"b"},
 				NotNullable: []bool{false},
-				ForeignKey:  &sqlmanager_shared.ForeignKey{Table: buildTable(schema, "t3"), Columns: []string{"a"}},
+				ForeignKey: &sqlmanager_shared.ForeignKey{
+					Table:   buildTable(schema, "t3"),
+					Columns: []string{"a"},
+				},
 			},
 		})
 
@@ -203,7 +222,10 @@ func Test_PostgresManager(t *testing.T) {
 			{
 				Columns:     []string{"b"},
 				NotNullable: []bool{false},
-				ForeignKey:  &sqlmanager_shared.ForeignKey{Table: buildTable(schema, "t2"), Columns: []string{"a"}},
+				ForeignKey: &sqlmanager_shared.ForeignKey{
+					Table:   buildTable(schema, "t2"),
+					Columns: []string{"a"},
+				},
 			},
 		})
 	})
@@ -221,7 +243,10 @@ func Test_PostgresManager(t *testing.T) {
 			{
 				Columns:     []string{"x", "y"},
 				NotNullable: []bool{true, true},
-				ForeignKey:  &sqlmanager_shared.ForeignKey{Table: buildTable(schema, "t4"), Columns: []string{"a", "b"}},
+				ForeignKey: &sqlmanager_shared.ForeignKey{
+					Table:   buildTable(schema, "t4"),
+					Columns: []string{"a", "b"},
+				},
 			},
 		})
 	})
@@ -302,7 +327,10 @@ func Test_PostgresManager(t *testing.T) {
 
 	t.Run("Exec", func(t *testing.T) {
 		t.Parallel()
-		sql, _, err := goqu.Dialect("postgres").Select("*").From(goqu.T("users").Schema(schema)).ToSQL()
+		sql, _, err := goqu.Dialect("postgres").
+			Select("*").
+			From(goqu.T("users").Schema(schema)).
+			ToSQL()
 		require.NoError(t, err)
 
 		err = manager.Exec(context.Background(), sql)
@@ -311,23 +339,39 @@ func Test_PostgresManager(t *testing.T) {
 
 	t.Run("BatchExec", func(t *testing.T) {
 		t.Parallel()
-		sql, _, err := goqu.Dialect("postgres").Select("*").From(goqu.T("users").Schema(schema)).ToSQL()
+		sql, _, err := goqu.Dialect("postgres").
+			Select("*").
+			From(goqu.T("users").Schema(schema)).
+			ToSQL()
 		require.NoError(t, err)
 		sql += ";"
 
-		err = manager.BatchExec(context.Background(), 2, []string{sql, sql, sql}, &sqlmanager_shared.BatchExecOpts{})
+		err = manager.BatchExec(
+			context.Background(),
+			2,
+			[]string{sql, sql, sql},
+			&sqlmanager_shared.BatchExecOpts{},
+		)
 		require.NoError(t, err)
 	})
 
 	t.Run("BatchExec_With_Prefix", func(t *testing.T) {
 		t.Parallel()
-		sql, _, err := goqu.Dialect("postgres").Select("*").From(goqu.T("users").Schema(schema)).ToSQL()
+		sql, _, err := goqu.Dialect("postgres").
+			Select("*").
+			From(goqu.T("users").Schema(schema)).
+			ToSQL()
 		require.NoError(t, err)
 		sql += ";"
 
-		err = manager.BatchExec(context.Background(), 2, []string{sql}, &sqlmanager_shared.BatchExecOpts{
-			Prefix: &sql,
-		})
+		err = manager.BatchExec(
+			context.Background(),
+			2,
+			[]string{sql},
+			&sqlmanager_shared.BatchExecOpts{
+				Prefix: &sql,
+			},
+		)
 		require.NoError(t, err)
 	})
 
@@ -371,11 +415,25 @@ func Test_PostgresManager(t *testing.T) {
 		}
 
 		for col, colInfo := range testDefaultTable {
-			needsOverride, needsReset := postgres.GetPostgresColumnOverrideAndResetProperties(colInfo)
+			needsOverride, needsReset := postgres.GetPostgresColumnOverrideAndResetProperties(
+				colInfo,
+			)
 			expected, ok := expectedProperties[col]
 			require.Truef(t, ok, "Missing expected column %q", col)
-			require.Equalf(t, expected.needsOverride, needsOverride, "Incorrect needsOverride value for column %q", col)
-			require.Equalf(t, expected.needsReset, needsReset, "Incorrect needsReset value for column %q", col)
+			require.Equalf(
+				t,
+				expected.needsOverride,
+				needsOverride,
+				"Incorrect needsOverride value for column %q",
+				col,
+			)
+			require.Equalf(
+				t,
+				expected.needsReset,
+				needsReset,
+				"Incorrect needsReset value for column %q",
+				col,
+			)
 		}
 	})
 
@@ -469,7 +527,10 @@ func Test_PostgresManager(t *testing.T) {
 	})
 }
 
-func getSchemaTables(ctx context.Context, manager *postgres.PostgresManager) ([]*sqlmanager_shared.SchemaTable, error) {
+func getSchemaTables(
+	ctx context.Context,
+	manager *postgres.PostgresManager,
+) ([]*sqlmanager_shared.SchemaTable, error) {
 	cols, err := manager.GetDatabaseSchema(ctx)
 	if err != nil {
 		return nil, err

@@ -14,7 +14,11 @@ type MockIdentityAllocator struct {
 	identities map[uint]uint
 }
 
-func (m *MockIdentityAllocator) GetIdentity(ctx context.Context, token string, value *uint) (uint, error) {
+func (m *MockIdentityAllocator) GetIdentity(
+	ctx context.Context,
+	token string,
+	value *uint,
+) (uint, error) {
 	if value == nil {
 		return 1, nil
 	}
@@ -27,7 +31,11 @@ func (m *MockIdentityAllocator) GetIdentity(ctx context.Context, token string, v
 // MockZeroIdentityAllocator always returns 0 for testing error cases
 type MockZeroIdentityAllocator struct{}
 
-func (m *MockZeroIdentityAllocator) GetIdentity(ctx context.Context, token string, value *uint) (uint, error) {
+func (m *MockZeroIdentityAllocator) GetIdentity(
+	ctx context.Context,
+	token string,
+	value *uint,
+) (uint, error) {
 	return 0, nil
 }
 
@@ -98,6 +106,10 @@ func Test_transformIdentityScramble(t *testing.T) {
 		zeroAllocator := &MockZeroIdentityAllocator{}
 		_, err := transformIdentityScramble(zeroAllocator, "test-token", uint(1))
 		require.Error(t, err)
-		assert.Contains(t, err.Error(), "unable to get identity from value as generated identity was 0")
+		assert.Contains(
+			t,
+			err.Error(),
+			"unable to get identity from value as generated identity was 0",
+		)
 	})
 }

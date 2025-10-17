@@ -55,9 +55,12 @@ func Test_Service_GetAccountApiKeys(t *testing.T) {
 		Return(rawData, nil)
 	mockIsUserInAccount(t, mockUserService, true)
 
-	resp, err := svc.GetAccountApiKeys(context.Background(), connect.NewRequest(&mgmtv1alpha1.GetAccountApiKeysRequest{
-		AccountId: uuid.NewString(),
-	}))
+	resp, err := svc.GetAccountApiKeys(
+		context.Background(),
+		connect.NewRequest(&mgmtv1alpha1.GetAccountApiKeysRequest{
+			AccountId: uuid.NewString(),
+		}),
+	)
 	assert.NoError(t, err)
 	assert.NotNil(t, resp)
 	assert.NotEmpty(t, resp.Msg.ApiKeys)
@@ -83,9 +86,12 @@ func Test_Service_GetAccountApiKeys_ForbiddenAccount(t *testing.T) {
 
 	mockIsUserInAccount(t, mockUserService, false)
 
-	resp, err := svc.GetAccountApiKeys(context.Background(), connect.NewRequest(&mgmtv1alpha1.GetAccountApiKeysRequest{
-		AccountId: uuid.NewString(),
-	}))
+	resp, err := svc.GetAccountApiKeys(
+		context.Background(),
+		connect.NewRequest(&mgmtv1alpha1.GetAccountApiKeysRequest{
+			AccountId: uuid.NewString(),
+		}),
+	)
 	assert.Error(t, err)
 	assert.Nil(t, resp)
 }
@@ -112,9 +118,12 @@ func Test_Service_GetAccountApiKey_Found(t *testing.T) {
 		Return(rawData, nil)
 	mockIsUserInAccount(t, mockUserService, true)
 
-	resp, err := svc.GetAccountApiKey(context.Background(), connect.NewRequest(&mgmtv1alpha1.GetAccountApiKeyRequest{
-		Id: uuid.NewString(),
-	}))
+	resp, err := svc.GetAccountApiKey(
+		context.Background(),
+		connect.NewRequest(&mgmtv1alpha1.GetAccountApiKeyRequest{
+			Id: uuid.NewString(),
+		}),
+	)
 	assert.NoError(t, err)
 	assert.NotNil(t, resp)
 	assert.Equal(t, resp.Msg.ApiKey.Id, neosyncdb.UUIDString(rawData.ID))
@@ -131,9 +140,12 @@ func Test_Service_GetAccountApiKey_NotFound(t *testing.T) {
 	mockQuerier.On("GetAccountApiKeyById", mock.Anything, mock.Anything, mock.Anything).
 		Return(db_queries.NeosyncApiAccountApiKey{}, pgx.ErrNoRows)
 
-	resp, err := svc.GetAccountApiKey(context.Background(), connect.NewRequest(&mgmtv1alpha1.GetAccountApiKeyRequest{
-		Id: uuid.NewString(),
-	}))
+	resp, err := svc.GetAccountApiKey(
+		context.Background(),
+		connect.NewRequest(&mgmtv1alpha1.GetAccountApiKeyRequest{
+			Id: uuid.NewString(),
+		}),
+	)
 	assert.Error(t, err)
 	assert.Nil(t, resp)
 }
@@ -160,9 +172,12 @@ func Test_Service_GetAccountApiKey_Found_ForbiddenAccount(t *testing.T) {
 		Return(rawData, nil)
 	mockIsUserInAccount(t, mockUserService, false)
 
-	resp, err := svc.GetAccountApiKey(context.Background(), connect.NewRequest(&mgmtv1alpha1.GetAccountApiKeyRequest{
-		Id: uuid.NewString(),
-	}))
+	resp, err := svc.GetAccountApiKey(
+		context.Background(),
+		connect.NewRequest(&mgmtv1alpha1.GetAccountApiKeyRequest{
+			Id: uuid.NewString(),
+		}),
+	)
 	assert.Error(t, err)
 	assert.Nil(t, resp)
 }
@@ -201,15 +216,23 @@ func Test_Service_CreateAccountApiKey(t *testing.T) {
 	mockQuerier.On("CreateAccountApiKey", mock.Anything, mock.Anything, mock.Anything).
 		Return(rawData, nil)
 
-	resp, err := svc.CreateAccountApiKey(context.Background(), connect.NewRequest(&mgmtv1alpha1.CreateAccountApiKeyRequest{
-		AccountId: uuid.NewString(),
-		Name:      "foo",
-		ExpiresAt: timestamppb.New(time.Now().Add(24 * time.Hour)),
-	}))
+	resp, err := svc.CreateAccountApiKey(
+		context.Background(),
+		connect.NewRequest(&mgmtv1alpha1.CreateAccountApiKeyRequest{
+			AccountId: uuid.NewString(),
+			Name:      "foo",
+			ExpiresAt: timestamppb.New(time.Now().Add(24 * time.Hour)),
+		}),
+	)
 	assert.NoError(t, err)
 	assert.NotNil(t, resp)
 	assert.NotNil(t, resp.Msg.ApiKey.KeyValue)
-	assert.NotEqual(t, resp.Msg.ApiKey.KeyValue, rawData.KeyValue, "KeyValue return should be the clear text, not the hash")
+	assert.NotEqual(
+		t,
+		resp.Msg.ApiKey.KeyValue,
+		rawData.KeyValue,
+		"KeyValue return should be the clear text, not the hash",
+	)
 }
 
 func Test_Service_RegenerateAccountApiKey(t *testing.T) {
@@ -237,14 +260,22 @@ func Test_Service_RegenerateAccountApiKey(t *testing.T) {
 	mockQuerier.On("UpdateAccountApiKeyValue", mock.Anything, mock.Anything, mock.Anything).
 		Return(rawData, nil)
 
-	resp, err := svc.RegenerateAccountApiKey(context.Background(), connect.NewRequest(&mgmtv1alpha1.RegenerateAccountApiKeyRequest{
-		Id:        uuid.NewString(),
-		ExpiresAt: timestamppb.New(time.Now().Add(24 * time.Hour)),
-	}))
+	resp, err := svc.RegenerateAccountApiKey(
+		context.Background(),
+		connect.NewRequest(&mgmtv1alpha1.RegenerateAccountApiKeyRequest{
+			Id:        uuid.NewString(),
+			ExpiresAt: timestamppb.New(time.Now().Add(24 * time.Hour)),
+		}),
+	)
 	assert.NoError(t, err)
 	assert.NotNil(t, resp)
 	assert.NotNil(t, resp.Msg.ApiKey.KeyValue)
-	assert.NotEqual(t, resp.Msg.ApiKey.KeyValue, rawData.KeyValue, "KeyValue return should be the clear text, not the hash")
+	assert.NotEqual(
+		t,
+		resp.Msg.ApiKey.KeyValue,
+		rawData.KeyValue,
+		"KeyValue return should be the clear text, not the hash",
+	)
 }
 
 func Test_Service_RegenerateAccountApiKey_ForbiddenAccount(t *testing.T) {
@@ -269,10 +300,13 @@ func Test_Service_RegenerateAccountApiKey_ForbiddenAccount(t *testing.T) {
 	mockQuerier.On("GetAccountApiKeyById", mock.Anything, mock.Anything, mock.Anything).
 		Return(rawData, nil)
 
-	resp, err := svc.RegenerateAccountApiKey(context.Background(), connect.NewRequest(&mgmtv1alpha1.RegenerateAccountApiKeyRequest{
-		Id:        uuid.NewString(),
-		ExpiresAt: timestamppb.New(time.Now().Add(24 * time.Hour)),
-	}))
+	resp, err := svc.RegenerateAccountApiKey(
+		context.Background(),
+		connect.NewRequest(&mgmtv1alpha1.RegenerateAccountApiKeyRequest{
+			Id:        uuid.NewString(),
+			ExpiresAt: timestamppb.New(time.Now().Add(24 * time.Hour)),
+		}),
+	)
 	assert.Error(t, err)
 	assert.Nil(t, resp)
 }
@@ -287,10 +321,13 @@ func Test_Service_RegenerateAccountApiKey_NotFound(t *testing.T) {
 	mockQuerier.On("GetAccountApiKeyById", mock.Anything, mock.Anything, mock.Anything).
 		Return(db_queries.NeosyncApiAccountApiKey{}, pgx.ErrNoRows)
 
-	resp, err := svc.RegenerateAccountApiKey(context.Background(), connect.NewRequest(&mgmtv1alpha1.RegenerateAccountApiKeyRequest{
-		Id:        uuid.NewString(),
-		ExpiresAt: timestamppb.New(time.Now().Add(24 * time.Hour)),
-	}))
+	resp, err := svc.RegenerateAccountApiKey(
+		context.Background(),
+		connect.NewRequest(&mgmtv1alpha1.RegenerateAccountApiKeyRequest{
+			Id:        uuid.NewString(),
+			ExpiresAt: timestamppb.New(time.Now().Add(24 * time.Hour)),
+		}),
+	)
 	assert.Error(t, err)
 	assert.Nil(t, resp)
 }
@@ -304,11 +341,14 @@ func Test_Service_CreateAccountApiKey_ForbiddenAccount(t *testing.T) {
 
 	mockIsUserInAccount(t, mockUserService, false)
 
-	resp, err := svc.CreateAccountApiKey(context.Background(), connect.NewRequest(&mgmtv1alpha1.CreateAccountApiKeyRequest{
-		AccountId: uuid.NewString(),
-		Name:      "foo",
-		ExpiresAt: timestamppb.New(time.Now().Add(24 * time.Hour)),
-	}))
+	resp, err := svc.CreateAccountApiKey(
+		context.Background(),
+		connect.NewRequest(&mgmtv1alpha1.CreateAccountApiKeyRequest{
+			AccountId: uuid.NewString(),
+			Name:      "foo",
+			ExpiresAt: timestamppb.New(time.Now().Add(24 * time.Hour)),
+		}),
+	)
 	assert.Error(t, err)
 	assert.Nil(t, resp)
 }
@@ -336,9 +376,12 @@ func Test_Service_DeleteAccountApiKey_Existing(t *testing.T) {
 	mockIsUserInAccount(t, mockUserService, true)
 	mockQuerier.On("RemoveAccountApiKey", mock.Anything, mock.Anything, mock.Anything).Return(nil)
 
-	resp, err := svc.DeleteAccountApiKey(context.Background(), connect.NewRequest(&mgmtv1alpha1.DeleteAccountApiKeyRequest{
-		Id: uuid.NewString(),
-	}))
+	resp, err := svc.DeleteAccountApiKey(
+		context.Background(),
+		connect.NewRequest(&mgmtv1alpha1.DeleteAccountApiKeyRequest{
+			Id: uuid.NewString(),
+		}),
+	)
 	assert.NoError(t, err)
 	assert.NotNil(t, resp)
 }
@@ -365,9 +408,12 @@ func Test_Service_DeleteAccountApiKey_Existing_ForbiddenAccount(t *testing.T) {
 		Return(rawData, nil)
 	mockIsUserInAccount(t, mockUserService, false)
 
-	resp, err := svc.DeleteAccountApiKey(context.Background(), connect.NewRequest(&mgmtv1alpha1.DeleteAccountApiKeyRequest{
-		Id: uuid.NewString(),
-	}))
+	resp, err := svc.DeleteAccountApiKey(
+		context.Background(),
+		connect.NewRequest(&mgmtv1alpha1.DeleteAccountApiKeyRequest{
+			Id: uuid.NewString(),
+		}),
+	)
 	assert.Error(t, err)
 	assert.Nil(t, resp)
 }
@@ -382,9 +428,12 @@ func Test_Service_DeleteAccountApiKey_NotFound(t *testing.T) {
 	mockQuerier.On("GetAccountApiKeyById", mock.Anything, mock.Anything, mock.Anything).
 		Return(db_queries.NeosyncApiAccountApiKey{}, pgx.ErrNoRows)
 
-	resp, err := svc.DeleteAccountApiKey(context.Background(), connect.NewRequest(&mgmtv1alpha1.DeleteAccountApiKeyRequest{
-		Id: uuid.NewString(),
-	}))
+	resp, err := svc.DeleteAccountApiKey(
+		context.Background(),
+		connect.NewRequest(&mgmtv1alpha1.DeleteAccountApiKeyRequest{
+			Id: uuid.NewString(),
+		}),
+	)
 	assert.NoError(t, err)
 	assert.NotNil(t, resp)
 }
@@ -410,11 +459,15 @@ func Test_Service_DeleteAccountApiKey_Existing_DeleteRace(t *testing.T) {
 	mockQuerier.On("GetAccountApiKeyById", mock.Anything, mock.Anything, mock.Anything).
 		Return(rawData, nil)
 	mockIsUserInAccount(t, mockUserService, true)
-	mockQuerier.On("RemoveAccountApiKey", mock.Anything, mock.Anything, mock.Anything).Return(pgx.ErrNoRows)
+	mockQuerier.On("RemoveAccountApiKey", mock.Anything, mock.Anything, mock.Anything).
+		Return(pgx.ErrNoRows)
 
-	resp, err := svc.DeleteAccountApiKey(context.Background(), connect.NewRequest(&mgmtv1alpha1.DeleteAccountApiKeyRequest{
-		Id: uuid.NewString(),
-	}))
+	resp, err := svc.DeleteAccountApiKey(
+		context.Background(),
+		connect.NewRequest(&mgmtv1alpha1.DeleteAccountApiKeyRequest{
+			Id: uuid.NewString(),
+		}),
+	)
 	assert.NoError(t, err)
 	assert.NotNil(t, resp)
 }
@@ -430,7 +483,9 @@ func newPgUuid(t *testing.T) pgtype.UUID {
 func mockIsUserInAccount(t testing.TB, userServiceMock *userdata.MockInterface, isInAccount bool) {
 	mockEntityEnforcer := userdata.NewMockEntityEnforcer(t)
 	if isInAccount {
-		mockEntityEnforcer.On("EnforceAccount", mock.Anything, mock.Anything, mock.Anything).Once().Return(nil)
+		mockEntityEnforcer.On("EnforceAccount", mock.Anything, mock.Anything, mock.Anything).
+			Once().
+			Return(nil)
 	} else {
 		mockEntityEnforcer.On("EnforceAccount", mock.Anything, mock.Anything, mock.Anything).Once().Return(errors.New("test: not in account"))
 	}

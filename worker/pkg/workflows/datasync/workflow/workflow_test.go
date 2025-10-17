@@ -49,7 +49,8 @@ func Test_Workflow_BenthosConfigsFails(t *testing.T) {
 		Return(&accountstatus_activity.CheckAccountStatusResponse{IsValid: true}, nil)
 
 	var genact *genbenthosconfigs_activity.Activity
-	env.OnActivity(genact.GenerateBenthosConfigs, mock.Anything, mock.Anything).Return(nil, errors.New("TestFailure"))
+	env.OnActivity(genact.GenerateBenthosConfigs, mock.Anything, mock.Anything).
+		Return(nil, errors.New("TestFailure"))
 
 	env.OnWorkflow(accounthook_workflow.ProcessAccountHook, mock.Anything, mock.Anything).
 		Return(&accounthook_workflow.ProcessAccountHookResponse{}, nil).Twice()
@@ -153,7 +154,12 @@ func Test_Workflow_Succeeds_SingleSync(t *testing.T) {
 	result := &WorkflowResponse{}
 	err = env.GetWorkflowResult(result)
 	assert.Nil(t, err, "Failed to retrieve workflow result: %v", err)
-	assert.Equal(t, result, &WorkflowResponse{}, "Error: Workflow result does not match the expected value")
+	assert.Equal(
+		t,
+		result,
+		&WorkflowResponse{},
+		"Error: Workflow result does not match the expected value",
+	)
 
 	env.AssertExpectations(t)
 }
@@ -190,8 +196,10 @@ func Test_Workflow_Follows_Synchronous_DependentFlow(t *testing.T) {
 				Columns:     []string{"id"},
 			},
 			{
-				Name:      "public.foo",
-				DependsOn: []*runconfigs.DependsOn{{Table: "public.users", Columns: []string{"id"}}},
+				Name: "public.foo",
+				DependsOn: []*runconfigs.DependsOn{
+					{Table: "public.users", Columns: []string{"id"}},
+				},
 				Config: &neosync_benthos.BenthosConfig{
 					StreamConfig: neosync_benthos.StreamConfig{
 						Input: &neosync_benthos.InputConfig{
@@ -303,8 +311,11 @@ func Test_Workflow_Follows_Multiple_Dependents(t *testing.T) {
 				},
 			},
 			{
-				Name:        "public.foo",
-				DependsOn:   []*runconfigs.DependsOn{{Table: "public.users", Columns: []string{"id"}}, {Table: "public.accounts", Columns: []string{"id"}}},
+				Name: "public.foo",
+				DependsOn: []*runconfigs.DependsOn{
+					{Table: "public.users", Columns: []string{"id"}},
+					{Table: "public.accounts", Columns: []string{"id"}},
+				},
 				Columns:     []string{"id"},
 				TableSchema: "public",
 				TableName:   "foo",
@@ -343,7 +354,12 @@ func Test_Workflow_Follows_Multiple_Dependents(t *testing.T) {
 				counter.Add(1)
 			case "foo":
 				// Dependent sync should run only after both roots are complete.
-				assert.Equal(t, int32(2), counter.Load(), "Expected both 'users' and 'accounts' to finish before 'foo' runs")
+				assert.Equal(
+					t,
+					int32(2),
+					counter.Load(),
+					"Expected both 'users' and 'accounts' to finish before 'foo' runs",
+				)
 				counter.Add(1)
 			default:
 				t.Errorf("unexpected table name: %s", req.TableName)
@@ -431,8 +447,11 @@ func Test_Workflow_Follows_Multiple_Dependent_Redis_Cleanup(t *testing.T) {
 				},
 			},
 			{
-				Name:        "public.foo",
-				DependsOn:   []*runconfigs.DependsOn{{Table: "public.users", Columns: []string{"id"}}, {Table: "public.accounts", Columns: []string{"id"}}},
+				Name: "public.foo",
+				DependsOn: []*runconfigs.DependsOn{
+					{Table: "public.users", Columns: []string{"id"}},
+					{Table: "public.accounts", Columns: []string{"id"}},
+				},
 				Columns:     []string{"id"},
 				TableSchema: "public",
 				TableName:   "foo",
@@ -471,7 +490,12 @@ func Test_Workflow_Follows_Multiple_Dependent_Redis_Cleanup(t *testing.T) {
 				counter.Add(1)
 			case "foo":
 				// Dependent sync should run only after both roots are complete.
-				assert.Equal(t, int32(2), counter.Load(), "Expected both 'users' and 'accounts' to finish before 'foo' runs")
+				assert.Equal(
+					t,
+					int32(2),
+					counter.Load(),
+					"Expected both 'users' and 'accounts' to finish before 'foo' runs",
+				)
 				counter.Add(1)
 			default:
 				t.Errorf("unexpected table name: %s", req.TableName)
@@ -492,7 +516,12 @@ func Test_Workflow_Follows_Multiple_Dependent_Redis_Cleanup(t *testing.T) {
 
 	assert.True(t, env.IsWorkflowCompleted())
 	assert.Equal(t, counter.Load(), int32(3))
-	assert.Equal(t, int32(2), redisCleanupCount.Load(), "Expected two redis cleanup calls (one for each RedisConfig)")
+	assert.Equal(
+		t,
+		int32(2),
+		redisCleanupCount.Load(),
+		"Expected two redis cleanup calls (one for each RedisConfig)",
+	)
 
 	err := env.GetWorkflowError()
 	assert.Nil(t, err)
@@ -549,8 +578,11 @@ func Test_Workflow_Halts_Activities_OnError(t *testing.T) {
 				},
 			},
 			{
-				Name:        "public.foo",
-				DependsOn:   []*runconfigs.DependsOn{{Table: "public.users", Columns: []string{"id"}}, {Table: "public.accounts", Columns: []string{"id"}}},
+				Name: "public.foo",
+				DependsOn: []*runconfigs.DependsOn{
+					{Table: "public.users", Columns: []string{"id"}},
+					{Table: "public.accounts", Columns: []string{"id"}},
+				},
 				Columns:     []string{"id"},
 				TableSchema: "public",
 				TableName:   "foo",
@@ -651,8 +683,11 @@ func Test_Workflow_Halts_Activities_On_InvalidAccountStatus(t *testing.T) {
 				},
 			},
 			{
-				Name:        "public.foo",
-				DependsOn:   []*runconfigs.DependsOn{{Table: "public.users", Columns: []string{"id"}}, {Table: "public.accounts", Columns: []string{"id"}}},
+				Name: "public.foo",
+				DependsOn: []*runconfigs.DependsOn{
+					{Table: "public.users", Columns: []string{"id"}},
+					{Table: "public.accounts", Columns: []string{"id"}},
+				},
 				Columns:     []string{"id"},
 				TableSchema: "public",
 				TableName:   "foo",
@@ -679,7 +714,8 @@ func Test_Workflow_Halts_Activities_On_InvalidAccountStatus(t *testing.T) {
 
 	var accStatsActivity *accountstatus_activity.Activity
 	env.OnActivity(accStatsActivity.CheckAccountStatus, mock.Anything, mock.Anything).
-		Return(&accountstatus_activity.CheckAccountStatusResponse{IsValid: true, ShouldPoll: true}, nil).Once()
+		Return(&accountstatus_activity.CheckAccountStatusResponse{IsValid: true, ShouldPoll: true}, nil).
+		Once()
 	env.OnActivity(accStatsActivity.CheckAccountStatus, mock.Anything, mock.Anything).
 		Return(&accountstatus_activity.CheckAccountStatusResponse{IsValid: false}, nil).Once()
 
@@ -762,8 +798,11 @@ func Test_Workflow_Cleans_Up_Redis_OnError(t *testing.T) {
 				},
 			},
 			{
-				Name:        "public.foo",
-				DependsOn:   []*runconfigs.DependsOn{{Table: "public.users", Columns: []string{"id"}}, {Table: "public.accounts", Columns: []string{"id"}}},
+				Name: "public.foo",
+				DependsOn: []*runconfigs.DependsOn{
+					{Table: "public.users", Columns: []string{"id"}},
+					{Table: "public.accounts", Columns: []string{"id"}},
+				},
 				Columns:     []string{"id"},
 				TableSchema: "public",
 				TableName:   "foo",
@@ -911,7 +950,12 @@ func Test_Workflow_Max_InFlight(t *testing.T) {
 	require.NoError(t, err)
 
 	// Assert that the maximum number of concurrently running syncs never exceeded maxConcurrency.
-	assert.LessOrEqual(t, maxObserved.Load(), int32(3), "Max in-flight child workflows exceeded limit")
+	assert.LessOrEqual(
+		t,
+		maxObserved.Load(),
+		int32(3),
+		"Max in-flight child workflows exceeded limit",
+	)
 
 	result := &WorkflowResponse{}
 	err = env.GetWorkflowResult(result)
@@ -946,8 +990,11 @@ func Test_isConfigReady(t *testing.T) {
 	completed = sync.Map{}
 	completed.Store("bar", []string{"id"})
 	isReady, err = isConfigReady(&benthosbuilder.BenthosConfigResponse{
-		Name:      "foo",
-		DependsOn: []*runconfigs.DependsOn{{Table: "bar", Columns: []string{"id"}}, {Table: "baz", Columns: []string{"id"}}},
+		Name: "foo",
+		DependsOn: []*runconfigs.DependsOn{
+			{Table: "bar", Columns: []string{"id"}},
+			{Table: "baz", Columns: []string{"id"}},
+		},
 	},
 		&completed)
 	assert.NoError(t, err)
@@ -961,8 +1008,11 @@ func Test_isConfigReady(t *testing.T) {
 	completed.Store("bar", []string{"id"})
 	completed.Store("baz", []string{"id"})
 	isReady, err = isConfigReady(&benthosbuilder.BenthosConfigResponse{
-		Name:      "foo",
-		DependsOn: []*runconfigs.DependsOn{{Table: "bar", Columns: []string{"id"}}, {Table: "baz", Columns: []string{"id"}}},
+		Name: "foo",
+		DependsOn: []*runconfigs.DependsOn{
+			{Table: "bar", Columns: []string{"id"}},
+			{Table: "baz", Columns: []string{"id"}},
+		},
 	}, &completed)
 	assert.NoError(t, err)
 	assert.True(

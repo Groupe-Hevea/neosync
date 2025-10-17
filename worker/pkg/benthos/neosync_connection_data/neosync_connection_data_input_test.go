@@ -64,20 +64,76 @@ func Test_ParseDynamoDBAttributeValue(t *testing.T) {
 		want        any
 		wantKeyType neosync_types.KeyType
 	}{
-		{"String", "StrKey", map[string]any{"S": "value"}, map[string]neosync_types.KeyType{}, "value", 0},
-		{"Number", "NumKey", map[string]any{"N": "123"}, map[string]neosync_types.KeyType{}, int64(123), 0},
-		{"Boolean", "BoolKey", map[string]any{"BOOL": true}, map[string]neosync_types.KeyType{}, true, 0},
-		{"Null", "NullKey", map[string]any{"NULL": true}, map[string]neosync_types.KeyType{}, nil, 0},
-		{"StringSet", "SSKey", map[string]any{"SS": []any{"a", "b"}}, map[string]neosync_types.KeyType{}, []string{"a", "b"}, neosync_types.StringSet},
-		{"NumberSet", "NSKey", map[string]any{"NS": []any{"1", "2"}}, map[string]neosync_types.KeyType{}, []any{int64(1), int64(2)}, neosync_types.NumberSet},
+		{
+			"String",
+			"StrKey",
+			map[string]any{"S": "value"},
+			map[string]neosync_types.KeyType{},
+			"value",
+			0,
+		},
+		{
+			"Number",
+			"NumKey",
+			map[string]any{"N": "123"},
+			map[string]neosync_types.KeyType{},
+			int64(123),
+			0,
+		},
+		{
+			"Boolean",
+			"BoolKey",
+			map[string]any{"BOOL": true},
+			map[string]neosync_types.KeyType{},
+			true,
+			0,
+		},
+		{
+			"Null",
+			"NullKey",
+			map[string]any{"NULL": true},
+			map[string]neosync_types.KeyType{},
+			nil,
+			0,
+		},
+		{
+			"StringSet",
+			"SSKey",
+			map[string]any{"SS": []any{"a", "b"}},
+			map[string]neosync_types.KeyType{},
+			[]string{"a", "b"},
+			neosync_types.StringSet,
+		},
+		{
+			"NumberSet",
+			"NSKey",
+			map[string]any{"NS": []any{"1", "2"}},
+			map[string]neosync_types.KeyType{},
+			[]any{int64(1), int64(2)},
+			neosync_types.NumberSet,
+		},
 	}
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			got := parseDynamoDBAttributeValue(tt.key, tt.value, tt.keyTypeMap)
-			require.Equalf(t, tt.want, got, fmt.Sprintf("ParseDynamoDBAttributeValue() = %v, want %v", got, tt.want))
+			require.Equalf(
+				t,
+				tt.want,
+				got,
+				fmt.Sprintf("ParseDynamoDBAttributeValue() = %v, want %v", got, tt.want),
+			)
 			if gotKeyType, ok := tt.keyTypeMap[tt.key]; ok {
-				require.Equalf(t, tt.wantKeyType, gotKeyType, fmt.Sprintf("ParseDynamoDBAttributeValue() key type = %v, want %v", gotKeyType, tt.wantKeyType))
+				require.Equalf(
+					t,
+					tt.wantKeyType,
+					gotKeyType,
+					fmt.Sprintf(
+						"ParseDynamoDBAttributeValue() key type = %v, want %v",
+						gotKeyType,
+						tt.wantKeyType,
+					),
+				)
 			}
 		})
 	}

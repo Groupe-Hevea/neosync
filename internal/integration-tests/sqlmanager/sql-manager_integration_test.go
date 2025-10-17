@@ -48,7 +48,12 @@ func Test_Manager_NewSqlConnection(t *testing.T) {
 				},
 			},
 		}
-		conn, err := manager.NewSqlConnection(ctx, connectionmanager.NewUniqueSession(), mgmtconn, testutil.GetTestLogger(t))
+		conn, err := manager.NewSqlConnection(
+			ctx,
+			connectionmanager.NewUniqueSession(),
+			mgmtconn,
+			testutil.GetTestLogger(t),
+		)
 		requireNoConnErr(t, conn, err)
 		defer conn.Db().Close()
 		requireValidDatabase(t, ctx, conn, "pgx", "SELECT 1")
@@ -72,7 +77,12 @@ func Test_Manager_NewSqlConnection(t *testing.T) {
 				},
 			},
 		}
-		conn, err := manager.NewSqlConnection(ctx, connectionmanager.NewUniqueSession(), mgmtconn, testutil.GetTestLogger(t))
+		conn, err := manager.NewSqlConnection(
+			ctx,
+			connectionmanager.NewUniqueSession(),
+			mgmtconn,
+			testutil.GetTestLogger(t),
+		)
 		requireNoConnErr(t, conn, err)
 		defer conn.Db().Close()
 		requireValidDatabase(t, ctx, conn, "mysql", "SELECT 1")
@@ -101,7 +111,12 @@ func Test_Manager_NewSqlConnection(t *testing.T) {
 			},
 		}
 
-		conn, err := manager.NewSqlConnection(ctx, connectionmanager.NewUniqueSession(), mgmtconn, testutil.GetTestLogger(t))
+		conn, err := manager.NewSqlConnection(
+			ctx,
+			connectionmanager.NewUniqueSession(),
+			mgmtconn,
+			testutil.GetTestLogger(t),
+		)
 		requireNoConnErr(t, conn, err)
 		defer conn.Db().Close()
 		requireValidDatabase(t, ctx, conn, "sqlserver", "SELECT 1")
@@ -113,7 +128,12 @@ func requireNoConnErr(t testing.TB, conn *sqlmanager.SqlConnection, err error) {
 	require.NotNil(t, conn)
 }
 
-func requireValidDatabase(t testing.TB, ctx context.Context, conn *sqlmanager.SqlConnection, driver, statement string) { //nolint
+func requireValidDatabase(
+	t testing.TB,
+	ctx context.Context,
+	conn *sqlmanager.SqlConnection,
+	driver, statement string,
+) { //nolint
 	require.Equal(t, conn.Driver(), driver)
 	err := conn.Db().Exec(ctx, statement)
 	require.NoError(t, err)

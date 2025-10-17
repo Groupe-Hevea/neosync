@@ -35,7 +35,11 @@ func Test_Sync(t *testing.T) {
 	}
 	ctx := context.Background()
 
-	neosyncApi, err := tcneosyncapi.NewNeosyncApiTestClient(ctx, t, tcneosyncapi.WithMigrationsDirectory(neosyncDbMigrationsPath))
+	neosyncApi, err := tcneosyncapi.NewNeosyncApiTestClient(
+		ctx,
+		t,
+		tcneosyncapi.WithMigrationsDirectory(neosyncDbMigrationsPath),
+	)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -47,7 +51,11 @@ func Test_Sync(t *testing.T) {
 	dbManagers := tcworkflow.NewTestDatabaseManagers(t)
 	connmanager := dbManagers.SqlConnManager
 	sqlmanagerclient := dbManagers.SqlManager
-	accountId := tcneosyncapi.CreatePersonalAccount(ctx, t, neosyncApi.OSSUnauthenticatedLicensedClients.Users())
+	accountId := tcneosyncapi.CreatePersonalAccount(
+		ctx,
+		t,
+		neosyncApi.OSSUnauthenticatedLicensedClients.Users(),
+	)
 	awsS3Config := testutil.GetTestAwsS3Config()
 	s3Conn := tcneosyncapi.CreateS3Connection(
 		ctx,
@@ -62,25 +70,46 @@ func Test_Sync(t *testing.T) {
 
 	t.Run("postgres", func(t *testing.T) {
 		t.Parallel()
-		postgres, err := tcpostgres.NewPostgresTestSyncContainer(ctx, []tcpostgres.Option{}, []tcpostgres.Option{})
+		postgres, err := tcpostgres.NewPostgresTestSyncContainer(
+			ctx,
+			[]tcpostgres.Option{},
+			[]tcpostgres.Option{},
+		)
 		if err != nil {
 			t.Fatal(err)
 		}
 
 		testdataFolder := "../../../../../internal/testutil/testdata/postgres"
-		sourceConn := tcneosyncapi.CreatePostgresConnection(ctx, t, connclient, accountId, "postgres-source", postgres.Source.URL)
+		sourceConn := tcneosyncapi.CreatePostgresConnection(
+			ctx,
+			t,
+			connclient,
+			accountId,
+			"postgres-source",
+			postgres.Source.URL,
+		)
 
 		t.Run("postgres_sync", func(t *testing.T) {
 			// can't be run in parallel yet
 			// right now CLI sync and init schema takes everything in source and copies it to target since there are no job mappings defined by the user
 			// so it can't be scoped to specific schema
 			// t.Parallel()
-			err = postgres.Source.RunCreateStmtsInSchema(ctx, testdataFolder, []string{"humanresources/create-tables.sql"}, "humanresources")
+			err = postgres.Source.RunCreateStmtsInSchema(
+				ctx,
+				testdataFolder,
+				[]string{"humanresources/create-tables.sql"},
+				"humanresources",
+			)
 			if err != nil {
 				t.Fatal(err)
 			}
 			alltypesSchema := "alltypes"
-			err = postgres.Source.RunCreateStmtsInSchema(ctx, testdataFolder, []string{"alltypes/create-tables.sql"}, alltypesSchema)
+			err = postgres.Source.RunCreateStmtsInSchema(
+				ctx,
+				testdataFolder,
+				[]string{"alltypes/create-tables.sql"},
+				alltypesSchema,
+			)
 			if err != nil {
 				t.Fatal(err)
 			}
@@ -141,11 +170,56 @@ func Test_Sync(t *testing.T) {
 			require.NoError(t, err)
 			defer target.Close()
 
-			testutil_testdata.VerifySQLTableColumnValues(t, ctx, source, target, alltypesSchema, "all_data_types", "postgres", []string{"id"})
-			testutil_testdata.VerifySQLTableColumnValues(t, ctx, source, target, alltypesSchema, "time_time", "postgres", []string{"id"})
-			testutil_testdata.VerifySQLTableColumnValues(t, ctx, source, target, alltypesSchema, "json_data", "postgres", []string{"id"})
-			testutil_testdata.VerifySQLTableColumnValues(t, ctx, source, target, alltypesSchema, "array_types", "postgres", []string{"id"})
-			testutil_testdata.VerifySQLTableColumnValues(t, ctx, source, target, alltypesSchema, "generated_table", "postgres", []string{"id"})
+			testutil_testdata.VerifySQLTableColumnValues(
+				t,
+				ctx,
+				source,
+				target,
+				alltypesSchema,
+				"all_data_types",
+				"postgres",
+				[]string{"id"},
+			)
+			testutil_testdata.VerifySQLTableColumnValues(
+				t,
+				ctx,
+				source,
+				target,
+				alltypesSchema,
+				"time_time",
+				"postgres",
+				[]string{"id"},
+			)
+			testutil_testdata.VerifySQLTableColumnValues(
+				t,
+				ctx,
+				source,
+				target,
+				alltypesSchema,
+				"json_data",
+				"postgres",
+				[]string{"id"},
+			)
+			testutil_testdata.VerifySQLTableColumnValues(
+				t,
+				ctx,
+				source,
+				target,
+				alltypesSchema,
+				"array_types",
+				"postgres",
+				[]string{"id"},
+			)
+			testutil_testdata.VerifySQLTableColumnValues(
+				t,
+				ctx,
+				source,
+				target,
+				alltypesSchema,
+				"generated_table",
+				"postgres",
+				[]string{"id"},
+			)
 		})
 
 		t.Run("S3_end_to_end", func(t *testing.T) {
@@ -156,12 +230,22 @@ func Test_Sync(t *testing.T) {
 			}
 
 			alltypesSchema := "alltypes_s3_pg"
-			err := postgres.Source.RunCreateStmtsInSchema(ctx, testdataFolder, []string{"alltypes/create-tables.sql"}, alltypesSchema)
+			err := postgres.Source.RunCreateStmtsInSchema(
+				ctx,
+				testdataFolder,
+				[]string{"alltypes/create-tables.sql"},
+				alltypesSchema,
+			)
 			if err != nil {
 				t.Fatal(err)
 			}
 
-			err = postgres.Target.RunCreateStmtsInSchema(ctx, testdataFolder, []string{"alltypes/create-tables.sql"}, alltypesSchema)
+			err = postgres.Target.RunCreateStmtsInSchema(
+				ctx,
+				testdataFolder,
+				[]string{"alltypes/create-tables.sql"},
+				alltypesSchema,
+			)
 			if err != nil {
 				t.Fatal(err)
 			}
@@ -199,7 +283,11 @@ func Test_Sync(t *testing.T) {
 				testworkflow := tcworkflow.NewTestDataSyncWorkflowEnv(t, neosyncApi, dbManagers)
 				testworkflow.RequireActivitiesCompletedSuccessfully(t)
 				testworkflow.ExecuteTestDataSyncWorkflow(job.Msg.GetJob().GetId())
-				require.Truef(t, testworkflow.TestEnv.IsWorkflowCompleted(), "Workflow did not complete. Test: pg_to_s3")
+				require.Truef(
+					t,
+					testworkflow.TestEnv.IsWorkflowCompleted(),
+					"Workflow did not complete. Test: pg_to_s3",
+				)
 				err = testworkflow.TestEnv.GetWorkflowError()
 				require.NoError(t, err, "Received Temporal Workflow Error", "testName", "pg_to_s3")
 			})
@@ -235,7 +323,11 @@ func Test_Sync(t *testing.T) {
 				}
 				err := sync.configureAndRunSync()
 				require.NoError(t, err)
-				rowCount, err := postgres.Target.GetTableRowCount(ctx, alltypesSchema, "all_data_types")
+				rowCount, err := postgres.Target.GetTableRowCount(
+					ctx,
+					alltypesSchema,
+					"all_data_types",
+				)
 				require.NoError(t, err)
 				require.Greater(t, rowCount, 1)
 
@@ -255,10 +347,46 @@ func Test_Sync(t *testing.T) {
 				require.NoError(t, err)
 				defer target.Close()
 
-				testutil_testdata.VerifySQLTableColumnValues(t, ctx, source, target, alltypesSchema, "all_data_types", "postgres", []string{"id"})
-				testutil_testdata.VerifySQLTableColumnValues(t, ctx, source, target, alltypesSchema, "time_time", "postgres", []string{"id"})
-				testutil_testdata.VerifySQLTableColumnValues(t, ctx, source, target, alltypesSchema, "json_data", "postgres", []string{"id"})
-				testutil_testdata.VerifySQLTableColumnValues(t, ctx, source, target, alltypesSchema, "array_types", "postgres", []string{"id"})
+				testutil_testdata.VerifySQLTableColumnValues(
+					t,
+					ctx,
+					source,
+					target,
+					alltypesSchema,
+					"all_data_types",
+					"postgres",
+					[]string{"id"},
+				)
+				testutil_testdata.VerifySQLTableColumnValues(
+					t,
+					ctx,
+					source,
+					target,
+					alltypesSchema,
+					"time_time",
+					"postgres",
+					[]string{"id"},
+				)
+				testutil_testdata.VerifySQLTableColumnValues(
+					t,
+					ctx,
+					source,
+					target,
+					alltypesSchema,
+					"json_data",
+					"postgres",
+					[]string{"id"},
+				)
+				testutil_testdata.VerifySQLTableColumnValues(
+					t,
+					ctx,
+					source,
+					target,
+					alltypesSchema,
+					"array_types",
+					"postgres",
+					[]string{"id"},
+				)
 			})
 		})
 
@@ -278,7 +406,14 @@ func Test_Sync(t *testing.T) {
 		}
 
 		testdataFolder := "../../../../../internal/testutil/testdata/mysql"
-		sourceConn := tcneosyncapi.CreateMysqlConnection(ctx, t, connclient, accountId, "mysql-source", mysql.Source.URL)
+		sourceConn := tcneosyncapi.CreateMysqlConnection(
+			ctx,
+			t,
+			connclient,
+			accountId,
+			"mysql-source",
+			mysql.Source.URL,
+		)
 
 		t.Run("mysql_sync", func(t *testing.T) {
 			// can't be run in parallel yet
@@ -286,11 +421,21 @@ func Test_Sync(t *testing.T) {
 			// so it can't be scoped to specific schema
 			// t.Parallel()
 			alltypesSchema := "alltypes"
-			err = mysql.Source.RunCreateStmtsInDatabase(ctx, testdataFolder, []string{"humanresources/create-tables.sql"}, "humanresources")
+			err = mysql.Source.RunCreateStmtsInDatabase(
+				ctx,
+				testdataFolder,
+				[]string{"humanresources/create-tables.sql"},
+				"humanresources",
+			)
 			if err != nil {
 				t.Fatal(err)
 			}
-			err = mysql.Source.RunCreateStmtsInDatabase(ctx, testdataFolder, []string{"alltypes/create-tables.sql"}, alltypesSchema)
+			err = mysql.Source.RunCreateStmtsInDatabase(
+				ctx,
+				testdataFolder,
+				[]string{"alltypes/create-tables.sql"},
+				alltypesSchema,
+			)
 			if err != nil {
 				t.Fatal(err)
 			}
@@ -337,9 +482,36 @@ func Test_Sync(t *testing.T) {
 			require.NoError(t, err)
 			require.Greater(t, rowCount, 1)
 
-			testutil_testdata.VerifySQLTableColumnValues(t, ctx, mysql.Source.DB, mysql.Target.DB, alltypesSchema, "json_data", "mysql", []string{"id"})
-			testutil_testdata.VerifySQLTableColumnValues(t, ctx, mysql.Source.DB, mysql.Target.DB, alltypesSchema, "all_data_types", "mysql", []string{"id"})
-			testutil_testdata.VerifySQLTableColumnValues(t, ctx, mysql.Source.DB, mysql.Target.DB, alltypesSchema, "generated_table", "mysql", []string{"id"})
+			testutil_testdata.VerifySQLTableColumnValues(
+				t,
+				ctx,
+				mysql.Source.DB,
+				mysql.Target.DB,
+				alltypesSchema,
+				"json_data",
+				"mysql",
+				[]string{"id"},
+			)
+			testutil_testdata.VerifySQLTableColumnValues(
+				t,
+				ctx,
+				mysql.Source.DB,
+				mysql.Target.DB,
+				alltypesSchema,
+				"all_data_types",
+				"mysql",
+				[]string{"id"},
+			)
+			testutil_testdata.VerifySQLTableColumnValues(
+				t,
+				ctx,
+				mysql.Source.DB,
+				mysql.Target.DB,
+				alltypesSchema,
+				"generated_table",
+				"mysql",
+				[]string{"id"},
+			)
 		})
 
 		t.Run("S3_end_to_end", func(t *testing.T) {
@@ -350,12 +522,22 @@ func Test_Sync(t *testing.T) {
 			}
 
 			alltypesSchema := "alltypes_s3_mysql"
-			err := mysql.Source.RunCreateStmtsInDatabase(ctx, testdataFolder, []string{"alltypes/create-tables.sql"}, alltypesSchema)
+			err := mysql.Source.RunCreateStmtsInDatabase(
+				ctx,
+				testdataFolder,
+				[]string{"alltypes/create-tables.sql"},
+				alltypesSchema,
+			)
 			if err != nil {
 				t.Fatal(err)
 			}
 
-			err = mysql.Target.RunCreateStmtsInDatabase(ctx, testdataFolder, []string{"alltypes/create-tables.sql"}, alltypesSchema)
+			err = mysql.Target.RunCreateStmtsInDatabase(
+				ctx,
+				testdataFolder,
+				[]string{"alltypes/create-tables.sql"},
+				alltypesSchema,
+			)
 			if err != nil {
 				t.Fatal(err)
 			}
@@ -393,9 +575,19 @@ func Test_Sync(t *testing.T) {
 				testworkflow := tcworkflow.NewTestDataSyncWorkflowEnv(t, neosyncApi, dbManagers)
 				testworkflow.RequireActivitiesCompletedSuccessfully(t)
 				testworkflow.ExecuteTestDataSyncWorkflow(job.Msg.GetJob().GetId())
-				require.Truef(t, testworkflow.TestEnv.IsWorkflowCompleted(), "Workflow did not complete. Test: mysql_to_s3")
+				require.Truef(
+					t,
+					testworkflow.TestEnv.IsWorkflowCompleted(),
+					"Workflow did not complete. Test: mysql_to_s3",
+				)
 				err = testworkflow.TestEnv.GetWorkflowError()
-				require.NoError(t, err, "Received Temporal Workflow Error", "testName", "mysql_to_s3")
+				require.NoError(
+					t,
+					err,
+					"Received Temporal Workflow Error",
+					"testName",
+					"mysql_to_s3",
+				)
 			})
 
 			t.Run("S3_to_Mysql", func(t *testing.T) {
@@ -442,9 +634,36 @@ func Test_Sync(t *testing.T) {
 			require.NoError(t, err)
 			require.Greater(t, rowCount, 1)
 
-			testutil_testdata.VerifySQLTableColumnValues(t, ctx, mysql.Source.DB, mysql.Target.DB, alltypesSchema, "json_data", "mysql", []string{"id"})
-			testutil_testdata.VerifySQLTableColumnValues(t, ctx, mysql.Source.DB, mysql.Target.DB, alltypesSchema, "all_data_types", "mysql", []string{"id"})
-			testutil_testdata.VerifySQLTableColumnValues(t, ctx, mysql.Source.DB, mysql.Target.DB, alltypesSchema, "generated_table", "mysql", []string{"id"})
+			testutil_testdata.VerifySQLTableColumnValues(
+				t,
+				ctx,
+				mysql.Source.DB,
+				mysql.Target.DB,
+				alltypesSchema,
+				"json_data",
+				"mysql",
+				[]string{"id"},
+			)
+			testutil_testdata.VerifySQLTableColumnValues(
+				t,
+				ctx,
+				mysql.Source.DB,
+				mysql.Target.DB,
+				alltypesSchema,
+				"all_data_types",
+				"mysql",
+				[]string{"id"},
+			)
+			testutil_testdata.VerifySQLTableColumnValues(
+				t,
+				ctx,
+				mysql.Source.DB,
+				mysql.Target.DB,
+				alltypesSchema,
+				"generated_table",
+				"mysql",
+				[]string{"id"},
+			)
 		})
 
 		t.Cleanup(func() {
@@ -457,12 +676,25 @@ func Test_Sync(t *testing.T) {
 
 	t.Run("dynamodb", func(t *testing.T) {
 		t.Parallel()
-		dynamo, err := tcdynamodb.NewDynamoDBTestSyncContainer(ctx, t, []tcdynamodb.Option{}, []tcdynamodb.Option{})
+		dynamo, err := tcdynamodb.NewDynamoDBTestSyncContainer(
+			ctx,
+			t,
+			[]tcdynamodb.Option{},
+			[]tcdynamodb.Option{},
+		)
 		if err != nil {
 			t.Fatal(err)
 		}
 
-		sourceConn := tcneosyncapi.CreateDynamoDBConnection(ctx, t, neosyncApi.OSSUnauthenticatedLicensedClients.Connections(), accountId, "dynamo-source", dynamo.Source.URL, dynamo.Source.Credentials)
+		sourceConn := tcneosyncapi.CreateDynamoDBConnection(
+			ctx,
+			t,
+			neosyncApi.OSSUnauthenticatedLicensedClients.Connections(),
+			accountId,
+			"dynamo-source",
+			dynamo.Source.URL,
+			dynamo.Source.Credentials,
+		)
 
 		t.Run("dynamodb_sync", func(t *testing.T) {
 			t.Parallel()
@@ -490,13 +722,23 @@ func Test_Sync(t *testing.T) {
 								Value: map[string]dyntypes.AttributeValue{
 									"Level2": &dyntypes.AttributeValueMemberM{
 										Value: map[string]dyntypes.AttributeValue{
-											"Attribute1": &dyntypes.AttributeValueMemberS{Value: "Value1"},
-											"NumberSet":  &dyntypes.AttributeValueMemberNS{Value: []string{"1", "2", "3"}},
-											"BinaryData": &dyntypes.AttributeValueMemberB{Value: []byte("U29tZUJpbmFyeURhdGE=")},
+											"Attribute1": &dyntypes.AttributeValueMemberS{
+												Value: "Value1",
+											},
+											"NumberSet": &dyntypes.AttributeValueMemberNS{
+												Value: []string{"1", "2", "3"},
+											},
+											"BinaryData": &dyntypes.AttributeValueMemberB{
+												Value: []byte("U29tZUJpbmFyeURhdGE="),
+											},
 											"Level3": &dyntypes.AttributeValueMemberM{
 												Value: map[string]dyntypes.AttributeValue{
-													"Attribute2": &dyntypes.AttributeValueMemberS{Value: "Value2"},
-													"StringSet":  &dyntypes.AttributeValueMemberSS{Value: []string{"Item1", "Item2", "Item3"}},
+													"Attribute2": &dyntypes.AttributeValueMemberS{
+														Value: "Value2",
+													},
+													"StringSet": &dyntypes.AttributeValueMemberSS{
+														Value: []string{"Item1", "Item2", "Item3"},
+													},
 													"BinarySet": &dyntypes.AttributeValueMemberBS{
 														Value: [][]byte{
 															[]byte("U29tZUJpbmFyeQ=="),
@@ -505,13 +747,23 @@ func Test_Sync(t *testing.T) {
 													},
 													"Level4": &dyntypes.AttributeValueMemberM{
 														Value: map[string]dyntypes.AttributeValue{
-															"Attribute3":     &dyntypes.AttributeValueMemberS{Value: "Value3"},
-															"Boolean":        &dyntypes.AttributeValueMemberBOOL{Value: true},
-															"MoreBinaryData": &dyntypes.AttributeValueMemberB{Value: []byte("TW9yZUJpbmFyeURhdGE=")},
+															"Attribute3": &dyntypes.AttributeValueMemberS{
+																Value: "Value3",
+															},
+															"Boolean": &dyntypes.AttributeValueMemberBOOL{
+																Value: true,
+															},
+															"MoreBinaryData": &dyntypes.AttributeValueMemberB{
+																Value: []byte(
+																	"TW9yZUJpbmFyeURhdGE=",
+																),
+															},
 															"MoreBinarySet": &dyntypes.AttributeValueMemberBS{
 																Value: [][]byte{
 																	[]byte("TW9yZUJpbmFyeQ=="),
-																	[]byte("QW5vdGhlck1vcmVCaW5hcnk="),
+																	[]byte(
+																		"QW5vdGhlck1vcmVCaW5hcnk=",
+																	),
 																},
 															},
 														},

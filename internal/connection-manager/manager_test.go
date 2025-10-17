@@ -69,7 +69,11 @@ func Test_ConnectionTunnelManager_ReleaseSession(t *testing.T) {
 	provider := NewMockConnectionProvider[any](t)
 	mgr := NewConnectionManager(provider)
 
-	require.False(t, mgr.ReleaseSession(NewSession("111"), testutil.GetTestLogger(t)), "currently no session")
+	require.False(
+		t,
+		mgr.ReleaseSession(NewSession("111"), testutil.GetTestLogger(t)),
+		"currently no session",
+	)
 
 	conn := &mgmtv1alpha1.Connection{
 		Id: "1",
@@ -83,14 +87,22 @@ func Test_ConnectionTunnelManager_ReleaseSession(t *testing.T) {
 	_, err := mgr.GetConnection(NewSession("111"), conn, testutil.GetTestLogger(t))
 	require.NoError(t, err)
 
-	require.True(t, mgr.ReleaseSession(NewSession("111"), testutil.GetTestLogger(t)), "released an existing session")
+	require.True(
+		t,
+		mgr.ReleaseSession(NewSession("111"), testutil.GetTestLogger(t)),
+		"released an existing session",
+	)
 }
 
 func Test_ConnectionTunnelManager_cleanUnusedConnections(t *testing.T) {
 	provider := NewMockConnectionProvider[any](t)
 	mgr := NewConnectionManager(provider)
 
-	require.False(t, mgr.ReleaseSession(NewSession("111"), testutil.GetTestLogger(t)), "currently no session")
+	require.False(
+		t,
+		mgr.ReleaseSession(NewSession("111"), testutil.GetTestLogger(t)),
+		"currently no session",
+	)
 
 	conn := &mgmtv1alpha1.Connection{
 		Id: "1",
@@ -110,7 +122,11 @@ func Test_ConnectionTunnelManager_cleanUnusedConnections(t *testing.T) {
 	require.NotEmpty(t, mgr.groupConnMap, "has an active connection")
 	mgr.cleanUnusedConnections(testutil.GetTestLogger(t))
 	require.NotEmpty(t, mgr.groupConnMap, "not empty due to active session")
-	require.True(t, mgr.ReleaseSession(NewSession("111"), testutil.GetTestLogger(t)), "released an existing session")
+	require.True(
+		t,
+		mgr.ReleaseSession(NewSession("111"), testutil.GetTestLogger(t)),
+		"released an existing session",
+	)
 	mgr.cleanUnusedConnections(testutil.GetTestLogger(t))
 	require.Empty(t, mgr.groupConnMap, "now empty due to no active sessions")
 }
@@ -232,7 +248,11 @@ func Test_ConnectionManager_Concurrent_Sessions_Different_Connections(t *testing
 	for i := 0; i < 10; i++ {
 		conn := connections[i]
 		errgrp.Go(func() error {
-			_, err := mgr.GetConnection(NewSession(fmt.Sprintf("session-%s", conn.Id)), conn, testutil.GetTestLogger(t))
+			_, err := mgr.GetConnection(
+				NewSession(fmt.Sprintf("session-%s", conn.Id)),
+				conn,
+				testutil.GetTestLogger(t),
+			)
 			return err
 		})
 	}
@@ -253,7 +273,8 @@ func Test_ConnectionManager_Error_During_Connection(t *testing.T) {
 		},
 	}
 
-	provider.On("GetConnectionClient", mock.Anything, mock.Anything).Return(nil, fmt.Errorf("connection error"))
+	provider.On("GetConnectionClient", mock.Anything, mock.Anything).
+		Return(nil, fmt.Errorf("connection error"))
 
 	_, err := mgr.GetConnection(NewSession("session1"), conn, testutil.GetTestLogger(t))
 	require.Error(t, err)

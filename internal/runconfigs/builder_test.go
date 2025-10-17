@@ -220,7 +220,11 @@ func TestBuildConstraintHandlingConfigs(t *testing.T) {
 	assert.Contains(t, configs[0].insertColumns, "id")
 	assert.Contains(t, configs[0].insertColumns, "user_id")
 	assert.Contains(t, configs[0].insertColumns, "quantity")
-	assert.NotContains(t, configs[0].insertColumns, "product_id") // Nullable FK should not be in insert
+	assert.NotContains(
+		t,
+		configs[0].insertColumns,
+		"product_id",
+	) // Nullable FK should not be in insert
 	assert.Len(t, configs[0].dependsOn, 1)
 	assert.Equal(t, "public.users", configs[0].dependsOn[0].Table)
 

@@ -422,14 +422,27 @@ func TestValidateCircularDependencies(t *testing.T) {
 		}
 
 		jmv := NewJobMappingsValidator(mappings)
-		err := jmv.ValidateCircularDependencies(foreignKeys, primaryKeys, []*mgmtv1alpha1.VirtualForeignConstraint{}, map[string]map[string]*sqlmanager_shared.DatabaseSchemaRow{})
+		err := jmv.ValidateCircularDependencies(
+			foreignKeys,
+			primaryKeys,
+			[]*mgmtv1alpha1.VirtualForeignConstraint{},
+			map[string]map[string]*sqlmanager_shared.DatabaseSchemaRow{},
+		)
 		require.NoError(t, err)
 
 		errs := jmv.GetDatabaseErrors()
 		require.Len(t, errs, 1)
 		require.Len(t, errs, 1)
-		assert.Equal(t, mgmtv1alpha1.DatabaseError_DATABASE_ERROR_CODE_UNSUPPORTED_CIRCULAR_DEPENDENCY_AT_LEAST_ONE_NULLABLE, errs[0].Code)
-		assert.Contains(t, errs[0].Message, "unsupported circular dependency detected. at least one foreign key in circular dependency must be nullable")
+		assert.Equal(
+			t,
+			mgmtv1alpha1.DatabaseError_DATABASE_ERROR_CODE_UNSUPPORTED_CIRCULAR_DEPENDENCY_AT_LEAST_ONE_NULLABLE,
+			errs[0].Code,
+		)
+		assert.Contains(
+			t,
+			errs[0].Message,
+			"unsupported circular dependency detected. at least one foreign key in circular dependency must be nullable",
+		)
 	})
 
 	t.Run("should not return error when cycle has nullable foreign key", func(t *testing.T) {
@@ -467,7 +480,12 @@ func TestValidateCircularDependencies(t *testing.T) {
 		}
 
 		jmv := NewJobMappingsValidator(mappings)
-		err := jmv.ValidateCircularDependencies(foreignKeys, primaryKeys, []*mgmtv1alpha1.VirtualForeignConstraint{}, map[string]map[string]*sqlmanager_shared.DatabaseSchemaRow{})
+		err := jmv.ValidateCircularDependencies(
+			foreignKeys,
+			primaryKeys,
+			[]*mgmtv1alpha1.VirtualForeignConstraint{},
+			map[string]map[string]*sqlmanager_shared.DatabaseSchemaRow{},
+		)
 		require.NoError(t, err)
 
 		errs := jmv.GetDatabaseErrors()
@@ -512,87 +530,108 @@ func TestValidateCircularDependencies(t *testing.T) {
 		}
 
 		jmv := NewJobMappingsValidator(mappings)
-		err := jmv.ValidateCircularDependencies(map[string][]*sqlmanager_shared.ForeignConstraint{}, primaryKeys, virtualForeignKeys, tableColumnMap)
+		err := jmv.ValidateCircularDependencies(
+			map[string][]*sqlmanager_shared.ForeignConstraint{},
+			primaryKeys,
+			virtualForeignKeys,
+			tableColumnMap,
+		)
 		require.NoError(t, err)
 	})
 
-	t.Run("should detect unsupported circular dependency with virtual foreign keys", func(t *testing.T) {
-		mappings := []*mgmtv1alpha1.JobMapping{
-			{Schema: "schema1", Table: "table1", Column: "col1"},
-			{Schema: "schema1", Table: "table2", Column: "col1"},
-			{Schema: "schema1", Table: "table3", Column: "col1"},
-		}
+	t.Run(
+		"should detect unsupported circular dependency with virtual foreign keys",
+		func(t *testing.T) {
+			mappings := []*mgmtv1alpha1.JobMapping{
+				{Schema: "schema1", Table: "table1", Column: "col1"},
+				{Schema: "schema1", Table: "table2", Column: "col1"},
+				{Schema: "schema1", Table: "table3", Column: "col1"},
+			}
 
-		primaryKeys := map[string][]string{
-			"schema1.table1": {"col1"},
-			"schema1.table2": {"col1"},
-			"schema1.table3": {"col1"},
-		}
+			primaryKeys := map[string][]string{
+				"schema1.table1": {"col1"},
+				"schema1.table2": {"col1"},
+				"schema1.table3": {"col1"},
+			}
 
-		foreignKeys := map[string][]*sqlmanager_shared.ForeignConstraint{
-			"schema1.table2": {
+			foreignKeys := map[string][]*sqlmanager_shared.ForeignConstraint{
+				"schema1.table2": {
+					{
+						Columns:     []string{"col1"},
+						NotNullable: []bool{true},
+						ForeignKey: &sqlmanager_shared.ForeignKey{
+							Table:   "schema1.table3",
+							Columns: []string{"col1"},
+						},
+					},
+				},
+			}
+
+			virtualForeignKeys := []*mgmtv1alpha1.VirtualForeignConstraint{
 				{
-					Columns:     []string{"col1"},
-					NotNullable: []bool{true},
-					ForeignKey: &sqlmanager_shared.ForeignKey{
-						Table:   "schema1.table3",
+					Schema:  "schema1",
+					Table:   "table3",
+					Columns: []string{"col1"},
+					ForeignKey: &mgmtv1alpha1.VirtualForeignKey{
+						Schema:  "schema1",
+						Table:   "table1",
 						Columns: []string{"col1"},
 					},
 				},
-			},
-		}
-
-		virtualForeignKeys := []*mgmtv1alpha1.VirtualForeignConstraint{
-			{
-				Schema:  "schema1",
-				Table:   "table3",
-				Columns: []string{"col1"},
-				ForeignKey: &mgmtv1alpha1.VirtualForeignKey{
+				{
 					Schema:  "schema1",
 					Table:   "table1",
 					Columns: []string{"col1"},
+					ForeignKey: &mgmtv1alpha1.VirtualForeignKey{
+						Schema:  "schema1",
+						Table:   "table2",
+						Columns: []string{"col1"},
+					},
 				},
-			},
-			{
-				Schema:  "schema1",
-				Table:   "table1",
-				Columns: []string{"col1"},
-				ForeignKey: &mgmtv1alpha1.VirtualForeignKey{
-					Schema:  "schema1",
-					Table:   "table2",
-					Columns: []string{"col1"},
-				},
-			},
-		}
+			}
 
-		tableColumnMap := map[string]map[string]*sqlmanager_shared.DatabaseSchemaRow{
-			"schema1.table1": {
-				"col1": &sqlmanager_shared.DatabaseSchemaRow{
-					IsNullable: false,
+			tableColumnMap := map[string]map[string]*sqlmanager_shared.DatabaseSchemaRow{
+				"schema1.table1": {
+					"col1": &sqlmanager_shared.DatabaseSchemaRow{
+						IsNullable: false,
+					},
 				},
-			},
-			"schema1.table2": {
-				"col1": &sqlmanager_shared.DatabaseSchemaRow{
-					IsNullable: false,
+				"schema1.table2": {
+					"col1": &sqlmanager_shared.DatabaseSchemaRow{
+						IsNullable: false,
+					},
 				},
-			},
-			"schema1.table3": {
-				"col1": &sqlmanager_shared.DatabaseSchemaRow{
-					IsNullable: false,
+				"schema1.table3": {
+					"col1": &sqlmanager_shared.DatabaseSchemaRow{
+						IsNullable: false,
+					},
 				},
-			},
-		}
+			}
 
-		jmv := NewJobMappingsValidator(mappings)
-		err := jmv.ValidateCircularDependencies(foreignKeys, primaryKeys, virtualForeignKeys, tableColumnMap)
-		require.NoError(t, err)
+			jmv := NewJobMappingsValidator(mappings)
+			err := jmv.ValidateCircularDependencies(
+				foreignKeys,
+				primaryKeys,
+				virtualForeignKeys,
+				tableColumnMap,
+			)
+			require.NoError(t, err)
 
-		errs := jmv.GetDatabaseErrors()
-		require.NotEmpty(t, errs)
-		require.Len(t, errs, 1)
-		assert.Equal(t, mgmtv1alpha1.DatabaseError_DATABASE_ERROR_CODE_UNSUPPORTED_CIRCULAR_DEPENDENCY_AT_LEAST_ONE_NULLABLE, errs[0].Code)
-		assert.Contains(t, errs[0].Message, "unsupported circular dependency detected. at least one foreign key in circular dependency must be nullable")
-	})
+			errs := jmv.GetDatabaseErrors()
+			require.NotEmpty(t, errs)
+			require.Len(t, errs, 1)
+			assert.Equal(
+				t,
+				mgmtv1alpha1.DatabaseError_DATABASE_ERROR_CODE_UNSUPPORTED_CIRCULAR_DEPENDENCY_AT_LEAST_ONE_NULLABLE,
+				errs[0].Code,
+			)
+			assert.Contains(
+				t,
+				errs[0].Message,
+				"unsupported circular dependency detected. at least one foreign key in circular dependency must be nullable",
+			)
+		},
+	)
 
 	t.Run("should skip tables not in mappings", func(t *testing.T) {
 		mappings := []*mgmtv1alpha1.JobMapping{
@@ -617,63 +656,76 @@ func TestValidateCircularDependencies(t *testing.T) {
 		}
 
 		jmv := NewJobMappingsValidator(mappings)
-		err := jmv.ValidateCircularDependencies(foreignKeys, primaryKeys, []*mgmtv1alpha1.VirtualForeignConstraint{}, map[string]map[string]*sqlmanager_shared.DatabaseSchemaRow{})
+		err := jmv.ValidateCircularDependencies(
+			foreignKeys,
+			primaryKeys,
+			[]*mgmtv1alpha1.VirtualForeignConstraint{},
+			map[string]map[string]*sqlmanager_shared.DatabaseSchemaRow{},
+		)
 		require.NoError(t, err)
 
 		errs := jmv.GetDatabaseErrors()
 		assert.Empty(t, errs)
 	})
 
-	t.Run("should return error when virtual foreign key column does not exist in source", func(t *testing.T) {
-		mappings := []*mgmtv1alpha1.JobMapping{
-			{Schema: "schema1", Table: "table1", Column: "col1"},
-			{Schema: "schema1", Table: "table2", Column: "col1"},
-		}
+	t.Run(
+		"should return error when virtual foreign key column does not exist in source",
+		func(t *testing.T) {
+			mappings := []*mgmtv1alpha1.JobMapping{
+				{Schema: "schema1", Table: "table1", Column: "col1"},
+				{Schema: "schema1", Table: "table2", Column: "col1"},
+			}
 
-		primaryKeys := map[string][]string{
-			"schema1.table1": {"col1"},
-			"schema1.table2": {"col1"},
-		}
+			primaryKeys := map[string][]string{
+				"schema1.table1": {"col1"},
+				"schema1.table2": {"col1"},
+			}
 
-		virtualForeignKeys := []*mgmtv1alpha1.VirtualForeignConstraint{
-			{
-				Schema:  "schema1",
-				Table:   "table1",
-				Columns: []string{"col2"}, // Column that doesn't exist
-				ForeignKey: &mgmtv1alpha1.VirtualForeignKey{
+			virtualForeignKeys := []*mgmtv1alpha1.VirtualForeignConstraint{
+				{
 					Schema:  "schema1",
-					Table:   "table2",
-					Columns: []string{"col1"},
+					Table:   "table1",
+					Columns: []string{"col2"}, // Column that doesn't exist
+					ForeignKey: &mgmtv1alpha1.VirtualForeignKey{
+						Schema:  "schema1",
+						Table:   "table2",
+						Columns: []string{"col1"},
+					},
 				},
-			},
-		}
+			}
 
-		tableColumnMap := map[string]map[string]*sqlmanager_shared.DatabaseSchemaRow{
-			"schema1.table1": {
-				"col1": &sqlmanager_shared.DatabaseSchemaRow{
-					IsNullable: false,
+			tableColumnMap := map[string]map[string]*sqlmanager_shared.DatabaseSchemaRow{
+				"schema1.table1": {
+					"col1": &sqlmanager_shared.DatabaseSchemaRow{
+						IsNullable: false,
+					},
 				},
-			},
-			"schema1.table2": {
-				"col1": &sqlmanager_shared.DatabaseSchemaRow{
-					IsNullable: false,
+				"schema1.table2": {
+					"col1": &sqlmanager_shared.DatabaseSchemaRow{
+						IsNullable: false,
+					},
 				},
-			},
-		}
+			}
 
-		jmv := NewJobMappingsValidator(mappings)
-		err := jmv.ValidateCircularDependencies(map[string][]*sqlmanager_shared.ForeignConstraint{}, primaryKeys, virtualForeignKeys, tableColumnMap)
-		require.NoError(t, err)
+			jmv := NewJobMappingsValidator(mappings)
+			err := jmv.ValidateCircularDependencies(
+				map[string][]*sqlmanager_shared.ForeignConstraint{},
+				primaryKeys,
+				virtualForeignKeys,
+				tableColumnMap,
+			)
+			require.NoError(t, err)
 
-		errs := jmv.GetColumnErrors()
-		require.NotEmpty(t, errs)
-		assert.Equal(t, []*mgmtv1alpha1.ColumnError_ColumnErrorReport{
-			{
-				Code:    mgmtv1alpha1.ColumnError_COLUMN_ERROR_CODE_VFK_SOURCE_COLUMN_NOT_FOUND_IN_SOURCE,
-				Message: "Column does not exist in source but required by virtual foreign key",
-			},
-		}, errs["schema1.table1"]["col2"])
-	})
+			errs := jmv.GetColumnErrors()
+			require.NotEmpty(t, errs)
+			assert.Equal(t, []*mgmtv1alpha1.ColumnError_ColumnErrorReport{
+				{
+					Code:    mgmtv1alpha1.ColumnError_COLUMN_ERROR_CODE_VFK_SOURCE_COLUMN_NOT_FOUND_IN_SOURCE,
+					Message: "Column does not exist in source but required by virtual foreign key",
+				},
+			}, errs["schema1.table1"]["col2"])
+		},
+	)
 }
 
 func TestValidateVirtualForeignKeys(t *testing.T) {
@@ -705,12 +757,24 @@ func TestValidateVirtualForeignKeys(t *testing.T) {
 		}
 
 		jmv := NewJobMappingsValidator(mappings)
-		jmv.ValidateVirtualForeignKeys(virtualForeignKeys, tableColumnMap, &sqlmanager_shared.TableConstraints{})
+		jmv.ValidateVirtualForeignKeys(
+			virtualForeignKeys,
+			tableColumnMap,
+			&sqlmanager_shared.TableConstraints{},
+		)
 
 		errs := jmv.GetTableErrors()
 		require.Len(t, errs["schema1.table2"], 1)
-		assert.Equal(t, mgmtv1alpha1.TableError_TABLE_ERROR_CODE_VFK_SOURCE_TABLE_NOT_FOUND_IN_MAPPING, errs["schema1.table2"][0].Code)
-		assert.Contains(t, errs["schema1.table2"][0].Message, "Virtual foreign key source table missing in job mappings")
+		assert.Equal(
+			t,
+			mgmtv1alpha1.TableError_TABLE_ERROR_CODE_VFK_SOURCE_TABLE_NOT_FOUND_IN_MAPPING,
+			errs["schema1.table2"][0].Code,
+		)
+		assert.Contains(
+			t,
+			errs["schema1.table2"][0].Message,
+			"Virtual foreign key source table missing in job mappings",
+		)
 	})
 
 	t.Run("should return error when target table missing in job mappings", func(t *testing.T) {
@@ -741,12 +805,24 @@ func TestValidateVirtualForeignKeys(t *testing.T) {
 		}
 
 		jmv := NewJobMappingsValidator(mappings)
-		jmv.ValidateVirtualForeignKeys(virtualForeignKeys, tableColumnMap, &sqlmanager_shared.TableConstraints{})
+		jmv.ValidateVirtualForeignKeys(
+			virtualForeignKeys,
+			tableColumnMap,
+			&sqlmanager_shared.TableConstraints{},
+		)
 
 		errs := jmv.GetTableErrors()
 		require.Len(t, errs["schema1.table1"], 1)
-		assert.Equal(t, mgmtv1alpha1.TableError_TABLE_ERROR_CODE_VFK_TARGET_TABLE_NOT_FOUND_IN_MAPPING, errs["schema1.table1"][0].Code)
-		assert.Contains(t, errs["schema1.table1"][0].Message, "Virtual foreign key target table missing in job mappings")
+		assert.Equal(
+			t,
+			mgmtv1alpha1.TableError_TABLE_ERROR_CODE_VFK_TARGET_TABLE_NOT_FOUND_IN_MAPPING,
+			errs["schema1.table1"][0].Code,
+		)
+		assert.Contains(
+			t,
+			errs["schema1.table1"][0].Message,
+			"Virtual foreign key target table missing in job mappings",
+		)
 	})
 
 	t.Run("should return error when source table missing in source database", func(t *testing.T) {
@@ -775,12 +851,24 @@ func TestValidateVirtualForeignKeys(t *testing.T) {
 		}
 
 		jmv := NewJobMappingsValidator(mappings)
-		jmv.ValidateVirtualForeignKeys(virtualForeignKeys, tableColumnMap, &sqlmanager_shared.TableConstraints{})
+		jmv.ValidateVirtualForeignKeys(
+			virtualForeignKeys,
+			tableColumnMap,
+			&sqlmanager_shared.TableConstraints{},
+		)
 
 		errs := jmv.GetTableErrors()
 		require.Len(t, errs["schema1.table2"], 1)
-		assert.Equal(t, mgmtv1alpha1.TableError_TABLE_ERROR_CODE_VFK_SOURCE_TABLE_NOT_FOUND_IN_SOURCE, errs["schema1.table2"][0].Code)
-		assert.Contains(t, errs["schema1.table2"][0].Message, "Virtual foreign key source table missing in source database")
+		assert.Equal(
+			t,
+			mgmtv1alpha1.TableError_TABLE_ERROR_CODE_VFK_SOURCE_TABLE_NOT_FOUND_IN_SOURCE,
+			errs["schema1.table2"][0].Code,
+		)
+		assert.Contains(
+			t,
+			errs["schema1.table2"][0].Message,
+			"Virtual foreign key source table missing in source database",
+		)
 	})
 
 	t.Run("should return error when target table missing in source database", func(t *testing.T) {
@@ -809,12 +897,24 @@ func TestValidateVirtualForeignKeys(t *testing.T) {
 		}
 
 		jmv := NewJobMappingsValidator(mappings)
-		jmv.ValidateVirtualForeignKeys(virtualForeignKeys, tableColumnMap, &sqlmanager_shared.TableConstraints{})
+		jmv.ValidateVirtualForeignKeys(
+			virtualForeignKeys,
+			tableColumnMap,
+			&sqlmanager_shared.TableConstraints{},
+		)
 
 		errs := jmv.GetTableErrors()
 		require.Len(t, errs["schema1.table1"], 1)
-		assert.Equal(t, mgmtv1alpha1.TableError_TABLE_ERROR_CODE_VFK_TARGET_TABLE_NOT_FOUND_IN_SOURCE, errs["schema1.table1"][0].Code)
-		assert.Contains(t, errs["schema1.table1"][0].Message, "Virtual foreign key target table missing in source database")
+		assert.Equal(
+			t,
+			mgmtv1alpha1.TableError_TABLE_ERROR_CODE_VFK_TARGET_TABLE_NOT_FOUND_IN_SOURCE,
+			errs["schema1.table1"][0].Code,
+		)
+		assert.Contains(
+			t,
+			errs["schema1.table1"][0].Message,
+			"Virtual foreign key target table missing in source database",
+		)
 	})
 
 	t.Run("should return error when column datatypes don't match", func(t *testing.T) {
@@ -850,12 +950,20 @@ func TestValidateVirtualForeignKeys(t *testing.T) {
 		}
 
 		jmv := NewJobMappingsValidator(mappings)
-		jmv.ValidateVirtualForeignKeys(virtualForeignKeys, tableColumnMap, &sqlmanager_shared.TableConstraints{})
+		jmv.ValidateVirtualForeignKeys(
+			virtualForeignKeys,
+			tableColumnMap,
+			&sqlmanager_shared.TableConstraints{},
+		)
 
 		errs := jmv.GetColumnErrors()
 		require.NotEmpty(t, errs)
 		require.Len(t, errs["schema1.table1"]["col1"], 1)
-		assert.Equal(t, mgmtv1alpha1.ColumnError_COLUMN_ERROR_CODE_VFK_COLUMN_DATATYPE_MISMATCH, errs["schema1.table1"]["col1"][0].Code)
+		assert.Equal(
+			t,
+			mgmtv1alpha1.ColumnError_COLUMN_ERROR_CODE_VFK_COLUMN_DATATYPE_MISMATCH,
+			errs["schema1.table1"]["col1"][0].Code,
+		)
 		assert.Contains(t, errs["schema1.table1"]["col1"][0].Message, "Column datatype mismatch.")
 	})
 
@@ -886,253 +994,296 @@ func TestValidateVirtualForeignKeys(t *testing.T) {
 		}
 
 		jmv := NewJobMappingsValidator(mappings)
-		jmv.ValidateVirtualForeignKeys(virtualForeignKeys, tableColumnMap, &sqlmanager_shared.TableConstraints{})
+		jmv.ValidateVirtualForeignKeys(
+			virtualForeignKeys,
+			tableColumnMap,
+			&sqlmanager_shared.TableConstraints{},
+		)
 
 		errs := jmv.GetColumnErrors()
 		require.NotEmpty(t, errs)
-		assert.Equal(t, mgmtv1alpha1.ColumnError_COLUMN_ERROR_CODE_VFK_SOURCE_COLUMN_NOT_UNIQUE, errs["schema1.table1"]["col1"][0].Code)
-		assert.Contains(t, errs["schema1.table1"]["col1"][0].Message, "Virtual foreign key source must be either a primary key or have a unique constraint")
+		assert.Equal(
+			t,
+			mgmtv1alpha1.ColumnError_COLUMN_ERROR_CODE_VFK_SOURCE_COLUMN_NOT_UNIQUE,
+			errs["schema1.table1"]["col1"][0].Code,
+		)
+		assert.Contains(
+			t,
+			errs["schema1.table1"]["col1"][0].Message,
+			"Virtual foreign key source must be either a primary key or have a unique constraint",
+		)
 	})
 
-	t.Run("should return error when self-referencing virtual foreign key is not nullable", func(t *testing.T) {
-		mappings := []*mgmtv1alpha1.JobMapping{
-			{Schema: "schema1", Table: "table1", Column: "col1"},
-		}
+	t.Run(
+		"should return error when self-referencing virtual foreign key is not nullable",
+		func(t *testing.T) {
+			mappings := []*mgmtv1alpha1.JobMapping{
+				{Schema: "schema1", Table: "table1", Column: "col1"},
+			}
 
-		virtualForeignKeys := []*mgmtv1alpha1.VirtualForeignConstraint{
-			{
-				Schema:  "schema1",
-				Table:   "table1",
-				Columns: []string{"col1"},
-				ForeignKey: &mgmtv1alpha1.VirtualForeignKey{
+			virtualForeignKeys := []*mgmtv1alpha1.VirtualForeignConstraint{
+				{
 					Schema:  "schema1",
 					Table:   "table1",
 					Columns: []string{"col1"},
+					ForeignKey: &mgmtv1alpha1.VirtualForeignKey{
+						Schema:  "schema1",
+						Table:   "table1",
+						Columns: []string{"col1"},
+					},
 				},
-			},
-		}
+			}
 
-		tableColumnMap := map[string]map[string]*sqlmanager_shared.DatabaseSchemaRow{
-			"schema1.table1": {
-				"col1": &sqlmanager_shared.DatabaseSchemaRow{
-					IsNullable: false, // Not nullable
+			tableColumnMap := map[string]map[string]*sqlmanager_shared.DatabaseSchemaRow{
+				"schema1.table1": {
+					"col1": &sqlmanager_shared.DatabaseSchemaRow{
+						IsNullable: false, // Not nullable
+					},
 				},
-			},
-		}
+			}
 
-		tableConstraints := &sqlmanager_shared.TableConstraints{
-			PrimaryKeyConstraints: map[string][]string{
-				"schema1.table1": {"col1"},
-			},
-		}
-		jmv := NewJobMappingsValidator(mappings)
-		jmv.ValidateVirtualForeignKeys(virtualForeignKeys, tableColumnMap, tableConstraints)
+			tableConstraints := &sqlmanager_shared.TableConstraints{
+				PrimaryKeyConstraints: map[string][]string{
+					"schema1.table1": {"col1"},
+				},
+			}
+			jmv := NewJobMappingsValidator(mappings)
+			jmv.ValidateVirtualForeignKeys(virtualForeignKeys, tableColumnMap, tableConstraints)
 
-		errs := jmv.GetColumnErrors()
-		require.NotEmpty(t, errs)
-		require.Len(t, errs["schema1.table1"]["col1"], 1)
-		assert.Equal(t, mgmtv1alpha1.ColumnError_COLUMN_ERROR_CODE_UNSUPPORTED_CIRCULAR_DEPENDENCY_AT_LEAST_ONE_NULLABLE, errs["schema1.table1"]["col1"][0].Code)
-		assert.Contains(t, errs["schema1.table1"]["col1"][0].Message, "Self referencing virtual foreign key target column must be nullable")
-	})
+			errs := jmv.GetColumnErrors()
+			require.NotEmpty(t, errs)
+			require.Len(t, errs["schema1.table1"]["col1"], 1)
+			assert.Equal(
+				t,
+				mgmtv1alpha1.ColumnError_COLUMN_ERROR_CODE_UNSUPPORTED_CIRCULAR_DEPENDENCY_AT_LEAST_ONE_NULLABLE,
+				errs["schema1.table1"]["col1"][0].Code,
+			)
+			assert.Contains(
+				t,
+				errs["schema1.table1"]["col1"][0].Message,
+				"Self referencing virtual foreign key target column must be nullable",
+			)
+		},
+	)
 
-	t.Run("should not return error when self-referencing virtual foreign key is nullable", func(t *testing.T) {
-		mappings := []*mgmtv1alpha1.JobMapping{
-			{Schema: "schema1", Table: "table1", Column: "col1"},
-		}
+	t.Run(
+		"should not return error when self-referencing virtual foreign key is nullable",
+		func(t *testing.T) {
+			mappings := []*mgmtv1alpha1.JobMapping{
+				{Schema: "schema1", Table: "table1", Column: "col1"},
+			}
 
-		virtualForeignKeys := []*mgmtv1alpha1.VirtualForeignConstraint{
-			{
-				Schema:  "schema1",
-				Table:   "table1",
-				Columns: []string{"col1"},
-				ForeignKey: &mgmtv1alpha1.VirtualForeignKey{
+			virtualForeignKeys := []*mgmtv1alpha1.VirtualForeignConstraint{
+				{
 					Schema:  "schema1",
 					Table:   "table1",
 					Columns: []string{"col1"},
+					ForeignKey: &mgmtv1alpha1.VirtualForeignKey{
+						Schema:  "schema1",
+						Table:   "table1",
+						Columns: []string{"col1"},
+					},
 				},
-			},
-		}
+			}
 
-		tableColumnMap := map[string]map[string]*sqlmanager_shared.DatabaseSchemaRow{
-			"schema1.table1": {
-				"col1": &sqlmanager_shared.DatabaseSchemaRow{
-					IsNullable: true, // Nullable
+			tableColumnMap := map[string]map[string]*sqlmanager_shared.DatabaseSchemaRow{
+				"schema1.table1": {
+					"col1": &sqlmanager_shared.DatabaseSchemaRow{
+						IsNullable: true, // Nullable
+					},
 				},
-			},
-		}
+			}
 
-		tableConstraints := &sqlmanager_shared.TableConstraints{
-			UniqueConstraints: map[string][][]string{
-				"schema1.table1": {{"col1"}},
-			},
-		}
-		jmv := NewJobMappingsValidator(mappings)
-		jmv.ValidateVirtualForeignKeys(virtualForeignKeys, tableColumnMap, tableConstraints)
+			tableConstraints := &sqlmanager_shared.TableConstraints{
+				UniqueConstraints: map[string][][]string{
+					"schema1.table1": {{"col1"}},
+				},
+			}
+			jmv := NewJobMappingsValidator(mappings)
+			jmv.ValidateVirtualForeignKeys(virtualForeignKeys, tableColumnMap, tableConstraints)
 
-		errs := jmv.GetColumnErrors()
-		assert.Empty(t, errs)
-	})
+			errs := jmv.GetColumnErrors()
+			assert.Empty(t, errs)
+		},
+	)
 
-	t.Run("should return error when virtual foreign key source column missing in job mappings and source database", func(t *testing.T) {
-		mappings := []*mgmtv1alpha1.JobMapping{
-			{Schema: "schema1", Table: "table1", Column: "col1"},
-			{Schema: "schema1", Table: "table2", Column: "col1"},
-			// col2 intentionally missing from mappings
-		}
+	t.Run(
+		"should return error when virtual foreign key source column missing in job mappings and source database",
+		func(t *testing.T) {
+			mappings := []*mgmtv1alpha1.JobMapping{
+				{Schema: "schema1", Table: "table1", Column: "col1"},
+				{Schema: "schema1", Table: "table2", Column: "col1"},
+				// col2 intentionally missing from mappings
+			}
 
-		virtualForeignKeys := []*mgmtv1alpha1.VirtualForeignConstraint{
-			{
-				Schema:  "schema1",
-				Table:   "table2",
-				Columns: []string{"col1"},
-				ForeignKey: &mgmtv1alpha1.VirtualForeignKey{
+			virtualForeignKeys := []*mgmtv1alpha1.VirtualForeignConstraint{
+				{
 					Schema:  "schema1",
-					Table:   "table1",
-					Columns: []string{"col2"}, // Reference missing column
-				},
-			},
-		}
-
-		tableColumnMap := map[string]map[string]*sqlmanager_shared.DatabaseSchemaRow{
-			"schema1.table1": {
-				"col1": &sqlmanager_shared.DatabaseSchemaRow{
-					IsNullable: false,
-					DataType:   "integer",
-				},
-				// col2 intentionally missing from source database
-			},
-			"schema1.table2": {
-				"col1": &sqlmanager_shared.DatabaseSchemaRow{
-					IsNullable: false,
-					DataType:   "integer",
-				},
-			},
-		}
-
-		tableConstraints := &sqlmanager_shared.TableConstraints{
-			PrimaryKeyConstraints: map[string][]string{
-				"schema1.table1": {"col2"},
-			},
-		}
-
-		jmv := NewJobMappingsValidator(mappings)
-		jmv.ValidateVirtualForeignKeys(virtualForeignKeys, tableColumnMap, tableConstraints)
-
-		errs := jmv.GetColumnErrors()
-		require.NotEmpty(t, errs)
-		assert.Equal(t, []*mgmtv1alpha1.ColumnError_ColumnErrorReport{
-			{
-				Code:    mgmtv1alpha1.ColumnError_COLUMN_ERROR_CODE_VFK_SOURCE_COLUMN_NOT_FOUND_IN_MAPPING,
-				Message: "Virtual foreign key source column missing in job mappings. Table: schema1.table1 Column: col2",
-			},
-			{
-				Code:    mgmtv1alpha1.ColumnError_COLUMN_ERROR_CODE_VFK_SOURCE_COLUMN_NOT_FOUND_IN_SOURCE,
-				Message: "Virtual foreign key source column missing in source database. Table: schema1.table1 Column: col2",
-			},
-		}, errs["schema1.table1"]["col2"])
-	})
-
-	t.Run("validates virtual foreign key target column exists in job mappings and source db", func(t *testing.T) {
-		mappings := []*mgmtv1alpha1.JobMapping{
-			{Schema: "schema1", Table: "table1", Column: "col1"},
-			{Schema: "schema1", Table: "table2", Column: "col2"},
-			// col1 intentionally missing from table2 mappings
-		}
-
-		virtualForeignKeys := []*mgmtv1alpha1.VirtualForeignConstraint{
-			{
-				Schema:  "schema1",
-				Table:   "table2",
-				Columns: []string{"col1"}, // Reference missing mapping and column
-				ForeignKey: &mgmtv1alpha1.VirtualForeignKey{
-					Schema:  "schema1",
-					Table:   "table1",
+					Table:   "table2",
 					Columns: []string{"col1"},
+					ForeignKey: &mgmtv1alpha1.VirtualForeignKey{
+						Schema:  "schema1",
+						Table:   "table1",
+						Columns: []string{"col2"}, // Reference missing column
+					},
 				},
-			},
-		}
+			}
 
-		tableColumnMap := map[string]map[string]*sqlmanager_shared.DatabaseSchemaRow{
-			"schema1.table1": {
-				"col1": &sqlmanager_shared.DatabaseSchemaRow{
-					IsNullable: false,
-					DataType:   "integer",
+			tableColumnMap := map[string]map[string]*sqlmanager_shared.DatabaseSchemaRow{
+				"schema1.table1": {
+					"col1": &sqlmanager_shared.DatabaseSchemaRow{
+						IsNullable: false,
+						DataType:   "integer",
+					},
+					// col2 intentionally missing from source database
 				},
-			},
-			"schema1.table2": {
-				"col2": &sqlmanager_shared.DatabaseSchemaRow{
-					IsNullable: false,
-					DataType:   "integer",
+				"schema1.table2": {
+					"col1": &sqlmanager_shared.DatabaseSchemaRow{
+						IsNullable: false,
+						DataType:   "integer",
+					},
 				},
-				// col1 intentionally missing from source database
-			},
-		}
+			}
 
-		tableConstraints := &sqlmanager_shared.TableConstraints{
-			PrimaryKeyConstraints: map[string][]string{
-				"schema1.table1": {"col1"},
-			},
-		}
+			tableConstraints := &sqlmanager_shared.TableConstraints{
+				PrimaryKeyConstraints: map[string][]string{
+					"schema1.table1": {"col2"},
+				},
+			}
 
-		jmv := NewJobMappingsValidator(mappings)
-		jmv.ValidateVirtualForeignKeys(virtualForeignKeys, tableColumnMap, tableConstraints)
+			jmv := NewJobMappingsValidator(mappings)
+			jmv.ValidateVirtualForeignKeys(virtualForeignKeys, tableColumnMap, tableConstraints)
 
-		errs := jmv.GetColumnErrors()
-		require.NotEmpty(t, errs)
-		assert.Equal(t, []*mgmtv1alpha1.ColumnError_ColumnErrorReport{
-			{
-				Code:    mgmtv1alpha1.ColumnError_COLUMN_ERROR_CODE_VFK_TARGET_COLUMN_NOT_FOUND_IN_MAPPING,
-				Message: "Virtual foreign key target column missing in job mappings. Table: schema1.table2 Column: col1",
-			},
-			{
-				Code:    mgmtv1alpha1.ColumnError_COLUMN_ERROR_CODE_VFK_TARGET_COLUMN_NOT_FOUND_IN_SOURCE,
-				Message: "Virtual foreign key target column missing in source database. Table: schema1.table2 Column: col1",
-			},
-		}, errs["schema1.table2"]["col1"])
-	})
+			errs := jmv.GetColumnErrors()
+			require.NotEmpty(t, errs)
+			assert.Equal(t, []*mgmtv1alpha1.ColumnError_ColumnErrorReport{
+				{
+					Code:    mgmtv1alpha1.ColumnError_COLUMN_ERROR_CODE_VFK_SOURCE_COLUMN_NOT_FOUND_IN_MAPPING,
+					Message: "Virtual foreign key source column missing in job mappings. Table: schema1.table1 Column: col2",
+				},
+				{
+					Code:    mgmtv1alpha1.ColumnError_COLUMN_ERROR_CODE_VFK_SOURCE_COLUMN_NOT_FOUND_IN_SOURCE,
+					Message: "Virtual foreign key source column missing in source database. Table: schema1.table1 Column: col2",
+				},
+			}, errs["schema1.table1"]["col2"])
+		},
+	)
 
-	t.Run("validates self referencing virtual foreign key target column must be nullable", func(t *testing.T) {
-		mappings := []*mgmtv1alpha1.JobMapping{
-			{Schema: "schema1", Table: "table1", Column: "col1"},
-		}
+	t.Run(
+		"validates virtual foreign key target column exists in job mappings and source db",
+		func(t *testing.T) {
+			mappings := []*mgmtv1alpha1.JobMapping{
+				{Schema: "schema1", Table: "table1", Column: "col1"},
+				{Schema: "schema1", Table: "table2", Column: "col2"},
+				// col1 intentionally missing from table2 mappings
+			}
 
-		virtualForeignKeys := []*mgmtv1alpha1.VirtualForeignConstraint{
-			{
-				Schema:  "schema1",
-				Table:   "table1",
-				Columns: []string{"col1"}, // Self reference to non-nullable column
-				ForeignKey: &mgmtv1alpha1.VirtualForeignKey{
+			virtualForeignKeys := []*mgmtv1alpha1.VirtualForeignConstraint{
+				{
+					Schema:  "schema1",
+					Table:   "table2",
+					Columns: []string{"col1"}, // Reference missing mapping and column
+					ForeignKey: &mgmtv1alpha1.VirtualForeignKey{
+						Schema:  "schema1",
+						Table:   "table1",
+						Columns: []string{"col1"},
+					},
+				},
+			}
+
+			tableColumnMap := map[string]map[string]*sqlmanager_shared.DatabaseSchemaRow{
+				"schema1.table1": {
+					"col1": &sqlmanager_shared.DatabaseSchemaRow{
+						IsNullable: false,
+						DataType:   "integer",
+					},
+				},
+				"schema1.table2": {
+					"col2": &sqlmanager_shared.DatabaseSchemaRow{
+						IsNullable: false,
+						DataType:   "integer",
+					},
+					// col1 intentionally missing from source database
+				},
+			}
+
+			tableConstraints := &sqlmanager_shared.TableConstraints{
+				PrimaryKeyConstraints: map[string][]string{
+					"schema1.table1": {"col1"},
+				},
+			}
+
+			jmv := NewJobMappingsValidator(mappings)
+			jmv.ValidateVirtualForeignKeys(virtualForeignKeys, tableColumnMap, tableConstraints)
+
+			errs := jmv.GetColumnErrors()
+			require.NotEmpty(t, errs)
+			assert.Equal(t, []*mgmtv1alpha1.ColumnError_ColumnErrorReport{
+				{
+					Code:    mgmtv1alpha1.ColumnError_COLUMN_ERROR_CODE_VFK_TARGET_COLUMN_NOT_FOUND_IN_MAPPING,
+					Message: "Virtual foreign key target column missing in job mappings. Table: schema1.table2 Column: col1",
+				},
+				{
+					Code:    mgmtv1alpha1.ColumnError_COLUMN_ERROR_CODE_VFK_TARGET_COLUMN_NOT_FOUND_IN_SOURCE,
+					Message: "Virtual foreign key target column missing in source database. Table: schema1.table2 Column: col1",
+				},
+			}, errs["schema1.table2"]["col1"])
+		},
+	)
+
+	t.Run(
+		"validates self referencing virtual foreign key target column must be nullable",
+		func(t *testing.T) {
+			mappings := []*mgmtv1alpha1.JobMapping{
+				{Schema: "schema1", Table: "table1", Column: "col1"},
+			}
+
+			virtualForeignKeys := []*mgmtv1alpha1.VirtualForeignConstraint{
+				{
 					Schema:  "schema1",
 					Table:   "table1",
-					Columns: []string{"col1"},
+					Columns: []string{"col1"}, // Self reference to non-nullable column
+					ForeignKey: &mgmtv1alpha1.VirtualForeignKey{
+						Schema:  "schema1",
+						Table:   "table1",
+						Columns: []string{"col1"},
+					},
 				},
-			},
-		}
+			}
 
-		tableColumnMap := map[string]map[string]*sqlmanager_shared.DatabaseSchemaRow{
-			"schema1.table1": {
-				"col1": &sqlmanager_shared.DatabaseSchemaRow{
-					IsNullable: false, // Not nullable
-					DataType:   "integer",
+			tableColumnMap := map[string]map[string]*sqlmanager_shared.DatabaseSchemaRow{
+				"schema1.table1": {
+					"col1": &sqlmanager_shared.DatabaseSchemaRow{
+						IsNullable: false, // Not nullable
+						DataType:   "integer",
+					},
 				},
-			},
-		}
+			}
 
-		tableConstraints := &sqlmanager_shared.TableConstraints{
-			PrimaryKeyConstraints: map[string][]string{
-				"schema1.table1": {"col1"},
-			},
-		}
+			tableConstraints := &sqlmanager_shared.TableConstraints{
+				PrimaryKeyConstraints: map[string][]string{
+					"schema1.table1": {"col1"},
+				},
+			}
 
-		jmv := NewJobMappingsValidator(mappings)
-		jmv.ValidateVirtualForeignKeys(virtualForeignKeys, tableColumnMap, tableConstraints)
+			jmv := NewJobMappingsValidator(mappings)
+			jmv.ValidateVirtualForeignKeys(virtualForeignKeys, tableColumnMap, tableConstraints)
 
-		errs := jmv.GetColumnErrors()
-		require.NotEmpty(t, errs)
-		require.Len(t, errs["schema1.table1"]["col1"], 1)
-		assert.Equal(t, mgmtv1alpha1.ColumnError_COLUMN_ERROR_CODE_UNSUPPORTED_CIRCULAR_DEPENDENCY_AT_LEAST_ONE_NULLABLE, errs["schema1.table1"]["col1"][0].Code)
-		assert.Contains(t, errs["schema1.table1"]["col1"][0].Message, "Self referencing virtual foreign key target column must be nullable")
-	})
+			errs := jmv.GetColumnErrors()
+			require.NotEmpty(t, errs)
+			require.Len(t, errs["schema1.table1"]["col1"], 1)
+			assert.Equal(
+				t,
+				mgmtv1alpha1.ColumnError_COLUMN_ERROR_CODE_UNSUPPORTED_CIRCULAR_DEPENDENCY_AT_LEAST_ONE_NULLABLE,
+				errs["schema1.table1"]["col1"][0].Code,
+			)
+			assert.Contains(
+				t,
+				errs["schema1.table1"]["col1"][0].Message,
+				"Self referencing virtual foreign key target column must be nullable",
+			)
+		},
+	)
 
 	t.Run("validates length of source and foreign key columns must match", func(t *testing.T) {
 		mappings := []*mgmtv1alpha1.JobMapping{
@@ -1181,8 +1332,16 @@ func TestValidateVirtualForeignKeys(t *testing.T) {
 
 		errs := jmv.GetDatabaseErrors()
 		require.NotEmpty(t, errs)
-		assert.Contains(t, errs[0].Message, "length of source columns was not equal to length of foreign key cols: 1 2")
-		assert.Equal(t, mgmtv1alpha1.DatabaseError_DATABASE_ERROR_CODE_VFK_COLUMN_MISMATCH, errs[0].Code)
+		assert.Contains(
+			t,
+			errs[0].Message,
+			"length of source columns was not equal to length of foreign key cols: 1 2",
+		)
+		assert.Equal(
+			t,
+			mgmtv1alpha1.DatabaseError_DATABASE_ERROR_CODE_VFK_COLUMN_MISMATCH,
+			errs[0].Code,
+		)
 	})
 }
 
@@ -1528,6 +1687,10 @@ func Test_ValidateVirtualForeignKeys(t *testing.T) {
 
 		require.NoError(t, err)
 		require.NotEmpty(t, resp.DatabaseErrors)
-		assert.Equal(t, mgmtv1alpha1.DatabaseError_DATABASE_ERROR_CODE_UNSUPPORTED_CIRCULAR_DEPENDENCY_AT_LEAST_ONE_NULLABLE, resp.DatabaseErrors[0].Code)
+		assert.Equal(
+			t,
+			mgmtv1alpha1.DatabaseError_DATABASE_ERROR_CODE_UNSUPPORTED_CIRCULAR_DEPENDENCY_AT_LEAST_ONE_NULLABLE,
+			resp.DatabaseErrors[0].Code,
+		)
 	})
 }

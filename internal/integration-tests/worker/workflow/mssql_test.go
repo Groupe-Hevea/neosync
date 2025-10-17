@@ -41,10 +41,13 @@ func createMssqlSyncJob(
 			}
 		}
 		w := where
-		subsetMap[schema].Tables = append(subsetMap[schema].Tables, &mgmtv1alpha1.MssqlSourceTableOption{
-			Table:       table,
-			WhereClause: &w,
-		})
+		subsetMap[schema].Tables = append(
+			subsetMap[schema].Tables,
+			&mgmtv1alpha1.MssqlSourceTableOption{
+				Table:       table,
+				WhereClause: &w,
+			},
+		)
 	}
 
 	for _, s := range subsetMap {
@@ -113,7 +116,12 @@ func test_mssql_types(
 ) {
 	jobclient := neosyncApi.OSSUnauthenticatedLicensedClients.Jobs()
 	schema := "alltypes"
-	err := mssql.Source.RunCreateStmtsInSchema(ctx, mssqlTestdataFolder, []string{"alltypes/create-tables.sql"}, schema)
+	err := mssql.Source.RunCreateStmtsInSchema(
+		ctx,
+		mssqlTestdataFolder,
+		[]string{"alltypes/create-tables.sql"},
+		schema,
+	)
 	require.NoError(t, err)
 	err = mssql.Target.CreateSchemas(ctx, []string{schema})
 	require.NoError(t, err)
@@ -121,7 +129,8 @@ func test_mssql_types(
 
 	alltypesMappings := mssql_alltypes.GetDefaultSyncJobMappings(schema)
 	for _, mapping := range alltypesMappings {
-		if mapping.Table == "temporal_table" && (mapping.Column == "valid_from" || mapping.Column == "valid_to") {
+		if mapping.Table == "temporal_table" &&
+			(mapping.Column == "valid_from" || mapping.Column == "valid_to") {
 			mapping.Transformer = getDefaultTransformerConfig()
 		}
 	}
@@ -141,7 +150,11 @@ func test_mssql_types(
 	testworkflow := NewTestDataSyncWorkflowEnv(t, neosyncApi, dbManagers, WithValidEELicense())
 	testworkflow.RequireActivitiesCompletedSuccessfully(t)
 	testworkflow.ExecuteTestDataSyncWorkflow(job.GetId())
-	require.Truef(t, testworkflow.TestEnv.IsWorkflowCompleted(), "Workflow did not complete. Test: mssql_all_types")
+	require.Truef(
+		t,
+		testworkflow.TestEnv.IsWorkflowCompleted(),
+		"Workflow did not complete. Test: mssql_all_types",
+	)
 	err = testworkflow.TestEnv.GetWorkflowError()
 	require.NoError(t, err, "Received Temporal Workflow Error: mssql_all_types")
 
@@ -156,10 +169,24 @@ func test_mssql_types(
 	for _, expected := range expectedResults {
 		rowCount, err := mssql.Target.GetTableRowCount(ctx, expected.schema, expected.table)
 		require.NoError(t, err)
-		require.Equalf(t, expected.rowCount, rowCount, fmt.Sprintf("Test: mssql_all_types Table: %s", expected.table))
+		require.Equalf(
+			t,
+			expected.rowCount,
+			rowCount,
+			fmt.Sprintf("Test: mssql_all_types Table: %s", expected.table),
+		)
 	}
 
-	testutil_testdata.VerifySQLTableColumnValues(t, ctx, mssql.Source.DB, mssql.Target.DB, schema, "alldatatypes", sqlmanager_shared.MssqlDriver, []string{"id"})
+	testutil_testdata.VerifySQLTableColumnValues(
+		t,
+		ctx,
+		mssql.Source.DB,
+		mssql.Target.DB,
+		schema,
+		"alldatatypes",
+		sqlmanager_shared.MssqlDriver,
+		[]string{"id"},
+	)
 
 	// TODO: Tear down, fix schema dropping issue. No way to force drop schemas in MSSQL.
 	// err = mssql.Source.DropSchemas(ctx, []string{schema})
@@ -204,7 +231,11 @@ func test_mssql_cross_schema_foreign_keys(
 	testworkflow := NewTestDataSyncWorkflowEnv(t, neosyncApi, dbManagers, WithValidEELicense())
 	testworkflow.RequireActivitiesCompletedSuccessfully(t)
 	testworkflow.ExecuteTestDataSyncWorkflow(job.GetId())
-	require.Truef(t, testworkflow.TestEnv.IsWorkflowCompleted(), "Workflow did not complete. Test: mssql_cross_schema_foreign_keys")
+	require.Truef(
+		t,
+		testworkflow.TestEnv.IsWorkflowCompleted(),
+		"Workflow did not complete. Test: mssql_cross_schema_foreign_keys",
+	)
 	err = testworkflow.TestEnv.GetWorkflowError()
 	require.NoError(t, err, "Received Temporal Workflow Error: mssql_cross_schema_foreign_keys")
 
@@ -228,7 +259,12 @@ func test_mssql_cross_schema_foreign_keys(
 	for _, expected := range expectedResults {
 		rowCount, err := mssql.Target.GetTableRowCount(ctx, expected.schema, expected.table)
 		require.NoError(t, err)
-		assert.Equalf(t, expected.rowCount, rowCount, fmt.Sprintf("Test: mssql_cross_schema_foreign_keys Table: %s", expected.table))
+		assert.Equalf(
+			t,
+			expected.rowCount,
+			rowCount,
+			fmt.Sprintf("Test: mssql_cross_schema_foreign_keys Table: %s", expected.table),
+		)
 	}
 
 	// TODO: Tear down, fix schema dropping issue. No way to force drop schemas in MSSQL.
@@ -251,7 +287,13 @@ func test_mssql_subset(
 	jobclient := neosyncApi.OSSUnauthenticatedLicensedClients.Jobs()
 	err := mssql.Source.CreateSchemas(ctx, []string{"sales_subset", "production_subset"})
 	require.NoError(t, err)
-	err = createCommerceTables(ctx, mssql.Source, &testdataFolder, []string{"create-tables.sql"}, "subset")
+	err = createCommerceTables(
+		ctx,
+		mssql.Source,
+		&testdataFolder,
+		[]string{"create-tables.sql"},
+		"subset",
+	)
 	require.NoError(t, err)
 	err = mssql.Target.CreateSchemas(ctx, []string{"sales_subset", "production_subset"})
 	require.NoError(t, err)
@@ -290,7 +332,11 @@ func test_mssql_subset(
 	testworkflow := NewTestDataSyncWorkflowEnv(t, neosyncApi, dbManagers, WithValidEELicense())
 	testworkflow.RequireActivitiesCompletedSuccessfully(t)
 	testworkflow.ExecuteTestDataSyncWorkflow(job.GetId())
-	require.Truef(t, testworkflow.TestEnv.IsWorkflowCompleted(), "Workflow did not complete. Test: mssql_subset")
+	require.Truef(
+		t,
+		testworkflow.TestEnv.IsWorkflowCompleted(),
+		"Workflow did not complete. Test: mssql_subset",
+	)
 	err = testworkflow.TestEnv.GetWorkflowError()
 	require.NoError(t, err, "Received Temporal Workflow Error: mssql_subset")
 
@@ -314,7 +360,12 @@ func test_mssql_subset(
 	for _, expected := range expectedResults {
 		rowCount, err := mssql.Target.GetTableRowCount(ctx, expected.schema, expected.table)
 		require.NoError(t, err)
-		require.Equalf(t, expected.rowCount, rowCount, fmt.Sprintf("Test: mssql_subset Table: %s", expected.table))
+		require.Equalf(
+			t,
+			expected.rowCount,
+			rowCount,
+			fmt.Sprintf("Test: mssql_subset Table: %s", expected.table),
+		)
 	}
 
 	// TODO: Tear down, fix schema dropping issue. No way to force drop schemas in MSSQL.
@@ -337,7 +388,13 @@ func test_mssql_identity_columns(
 	jobclient := neosyncApi.OSSUnauthenticatedLicensedClients.Jobs()
 	err := mssql.Source.CreateSchemas(ctx, []string{"sales_identity", "production_identity"})
 	require.NoError(t, err)
-	err = createCommerceTables(ctx, mssql.Source, &testdataFolder, []string{"create-tables.sql"}, "identity")
+	err = createCommerceTables(
+		ctx,
+		mssql.Source,
+		&testdataFolder,
+		[]string{"create-tables.sql"},
+		"identity",
+	)
 	require.NoError(t, err)
 	err = mssql.Target.CreateSchemas(ctx, []string{"sales_identity", "production_identity"})
 	require.NoError(t, err)
@@ -379,7 +436,11 @@ func test_mssql_identity_columns(
 	testworkflow := NewTestDataSyncWorkflowEnv(t, neosyncApi, dbManagers, WithValidEELicense())
 	testworkflow.RequireActivitiesCompletedSuccessfully(t)
 	testworkflow.ExecuteTestDataSyncWorkflow(job.GetId())
-	require.Truef(t, testworkflow.TestEnv.IsWorkflowCompleted(), "Workflow did not complete. Test: mssql_identity_columns")
+	require.Truef(
+		t,
+		testworkflow.TestEnv.IsWorkflowCompleted(),
+		"Workflow did not complete. Test: mssql_identity_columns",
+	)
 	err = testworkflow.TestEnv.GetWorkflowError()
 	require.NoError(t, err, "Received Temporal Workflow Error: mssql_identity_columns")
 
@@ -403,7 +464,12 @@ func test_mssql_identity_columns(
 	for _, expected := range expectedResults {
 		rowCount, err := mssql.Target.GetTableRowCount(ctx, expected.schema, expected.table)
 		require.NoError(t, err)
-		require.Equalf(t, expected.rowCount, rowCount, fmt.Sprintf("Test: mssql_identity_columns Table: %s", expected.table))
+		require.Equalf(
+			t,
+			expected.rowCount,
+			rowCount,
+			fmt.Sprintf("Test: mssql_identity_columns Table: %s", expected.table),
+		)
 	}
 
 	// TODO: Tear down, fix schema dropping issue. No way to force drop schemas in MSSQL.
@@ -423,7 +489,13 @@ func getDefaultTransformerConfig() *mgmtv1alpha1.JobMappingTransformer {
 	}
 }
 
-func createCommerceTables(ctx context.Context, mssql *tcmssql.MssqlTestContainer, folder *string, files []string, schemaSuffix string) error {
+func createCommerceTables(
+	ctx context.Context,
+	mssql *tcmssql.MssqlTestContainer,
+	folder *string,
+	files []string,
+	schemaSuffix string,
+) error {
 	for _, file := range files {
 		filePath := file
 		if folder != nil && *folder != "" {
@@ -434,8 +506,16 @@ func createCommerceTables(ctx context.Context, mssql *tcmssql.MssqlTestContainer
 			return err
 		}
 
-		updatedSql := strings.ReplaceAll(string(sqlStr), "sales.", fmt.Sprintf("sales_%s.", schemaSuffix))
-		updatedSql = strings.ReplaceAll(updatedSql, "production.", fmt.Sprintf("production_%s.", schemaSuffix))
+		updatedSql := strings.ReplaceAll(
+			string(sqlStr),
+			"sales.",
+			fmt.Sprintf("sales_%s.", schemaSuffix),
+		)
+		updatedSql = strings.ReplaceAll(
+			updatedSql,
+			"production.",
+			fmt.Sprintf("production_%s.", schemaSuffix),
+		)
 		_, err = mssql.DB.ExecContext(ctx, updatedSql)
 		if err != nil {
 			return fmt.Errorf("unable to exec SQL when running MsSQL SQL files: %w", err)

@@ -94,7 +94,12 @@ func (s *IntegrationTestSuite) SetupMssql(
 		},
 	}
 
-	db, err := sqlmanager.NewSqlConnection(s.ctx, connectionmanager.NewUniqueSession(connectionmanager.WithSessionGroup("mssqltest")), sourceConn, logger)
+	db, err := sqlmanager.NewSqlConnection(
+		s.ctx,
+		connectionmanager.NewUniqueSession(connectionmanager.WithSessionGroup("mssqltest")),
+		sourceConn,
+		logger,
+	)
 	if err != nil {
 		s.T().Fatalf("unable to create sql connection: %s", err)
 	}
@@ -143,7 +148,12 @@ func (s *IntegrationTestSuite) SetupPostgres(
 		},
 	}
 
-	db, err := sqlmanager.NewSqlConnection(s.ctx, connectionmanager.NewUniqueSession(connectionmanager.WithSessionGroup("test")), sourceConn, logger)
+	db, err := sqlmanager.NewSqlConnection(
+		s.ctx,
+		connectionmanager.NewUniqueSession(connectionmanager.WithSessionGroup("test")),
+		sourceConn,
+		logger,
+	)
 	if err != nil {
 		s.T().Fatalf("unable to create sql connection: %s", err)
 	}

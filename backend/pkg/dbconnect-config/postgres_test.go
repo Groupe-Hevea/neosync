@@ -220,7 +220,10 @@ func Test_NewFromPostgresConnection(t *testing.T) {
 
 	t.Run("URL from Env", func(t *testing.T) {
 		t.Run("ok", func(t *testing.T) {
-			viper.Set(fmt.Sprintf("%s%s", userDefinedEnvPrefix, "PG_URL"), "postgres://test-user:testpass@localhost:3309/mydb")
+			viper.Set(
+				fmt.Sprintf("%s%s", userDefinedEnvPrefix, "PG_URL"),
+				"postgres://test-user:testpass@localhost:3309/mydb",
+			)
 			actual, err := NewFromPostgresConnection(
 				&mgmtv1alpha1.ConnectionConfig_PgConfig{
 					PgConfig: &mgmtv1alpha1.PostgresConnectionConfig{

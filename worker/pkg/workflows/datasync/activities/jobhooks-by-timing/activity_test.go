@@ -70,54 +70,58 @@ func Test_Activity_Success(t *testing.T) {
 	connId := uuid.NewString()
 
 	mux := http.NewServeMux()
-	mux.Handle(mgmtv1alpha1connect.JobServiceGetActiveJobHooksByTimingProcedure, connect.NewUnaryHandler(
+	mux.Handle(
 		mgmtv1alpha1connect.JobServiceGetActiveJobHooksByTimingProcedure,
-		func(ctx context.Context, r *connect.Request[mgmtv1alpha1.GetActiveJobHooksByTimingRequest]) (*connect.Response[mgmtv1alpha1.GetActiveJobHooksByTimingResponse], error) {
-			if r.Msg.GetJobId() == jobId && r.Msg.Timing == mgmtv1alpha1.GetActiveJobHooksByTimingRequest_TIMING_PRESYNC {
-				return connect.NewResponse(&mgmtv1alpha1.GetActiveJobHooksByTimingResponse{
-					Hooks: []*mgmtv1alpha1.JobHook{
-						{
-							Id:       uuid.NewString(),
-							Name:     "test-1",
-							JobId:    jobId,
-							Enabled:  true,
-							Priority: 0,
-							Config: &mgmtv1alpha1.JobHookConfig{
-								Config: &mgmtv1alpha1.JobHookConfig_Sql{
-									Sql: &mgmtv1alpha1.JobHookConfig_JobSqlHook{
-										Query:        "truncate table public.users",
-										ConnectionId: connId,
-										Timing: &mgmtv1alpha1.JobHookConfig_JobSqlHook_Timing{
-											Timing: &mgmtv1alpha1.JobHookConfig_JobSqlHook_Timing_PreSync{},
+		connect.NewUnaryHandler(
+			mgmtv1alpha1connect.JobServiceGetActiveJobHooksByTimingProcedure,
+			func(ctx context.Context, r *connect.Request[mgmtv1alpha1.GetActiveJobHooksByTimingRequest]) (*connect.Response[mgmtv1alpha1.GetActiveJobHooksByTimingResponse], error) {
+				if r.Msg.GetJobId() == jobId &&
+					r.Msg.Timing == mgmtv1alpha1.GetActiveJobHooksByTimingRequest_TIMING_PRESYNC {
+					return connect.NewResponse(&mgmtv1alpha1.GetActiveJobHooksByTimingResponse{
+						Hooks: []*mgmtv1alpha1.JobHook{
+							{
+								Id:       uuid.NewString(),
+								Name:     "test-1",
+								JobId:    jobId,
+								Enabled:  true,
+								Priority: 0,
+								Config: &mgmtv1alpha1.JobHookConfig{
+									Config: &mgmtv1alpha1.JobHookConfig_Sql{
+										Sql: &mgmtv1alpha1.JobHookConfig_JobSqlHook{
+											Query:        "truncate table public.users",
+											ConnectionId: connId,
+											Timing: &mgmtv1alpha1.JobHookConfig_JobSqlHook_Timing{
+												Timing: &mgmtv1alpha1.JobHookConfig_JobSqlHook_Timing_PreSync{},
+											},
+										},
+									},
+								},
+							},
+							{
+								Id:       uuid.NewString(),
+								Name:     "test-2",
+								JobId:    jobId,
+								Enabled:  true,
+								Priority: 0,
+								Config: &mgmtv1alpha1.JobHookConfig{
+									Config: &mgmtv1alpha1.JobHookConfig_Sql{
+										Sql: &mgmtv1alpha1.JobHookConfig_JobSqlHook{
+											Query:        "truncate table public.pets",
+											ConnectionId: connId,
+											Timing: &mgmtv1alpha1.JobHookConfig_JobSqlHook_Timing{
+												Timing: &mgmtv1alpha1.JobHookConfig_JobSqlHook_Timing_PreSync{},
+											},
 										},
 									},
 								},
 							},
 						},
-						{
-							Id:       uuid.NewString(),
-							Name:     "test-2",
-							JobId:    jobId,
-							Enabled:  true,
-							Priority: 0,
-							Config: &mgmtv1alpha1.JobHookConfig{
-								Config: &mgmtv1alpha1.JobHookConfig_Sql{
-									Sql: &mgmtv1alpha1.JobHookConfig_JobSqlHook{
-										Query:        "truncate table public.pets",
-										ConnectionId: connId,
-										Timing: &mgmtv1alpha1.JobHookConfig_JobSqlHook_Timing{
-											Timing: &mgmtv1alpha1.JobHookConfig_JobSqlHook_Timing_PreSync{},
-										},
-									},
-								},
-							},
-						},
-					},
-				}), nil
-			}
-			return nil, connect.NewError(connect.CodeNotFound, errors.New("invalid test input"))
-		},
-	))
+					}), nil
+				}
+				return nil, connect.NewError(connect.CodeNotFound, errors.New("invalid test input"))
+			},
+		),
+	)
 	mux.Handle(mgmtv1alpha1connect.ConnectionServiceGetConnectionProcedure, connect.NewUnaryHandler(
 		mgmtv1alpha1connect.ConnectionServiceGetConnectionProcedure,
 		func(ctx context.Context, r *connect.Request[mgmtv1alpha1.GetConnectionRequest]) (*connect.Response[mgmtv1alpha1.GetConnectionResponse], error) {
@@ -138,9 +142,11 @@ func Test_Activity_Success(t *testing.T) {
 	mockSqlMgrClient := sqlmanager.NewMockSqlManagerClient(t)
 	mockSqlDb := sqlmanager.NewMockSqlDatabase(t)
 
-	mockSqlMgrClient.On("NewSqlConnection", mock.Anything, mock.Anything, mock.Anything, mock.Anything).Once().Return(
-		sqlmanager.NewPostgresSqlConnection(mockSqlDb), nil,
-	)
+	mockSqlMgrClient.On("NewSqlConnection", mock.Anything, mock.Anything, mock.Anything, mock.Anything).
+		Once().
+		Return(
+			sqlmanager.NewPostgresSqlConnection(mockSqlDb), nil,
+		)
 	mockSqlDb.On("Exec", mock.Anything, mock.Anything).Twice().Return(nil)
 	mockSqlDb.On("Close").Once().Return(nil)
 

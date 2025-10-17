@@ -33,7 +33,10 @@ func Test_Interceptor_WrapUnary_InjectLogger(t *testing.T) {
 
 	assert.Nil(t, ctxlogger, "ctxlogger has not been set yet")
 	client := mgmtv1alpha1connect.NewUserAccountServiceClient(srv.Client(), srv.URL)
-	_, err := client.GetUser(context.Background(), connect.NewRequest(&mgmtv1alpha1.GetUserRequest{}))
+	_, err := client.GetUser(
+		context.Background(),
+		connect.NewRequest(&mgmtv1alpha1.GetUserRequest{}),
+	)
 	assert.Nil(t, err)
 	assert.NotNil(t, ctxlogger)
 }

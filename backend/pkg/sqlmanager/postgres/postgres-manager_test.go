@@ -17,7 +17,12 @@ func Test_EscapePgColumns(t *testing.T) {
 }
 
 func Test_BuildPgTruncateStatement(t *testing.T) {
-	stmt, err := BuildPgTruncateStatement([]*sqlmanager_shared.SchemaTable{{Schema: "public", Table: "users"}, {Schema: "bad name", Table: "C$@111"}})
+	stmt, err := BuildPgTruncateStatement(
+		[]*sqlmanager_shared.SchemaTable{
+			{Schema: "public", Table: "users"},
+			{Schema: "bad name", Table: "C$@111"},
+		},
+	)
 	require.NoError(t, err)
 	require.Equal(
 		t,

@@ -94,9 +94,12 @@ func Test_MarshalJSONToBSONDocument(t *testing.T) {
 				"timestamp": neosync_types.Timestamp,
 			},
 			expected: bson.M{
-				"id":        bson.E{Key: "id", Value: objId},
-				"amount":    bson.E{Key: "amount", Value: dec128},
-				"timestamp": bson.E{Key: "timestamp", Value: primitive.Timestamp{T: 1630000000, I: 1}},
+				"id":     bson.E{Key: "id", Value: objId},
+				"amount": bson.E{Key: "amount", Value: dec128},
+				"timestamp": bson.E{
+					Key:   "timestamp",
+					Value: primitive.Timestamp{T: 1630000000, I: 1},
+				},
 			},
 			expectError: false,
 		},

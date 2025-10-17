@@ -17,7 +17,12 @@ func Test_GenerateRandomFullName(t *testing.T) {
 
 	assert.NoError(t, err)
 	assert.NotEmpty(t, res)
-	assert.LessOrEqual(t, int64(len(res)), maxCharacterLimit, "The name should be less than the max character limit")
+	assert.LessOrEqual(
+		t,
+		int64(len(res)),
+		maxCharacterLimit,
+		"The name should be less than the max character limit",
+	)
 }
 
 func Test_generateRandomFullName_MinLength_Error(t *testing.T) {
@@ -33,7 +38,11 @@ func Test_generateRandomFullName_Small(t *testing.T) {
 
 	res, err := generateRandomFullName(randomizer, 4)
 	assert.Error(t, err)
-	assert.Empty(t, res, "cannot generate a full name of length 3 (excluding space) as it must generate a first and last name")
+	assert.Empty(
+		t,
+		res,
+		"cannot generate a full name of length 3 (excluding space) as it must generate a first and last name",
+	)
 
 	res, err = generateRandomFullName(randomizer, 5)
 	assert.NoError(t, err)
@@ -53,7 +62,12 @@ func Test_GenerateRandomFullNameTransformer(t *testing.T) {
 	require.True(t, ok)
 
 	assert.NotEmpty(t, resStr)
-	assert.LessOrEqual(t, int64(len(resStr)), maxCharacterLimit, "output should be less than or equal to max char limit")
+	assert.LessOrEqual(
+		t,
+		int64(len(resStr)),
+		maxCharacterLimit,
+		"output should be less than or equal to max char limit",
+	)
 }
 
 func Test_GenerateRandomFullNameTransformer_NoOptions(t *testing.T) {

@@ -22,11 +22,19 @@ type mockDynamoDB struct {
 	batchFn func(*dynamodb.BatchWriteItemInput) (*dynamodb.BatchWriteItemOutput, error)
 }
 
-func (m *mockDynamoDB) PutItem(ctx context.Context, params *dynamodb.PutItemInput, optFns ...func(*dynamodb.Options)) (*dynamodb.PutItemOutput, error) {
+func (m *mockDynamoDB) PutItem(
+	ctx context.Context,
+	params *dynamodb.PutItemInput,
+	optFns ...func(*dynamodb.Options),
+) (*dynamodb.PutItemOutput, error) {
 	return m.fn(params)
 }
 
-func (m *mockDynamoDB) BatchWriteItem(ctx context.Context, params *dynamodb.BatchWriteItemInput, optFns ...func(*dynamodb.Options)) (*dynamodb.BatchWriteItemOutput, error) {
+func (m *mockDynamoDB) BatchWriteItem(
+	ctx context.Context,
+	params *dynamodb.BatchWriteItemInput,
+	optFns ...func(*dynamodb.Options),
+) (*dynamodb.BatchWriteItemOutput, error) {
 	return m.batchFn(params)
 }
 
@@ -555,7 +563,12 @@ func Test_MarshalToAttributeValue(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			got, err := marshalToAttributeValue(tt.key, tt.root, tt.keyTypeMap)
 			require.NoError(t, err)
-			require.Equalf(t, tt.want, got, fmt.Sprintf("MarshalToAttributeValue() = %v, want %v", got, tt.want))
+			require.Equalf(
+				t,
+				tt.want,
+				got,
+				fmt.Sprintf("MarshalToAttributeValue() = %v, want %v", got, tt.want),
+			)
 		})
 	}
 }
@@ -624,7 +637,12 @@ func Test_AnyToString(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			got := anyToString(tt.input)
-			require.Equalf(t, tt.want, got, fmt.Sprintf("anyToString() = %v, want %v", got, tt.want))
+			require.Equalf(
+				t,
+				tt.want,
+				got,
+				fmt.Sprintf("anyToString() = %v, want %v", got, tt.want),
+			)
 		})
 	}
 }

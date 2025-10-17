@@ -14,7 +14,11 @@ type mockTransformPiiTextApi struct {
 	transformFn func(ctx context.Context, config *mgmtv1alpha1.TransformPiiText, value string) (string, error)
 }
 
-func (m *mockTransformPiiTextApi) Transform(ctx context.Context, config *mgmtv1alpha1.TransformPiiText, value string) (string, error) {
+func (m *mockTransformPiiTextApi) Transform(
+	ctx context.Context,
+	config *mgmtv1alpha1.TransformPiiText,
+	value string,
+) (string, error) {
 	return m.transformFn(ctx, config, value)
 }
 

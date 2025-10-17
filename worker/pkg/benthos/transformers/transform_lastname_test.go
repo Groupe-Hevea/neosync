@@ -26,7 +26,12 @@ func Test_TransformLastName_Preserve_True(t *testing.T) {
 	res, err := transformLastName(randomizer, name, true, maxCharacterLimit)
 
 	assert.NoError(t, err)
-	assert.Equal(t, nameLength, int64(len(*res)), "The last name output should be the same length as the input")
+	assert.Equal(
+		t,
+		nameLength,
+		int64(len(*res)),
+		"The last name output should be the same length as the input",
+	)
 	assert.IsType(t, "", *res, "The last name should be a string")
 }
 
@@ -45,7 +50,12 @@ func Test_TransformLastName_Preserve_True_With_Padding(t *testing.T) {
 	res, err := transformLastName(randomizer, name, true, 500)
 
 	assert.NoError(t, err)
-	assert.Equal(t, int64(len(name)), int64(len(*res)), "The last name output should be the same length as the input")
+	assert.Equal(
+		t,
+		int64(len(name)),
+		int64(len(*res)),
+		"The last name output should be the same length as the input",
+	)
 	assert.IsType(t, "", *res, "The last name should be a string")
 }
 
@@ -55,13 +65,22 @@ func Test_TransformLastName_Preserve_False(t *testing.T) {
 	res, err := transformLastName(randomizer, name, false, maxCharacterLimit)
 
 	assert.NoError(t, err)
-	assert.LessOrEqual(t, int64(len(*res)), maxCharacterLimit, "The last name output should be the same length as the input")
+	assert.LessOrEqual(
+		t,
+		int64(len(*res)),
+		maxCharacterLimit,
+		"The last name output should be the same length as the input",
+	)
 	assert.IsType(t, "", *res, "The last name should be a string")
 }
 
 func Test_LastNameTransformer(t *testing.T) {
 	testVal := "bill"
-	mapping := fmt.Sprintf(`root = transform_last_name(value:%q,preserve_length:true,max_length:%d)`, testVal, maxCharacterLimit)
+	mapping := fmt.Sprintf(
+		`root = transform_last_name(value:%q,preserve_length:true,max_length:%d)`,
+		testVal,
+		maxCharacterLimit,
+	)
 	ex, err := bloblang.Parse(mapping)
 	assert.NoError(t, err, "failed to parse the last name transformer")
 
@@ -77,7 +96,12 @@ func Test_LastNameTransformer(t *testing.T) {
 	}
 
 	if resStr != nil {
-		assert.Equal(t, len(*resStr), len(testVal), "Generated last name must be as long as input last name")
+		assert.Equal(
+			t,
+			len(*resStr),
+			len(testVal),
+			"Generated last name must be as long as input last name",
+		)
 	} else {
 		t.Error("Pointer is nil, expected a valid string pointer")
 	}
@@ -85,7 +109,11 @@ func Test_LastNameTransformer(t *testing.T) {
 
 func Test_TransformLastNameTransformerWithEmptyValue(t *testing.T) {
 	nilName := ""
-	mapping := fmt.Sprintf(`root = transform_last_name(value:%q,preserve_length:true,max_length:%d)`, nilName, maxCharacterLimit)
+	mapping := fmt.Sprintf(
+		`root = transform_last_name(value:%q,preserve_length:true,max_length:%d)`,
+		nilName,
+		maxCharacterLimit,
+	)
 	ex, err := bloblang.Parse(mapping)
 	assert.NoError(t, err, "failed to parse the last name transformer")
 

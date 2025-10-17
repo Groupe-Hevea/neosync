@@ -369,7 +369,10 @@ type BenchmarkTemplateData struct {
 	StructName       string
 }
 
-func generateBenchmarkCode(pkgName string, transformerSpecs []*transformers.BenthosSpec) (string, error) {
+func generateBenchmarkCode(
+	pkgName string,
+	transformerSpecs []*transformers.BenthosSpec,
+) (string, error) {
 	for _, tf := range transformerSpecs {
 		tf.Name = capitalizeFirst(tf.Name)
 	}

@@ -38,7 +38,11 @@ func Test_Client_GetAuthorizeUrl(t *testing.T) {
 
 		authorizedUrl, err := client.GetAuthorizeUrl("test-account-id", "test-user-id")
 		assert.NoError(t, err)
-		assert.Equal(t, "https://slack.com/oauth/v2/authorize?client_id=test-client-id&redirect_uri=http%3A%2F%2Ftest.com&scope=test-scope&state=encrypted-token", authorizedUrl)
+		assert.Equal(
+			t,
+			"https://slack.com/oauth/v2/authorize?client_id=test-client-id&redirect_uri=http%3A%2F%2Ftest.com&scope=test-scope&state=encrypted-token",
+			authorizedUrl,
+		)
 		encryptor.AssertExpectations(t)
 	})
 }
@@ -64,9 +68,14 @@ func Test_Client_ValidateState(t *testing.T) {
 
 		encryptor.EXPECT().Decrypt("encrypted-token").Return(string(stateJson), nil).Once()
 
-		oauthState, err := client.ValidateState(context.Background(), "encrypted-token", "test-user-id", func(ctx context.Context, userId, accountId string) (bool, error) {
-			return true, nil
-		})
+		oauthState, err := client.ValidateState(
+			context.Background(),
+			"encrypted-token",
+			"test-user-id",
+			func(ctx context.Context, userId, accountId string) (bool, error) {
+				return true, nil
+			},
+		)
 		assert.NoError(t, err)
 		assert.Equal(t, state, *oauthState)
 		encryptor.AssertExpectations(t)
@@ -92,9 +101,14 @@ func Test_Client_ValidateState(t *testing.T) {
 
 		encryptor.EXPECT().Decrypt("encrypted-token").Return(string(stateJson), nil).Once()
 
-		oauthState, err := client.ValidateState(context.Background(), "encrypted-token", "test-user-id", func(ctx context.Context, userId, accountId string) (bool, error) {
-			return false, nil
-		})
+		oauthState, err := client.ValidateState(
+			context.Background(),
+			"encrypted-token",
+			"test-user-id",
+			func(ctx context.Context, userId, accountId string) (bool, error) {
+				return false, nil
+			},
+		)
 		assert.Error(t, err)
 		assert.Nil(t, oauthState)
 		encryptor.AssertExpectations(t)
@@ -120,9 +134,14 @@ func Test_Client_ValidateState(t *testing.T) {
 
 		encryptor.EXPECT().Decrypt("encrypted-token").Return(string(stateJson), nil).Once()
 
-		oauthState, err := client.ValidateState(context.Background(), "encrypted-token", "invalid-user-id", func(ctx context.Context, userId, accountId string) (bool, error) {
-			return true, nil
-		})
+		oauthState, err := client.ValidateState(
+			context.Background(),
+			"encrypted-token",
+			"invalid-user-id",
+			func(ctx context.Context, userId, accountId string) (bool, error) {
+				return true, nil
+			},
+		)
 		assert.Error(t, err)
 		assert.Nil(t, oauthState)
 		encryptor.AssertExpectations(t)
@@ -148,9 +167,14 @@ func Test_Client_ValidateState(t *testing.T) {
 
 		encryptor.EXPECT().Decrypt("encrypted-token").Return(string(stateJson), nil).Once()
 
-		oauthState, err := client.ValidateState(context.Background(), "encrypted-token", "test-user-id", func(ctx context.Context, userId, accountId string) (bool, error) {
-			return true, nil
-		})
+		oauthState, err := client.ValidateState(
+			context.Background(),
+			"encrypted-token",
+			"test-user-id",
+			func(ctx context.Context, userId, accountId string) (bool, error) {
+				return true, nil
+			},
+		)
 		assert.Error(t, err)
 		assert.Nil(t, oauthState)
 		encryptor.AssertExpectations(t)

@@ -14,7 +14,10 @@ func Test_NewFromMssqlConnection(t *testing.T) {
 
 	t.Run("URL from Env", func(t *testing.T) {
 		t.Run("ok", func(t *testing.T) {
-			viper.Set(fmt.Sprintf("%s%s", userDefinedEnvPrefix, "MSSQL_URL"), "sqlserver://test-user:test-pass@localhost:1433/myinstance?database=master")
+			viper.Set(
+				fmt.Sprintf("%s%s", userDefinedEnvPrefix, "MSSQL_URL"),
+				"sqlserver://test-user:test-pass@localhost:1433/myinstance?database=master",
+			)
 			actual, err := NewFromMssqlConnection(
 				&mgmtv1alpha1.ConnectionConfig_MssqlConfig{
 					MssqlConfig: &mgmtv1alpha1.MssqlConnectionConfig{
@@ -27,11 +30,18 @@ func Test_NewFromMssqlConnection(t *testing.T) {
 			)
 			assert.NoError(t, err)
 			assert.NotNil(t, actual)
-			assert.Equal(t, "sqlserver://test-user:test-pass@localhost:1433/myinstance?connection+timeout=5&database=master", actual.String())
+			assert.Equal(
+				t,
+				"sqlserver://test-user:test-pass@localhost:1433/myinstance?connection+timeout=5&database=master",
+				actual.String(),
+			)
 			assert.Equal(t, "test-user", actual.GetUser())
 		})
 		t.Run("error_no_prefix", func(t *testing.T) {
-			viper.Set("MSSQL_URL_NO_PREFIX", "sqlserver://test-user:test-pass@localhost:1433/myinstance?database=master")
+			viper.Set(
+				"MSSQL_URL_NO_PREFIX",
+				"sqlserver://test-user:test-pass@localhost:1433/myinstance?database=master",
+			)
 
 			_, err := NewFromMssqlConnection(
 				&mgmtv1alpha1.ConnectionConfig_MssqlConfig{

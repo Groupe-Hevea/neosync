@@ -156,7 +156,11 @@ func Test_getAdditionalMappings(t *testing.T) {
 					Table:  "users",
 					Column: "id",
 					Transformer: &mgmtv1alpha1.JobMappingTransformer{
-						Config: &mgmtv1alpha1.TransformerConfig{Config: &mgmtv1alpha1.TransformerConfig_PassthroughConfig{PassthroughConfig: &mgmtv1alpha1.Passthrough{}}},
+						Config: &mgmtv1alpha1.TransformerConfig{
+							Config: &mgmtv1alpha1.TransformerConfig_PassthroughConfig{
+								PassthroughConfig: &mgmtv1alpha1.Passthrough{},
+							},
+						},
 					},
 				}},
 				splitKeyToTablePieces,
@@ -190,7 +194,11 @@ func Test_getAdditionalMappings(t *testing.T) {
 					Table:  "users",
 					Column: "id",
 					Transformer: &mgmtv1alpha1.JobMappingTransformer{
-						Config: &mgmtv1alpha1.TransformerConfig{Config: &mgmtv1alpha1.TransformerConfig_PassthroughConfig{PassthroughConfig: &mgmtv1alpha1.Passthrough{}}},
+						Config: &mgmtv1alpha1.TransformerConfig{
+							Config: &mgmtv1alpha1.TransformerConfig_PassthroughConfig{
+								PassthroughConfig: &mgmtv1alpha1.Passthrough{},
+							},
+						},
 					},
 				}},
 				splitKeyToTablePieces,

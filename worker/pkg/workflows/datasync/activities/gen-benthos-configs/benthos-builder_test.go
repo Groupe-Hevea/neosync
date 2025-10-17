@@ -82,7 +82,11 @@ func Test_buildPostTableSyncRunCtx(t *testing.T) {
 				DestinationConfigs: map[string]*shared.PostTableSyncDestConfig{
 					"pg_dest": {
 						Statements: []string{
-							sqlmanager_postgres.BuildPgIdentityColumnResetCurrentSql("public", "table1", "col1"),
+							sqlmanager_postgres.BuildPgIdentityColumnResetCurrentSql(
+								"public",
+								"table1",
+								"col1",
+							),
 						},
 					},
 				},
@@ -138,10 +142,23 @@ func Test_BuildPgPostTableSyncStatement(t *testing.T) {
 		}
 		resultSomeReset := buildPgPostTableSyncStatement(bcSomeReset)
 		expectedSomeReset := []string{
-			sqlmanager_postgres.BuildPgIdentityColumnResetCurrentSql("public", "test_table", "col1"),
-			sqlmanager_postgres.BuildPgIdentityColumnResetCurrentSql("public", "test_table", "col3"),
+			sqlmanager_postgres.BuildPgIdentityColumnResetCurrentSql(
+				"public",
+				"test_table",
+				"col1",
+			),
+			sqlmanager_postgres.BuildPgIdentityColumnResetCurrentSql(
+				"public",
+				"test_table",
+				"col3",
+			),
 		}
-		require.ElementsMatch(t, expectedSomeReset, resultSomeReset, "Unexpected result when some columns need reset")
+		require.ElementsMatch(
+			t,
+			expectedSomeReset,
+			resultSomeReset,
+			"Unexpected result when some columns need reset",
+		)
 	})
 }
 
@@ -182,6 +199,11 @@ func Test_BuildMssqlPostTableSyncStatement(t *testing.T) {
 		expectedSomeOverride := []string{
 			sqlmanager_mssql.BuildMssqlIdentityColumnResetCurrent("dbo", "test_table"),
 		}
-		require.Equal(t, expectedSomeOverride, resultSomeOverride, "Unexpected result when some columns need override")
+		require.Equal(
+			t,
+			expectedSomeOverride,
+			resultSomeOverride,
+			"Unexpected result when some columns need override",
+		)
 	})
 }

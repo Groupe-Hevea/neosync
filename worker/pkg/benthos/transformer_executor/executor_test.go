@@ -43,14 +43,18 @@ func Test_InitializeTransformerByConfigType(t *testing.T) {
 		}
 		mockResolver := NewMockUserDefinedTransformerResolver(t)
 		categories := "A"
-		mockResolver.On("GetUserDefinedTransformer", mock.Anything, "test_id").Return(&mgmtv1alpha1.TransformerConfig{
-			Config: &mgmtv1alpha1.TransformerConfig_GenerateCategoricalConfig{
-				GenerateCategoricalConfig: &mgmtv1alpha1.GenerateCategorical{
-					Categories: &categories,
+		mockResolver.On("GetUserDefinedTransformer", mock.Anything, "test_id").
+			Return(&mgmtv1alpha1.TransformerConfig{
+				Config: &mgmtv1alpha1.TransformerConfig_GenerateCategoricalConfig{
+					GenerateCategoricalConfig: &mgmtv1alpha1.GenerateCategorical{
+						Categories: &categories,
+					},
 				},
-			},
-		}, nil)
-		executor, err := InitializeTransformerByConfigType(config, WithUserDefinedTransformerResolver(mockResolver))
+			}, nil)
+		executor, err := InitializeTransformerByConfigType(
+			config,
+			WithUserDefinedTransformerResolver(mockResolver),
+		)
 		require.NoError(t, err)
 		require.NotNil(t, executor)
 		result, err := executor.Mutate("test", executor.Opts)
@@ -1638,7 +1642,10 @@ func Test_InitializeTransformerByConfigType(t *testing.T) {
 		mockText := "bar"
 		mockanon.On("PostAnonymizeWithResponse", mock.Anything, mock.Anything).
 			Return(&presidioapi.PostAnonymizeResponse{
-				JSON200: &presidioapi.AnonymizeResponse{Text: &mockText, Items: &[]presidioapi.OperatorResult{}},
+				JSON200: &presidioapi.AnonymizeResponse{
+					Text:  &mockText,
+					Items: &[]presidioapi.OperatorResult{},
+				},
 			}, nil)
 		defaultLan := "en"
 
@@ -1676,7 +1683,10 @@ func Test_InitializeTransformerByConfigType(t *testing.T) {
 		mockText := "bar"
 		mockanon.On("PostAnonymizeWithResponse", mock.Anything, mock.Anything).
 			Return(&presidioapi.PostAnonymizeResponse{
-				JSON200: &presidioapi.AnonymizeResponse{Text: &mockText, Items: &[]presidioapi.OperatorResult{}},
+				JSON200: &presidioapi.AnonymizeResponse{
+					Text:  &mockText,
+					Items: &[]presidioapi.OperatorResult{},
+				},
 			}, nil)
 		defaultLan := "en"
 		execOpts := []TransformerExecutorOption{

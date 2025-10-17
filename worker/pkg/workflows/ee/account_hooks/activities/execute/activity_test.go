@@ -42,32 +42,37 @@ func Test_Activity_Webhook_Success(t *testing.T) {
 	mux := http.NewServeMux()
 	var srv *httptest.Server
 	secret := "test-secret"
-	mux.Handle(mgmtv1alpha1connect.AccountHookServiceGetAccountHookProcedure, connect.NewUnaryHandler(
+	mux.Handle(
 		mgmtv1alpha1connect.AccountHookServiceGetAccountHookProcedure,
-		func(ctx context.Context, r *connect.Request[mgmtv1alpha1.GetAccountHookRequest]) (*connect.Response[mgmtv1alpha1.GetAccountHookResponse], error) {
-			if r.Msg.GetId() == hookId {
-				return connect.NewResponse(&mgmtv1alpha1.GetAccountHookResponse{
-					Hook: &mgmtv1alpha1.AccountHook{
-						Id:          hookId,
-						AccountId:   accountId,
-						Name:        "test-hook",
-						Description: "test-description",
-						Events:      []mgmtv1alpha1.AccountHookEvent{mgmtv1alpha1.AccountHookEvent_ACCOUNT_HOOK_EVENT_JOB_RUN_SUCCEEDED},
-						Config: &mgmtv1alpha1.AccountHookConfig{
-							Config: &mgmtv1alpha1.AccountHookConfig_Webhook{
-								Webhook: &mgmtv1alpha1.AccountHookConfig_WebHook{
-									Url:                    fmt.Sprintf("%s/webhook", srv.URL),
-									Secret:                 secret,
-									DisableSslVerification: false,
+		connect.NewUnaryHandler(
+			mgmtv1alpha1connect.AccountHookServiceGetAccountHookProcedure,
+			func(ctx context.Context, r *connect.Request[mgmtv1alpha1.GetAccountHookRequest]) (*connect.Response[mgmtv1alpha1.GetAccountHookResponse], error) {
+				if r.Msg.GetId() == hookId {
+					return connect.NewResponse(&mgmtv1alpha1.GetAccountHookResponse{
+						Hook: &mgmtv1alpha1.AccountHook{
+							Id:          hookId,
+							AccountId:   accountId,
+							Name:        "test-hook",
+							Description: "test-description",
+							Events: []mgmtv1alpha1.AccountHookEvent{
+								mgmtv1alpha1.AccountHookEvent_ACCOUNT_HOOK_EVENT_JOB_RUN_SUCCEEDED,
+							},
+							Config: &mgmtv1alpha1.AccountHookConfig{
+								Config: &mgmtv1alpha1.AccountHookConfig_Webhook{
+									Webhook: &mgmtv1alpha1.AccountHookConfig_WebHook{
+										Url:                    fmt.Sprintf("%s/webhook", srv.URL),
+										Secret:                 secret,
+										DisableSslVerification: false,
+									},
 								},
 							},
 						},
-					},
-				}), nil
-			}
-			return nil, connect.NewError(connect.CodeNotFound, errors.New("invalid test input"))
-		},
-	))
+					}), nil
+				}
+				return nil, connect.NewError(connect.CodeNotFound, errors.New("invalid test input"))
+			},
+		),
+	)
 	var (
 		receivedSignature     string
 		receivedSignatureType string
@@ -92,7 +97,11 @@ func Test_Activity_Webhook_Success(t *testing.T) {
 
 	val, err := env.ExecuteActivity(activity.ExecuteAccountHook, &ExecuteHookRequest{
 		HookId: hookId,
-		Event:  accounthook_events.NewEvent_JobRunSucceeded(accountId, "test-job-id", "test-run-id"),
+		Event: accounthook_events.NewEvent_JobRunSucceeded(
+			accountId,
+			"test-job-id",
+			"test-run-id",
+		),
 	})
 	require.NoError(t, err)
 	res := &ExecuteHookResponse{}
@@ -108,7 +117,11 @@ func Test_Activity_Webhook_Success(t *testing.T) {
 	var webhookPayload webhookPayload
 	err = json.Unmarshal(receivedPayload, &webhookPayload)
 	require.NoError(t, err)
-	require.Equal(t, webhookPayload.EventName, mgmtv1alpha1.AccountHookEvent_ACCOUNT_HOOK_EVENT_JOB_RUN_SUCCEEDED.String())
+	require.Equal(
+		t,
+		webhookPayload.EventName,
+		mgmtv1alpha1.AccountHookEvent_ACCOUNT_HOOK_EVENT_JOB_RUN_SUCCEEDED.String(),
+	)
 	eventData, ok := webhookPayload.EventData.(map[string]any)
 	require.True(t, ok)
 	jobRunSucceededEvent, ok := eventData["jobRunSucceeded"].(map[string]any)
@@ -129,37 +142,45 @@ func Test_Activity_Slack_Success(t *testing.T) {
 	mux := http.NewServeMux()
 	var srv *httptest.Server
 
-	mux.Handle(mgmtv1alpha1connect.AccountHookServiceGetAccountHookProcedure, connect.NewUnaryHandler(
+	mux.Handle(
 		mgmtv1alpha1connect.AccountHookServiceGetAccountHookProcedure,
-		func(ctx context.Context, r *connect.Request[mgmtv1alpha1.GetAccountHookRequest]) (*connect.Response[mgmtv1alpha1.GetAccountHookResponse], error) {
-			if r.Msg.GetId() == hookId {
-				return connect.NewResponse(&mgmtv1alpha1.GetAccountHookResponse{
-					Hook: &mgmtv1alpha1.AccountHook{
-						Id:          hookId,
-						AccountId:   accountId,
-						Name:        "test-hook",
-						Description: "test-description",
-						Events:      []mgmtv1alpha1.AccountHookEvent{mgmtv1alpha1.AccountHookEvent_ACCOUNT_HOOK_EVENT_JOB_RUN_SUCCEEDED},
-						Config: &mgmtv1alpha1.AccountHookConfig{
-							Config: &mgmtv1alpha1.AccountHookConfig_Slack{
-								Slack: &mgmtv1alpha1.AccountHookConfig_SlackHook{
-									ChannelId: "test-channel-id",
+		connect.NewUnaryHandler(
+			mgmtv1alpha1connect.AccountHookServiceGetAccountHookProcedure,
+			func(ctx context.Context, r *connect.Request[mgmtv1alpha1.GetAccountHookRequest]) (*connect.Response[mgmtv1alpha1.GetAccountHookResponse], error) {
+				if r.Msg.GetId() == hookId {
+					return connect.NewResponse(&mgmtv1alpha1.GetAccountHookResponse{
+						Hook: &mgmtv1alpha1.AccountHook{
+							Id:          hookId,
+							AccountId:   accountId,
+							Name:        "test-hook",
+							Description: "test-description",
+							Events: []mgmtv1alpha1.AccountHookEvent{
+								mgmtv1alpha1.AccountHookEvent_ACCOUNT_HOOK_EVENT_JOB_RUN_SUCCEEDED,
+							},
+							Config: &mgmtv1alpha1.AccountHookConfig{
+								Config: &mgmtv1alpha1.AccountHookConfig_Slack{
+									Slack: &mgmtv1alpha1.AccountHookConfig_SlackHook{
+										ChannelId: "test-channel-id",
+									},
 								},
 							},
 						},
-					},
-				}), nil
-			}
-			return nil, connect.NewError(connect.CodeNotFound, errors.New("invalid test input"))
-		},
-	))
+					}), nil
+				}
+				return nil, connect.NewError(connect.CodeNotFound, errors.New("invalid test input"))
+			},
+		),
+	)
 
-	mux.Handle(mgmtv1alpha1connect.AccountHookServiceSendSlackMessageProcedure, connect.NewUnaryHandler(
+	mux.Handle(
 		mgmtv1alpha1connect.AccountHookServiceSendSlackMessageProcedure,
-		func(ctx context.Context, r *connect.Request[mgmtv1alpha1.SendSlackMessageRequest]) (*connect.Response[mgmtv1alpha1.SendSlackMessageResponse], error) {
-			return connect.NewResponse(&mgmtv1alpha1.SendSlackMessageResponse{}), nil
-		},
-	))
+		connect.NewUnaryHandler(
+			mgmtv1alpha1connect.AccountHookServiceSendSlackMessageProcedure,
+			func(ctx context.Context, r *connect.Request[mgmtv1alpha1.SendSlackMessageRequest]) (*connect.Response[mgmtv1alpha1.SendSlackMessageResponse], error) {
+				return connect.NewResponse(&mgmtv1alpha1.SendSlackMessageResponse{}), nil
+			},
+		),
+	)
 
 	srv = startHTTPServer(t, mux)
 	accounthookclient := mgmtv1alpha1connect.NewAccountHookServiceClient(srv.Client(), srv.URL)
@@ -169,7 +190,11 @@ func Test_Activity_Slack_Success(t *testing.T) {
 
 	val, err := env.ExecuteActivity(activity.ExecuteAccountHook, &ExecuteHookRequest{
 		HookId: hookId,
-		Event:  accounthook_events.NewEvent_JobRunSucceeded(accountId, "test-job-id", "test-run-id"),
+		Event: accounthook_events.NewEvent_JobRunSucceeded(
+			accountId,
+			"test-job-id",
+			"test-run-id",
+		),
 	})
 	require.NoError(t, err)
 	res := &ExecuteHookResponse{}

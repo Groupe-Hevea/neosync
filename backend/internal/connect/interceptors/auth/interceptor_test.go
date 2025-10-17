@@ -14,9 +14,11 @@ import (
 )
 
 func Test_Interceptor_WrapUnary_Disallow_All(t *testing.T) {
-	interceptor := NewInterceptor(func(ctx context.Context, header http.Header, spec connect.Spec) (context.Context, error) {
-		return nil, errors.New("no dice")
-	})
+	interceptor := NewInterceptor(
+		func(ctx context.Context, header http.Header, spec connect.Spec) (context.Context, error) {
+			return nil, errors.New("no dice")
+		},
+	)
 
 	mux := http.NewServeMux()
 	mux.Handle(mgmtv1alpha1connect.UserAccountServiceGetUserProcedure, connect.NewUnaryHandler(
@@ -29,16 +31,21 @@ func Test_Interceptor_WrapUnary_Disallow_All(t *testing.T) {
 	srv := startHTTPServer(t, mux)
 
 	client := mgmtv1alpha1connect.NewUserAccountServiceClient(srv.Client(), srv.URL)
-	resp, err := client.GetUser(context.Background(), connect.NewRequest(&mgmtv1alpha1.GetUserRequest{}))
+	resp, err := client.GetUser(
+		context.Background(),
+		connect.NewRequest(&mgmtv1alpha1.GetUserRequest{}),
+	)
 	assert.Error(t, err)
 	assert.ErrorContains(t, err, "no dice")
 	assert.Nil(t, resp)
 }
 
 func Test_Interceptor_WrapUnary_Allow_All(t *testing.T) {
-	interceptor := NewInterceptor(func(ctx context.Context, header http.Header, spec connect.Spec) (context.Context, error) {
-		return ctx, nil
-	})
+	interceptor := NewInterceptor(
+		func(ctx context.Context, header http.Header, spec connect.Spec) (context.Context, error) {
+			return ctx, nil
+		},
+	)
 
 	mux := http.NewServeMux()
 	mux.Handle(mgmtv1alpha1connect.UserAccountServiceGetUserProcedure, connect.NewUnaryHandler(
@@ -51,7 +58,10 @@ func Test_Interceptor_WrapUnary_Allow_All(t *testing.T) {
 	srv := startHTTPServer(t, mux)
 
 	client := mgmtv1alpha1connect.NewUserAccountServiceClient(srv.Client(), srv.URL)
-	resp, err := client.GetUser(context.Background(), connect.NewRequest(&mgmtv1alpha1.GetUserRequest{}))
+	resp, err := client.GetUser(
+		context.Background(),
+		connect.NewRequest(&mgmtv1alpha1.GetUserRequest{}),
+	)
 	assert.Error(t, err)
 	assert.ErrorContains(t, err, "oh no")
 	assert.Nil(t, resp)
@@ -92,12 +102,18 @@ func Test_Interceptor_WrapUnary_WithExclude(t *testing.T) {
 	srv := startHTTPServer(t, mux)
 
 	client := mgmtv1alpha1connect.NewUserAccountServiceClient(srv.Client(), srv.URL)
-	resp, err := client.GetUser(context.Background(), connect.NewRequest(&mgmtv1alpha1.GetUserRequest{}))
+	resp, err := client.GetUser(
+		context.Background(),
+		connect.NewRequest(&mgmtv1alpha1.GetUserRequest{}),
+	)
 	assert.Error(t, err)
 	assert.ErrorContains(t, err, "no dice")
 	assert.Nil(t, resp)
 
-	resp2, err := client.SetUser(context.Background(), connect.NewRequest(&mgmtv1alpha1.SetUserRequest{}))
+	resp2, err := client.SetUser(
+		context.Background(),
+		connect.NewRequest(&mgmtv1alpha1.SetUserRequest{}),
+	)
 	assert.NoError(t, err)
 	assert.NotNil(t, resp2)
 }

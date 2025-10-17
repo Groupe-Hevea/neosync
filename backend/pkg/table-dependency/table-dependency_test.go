@@ -18,7 +18,15 @@ func Test_GetTablesOrderedByDependency_CircularDependency(t *testing.T) {
 	require.NoError(t, err)
 	require.Equal(t, resp.HasCycles, true)
 	for _, e := range resp.OrderedTables {
-		require.Contains(t, []*sqlmanager_shared.SchemaTable{{Schema: "other", Table: "a"}, {Schema: "other", Table: "b"}, {Schema: "other", Table: "c"}}, e)
+		require.Contains(
+			t,
+			[]*sqlmanager_shared.SchemaTable{
+				{Schema: "other", Table: "a"},
+				{Schema: "other", Table: "b"},
+				{Schema: "other", Table: "c"},
+			},
+			e,
+		)
 	}
 }
 
@@ -58,7 +66,12 @@ func Test_GetTablesOrderedByDependency_Mixed(t *testing.T) {
 		"jobs":      {},
 	}
 
-	expected := []*sqlmanager_shared.SchemaTable{{Schema: "public", Table: "countries"}, {Schema: "public", Table: "regions"}, {Schema: "public", Table: "jobs"}, {Schema: "public", Table: "locations"}}
+	expected := []*sqlmanager_shared.SchemaTable{
+		{Schema: "public", Table: "countries"},
+		{Schema: "public", Table: "regions"},
+		{Schema: "public", Table: "jobs"},
+		{Schema: "public", Table: "locations"},
+	}
 	actual, err := GetTablesOrderedByDependency(dependencies)
 	require.NoError(t, err)
 	require.Equal(t, actual.HasCycles, false)
@@ -66,7 +79,11 @@ func Test_GetTablesOrderedByDependency_Mixed(t *testing.T) {
 	for _, table := range actual.OrderedTables {
 		require.Contains(t, expected, table)
 	}
-	require.Equal(t, &sqlmanager_shared.SchemaTable{Schema: "public", Table: "locations"}, actual.OrderedTables[len(actual.OrderedTables)-1])
+	require.Equal(
+		t,
+		&sqlmanager_shared.SchemaTable{Schema: "public", Table: "locations"},
+		actual.OrderedTables[len(actual.OrderedTables)-1],
+	)
 }
 
 func Test_GetTablesOrderedByDependency_BrokenDependencies_NoLoop(t *testing.T) {
@@ -89,7 +106,12 @@ func Test_GetTablesOrderedByDependency_NestedDependencies(t *testing.T) {
 		"d": {},
 	}
 
-	expected := []*sqlmanager_shared.SchemaTable{{Schema: "public", Table: "d"}, {Schema: "public", Table: "c"}, {Schema: "public", Table: "b"}, {Schema: "public", Table: "a"}}
+	expected := []*sqlmanager_shared.SchemaTable{
+		{Schema: "public", Table: "d"},
+		{Schema: "public", Table: "c"},
+		{Schema: "public", Table: "b"},
+		{Schema: "public", Table: "a"},
+	}
 	actual, err := GetTablesOrderedByDependency(dependencies)
 	require.NoError(t, err)
 	require.Equal(t, expected[0], actual.OrderedTables[0])

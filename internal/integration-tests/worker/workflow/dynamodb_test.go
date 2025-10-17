@@ -35,7 +35,9 @@ func createDynamodbSyncJob(
 	destinationOptions := &mgmtv1alpha1.JobDestinationOptions{
 		Config: &mgmtv1alpha1.JobDestinationOptions_DynamodbOptions{
 			DynamodbOptions: &mgmtv1alpha1.DynamoDBDestinationConnectionOptions{
-				TableMappings: []*mgmtv1alpha1.DynamoDBDestinationTableMapping{{SourceTable: sourceTableName, DestinationTable: destTableName}},
+				TableMappings: []*mgmtv1alpha1.DynamoDBDestinationTableMapping{
+					{SourceTable: sourceTableName, DestinationTable: destTableName},
+				},
 			},
 		},
 	}
@@ -126,7 +128,11 @@ func test_dynamodb_alltypes(
 	testworkflow := NewTestDataSyncWorkflowEnv(t, neosyncApi, dbManagers)
 	testworkflow.RequireActivitiesCompletedSuccessfully(t)
 	testworkflow.ExecuteTestDataSyncWorkflow(job.GetId())
-	require.Truef(t, testworkflow.TestEnv.IsWorkflowCompleted(), "Workflow did not complete. Test: all_types")
+	require.Truef(
+		t,
+		testworkflow.TestEnv.IsWorkflowCompleted(),
+		"Workflow did not complete. Test: all_types",
+	)
 	err = testworkflow.TestEnv.GetWorkflowError()
 	require.NoError(t, err, "Received Temporal Workflow Error: all_types")
 
@@ -204,7 +210,11 @@ func test_dynamodb_subset(
 	testworkflow := NewTestDataSyncWorkflowEnv(t, neosyncApi, dbManagers)
 	testworkflow.RequireActivitiesCompletedSuccessfully(t)
 	testworkflow.ExecuteTestDataSyncWorkflow(job.GetId())
-	require.Truef(t, testworkflow.TestEnv.IsWorkflowCompleted(), "Workflow did not complete. Test: subset")
+	require.Truef(
+		t,
+		testworkflow.TestEnv.IsWorkflowCompleted(),
+		"Workflow did not complete. Test: subset",
+	)
 	err = testworkflow.TestEnv.GetWorkflowError()
 	require.NoError(t, err, "Received Temporal Workflow Error: subset")
 
@@ -275,7 +285,10 @@ func test_dynamodb_default_transformers(
 			Number: &mgmtv1alpha1.JobMappingTransformer{
 				Config: &mgmtv1alpha1.TransformerConfig{
 					Config: &mgmtv1alpha1.TransformerConfig_TransformInt64Config{
-						TransformInt64Config: &mgmtv1alpha1.TransformInt64{RandomizationRangeMin: gotypeutil.ToPtr(int64(10)), RandomizationRangeMax: gotypeutil.ToPtr(int64(1000))},
+						TransformInt64Config: &mgmtv1alpha1.TransformInt64{
+							RandomizationRangeMin: gotypeutil.ToPtr(int64(10)),
+							RandomizationRangeMax: gotypeutil.ToPtr(int64(1000)),
+						},
 					},
 				},
 			},
@@ -306,7 +319,11 @@ func test_dynamodb_default_transformers(
 	testworkflow := NewTestDataSyncWorkflowEnv(t, neosyncApi, dbManagers)
 	testworkflow.RequireActivitiesCompletedSuccessfully(t)
 	testworkflow.ExecuteTestDataSyncWorkflow(job.GetId())
-	require.Truef(t, testworkflow.TestEnv.IsWorkflowCompleted(), "Workflow did not complete. Test: default_transformers")
+	require.Truef(
+		t,
+		testworkflow.TestEnv.IsWorkflowCompleted(),
+		"Workflow did not complete. Test: default_transformers",
+	)
 	err = testworkflow.TestEnv.GetWorkflowError()
 	require.NoError(t, err, "Received Temporal Workflow Error: default_transformers")
 
@@ -321,17 +338,29 @@ func test_dynamodb_default_transformers(
 	require.NoError(t, err)
 }
 
-func cleanupDynamodbTables(ctx context.Context, dynamo *tcdynamodb.DynamoDBTestSyncContainer, tableName string) error {
+func cleanupDynamodbTables(
+	ctx context.Context,
+	dynamo *tcdynamodb.DynamoDBTestSyncContainer,
+	tableName string,
+) error {
 	errgrp, errctx := errgroup.WithContext(ctx)
 	errgrp.Go(func() error { return dynamo.Source.DestroyDynamoDbTable(errctx, tableName) })
 	errgrp.Go(func() error { return dynamo.Target.DestroyDynamoDbTable(errctx, tableName) })
 	return errgrp.Wait()
 }
 
-func createDynamodbTables(ctx context.Context, dynamo *tcdynamodb.DynamoDBTestSyncContainer, tableName, primaryKey string) error {
+func createDynamodbTables(
+	ctx context.Context,
+	dynamo *tcdynamodb.DynamoDBTestSyncContainer,
+	tableName, primaryKey string,
+) error {
 	errgrp, errctx := errgroup.WithContext(ctx)
-	errgrp.Go(func() error { return dynamo.Source.SetupDynamoDbTable(errctx, tableName, primaryKey) })
-	errgrp.Go(func() error { return dynamo.Target.SetupDynamoDbTable(errctx, tableName, primaryKey) })
+	errgrp.Go(
+		func() error { return dynamo.Source.SetupDynamoDbTable(errctx, tableName, primaryKey) },
+	)
+	errgrp.Go(
+		func() error { return dynamo.Target.SetupDynamoDbTable(errctx, tableName, primaryKey) },
+	)
 	return errgrp.Wait()
 }
 
@@ -347,12 +376,20 @@ func getAllTypesTestData() []map[string]dyntypes.AttributeValue {
 							"Level2": &dyntypes.AttributeValueMemberM{
 								Value: map[string]dyntypes.AttributeValue{
 									"Attribute1": &dyntypes.AttributeValueMemberS{Value: "Value1"},
-									"NumberSet":  &dyntypes.AttributeValueMemberNS{Value: []string{"1", "2", "3"}},
-									"BinaryData": &dyntypes.AttributeValueMemberB{Value: []byte("U29tZUJpbmFyeURhdGE=")},
+									"NumberSet": &dyntypes.AttributeValueMemberNS{
+										Value: []string{"1", "2", "3"},
+									},
+									"BinaryData": &dyntypes.AttributeValueMemberB{
+										Value: []byte("U29tZUJpbmFyeURhdGE="),
+									},
 									"Level3": &dyntypes.AttributeValueMemberM{
 										Value: map[string]dyntypes.AttributeValue{
-											"Attribute2": &dyntypes.AttributeValueMemberS{Value: "Value2"},
-											"StringSet":  &dyntypes.AttributeValueMemberSS{Value: []string{"Item1", "Item2", "Item3"}},
+											"Attribute2": &dyntypes.AttributeValueMemberS{
+												Value: "Value2",
+											},
+											"StringSet": &dyntypes.AttributeValueMemberSS{
+												Value: []string{"Item1", "Item2", "Item3"},
+											},
 											"BinarySet": &dyntypes.AttributeValueMemberBS{
 												Value: [][]byte{
 													[]byte("U29tZUJpbmFyeQ=="),
@@ -361,9 +398,15 @@ func getAllTypesTestData() []map[string]dyntypes.AttributeValue {
 											},
 											"Level4": &dyntypes.AttributeValueMemberM{
 												Value: map[string]dyntypes.AttributeValue{
-													"Attribute3":     &dyntypes.AttributeValueMemberS{Value: "Value3"},
-													"Boolean":        &dyntypes.AttributeValueMemberBOOL{Value: true},
-													"MoreBinaryData": &dyntypes.AttributeValueMemberB{Value: []byte("TW9yZUJpbmFyeURhdGE=")},
+													"Attribute3": &dyntypes.AttributeValueMemberS{
+														Value: "Value3",
+													},
+													"Boolean": &dyntypes.AttributeValueMemberBOOL{
+														Value: true,
+													},
+													"MoreBinaryData": &dyntypes.AttributeValueMemberB{
+														Value: []byte("TW9yZUJpbmFyeURhdGE="),
+													},
 													"MoreBinarySet": &dyntypes.AttributeValueMemberBS{
 														Value: [][]byte{
 															[]byte("TW9yZUJpbmFyeQ=="),

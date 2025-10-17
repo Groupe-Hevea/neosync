@@ -16,8 +16,18 @@ func Test_getUniqueSchemaColMappings(t *testing.T) {
 			{TableSchema: "neosync_api", TableName: "accounts", ColumnName: "id"},
 		},
 	)
-	require.Contains(t, mappings, "public.users", "job mappings are a subset of the present database schemas")
-	require.Contains(t, mappings, "neosync_api.accounts", "job mappings are a subset of the present database schemas")
+	require.Contains(
+		t,
+		mappings,
+		"public.users",
+		"job mappings are a subset of the present database schemas",
+	)
+	require.Contains(
+		t,
+		mappings,
+		"neosync_api.accounts",
+		"job mappings are a subset of the present database schemas",
+	)
 	require.Contains(t, mappings["public.users"], "id", "")
 	require.Contains(t, mappings["public.users"], "created_by", "")
 	require.Contains(t, mappings["public.users"], "updated_by", "")

@@ -52,7 +52,12 @@ func New(
 }
 
 func (c *AdminClient) GetUserBySub(ctx context.Context, sub string) (*authmgmt.User, error) {
-	req, err := http.NewRequestWithContext(ctx, "GET", fmt.Sprintf("%s/users/%s", c.domain, sub), http.NoBody)
+	req, err := http.NewRequestWithContext(
+		ctx,
+		"GET",
+		fmt.Sprintf("%s/users/%s", c.domain, sub),
+		http.NoBody,
+	)
 	if err != nil {
 		return nil, fmt.Errorf("unable to initiate request to user endpoint: %w", err)
 	}
@@ -64,7 +69,10 @@ func (c *AdminClient) GetUserBySub(ctx context.Context, sub string) (*authmgmt.U
 
 	res, err := http.DefaultClient.Do(req)
 	if err != nil {
-		return nil, fmt.Errorf("unable to retrieve response when requested access to user data: %w", err)
+		return nil, fmt.Errorf(
+			"unable to retrieve response when requested access to user data: %w",
+			err,
+		)
 	}
 	defer res.Body.Close()
 	body, err := io.ReadAll(res.Body)
@@ -73,8 +81,17 @@ func (c *AdminClient) GetUserBySub(ctx context.Context, sub string) (*authmgmt.U
 	}
 
 	if res.StatusCode > 399 {
-		c.logger.Error("unable to retrieve user", "body", string(body), "statuscode", res.StatusCode)
-		return nil, fmt.Errorf("received unsuccessful status code when retrieving keycloak user. code: %d", res.StatusCode)
+		c.logger.Error(
+			"unable to retrieve user",
+			"body",
+			string(body),
+			"statuscode",
+			res.StatusCode,
+		)
+		return nil, fmt.Errorf(
+			"received unsuccessful status code when retrieving keycloak user. code: %d",
+			res.StatusCode,
+		)
 	}
 
 	var kcuser *user

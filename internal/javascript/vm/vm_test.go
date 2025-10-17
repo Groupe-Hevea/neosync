@@ -35,7 +35,11 @@ func TestRunner(t *testing.T) {
 	})
 
 	t.Run("with_console_and_logger", func(t *testing.T) {
-		runner, err := NewRunner(WithConsole(), WithJsRegistry(goja_require.NewRegistry()), WithLogger(testutil.GetTestLogger(t)))
+		runner, err := NewRunner(
+			WithConsole(),
+			WithJsRegistry(goja_require.NewRegistry()),
+			WithLogger(testutil.GetTestLogger(t)),
+		)
 		require.NoError(t, err)
 
 		program := goja.MustCompile("test.js", `console.log('hello world');`, true)
@@ -44,7 +48,11 @@ func TestRunner(t *testing.T) {
 	})
 
 	t.Run("parallel_runs", func(t *testing.T) {
-		runner, err := NewRunner(WithConsole(), WithJsRegistry(goja_require.NewRegistry()), WithLogger(testutil.GetTestLogger(t)))
+		runner, err := NewRunner(
+			WithConsole(),
+			WithJsRegistry(goja_require.NewRegistry()),
+			WithLogger(testutil.GetTestLogger(t)),
+		)
 		require.NoError(t, err)
 
 		program := goja.MustCompile("test.js", `console.log('hello world');`, true)
@@ -61,11 +69,15 @@ func TestRunner(t *testing.T) {
 	})
 
 	t.Run("with_functions", func(t *testing.T) {
-		customFn := javascript_functions.NewFunctionDefinition("test", "test", func(r javascript_functions.Runner) javascript_functions.Function {
-			return func(ctx context.Context, call goja.FunctionCall, rt *goja.Runtime, l *slog.Logger) (any, error) {
-				return "hello world", nil
-			}
-		})
+		customFn := javascript_functions.NewFunctionDefinition(
+			"test",
+			"test",
+			func(r javascript_functions.Runner) javascript_functions.Function {
+				return func(ctx context.Context, call goja.FunctionCall, rt *goja.Runtime, l *slog.Logger) (any, error) {
+					return "hello world", nil
+				}
+			},
+		)
 
 		runner, err := NewRunner(WithFunctions(customFn))
 		require.NoError(t, err)
@@ -78,7 +90,11 @@ func TestRunner(t *testing.T) {
 }
 
 func BenchmarkRunner_Single(b *testing.B) {
-	runner, err := NewRunner(WithConsole(), WithJsRegistry(goja_require.NewRegistry()), WithLogger(testutil.GetTestLogger(b)))
+	runner, err := NewRunner(
+		WithConsole(),
+		WithJsRegistry(goja_require.NewRegistry()),
+		WithLogger(testutil.GetTestLogger(b)),
+	)
 	require.NoError(b, err)
 
 	program := goja.MustCompile("test.js", `console.log('hello world');`, true)

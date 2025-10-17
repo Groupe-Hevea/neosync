@@ -18,7 +18,10 @@ type mockUnaryFunc struct {
 	err       error
 }
 
-func (m *mockUnaryFunc) Call(ctx context.Context, req connect.AnyRequest) (connect.AnyResponse, error) {
+func (m *mockUnaryFunc) Call(
+	ctx context.Context,
+	req connect.AnyRequest,
+) (connect.AnyResponse, error) {
 	m.callCount++
 	return nil, m.err
 }
@@ -111,8 +114,14 @@ func (m *mockStreamingClientConn) Receive(msg any) error {
 func TestInterceptor_WrapStreamingClient(t *testing.T) {
 	t.Run("should retry stream operations on unavailable error", func(t *testing.T) {
 		mock := &mockStreamingClientConn{
-			sendErr:    connect.NewError(connect.CodeUnavailable, errors.New("service unavailable")),
-			receiveErr: connect.NewError(connect.CodeUnavailable, errors.New("service unavailable")),
+			sendErr: connect.NewError(
+				connect.CodeUnavailable,
+				errors.New("service unavailable"),
+			),
+			receiveErr: connect.NewError(
+				connect.CodeUnavailable,
+				errors.New("service unavailable"),
+			),
 		}
 
 		interceptor := New(WithRetryOptions(func() []backoff.RetryOption {
@@ -121,9 +130,11 @@ func TestInterceptor_WrapStreamingClient(t *testing.T) {
 				backoff.WithMaxElapsedTime(30 * time.Second),
 			}
 		}))
-		wrapped := interceptor.WrapStreamingClient(func(ctx context.Context, spec connect.Spec) connect.StreamingClientConn {
-			return mock
-		})
+		wrapped := interceptor.WrapStreamingClient(
+			func(ctx context.Context, spec connect.Spec) connect.StreamingClientConn {
+				return mock
+			},
+		)
 
 		conn := wrapped(context.Background(), connect.Spec{})
 		conn.Send(nil)
@@ -135,8 +146,14 @@ func TestInterceptor_WrapStreamingClient(t *testing.T) {
 
 	t.Run("should not retry on non-retryable error", func(t *testing.T) {
 		mock := &mockStreamingClientConn{
-			sendErr:    connect.NewError(connect.CodeInvalidArgument, errors.New("invalid argument")),
-			receiveErr: connect.NewError(connect.CodeInvalidArgument, errors.New("invalid argument")),
+			sendErr: connect.NewError(
+				connect.CodeInvalidArgument,
+				errors.New("invalid argument"),
+			),
+			receiveErr: connect.NewError(
+				connect.CodeInvalidArgument,
+				errors.New("invalid argument"),
+			),
 		}
 
 		interceptor := New(WithRetryOptions(func() []backoff.RetryOption {
@@ -145,9 +162,11 @@ func TestInterceptor_WrapStreamingClient(t *testing.T) {
 				backoff.WithMaxElapsedTime(30 * time.Second),
 			}
 		}))
-		wrapped := interceptor.WrapStreamingClient(func(ctx context.Context, spec connect.Spec) connect.StreamingClientConn {
-			return mock
-		})
+		wrapped := interceptor.WrapStreamingClient(
+			func(ctx context.Context, spec connect.Spec) connect.StreamingClientConn {
+				return mock
+			},
+		)
 
 		conn := wrapped(context.Background(), connect.Spec{})
 		conn.Send(nil)
@@ -168,9 +187,11 @@ func TestInterceptor_WrapStreamingClient(t *testing.T) {
 				backoff.WithMaxElapsedTime(30 * time.Second),
 			}
 		}))
-		wrapped := interceptor.WrapStreamingClient(func(ctx context.Context, spec connect.Spec) connect.StreamingClientConn {
-			return mock
-		})
+		wrapped := interceptor.WrapStreamingClient(
+			func(ctx context.Context, spec connect.Spec) connect.StreamingClientConn {
+				return mock
+			},
+		)
 
 		conn := wrapped(context.Background(), connect.Spec{})
 		conn.Send(nil)
@@ -193,13 +214,15 @@ func TestInterceptor_WrapStreamingHandler(t *testing.T) {
 			}
 		}))
 
-		handler := interceptor.WrapStreamingHandler(func(ctx context.Context, conn connect.StreamingHandlerConn) error {
-			callCount++
-			if callCount < 3 {
-				return handlerErr
-			}
-			return nil
-		})
+		handler := interceptor.WrapStreamingHandler(
+			func(ctx context.Context, conn connect.StreamingHandlerConn) error {
+				callCount++
+				if callCount < 3 {
+					return handlerErr
+				}
+				return nil
+			},
+		)
 
 		err := handler(context.Background(), nil)
 		assert.NoError(t, err)
@@ -217,10 +240,12 @@ func TestInterceptor_WrapStreamingHandler(t *testing.T) {
 			}
 		}))
 
-		handler := interceptor.WrapStreamingHandler(func(ctx context.Context, conn connect.StreamingHandlerConn) error {
-			callCount++
-			return handlerErr
-		})
+		handler := interceptor.WrapStreamingHandler(
+			func(ctx context.Context, conn connect.StreamingHandlerConn) error {
+				callCount++
+				return handlerErr
+			},
+		)
 
 		err := handler(context.Background(), nil)
 		assert.Error(t, err)
@@ -238,10 +263,12 @@ func TestInterceptor_WrapStreamingHandler(t *testing.T) {
 			}
 		}))
 
-		handler := interceptor.WrapStreamingHandler(func(ctx context.Context, conn connect.StreamingHandlerConn) error {
-			callCount++
-			return nil
-		})
+		handler := interceptor.WrapStreamingHandler(
+			func(ctx context.Context, conn connect.StreamingHandlerConn) error {
+				callCount++
+				return nil
+			},
+		)
 
 		err := handler(context.Background(), nil)
 		assert.NoError(t, err)

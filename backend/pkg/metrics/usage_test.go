@@ -131,17 +131,27 @@ func Test_GetDailyUsageFromProm(t *testing.T) {
 		mockapi.On("Query", mock.Anything, mock.Anything, mock.Anything).Once().
 			Return(model.Vector{
 				&model.Sample{
-					Metric:    model.Metric{NeosyncDateLabel: "2024-09-23"},
-					Value:     10,
-					Timestamp: model.TimeFromUnix(time.Date(2024, 9, 23, 12, 0, 0, 0, time.UTC).Unix()),
+					Metric: model.Metric{NeosyncDateLabel: "2024-09-23"},
+					Value:  10,
+					Timestamp: model.TimeFromUnix(
+						time.Date(2024, 9, 23, 12, 0, 0, 0, time.UTC).Unix(),
+					),
 				},
 				&model.Sample{
-					Metric:    model.Metric{NeosyncDateLabel: "2024-09-24"},
-					Value:     15,
-					Timestamp: model.TimeFromUnix(time.Date(2024, 9, 24, 12, 0, 0, 0, time.UTC).Unix()),
+					Metric: model.Metric{NeosyncDateLabel: "2024-09-24"},
+					Value:  15,
+					Timestamp: model.TimeFromUnix(
+						time.Date(2024, 9, 24, 12, 0, 0, 0, time.UTC).Unix(),
+					),
 				},
 			}, nil, nil)
-		actual, actualTotal, err := GetDailyUsageFromProm(context.Background(), mockapi, "test", time.Now(), slog.Default())
+		actual, actualTotal, err := GetDailyUsageFromProm(
+			context.Background(),
+			mockapi,
+			"test",
+			time.Now(),
+			slog.Default(),
+		)
 		require.NoError(t, err)
 		require.Equal(t, float64(25), actualTotal)
 
@@ -163,17 +173,27 @@ func Test_GetTotalUsageFromProm(t *testing.T) {
 		mockapi.On("Query", mock.Anything, mock.Anything, mock.Anything).Once().
 			Return(model.Vector{
 				&model.Sample{
-					Metric:    model.Metric{NeosyncDateLabel: "2024-09-23"},
-					Value:     10,
-					Timestamp: model.TimeFromUnix(time.Date(2024, 9, 23, 12, 0, 0, 0, time.UTC).Unix()),
+					Metric: model.Metric{NeosyncDateLabel: "2024-09-23"},
+					Value:  10,
+					Timestamp: model.TimeFromUnix(
+						time.Date(2024, 9, 23, 12, 0, 0, 0, time.UTC).Unix(),
+					),
 				},
 				&model.Sample{
-					Metric:    model.Metric{NeosyncDateLabel: "2024-09-24"},
-					Value:     15,
-					Timestamp: model.TimeFromUnix(time.Date(2024, 9, 24, 12, 0, 0, 0, time.UTC).Unix()),
+					Metric: model.Metric{NeosyncDateLabel: "2024-09-24"},
+					Value:  15,
+					Timestamp: model.TimeFromUnix(
+						time.Date(2024, 9, 24, 12, 0, 0, 0, time.UTC).Unix(),
+					),
 				},
 			}, nil, nil)
-		actual, err := GetTotalUsageFromProm(context.Background(), mockapi, "test", time.Now(), slog.Default())
+		actual, err := GetTotalUsageFromProm(
+			context.Background(),
+			mockapi,
+			"test",
+			time.Now(),
+			slog.Default(),
+		)
 		require.NoError(t, err)
 		require.Equal(t, float64(25), actual)
 

@@ -15,7 +15,12 @@ func Test_GenerateRandomIntPhoneNumber(t *testing.T) {
 	assert.NoError(t, err)
 
 	numStr := strconv.FormatInt(res, 10)
-	assert.Equal(t, len(numStr), 10, "The length of the output phone number should be the same as the input phone number")
+	assert.Equal(
+		t,
+		len(numStr),
+		10,
+		"The length of the output phone number should be the same as the input phone number",
+	)
 }
 
 func Test_GenerateRandomIntPhoneNumberTransformer(t *testing.T) {
@@ -28,6 +33,11 @@ func Test_GenerateRandomIntPhoneNumberTransformer(t *testing.T) {
 
 	resStr := strconv.FormatInt(res.(int64), 10)
 
-	assert.Equal(t, len(resStr), 10, "The length of the output phone number should be the same as the input phone number")
+	assert.Equal(
+		t,
+		len(resStr),
+		10,
+		"The length of the output phone number should be the same as the input phone number",
+	)
 	assert.IsType(t, "", resStr, "The actual value type should be a string")
 }

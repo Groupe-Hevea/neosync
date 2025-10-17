@@ -47,7 +47,10 @@ func Test_Interceptor_WrapUnary_JwtContextData_ValidUser(t *testing.T) {
 
 	srv := startHTTPServer(t, mux)
 	client := mgmtv1alpha1connect.NewUserAccountServiceClient(srv.Client(), srv.URL)
-	_, err := client.GetUser(context.Background(), connect.NewRequest(&mgmtv1alpha1.GetUserRequest{}))
+	_, err := client.GetUser(
+		context.Background(),
+		connect.NewRequest(&mgmtv1alpha1.GetUserRequest{}),
+	)
 	require.NoError(t, err)
 }
 
@@ -71,7 +74,10 @@ func Test_Interceptor_WrapUnary_JwtContextData_NoUser_NoFail(t *testing.T) {
 
 	srv := startHTTPServer(t, mux)
 	client := mgmtv1alpha1connect.NewUserAccountServiceClient(srv.Client(), srv.URL)
-	_, err := client.GetUser(context.Background(), connect.NewRequest(&mgmtv1alpha1.GetUserRequest{}))
+	_, err := client.GetUser(
+		context.Background(),
+		connect.NewRequest(&mgmtv1alpha1.GetUserRequest{}),
+	)
 	require.NoError(t, err)
 }
 
@@ -85,13 +91,17 @@ func (i *mockAuthInterceptor) WrapUnary(next connect.UnaryFunc) connect.UnaryFun
 	}
 }
 
-func (i *mockAuthInterceptor) WrapStreamingClient(next connect.StreamingClientFunc) connect.StreamingClientFunc {
+func (i *mockAuthInterceptor) WrapStreamingClient(
+	next connect.StreamingClientFunc,
+) connect.StreamingClientFunc {
 	return func(ctx context.Context, spec connect.Spec) connect.StreamingClientConn {
 		return next(ctx, spec)
 	}
 }
 
-func (i *mockAuthInterceptor) WrapStreamingHandler(next connect.StreamingHandlerFunc) connect.StreamingHandlerFunc {
+func (i *mockAuthInterceptor) WrapStreamingHandler(
+	next connect.StreamingHandlerFunc,
+) connect.StreamingHandlerFunc {
 	return func(ctx context.Context, conn connect.StreamingHandlerConn) error {
 		return next(ctx, conn)
 	}
@@ -120,9 +130,13 @@ func Test_getAuthValues_Valid_Jwt(t *testing.T) {
 	mockQuerier.On("GetUserByProviderSub", mock.Anything, mock.Anything, "auth-user-id").
 		Return(db_queries.NeosyncApiUser{ID: genuuid}, nil)
 
-	ctx := context.WithValue(context.Background(), auth_jwt.TokenContextKey{}, &auth_jwt.TokenContextData{
-		AuthUserId: "auth-user-id",
-	})
+	ctx := context.WithValue(
+		context.Background(),
+		auth_jwt.TokenContextKey{},
+		&auth_jwt.TokenContextData{
+			AuthUserId: "auth-user-id",
+		},
+	)
 
 	vals := getAuthValues(ctx, neosyncdb.New(mockDbtx, mockQuerier))
 	require.Equal(
@@ -139,9 +153,13 @@ func Test_getAuthValues_Valid_Jwt_No_User(t *testing.T) {
 	mockQuerier.On("GetUserByProviderSub", mock.Anything, mock.Anything, "auth-user-id").
 		Return(db_queries.NeosyncApiUser{}, errors.New("test err"))
 
-	ctx := context.WithValue(context.Background(), auth_jwt.TokenContextKey{}, &auth_jwt.TokenContextData{
-		AuthUserId: "auth-user-id",
-	})
+	ctx := context.WithValue(
+		context.Background(),
+		auth_jwt.TokenContextKey{},
+		&auth_jwt.TokenContextData{
+			AuthUserId: "auth-user-id",
+		},
+	)
 
 	vals := getAuthValues(ctx, neosyncdb.New(mockDbtx, mockQuerier))
 	require.Equal(
@@ -163,19 +181,32 @@ func Test_getAuthValues_Valid_ApiKey(t *testing.T) {
 	accountiduuid, _ := neosyncdb.ToUuid(accountid)
 	useriduuid, _ := neosyncdb.ToUuid(userid)
 
-	ctx := context.WithValue(context.Background(), auth_apikey.TokenContextKey{}, &auth_apikey.TokenContextData{
-		ApiKeyType: apikey.AccountApiKey,
-		ApiKey: &db_queries.NeosyncApiAccountApiKey{
-			ID:        apikeyuuid,
-			AccountID: accountiduuid,
-			UserID:    useriduuid,
+	ctx := context.WithValue(
+		context.Background(),
+		auth_apikey.TokenContextKey{},
+		&auth_apikey.TokenContextData{
+			ApiKeyType: apikey.AccountApiKey,
+			ApiKey: &db_queries.NeosyncApiAccountApiKey{
+				ID:        apikeyuuid,
+				AccountID: accountiduuid,
+				UserID:    useriduuid,
+			},
 		},
-	})
+	)
 
 	vals := getAuthValues(ctx, neosyncdb.New(mockDbtx, mockQuerier))
 	require.Equal(
 		t,
-		[]any{"apiKeyType", apikey.AccountApiKey, "apiKeyId", apikeyid, "accountId", accountid, "userId", userid},
+		[]any{
+			"apiKeyType",
+			apikey.AccountApiKey,
+			"apiKeyId",
+			apikeyid,
+			"accountId",
+			accountid,
+			"userId",
+			userid,
+		},
 		vals,
 	)
 }
@@ -184,9 +215,13 @@ func Test_getAuthValues_Valid_ApiKey_No_Apikey(t *testing.T) {
 	mockDbtx := neosyncdb.NewMockDBTX(t)
 	mockQuerier := db_queries.NewMockQuerier(t)
 
-	ctx := context.WithValue(context.Background(), auth_apikey.TokenContextKey{}, &auth_apikey.TokenContextData{
-		ApiKeyType: apikey.AccountApiKey,
-	})
+	ctx := context.WithValue(
+		context.Background(),
+		auth_apikey.TokenContextKey{},
+		&auth_apikey.TokenContextData{
+			ApiKeyType: apikey.AccountApiKey,
+		},
+	)
 
 	vals := getAuthValues(ctx, neosyncdb.New(mockDbtx, mockQuerier))
 	require.Equal(

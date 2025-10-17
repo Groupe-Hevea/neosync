@@ -59,9 +59,12 @@ func Test_GetPiiDetectJobDetails(t *testing.T) {
 			nil,
 		)
 
-		val, err := env.ExecuteActivity(activities.GetPiiDetectJobDetails, &GetPiiDetectJobDetailsRequest{
-			JobId: jobId,
-		})
+		val, err := env.ExecuteActivity(
+			activities.GetPiiDetectJobDetails,
+			&GetPiiDetectJobDetailsRequest{
+				JobId: jobId,
+			},
+		)
 		require.NoError(t, err)
 		resp := &GetPiiDetectJobDetailsResponse{}
 		err = val.Get(resp)
@@ -93,17 +96,21 @@ func Test_GetTablesToPiiScan(t *testing.T) {
 			{Schema: "schema2", Table: "table2", Column: "col1"},
 		}
 
-		connClient.EXPECT().GetConnection(mock.Anything, connect.NewRequest(&mgmtv1alpha1.GetConnectionRequest{
-			Id: connId,
-		})).Return(
-			connect.NewResponse(&mgmtv1alpha1.GetConnectionResponse{
-				Connection: &mgmtv1alpha1.Connection{},
-			}),
-			nil,
-		)
+		connClient.EXPECT().
+			GetConnection(mock.Anything, connect.NewRequest(&mgmtv1alpha1.GetConnectionRequest{
+				Id: connId,
+			})).
+			Return(
+				connect.NewResponse(&mgmtv1alpha1.GetConnectionResponse{
+					Connection: &mgmtv1alpha1.Connection{},
+				}),
+				nil,
+			)
 
 		connBuilder.EXPECT().NewDataConnection(mock.Anything, mock.Anything).Return(dataConn, nil)
-		dataConn.EXPECT().GetSchema(mock.Anything, &mgmtv1alpha1.ConnectionSchemaConfig{}).Return(dbColumnSchemas, nil)
+		dataConn.EXPECT().
+			GetSchema(mock.Anything, &mgmtv1alpha1.ConnectionSchemaConfig{}).
+			Return(dbColumnSchemas, nil)
 
 		filter := &mgmtv1alpha1.JobTypeConfig_JobTypePiiDetect_TableScanFilter{
 			Mode: &mgmtv1alpha1.JobTypeConfig_JobTypePiiDetect_TableScanFilter_Include{
@@ -126,7 +133,11 @@ func Test_GetTablesToPiiScan(t *testing.T) {
 		require.Equal(t, "schema1", resp.Tables[0].Schema)
 		require.Equal(t, "table1", resp.Tables[0].Table)
 		// Verify fingerprint matches expected value for schema1.table1 with columns col1,col2
-		expectedFingerprint := getTableColumnFingerprint("schema1", "table1", []string{"col1", "col2"})
+		expectedFingerprint := getTableColumnFingerprint(
+			"schema1",
+			"table1",
+			[]string{"col1", "col2"},
+		)
 		require.Equal(t, expectedFingerprint, resp.Tables[0].Fingerprint)
 
 		connClient.AssertExpectations(t)
@@ -155,7 +166,10 @@ func Test_SaveJobPiiDetectReport(t *testing.T) {
 				{
 					TableSchema: "schema1",
 					TableName:   "table1",
-					ReportKey:   &mgmtv1alpha1.RunContextKey{AccountId: accountId, JobRunId: "run1"},
+					ReportKey: &mgmtv1alpha1.RunContextKey{
+						AccountId: accountId,
+						JobRunId:  "run1",
+					},
 				},
 			},
 		}
@@ -165,11 +179,14 @@ func Test_SaveJobPiiDetectReport(t *testing.T) {
 			nil,
 		)
 
-		val, err := env.ExecuteActivity(activities.SaveJobPiiDetectReport, &SaveJobPiiDetectReportRequest{
-			AccountId: accountId,
-			JobId:     jobId,
-			Report:    report,
-		})
+		val, err := env.ExecuteActivity(
+			activities.SaveJobPiiDetectReport,
+			&SaveJobPiiDetectReportRequest{
+				AccountId: accountId,
+				JobId:     jobId,
+				Report:    report,
+			},
+		)
 
 		require.NoError(t, err)
 		resp := &SaveJobPiiDetectReportResponse{}
@@ -225,20 +242,28 @@ func Test_GetLastSuccessfulWorkflowId(t *testing.T) {
 		}, nil).Once()
 
 		// Mock successful job report for first workflow
-		jobClient.EXPECT().GetRunContext(mock.Anything, connect.NewRequest(&mgmtv1alpha1.GetRunContextRequest{
-			Id: &mgmtv1alpha1.RunContextKey{
-				AccountId:  accountId,
-				JobRunId:   workflowId1,
-				ExternalId: "test-job-id--job-pii-report",
-			},
-		})).Return(connect.NewResponse(&mgmtv1alpha1.GetRunContextResponse{
-			Value: []byte(`{"successfulTableReports":[{"tableSchema":"schema1","tableName":"table1"}]}`),
-		}), nil).Once()
+		jobClient.EXPECT().
+			GetRunContext(mock.Anything, connect.NewRequest(&mgmtv1alpha1.GetRunContextRequest{
+				Id: &mgmtv1alpha1.RunContextKey{
+					AccountId:  accountId,
+					JobRunId:   workflowId1,
+					ExternalId: "test-job-id--job-pii-report",
+				},
+			})).
+			Return(connect.NewResponse(&mgmtv1alpha1.GetRunContextResponse{
+				Value: []byte(
+					`{"successfulTableReports":[{"tableSchema":"schema1","tableName":"table1"}]}`,
+				),
+			}), nil).
+			Once()
 
-		val, err := env.ExecuteActivity(activities.GetLastSuccessfulWorkflowId, &GetLastSuccessfulWorkflowIdRequest{
-			AccountId: accountId,
-			JobId:     jobId,
-		})
+		val, err := env.ExecuteActivity(
+			activities.GetLastSuccessfulWorkflowId,
+			&GetLastSuccessfulWorkflowIdRequest{
+				AccountId: accountId,
+				JobId:     jobId,
+			},
+		)
 
 		require.NoError(t, err)
 		resp := &GetLastSuccessfulWorkflowIdResponse{}
@@ -269,20 +294,26 @@ func Test_GetLastSuccessfulWorkflowId(t *testing.T) {
 		}, nil).Once()
 
 		// Mock job report with empty value to simulate no successful tables
-		jobClient.EXPECT().GetRunContext(mock.Anything, connect.NewRequest(&mgmtv1alpha1.GetRunContextRequest{
-			Id: &mgmtv1alpha1.RunContextKey{
-				AccountId:  accountId,
-				JobRunId:   workflowId,
-				ExternalId: "test-job-id--job-pii-report",
-			},
-		})).Return(connect.NewResponse(&mgmtv1alpha1.GetRunContextResponse{
-			Value: []byte(`{"successfulTableReports":[]}`),
-		}), nil).Once()
+		jobClient.EXPECT().
+			GetRunContext(mock.Anything, connect.NewRequest(&mgmtv1alpha1.GetRunContextRequest{
+				Id: &mgmtv1alpha1.RunContextKey{
+					AccountId:  accountId,
+					JobRunId:   workflowId,
+					ExternalId: "test-job-id--job-pii-report",
+				},
+			})).
+			Return(connect.NewResponse(&mgmtv1alpha1.GetRunContextResponse{
+				Value: []byte(`{"successfulTableReports":[]}`),
+			}), nil).
+			Once()
 
-		val, err := env.ExecuteActivity(activities.GetLastSuccessfulWorkflowId, &GetLastSuccessfulWorkflowIdRequest{
-			AccountId: accountId,
-			JobId:     jobId,
-		})
+		val, err := env.ExecuteActivity(
+			activities.GetLastSuccessfulWorkflowId,
+			&GetLastSuccessfulWorkflowIdRequest{
+				AccountId: accountId,
+				JobId:     jobId,
+			},
+		)
 
 		require.NoError(t, err)
 		resp := &GetLastSuccessfulWorkflowIdResponse{}
@@ -297,12 +328,17 @@ func Test_GetLastSuccessfulWorkflowId(t *testing.T) {
 
 		// Mock schedule handle to return error
 		tmprlScheduleClient.On("GetHandle", mock.Anything, jobId).Return(scheduleHandle).Once()
-		scheduleHandle.On("Describe", mock.Anything).Return(nil, errors.New("schedule error")).Once()
+		scheduleHandle.On("Describe", mock.Anything).
+			Return(nil, errors.New("schedule error")).
+			Once()
 
-		val, err := env.ExecuteActivity(activities.GetLastSuccessfulWorkflowId, &GetLastSuccessfulWorkflowIdRequest{
-			AccountId: accountId,
-			JobId:     jobId,
-		})
+		val, err := env.ExecuteActivity(
+			activities.GetLastSuccessfulWorkflowId,
+			&GetLastSuccessfulWorkflowIdRequest{
+				AccountId: accountId,
+				JobId:     jobId,
+			},
+		)
 
 		require.NoError(t, err)
 		resp := &GetLastSuccessfulWorkflowIdResponse{}
@@ -332,12 +368,18 @@ func Test_GetLastSuccessfulWorkflowId(t *testing.T) {
 		}, nil).Once()
 
 		// Mock job report to return error
-		jobClient.EXPECT().GetRunContext(mock.Anything, mock.Anything).Return(nil, errors.New("report error")).Once()
+		jobClient.EXPECT().
+			GetRunContext(mock.Anything, mock.Anything).
+			Return(nil, errors.New("report error")).
+			Once()
 
-		val, err := env.ExecuteActivity(activities.GetLastSuccessfulWorkflowId, &GetLastSuccessfulWorkflowIdRequest{
-			AccountId: accountId,
-			JobId:     jobId,
-		})
+		val, err := env.ExecuteActivity(
+			activities.GetLastSuccessfulWorkflowId,
+			&GetLastSuccessfulWorkflowIdRequest{
+				AccountId: accountId,
+				JobId:     jobId,
+			},
+		)
 
 		require.NoError(t, err)
 		resp := &GetLastSuccessfulWorkflowIdResponse{}

@@ -19,8 +19,18 @@ func Test_GenerateInternationalPhoneNumber(t *testing.T) {
 
 	assert.NoError(t, err)
 	assert.Equal(t, validateE164(res), true, "The actual value should be a valid e164 number")
-	assert.GreaterOrEqual(t, len(res), 9, "Should be greater than 10 characters in length. 9 for the number and 1 for the plus sign.")
-	assert.LessOrEqual(t, len(res), 15, "Should be less than 16 characters in length. 15 for the number and 1 for the plus sign.")
+	assert.GreaterOrEqual(
+		t,
+		len(res),
+		9,
+		"Should be greater than 10 characters in length. 9 for the number and 1 for the plus sign.",
+	)
+	assert.LessOrEqual(
+		t,
+		len(res),
+		15,
+		"Should be less than 16 characters in length. 15 for the number and 1 for the plus sign.",
+	)
 }
 
 func Test_GenerateInternationalPhoneNumberPreserveLength(t *testing.T) {
@@ -31,8 +41,18 @@ func Test_GenerateInternationalPhoneNumberPreserveLength(t *testing.T) {
 
 	assert.NoError(t, err)
 	assert.Equal(t, validateE164(res), true, "The actual value should be a valid e164 number")
-	assert.GreaterOrEqual(t, len(res), 9+1, "Should be greater than 10 characters in length. 9 for the number and 1 for the plus sign.")
-	assert.LessOrEqual(t, len(res), 15+1, "Should be less than 16 characters in length. 15 for the number and 1 for the plus sign.")
+	assert.GreaterOrEqual(
+		t,
+		len(res),
+		9+1,
+		"Should be greater than 10 characters in length. 9 for the number and 1 for the plus sign.",
+	)
+	assert.LessOrEqual(
+		t,
+		len(res),
+		15+1,
+		"Should be less than 16 characters in length. 15 for the number and 1 for the plus sign.",
+	)
 }
 
 func Test_GenerateInternationalPhoneNumberTransformer(t *testing.T) {
@@ -44,9 +64,24 @@ func Test_GenerateInternationalPhoneNumberTransformer(t *testing.T) {
 
 	res, err := ex.Query(nil)
 	assert.NoError(t, err)
-	assert.Equal(t, validateE164(res.(string)), true, "The actual value should be a valid e164 number")
-	assert.GreaterOrEqual(t, len(res.(string)), 9+1, "Should be greater than 10 characters in length. 9 for the number and 1 for the plus sign.")
-	assert.LessOrEqual(t, len(res.(string)), 15+1, "Should be less than 16 characters in length. 15 for the number and 1 for the plus sign.")
+	assert.Equal(
+		t,
+		validateE164(res.(string)),
+		true,
+		"The actual value should be a valid e164 number",
+	)
+	assert.GreaterOrEqual(
+		t,
+		len(res.(string)),
+		9+1,
+		"Should be greater than 10 characters in length. 9 for the number and 1 for the plus sign.",
+	)
+	assert.LessOrEqual(
+		t,
+		len(res.(string)),
+		15+1,
+		"Should be less than 16 characters in length. 15 for the number and 1 for the plus sign.",
+	)
 }
 
 func Test_GenerateInternationalPhoneNumberTransformer_NoOptions(t *testing.T) {
@@ -64,7 +99,12 @@ func Test_ValidateE164True(t *testing.T) {
 
 	res := validateE164(val)
 
-	assert.Equal(t, res, true, "The e164 number should have a plus sign at the 0th index and be 10 < x < 15 characters long.")
+	assert.Equal(
+		t,
+		res,
+		true,
+		"The e164 number should have a plus sign at the 0th index and be 10 < x < 15 characters long.",
+	)
 }
 
 func Test_ValidateE164FalseTooLong(t *testing.T) {

@@ -72,7 +72,12 @@ func Test_GenerateMonthRegexRange(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			result := GenerateMonthRegexRange(tt.startDate, tt.endDate)
-			require.Equal(t, tt.expected, result, "The generated patterns do not match the expected output")
+			require.Equal(
+				t,
+				tt.expected,
+				result,
+				"The generated patterns do not match the expected output",
+			)
 		})
 	}
 }
@@ -218,9 +223,18 @@ func Test_ToEndOfDay(t *testing.T) {
 			expected: time.Date(2024, 9, 24, 23, 59, 59, 999999999, time.UTC),
 		},
 		{
-			name:     "Non-UTC time",
-			input:    time.Date(2024, 9, 24, 12, 30, 45, 0, time.FixedZone("EST", -5*60*60)),
-			expected: time.Date(2024, 9, 24, 23, 59, 59, 999999999, time.FixedZone("EST", -5*60*60)),
+			name:  "Non-UTC time",
+			input: time.Date(2024, 9, 24, 12, 30, 45, 0, time.FixedZone("EST", -5*60*60)),
+			expected: time.Date(
+				2024,
+				9,
+				24,
+				23,
+				59,
+				59,
+				999999999,
+				time.FixedZone("EST", -5*60*60),
+			),
 		},
 		{
 			name:     "Already at end of day",
@@ -241,7 +255,11 @@ func Test_ToEndOfDay(t *testing.T) {
 				t.Errorf("ToEndOfDay() = %v, want %v", result, tt.expected)
 			}
 			if result.Location() != tt.input.Location() {
-				t.Errorf("ToEndOfDay() timezone = %v, want %v", result.Location(), tt.input.Location())
+				t.Errorf(
+					"ToEndOfDay() timezone = %v, want %v",
+					result.Location(),
+					tt.input.Location(),
+				)
 			}
 		})
 	}

@@ -25,7 +25,10 @@ func Test_New(t *testing.T) {
 	})
 
 	t.Run("WithDialer", func(t *testing.T) {
-		connector, cleanup, err := New("postgres://postgres:postgres@localhost:5432", WithDialer(&net.Dialer{}))
+		connector, cleanup, err := New(
+			"postgres://postgres:postgres@localhost:5432",
+			WithDialer(&net.Dialer{}),
+		)
 		require.NoError(t, err)
 		require.NotNil(t, cleanup)
 		require.NotNil(t, connector)
@@ -33,7 +36,10 @@ func Test_New(t *testing.T) {
 	})
 
 	t.Run("WithTls", func(t *testing.T) {
-		connector, cleanup, err := New("postgres://postgres:postgres@localhost:5432", WithTLSConfig(&tls.Config{}))
+		connector, cleanup, err := New(
+			"postgres://postgres:postgres@localhost:5432",
+			WithTLSConfig(&tls.Config{}),
+		)
 		require.NoError(t, err)
 		require.NotNil(t, cleanup)
 		require.NotNil(t, connector)

@@ -105,7 +105,11 @@ func (s *IntegrationTestSuite) Test_SetUserByAuth0Id() {
 	})
 }
 
-func (s *IntegrationTestSuite) setUser(t testing.TB, ctx context.Context, sub string) *db_queries.NeosyncApiUser {
+func (s *IntegrationTestSuite) setUser(
+	t testing.TB,
+	ctx context.Context,
+	sub string,
+) *db_queries.NeosyncApiUser {
 	resp, err := s.db.SetUserByAuthSub(ctx, sub)
 	requireNoErrResp(t, resp, err)
 	return resp
@@ -197,19 +201,46 @@ func (s *IntegrationTestSuite) Test_ConvertPersonalToTeamAccount() {
 		requireNoErrResp(t, account, err)
 
 		newTeamName := "newteam"
-		resp, err := s.db.ConvertPersonalToTeamAccount(s.ctx, &neosyncdb.ConvertPersonalToTeamAccountRequest{
-			UserId:            user.ID,
-			PersonalAccountId: account.ID,
-			TeamName:          newTeamName,
-		}, testutil.GetTestLogger(t))
+		resp, err := s.db.ConvertPersonalToTeamAccount(
+			s.ctx,
+			&neosyncdb.ConvertPersonalToTeamAccountRequest{
+				UserId:            user.ID,
+				PersonalAccountId: account.ID,
+				TeamName:          newTeamName,
+			},
+			testutil.GetTestLogger(t),
+		)
 		requireNoErrResp(t, resp, err)
 
-		require.Equal(t, neosyncdb.UUIDString(account.ID), neosyncdb.UUIDString(resp.TeamAccount.ID), "the new team account must be the same id as the old account")
-		require.Equal(t, neosyncdb.AccountType_Team, neosyncdb.AccountType(resp.TeamAccount.AccountType))
+		require.Equal(
+			t,
+			neosyncdb.UUIDString(account.ID),
+			neosyncdb.UUIDString(resp.TeamAccount.ID),
+			"the new team account must be the same id as the old account",
+		)
+		require.Equal(
+			t,
+			neosyncdb.AccountType_Team,
+			neosyncdb.AccountType(resp.TeamAccount.AccountType),
+		)
 		require.Equal(t, newTeamName, resp.TeamAccount.AccountSlug)
-		require.NotEqual(t, neosyncdb.UUIDString(account.ID), neosyncdb.UUIDString(resp.PersonalAccount.ID), "the new personal account must not have the same id as the old one")
-		require.False(t, resp.TeamAccount.MaxAllowedRecords.Valid, "team account must not have any max allowed records set")
-		require.Equal(t, maxAllowedRecords, resp.PersonalAccount.MaxAllowedRecords.Int64, "max allowed records must persist on new personal account")
+		require.NotEqual(
+			t,
+			neosyncdb.UUIDString(account.ID),
+			neosyncdb.UUIDString(resp.PersonalAccount.ID),
+			"the new personal account must not have the same id as the old one",
+		)
+		require.False(
+			t,
+			resp.TeamAccount.MaxAllowedRecords.Valid,
+			"team account must not have any max allowed records set",
+		)
+		require.Equal(
+			t,
+			maxAllowedRecords,
+			resp.PersonalAccount.MaxAllowedRecords.Int64,
+			"max allowed records must persist on new personal account",
+		)
 	})
 
 	t.Run("invalid account type", func(t *testing.T) {
@@ -217,11 +248,15 @@ func (s *IntegrationTestSuite) Test_ConvertPersonalToTeamAccount() {
 		account, err := s.db.CreateTeamAccount(s.ctx, user.ID, "myteam", testutil.GetTestLogger(t))
 		requireNoErrResp(t, account, err)
 
-		resp, err := s.db.ConvertPersonalToTeamAccount(s.ctx, &neosyncdb.ConvertPersonalToTeamAccountRequest{
-			UserId:            user.ID,
-			PersonalAccountId: account.ID,
-			TeamName:          "myteam2",
-		}, testutil.GetTestLogger(t))
+		resp, err := s.db.ConvertPersonalToTeamAccount(
+			s.ctx,
+			&neosyncdb.ConvertPersonalToTeamAccountRequest{
+				UserId:            user.ID,
+				PersonalAccountId: account.ID,
+				TeamName:          "myteam2",
+			},
+			testutil.GetTestLogger(t),
+		)
 		requireErrResp(t, resp, err)
 		badreqerror := nucleuserrors.NewBadRequest("")
 		require.ErrorAs(t, err, &badreqerror)
@@ -238,9 +273,14 @@ func (s *IntegrationTestSuite) Test_UpsertStripeCustomerId() {
 		requireNoErrResp(t, account, err)
 		require.False(t, account.StripeCustomerID.Valid)
 
-		account, err = s.db.UpsertStripeCustomerId(s.ctx, account.ID, func(ctx context.Context, account db_queries.NeosyncApiAccount) (string, error) {
-			return "testid", nil
-		}, testutil.GetTestLogger(t))
+		account, err = s.db.UpsertStripeCustomerId(
+			s.ctx,
+			account.ID,
+			func(ctx context.Context, account db_queries.NeosyncApiAccount) (string, error) {
+				return "testid", nil
+			},
+			testutil.GetTestLogger(t),
+		)
 		requireNoErrResp(t, account, err)
 		require.True(t, account.StripeCustomerID.Valid)
 		require.Equal(t, "testid", account.StripeCustomerID.String)
@@ -252,16 +292,26 @@ func (s *IntegrationTestSuite) Test_UpsertStripeCustomerId() {
 		require.False(t, account.StripeCustomerID.Valid)
 
 		firstid := "testid"
-		account, err = s.db.UpsertStripeCustomerId(s.ctx, account.ID, func(ctx context.Context, account db_queries.NeosyncApiAccount) (string, error) {
-			return firstid, nil
-		}, testutil.GetTestLogger(t))
+		account, err = s.db.UpsertStripeCustomerId(
+			s.ctx,
+			account.ID,
+			func(ctx context.Context, account db_queries.NeosyncApiAccount) (string, error) {
+				return firstid, nil
+			},
+			testutil.GetTestLogger(t),
+		)
 		requireNoErrResp(t, account, err)
 		require.True(t, account.StripeCustomerID.Valid)
 		require.Equal(t, firstid, account.StripeCustomerID.String)
 
-		account, err = s.db.UpsertStripeCustomerId(s.ctx, account.ID, func(ctx context.Context, account db_queries.NeosyncApiAccount) (string, error) {
-			return "secondid", nil
-		}, testutil.GetTestLogger(t))
+		account, err = s.db.UpsertStripeCustomerId(
+			s.ctx,
+			account.ID,
+			func(ctx context.Context, account db_queries.NeosyncApiAccount) (string, error) {
+				return "secondid", nil
+			},
+			testutil.GetTestLogger(t),
+		)
 		requireNoErrResp(t, account, err)
 		require.True(t, account.StripeCustomerID.Valid)
 		require.Equal(t, firstid, account.StripeCustomerID.String)
@@ -272,15 +322,23 @@ func (s *IntegrationTestSuite) Test_UpsertStripeCustomerId() {
 		requireNoErrResp(t, account, err)
 		require.False(t, account.StripeCustomerID.Valid)
 
-		account, err = s.db.UpsertStripeCustomerId(s.ctx, account.ID, func(ctx context.Context, account db_queries.NeosyncApiAccount) (string, error) {
-			return "testid", nil
-		}, testutil.GetTestLogger(t))
+		account, err = s.db.UpsertStripeCustomerId(
+			s.ctx,
+			account.ID,
+			func(ctx context.Context, account db_queries.NeosyncApiAccount) (string, error) {
+				return "testid", nil
+			},
+			testutil.GetTestLogger(t),
+		)
 		requireErrResp(t, account, err)
 	})
 }
 
 var (
-	dbViewerRole = pgtype.Int4{Int32: int32(mgmtv1alpha1.AccountRole_ACCOUNT_ROLE_JOB_VIEWER), Valid: true}
+	dbViewerRole = pgtype.Int4{
+		Int32: int32(mgmtv1alpha1.AccountRole_ACCOUNT_ROLE_JOB_VIEWER),
+		Valid: true,
+	}
 )
 
 func (s *IntegrationTestSuite) Test_CreateTeamAccountInvite() {
@@ -291,15 +349,36 @@ func (s *IntegrationTestSuite) Test_CreateTeamAccountInvite() {
 	requireNoErrResp(t, account, err)
 
 	t.Run("new invite", func(t *testing.T) {
-		invite, err := s.db.CreateTeamAccountInvite(s.ctx, account.ID, user.ID, "foo2@example.com", getFutureTs(t, 1*time.Hour), dbViewerRole)
+		invite, err := s.db.CreateTeamAccountInvite(
+			s.ctx,
+			account.ID,
+			user.ID,
+			"foo2@example.com",
+			getFutureTs(t, 1*time.Hour),
+			dbViewerRole,
+		)
 		requireNoErrResp(t, invite, err)
 	})
 
 	t.Run("expire old invites", func(t *testing.T) {
-		invite, err := s.db.CreateTeamAccountInvite(s.ctx, account.ID, user.ID, "foo2@example.com", getFutureTs(t, 48*time.Hour), dbViewerRole)
+		invite, err := s.db.CreateTeamAccountInvite(
+			s.ctx,
+			account.ID,
+			user.ID,
+			"foo2@example.com",
+			getFutureTs(t, 48*time.Hour),
+			dbViewerRole,
+		)
 		requireNoErrResp(t, invite, err)
 
-		invite2, err := s.db.CreateTeamAccountInvite(s.ctx, account.ID, user.ID, "foo2@example.com", getFutureTs(t, 48*time.Hour), dbViewerRole)
+		invite2, err := s.db.CreateTeamAccountInvite(
+			s.ctx,
+			account.ID,
+			user.ID,
+			"foo2@example.com",
+			getFutureTs(t, 48*time.Hour),
+			dbViewerRole,
+		)
 		requireNoErrResp(t, invite2, err)
 		// Add time here as the expired invites as updated to CURRENT_TIMESTAMP, so this reduces flakiness
 		now := time.Now().Add(5 * time.Second)
@@ -313,7 +392,14 @@ func (s *IntegrationTestSuite) Test_CreateTeamAccountInvite() {
 		account, err := s.db.SetPersonalAccount(s.ctx, user.ID, nil)
 		requireNoErrResp(t, account, err)
 
-		invite, err := s.db.CreateTeamAccountInvite(s.ctx, account.ID, user.ID, "foo@example.com", getFutureTs(t, 1*time.Hour), dbViewerRole)
+		invite, err := s.db.CreateTeamAccountInvite(
+			s.ctx,
+			account.ID,
+			user.ID,
+			"foo@example.com",
+			getFutureTs(t, 1*time.Hour),
+			dbViewerRole,
+		)
 		requireErrResp(t, invite, err)
 		forbiddin := nucleuserrors.NewForbidden("")
 		require.ErrorAs(t, err, &forbiddin)
@@ -328,22 +414,46 @@ func (s *IntegrationTestSuite) Test_ValidateInviteAddUserToAccount() {
 	requireNoErrResp(t, account, err)
 
 	t.Run("accept invite", func(t *testing.T) {
-		invite, err := s.db.CreateTeamAccountInvite(s.ctx, account.ID, user.ID, "foo2@example.com", getFutureTs(t, 24*time.Hour), dbViewerRole)
+		invite, err := s.db.CreateTeamAccountInvite(
+			s.ctx,
+			account.ID,
+			user.ID,
+			"foo2@example.com",
+			getFutureTs(t, 24*time.Hour),
+			dbViewerRole,
+		)
 		requireNoErrResp(t, invite, err)
 
 		user2 := s.setUser(t, s.ctx, "foo2")
 
-		accountId, err := s.db.ValidateInviteAddUserToAccount(s.ctx, user2.ID, invite.Token, "foo2@example.com")
+		accountId, err := s.db.ValidateInviteAddUserToAccount(
+			s.ctx,
+			user2.ID,
+			invite.Token,
+			"foo2@example.com",
+		)
 		requireNoErrResp(t, accountId, err)
 	})
 
 	t.Run("expired invite", func(t *testing.T) {
-		invite, err := s.db.CreateTeamAccountInvite(s.ctx, account.ID, user.ID, "foo3@example.com", getFutureTs(t, -1*time.Hour), dbViewerRole)
+		invite, err := s.db.CreateTeamAccountInvite(
+			s.ctx,
+			account.ID,
+			user.ID,
+			"foo3@example.com",
+			getFutureTs(t, -1*time.Hour),
+			dbViewerRole,
+		)
 		requireNoErrResp(t, invite, err)
 
 		user3 := s.setUser(t, s.ctx, "foo3")
 
-		verifyResp, err := s.db.ValidateInviteAddUserToAccount(s.ctx, user3.ID, invite.Token, "foo3@example.com")
+		verifyResp, err := s.db.ValidateInviteAddUserToAccount(
+			s.ctx,
+			user3.ID,
+			invite.Token,
+			"foo3@example.com",
+		)
 		require.Error(t, err)
 		require.Nil(t, verifyResp)
 		forbidden := nucleuserrors.NewForbidden("")
@@ -351,12 +461,24 @@ func (s *IntegrationTestSuite) Test_ValidateInviteAddUserToAccount() {
 	})
 
 	t.Run("incorrect email", func(t *testing.T) {
-		invite, err := s.db.CreateTeamAccountInvite(s.ctx, account.ID, user.ID, "foo4@example.com", getFutureTs(t, -1*time.Hour), dbViewerRole)
+		invite, err := s.db.CreateTeamAccountInvite(
+			s.ctx,
+			account.ID,
+			user.ID,
+			"foo4@example.com",
+			getFutureTs(t, -1*time.Hour),
+			dbViewerRole,
+		)
 		requireNoErrResp(t, invite, err)
 
 		user4 := s.setUser(t, s.ctx, "foo3")
 
-		verifyResp, err := s.db.ValidateInviteAddUserToAccount(s.ctx, user4.ID, invite.Token, "blah@example.com")
+		verifyResp, err := s.db.ValidateInviteAddUserToAccount(
+			s.ctx,
+			user4.ID,
+			invite.Token,
+			"blah@example.com",
+		)
 		require.Error(t, err)
 		require.Nil(t, verifyResp)
 		badrequest := nucleuserrors.NewBadRequest("")
@@ -399,10 +521,12 @@ func (s *IntegrationTestSuite) Test_CreateJob() {
 	requireNoErrResp(t, connection, err)
 
 	job, err := s.db.CreateJob(s.ctx, &db_queries.CreateJobParams{
-		Name:               "foo",
-		AccountID:          account.ID,
-		Status:             1,
-		ConnectionOptions:  &pg_models.JobSourceOptions{PostgresOptions: &pg_models.PostgresSourceOptions{HaltOnNewColumnAddition: true}},
+		Name:      "foo",
+		AccountID: account.ID,
+		Status:    1,
+		ConnectionOptions: &pg_models.JobSourceOptions{
+			PostgresOptions: &pg_models.PostgresSourceOptions{HaltOnNewColumnAddition: true},
+		},
 		Mappings:           []*pg_models.JobMapping{{Schema: "foo", Table: "bar", Column: "baz"}},
 		CronSchedule:       pgtype.Text{String: "blah", Valid: true},
 		CreatedByID:        user.ID,
@@ -428,10 +552,12 @@ func (s *IntegrationTestSuite) Test_SetSourceSubsets() {
 	requireNoErrResp(t, account, err)
 
 	job, err := s.db.CreateJob(s.ctx, &db_queries.CreateJobParams{
-		Name:               "foo",
-		AccountID:          account.ID,
-		Status:             1,
-		ConnectionOptions:  &pg_models.JobSourceOptions{PostgresOptions: &pg_models.PostgresSourceOptions{HaltOnNewColumnAddition: true}},
+		Name:      "foo",
+		AccountID: account.ID,
+		Status:    1,
+		ConnectionOptions: &pg_models.JobSourceOptions{
+			PostgresOptions: &pg_models.PostgresSourceOptions{HaltOnNewColumnAddition: true},
+		},
 		Mappings:           []*pg_models.JobMapping{{Schema: "foo", Table: "bar", Column: "baz"}},
 		CronSchedule:       pgtype.Text{String: "blah", Valid: true},
 		CreatedByID:        user.ID,
@@ -450,7 +576,12 @@ func (s *IntegrationTestSuite) Test_SetSourceSubsets() {
 			Schemas: &mgmtv1alpha1.JobSourceSqlSubetSchemas_PostgresSubset{
 				PostgresSubset: &mgmtv1alpha1.PostgresSourceSchemaSubset{
 					PostgresSchemas: []*mgmtv1alpha1.PostgresSourceSchemaOption{
-						{Schema: "foo", Tables: []*mgmtv1alpha1.PostgresSourceTableOption{{Table: "foo", WhereClause: &where}}},
+						{
+							Schema: "foo",
+							Tables: []*mgmtv1alpha1.PostgresSourceTableOption{
+								{Table: "foo", WhereClause: &where},
+							},
+						},
 					},
 				},
 			},
@@ -463,7 +594,12 @@ func (s *IntegrationTestSuite) Test_SetSourceSubsets() {
 			Schemas: &mgmtv1alpha1.JobSourceSqlSubetSchemas_MysqlSubset{
 				MysqlSubset: &mgmtv1alpha1.MysqlSourceSchemaSubset{
 					MysqlSchemas: []*mgmtv1alpha1.MysqlSourceSchemaOption{
-						{Schema: "foo", Tables: []*mgmtv1alpha1.MysqlSourceTableOption{{Table: "foo", WhereClause: &where}}},
+						{
+							Schema: "foo",
+							Tables: []*mgmtv1alpha1.MysqlSourceTableOption{
+								{Table: "foo", WhereClause: &where},
+							},
+						},
 					},
 				},
 			},
@@ -476,7 +612,12 @@ func (s *IntegrationTestSuite) Test_SetSourceSubsets() {
 			Schemas: &mgmtv1alpha1.JobSourceSqlSubetSchemas_MssqlSubset{
 				MssqlSubset: &mgmtv1alpha1.MssqlSourceSchemaSubset{
 					MssqlSchemas: []*mgmtv1alpha1.MssqlSourceSchemaOption{
-						{Schema: "foo", Tables: []*mgmtv1alpha1.MssqlSourceTableOption{{Table: "foo", WhereClause: &where}}},
+						{
+							Schema: "foo",
+							Tables: []*mgmtv1alpha1.MssqlSourceTableOption{
+								{Table: "foo", WhereClause: &where},
+							},
+						},
 					},
 				},
 			},

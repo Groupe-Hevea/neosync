@@ -36,8 +36,12 @@ func (s *IntegrationTestSuite) Test_AnonymizeService_AnonymizeMany() {
 	})
 
 	t.Run("cloud-personal-fail", func(t *testing.T) {
-		userclient := s.NeosyncCloudAuthenticatedLicensedClients.Users(integrationtests_test.WithUserId(testAuthUserId))
-		anonclient := s.NeosyncCloudAuthenticatedLicensedClients.Anonymize(integrationtests_test.WithUserId(testAuthUserId))
+		userclient := s.NeosyncCloudAuthenticatedLicensedClients.Users(
+			integrationtests_test.WithUserId(testAuthUserId),
+		)
+		anonclient := s.NeosyncCloudAuthenticatedLicensedClients.Anonymize(
+			integrationtests_test.WithUserId(testAuthUserId),
+		)
 		s.setUser(s.ctx, userclient)
 		accountId := s.createPersonalAccount(s.ctx, userclient)
 		resp, err := anonclient.AnonymizeMany(
@@ -88,15 +92,21 @@ func (s *IntegrationTestSuite) Test_AnonymizeService_AnonymizeMany() {
 }`,
 		}
 
-		userclient := s.NeosyncCloudAuthenticatedLicensedClients.Users(integrationtests_test.WithUserId(testAuthUserId))
-		anonclient := s.NeosyncCloudAuthenticatedLicensedClients.Anonymize(integrationtests_test.WithUserId(testAuthUserId))
+		userclient := s.NeosyncCloudAuthenticatedLicensedClients.Users(
+			integrationtests_test.WithUserId(testAuthUserId),
+		)
+		anonclient := s.NeosyncCloudAuthenticatedLicensedClients.Anonymize(
+			integrationtests_test.WithUserId(testAuthUserId),
+		)
 
 		s.setUser(s.ctx, userclient)
 		accountId := s.createBilledTeamAccount(s.ctx, userclient, "team1", "foo")
-		s.Mocks.Billingclient.On("GetSubscriptions", "foo").Once().Return(&testSubscriptionIter{subscriptions: []*stripe.Subscription{
-			{Status: stripe.SubscriptionStatusIncompleteExpired},
-			{Status: stripe.SubscriptionStatusActive},
-		}}, nil)
+		s.Mocks.Billingclient.On("GetSubscriptions", "foo").
+			Once().
+			Return(&testSubscriptionIter{subscriptions: []*stripe.Subscription{
+				{Status: stripe.SubscriptionStatusIncompleteExpired},
+				{Status: stripe.SubscriptionStatusActive},
+			}}, nil)
 		resp, err := anonclient.AnonymizeMany(
 			s.ctx,
 			connect.NewRequest(&mgmtv1alpha1.AnonymizeManyRequest{
@@ -137,15 +147,26 @@ func (s *IntegrationTestSuite) Test_AnonymizeService_AnonymizeMany() {
 		require.NotEmpty(s.T(), resp.Msg.OutputData)
 
 		var inputObjects []map[string]any
-		err = json.Unmarshal([]byte(fmt.Sprintf("[%s]", strings.Join(jsonStrs, ","))), &inputObjects)
+		err = json.Unmarshal(
+			[]byte(fmt.Sprintf("[%s]", strings.Join(jsonStrs, ","))),
+			&inputObjects,
+		)
 		require.NoError(s.T(), err)
 
 		for i, output := range resp.Msg.OutputData {
 			var result map[string]any
 			err = json.Unmarshal([]byte(output), &result)
 			require.NoError(s.T(), err)
-			require.NotEqual(s.T(), inputObjects[i]["details"].(map[string]any)["name"], result["details"].(map[string]any)["name"])
-			require.NotEqual(s.T(), inputObjects[i]["user"].(map[string]any)["age"], result["user"].(map[string]any)["age"])
+			require.NotEqual(
+				s.T(),
+				inputObjects[i]["details"].(map[string]any)["name"],
+				result["details"].(map[string]any)["name"],
+			)
+			require.NotEqual(
+				s.T(),
+				inputObjects[i]["user"].(map[string]any)["age"],
+				result["user"].(map[string]any)["age"],
+			)
 			for j, sport := range result["sports"].([]any) {
 				require.NotEqual(s.T(), inputObjects[i]["sports"].([]any)[j], sport)
 			}
@@ -163,20 +184,21 @@ func (s *IntegrationTestSuite) Test_AnonymizeService_AnonymizeSingle() {
 
 		accountId := s.createPersonalAccount(s.ctx, s.OSSUnauthenticatedLicensedClients.Users())
 		categories := "A"
-		createTransformerResp, err := s.OSSUnauthenticatedLicensedClients.Transformers().CreateUserDefinedTransformer(
-			s.ctx,
-			connect.NewRequest(&mgmtv1alpha1.CreateUserDefinedTransformerRequest{
-				AccountId: accountId,
-				Source:    mgmtv1alpha1.TransformerSource_TRANSFORMER_SOURCE_GENERATE_CATEGORICAL,
-				TransformerConfig: &mgmtv1alpha1.TransformerConfig{
-					Config: &mgmtv1alpha1.TransformerConfig_GenerateCategoricalConfig{
-						GenerateCategoricalConfig: &mgmtv1alpha1.GenerateCategorical{
-							Categories: &categories,
+		createTransformerResp, err := s.OSSUnauthenticatedLicensedClients.Transformers().
+			CreateUserDefinedTransformer(
+				s.ctx,
+				connect.NewRequest(&mgmtv1alpha1.CreateUserDefinedTransformerRequest{
+					AccountId: accountId,
+					Source:    mgmtv1alpha1.TransformerSource_TRANSFORMER_SOURCE_GENERATE_CATEGORICAL,
+					TransformerConfig: &mgmtv1alpha1.TransformerConfig{
+						Config: &mgmtv1alpha1.TransformerConfig_GenerateCategoricalConfig{
+							GenerateCategoricalConfig: &mgmtv1alpha1.GenerateCategorical{
+								Categories: &categories,
+							},
 						},
 					},
-				},
-			}),
-		)
+				}),
+			)
 		requireNoErrResp(t, createTransformerResp, err)
 		transformerId := createTransformerResp.Msg.GetTransformer().GetId()
 		resp, err := s.OSSUnauthenticatedLicensedClients.Anonymize().AnonymizeSingle(
@@ -263,7 +285,11 @@ func (s *IntegrationTestSuite) Test_AnonymizeService_AnonymizeSingle() {
 		err = json.Unmarshal([]byte(output), &result)
 		require.NoError(t, err)
 		require.Equal(t, "jim", result["name"])
-		require.Equal(t, []any{"basketball updated", "golf updated", "swimming updated"}, result["sports"])
+		require.Equal(
+			t,
+			[]any{"basketball updated", "golf updated", "swimming updated"},
+			result["sports"],
+		)
 	})
 
 	t.Run("ok", func(t *testing.T) {
@@ -331,8 +357,16 @@ func (s *IntegrationTestSuite) Test_AnonymizeService_AnonymizeSingle() {
 		var result map[string]any
 		err = json.Unmarshal([]byte(output), &result)
 		require.NoError(s.T(), err)
-		require.NotEqual(s.T(), inputObject["details"].(map[string]any)["name"], result["details"].(map[string]any)["name"])
-		require.NotEqual(s.T(), inputObject["user"].(map[string]any)["age"], result["user"].(map[string]any)["age"])
+		require.NotEqual(
+			s.T(),
+			inputObject["details"].(map[string]any)["name"],
+			result["details"].(map[string]any)["name"],
+		)
+		require.NotEqual(
+			s.T(),
+			inputObject["user"].(map[string]any)["age"],
+			result["user"].(map[string]any)["age"],
+		)
 		for j, sport := range result["sports"].([]any) {
 			require.NotEqual(s.T(), inputObject["sports"].([]any)[j], sport)
 		}
@@ -343,8 +377,12 @@ func (s *IntegrationTestSuite) Test_AnonymizeService_AnonymizeSingle_InvalidTran
 	t := s.T()
 
 	t.Run("no-nested-transformpiitext", func(t *testing.T) {
-		userclient := s.NeosyncCloudAuthenticatedLicensedClients.Users(integrationtests_test.WithUserId(testAuthUserId))
-		anonclient := s.NeosyncCloudAuthenticatedLicensedClients.Anonymize(integrationtests_test.WithUserId(testAuthUserId))
+		userclient := s.NeosyncCloudAuthenticatedLicensedClients.Users(
+			integrationtests_test.WithUserId(testAuthUserId),
+		)
+		anonclient := s.NeosyncCloudAuthenticatedLicensedClients.Anonymize(
+			integrationtests_test.WithUserId(testAuthUserId),
+		)
 
 		s.setUser(s.ctx, userclient)
 		accountId := s.createBilledTeamAccount(s.ctx, userclient, "team34", "foo34")
@@ -360,11 +398,13 @@ func (s *IntegrationTestSuite) Test_AnonymizeService_AnonymizeSingle_InvalidTran
 							Config: &mgmtv1alpha1.TransformerConfig_TransformPiiTextConfig{
 								TransformPiiTextConfig: &mgmtv1alpha1.TransformPiiText{
 									DefaultAnonymizer: &mgmtv1alpha1.PiiAnonymizer{
-										Config: &mgmtv1alpha1.PiiAnonymizer_Transform_{Transform: &mgmtv1alpha1.PiiAnonymizer_Transform{
-											Config: &mgmtv1alpha1.TransformerConfig{
-												Config: &mgmtv1alpha1.TransformerConfig_TransformPiiTextConfig{},
+										Config: &mgmtv1alpha1.PiiAnonymizer_Transform_{
+											Transform: &mgmtv1alpha1.PiiAnonymizer_Transform{
+												Config: &mgmtv1alpha1.TransformerConfig{
+													Config: &mgmtv1alpha1.TransformerConfig_TransformPiiTextConfig{},
+												},
 											},
-										}},
+										},
 									},
 								},
 							},
@@ -509,8 +549,12 @@ func (s *IntegrationTestSuite) Test_AnonymizeService_AnonymizeSingle_ForbiddenTr
 	})
 
 	t.Run("cloud-personal", func(t *testing.T) {
-		userclient := s.NeosyncCloudAuthenticatedLicensedClients.Users(integrationtests_test.WithUserId(testAuthUserId))
-		anonclient := s.NeosyncCloudAuthenticatedLicensedClients.Anonymize(integrationtests_test.WithUserId(testAuthUserId))
+		userclient := s.NeosyncCloudAuthenticatedLicensedClients.Users(
+			integrationtests_test.WithUserId(testAuthUserId),
+		)
+		anonclient := s.NeosyncCloudAuthenticatedLicensedClients.Anonymize(
+			integrationtests_test.WithUserId(testAuthUserId),
+		)
 
 		s.setUser(s.ctx, userclient)
 		accountId := s.createPersonalAccount(s.ctx, userclient)

@@ -26,8 +26,17 @@ func Test_ScrambleCharacter(t *testing.T) {
 	res := scrambleChar(rng.New(time.Now().UnixNano()), testRune)
 
 	assert.IsType(t, "", string(res))
-	assert.Equal(t, len(testStringValue), len(string(res)), "The output string should be as long as the input string")
-	assert.True(t, transformer_utils.IsValidChar(string(res)), "The output string should contain valid characters")
+	assert.Equal(
+		t,
+		len(testStringValue),
+		len(string(res)),
+		"The output string should be as long as the input string",
+	)
+	assert.True(
+		t,
+		transformer_utils.IsValidChar(string(res)),
+		"The output string should contain valid characters",
+	)
 }
 
 func Test_TransformCharacterSubstitutionLetters(t *testing.T) {
@@ -37,55 +46,120 @@ func Test_TransformCharacterSubstitutionLetters(t *testing.T) {
 
 	assert.NoError(t, err)
 	assert.IsType(t, "", *res)
-	assert.Equal(t, len(testStringValue), len(*res), "The output string should be as long as the input string")
-	assert.True(t, transformer_utils.IsValidChar(*res), "The output string should contain valid characters")
+	assert.Equal(
+		t,
+		len(testStringValue),
+		len(*res),
+		"The output string should be as long as the input string",
+	)
+	assert.True(
+		t,
+		transformer_utils.IsValidChar(*res),
+		"The output string should contain valid characters",
+	)
 }
 
 func Test_TransformCharacterSubstitutionCapitalizationLetters(t *testing.T) {
 	testStringValue := "Hello"
 
-	res, err := transformCharacterScramble(rng.New(time.Now().UnixNano()), &testStringValue, helloWorldRegex)
+	res, err := transformCharacterScramble(
+		rng.New(time.Now().UnixNano()),
+		&testStringValue,
+		helloWorldRegex,
+	)
 
 	assert.NoError(t, err)
 	assert.NotNil(t, res, "Result should not be nil")
 	assert.IsType(t, "", *res)
 	//nolint
-	assert.True(t, unicode.IsUpper([]rune(*res)[0]), "The first character of the output string should be uppercase")
-	assert.Equal(t, len(testStringValue), len(*res), "The output string should be as long as the input string")
-	assert.True(t, transformer_utils.IsValidChar(*res), "The output string should contain valid characters")
+	assert.True(
+		t,
+		unicode.IsUpper([]rune(*res)[0]),
+		"The first character of the output string should be uppercase",
+	)
+	assert.Equal(
+		t,
+		len(testStringValue),
+		len(*res),
+		"The output string should be as long as the input string",
+	)
+	assert.True(
+		t,
+		transformer_utils.IsValidChar(*res),
+		"The output string should contain valid characters",
+	)
 }
 
 func Test_TransformCharacterSubstitutionNumbers(t *testing.T) {
 	testStringValue := "41323421"
 
-	res, err := transformCharacterScramble(rng.New(time.Now().UnixNano()), &testStringValue, numberRegex)
+	res, err := transformCharacterScramble(
+		rng.New(time.Now().UnixNano()),
+		&testStringValue,
+		numberRegex,
+	)
 
 	assert.NoError(t, err)
 	assert.IsType(t, "", *res)
-	assert.Equal(t, len(testStringValue), len(*res), "The output string should be as long as the input string")
-	assert.True(t, transformer_utils.IsValidChar(*res), "The output string should contain valid characters")
+	assert.Equal(
+		t,
+		len(testStringValue),
+		len(*res),
+		"The output string should be as long as the input string",
+	)
+	assert.True(
+		t,
+		transformer_utils.IsValidChar(*res),
+		"The output string should contain valid characters",
+	)
 }
 
 func Test_TransformCharacterSubstitutionLettersNumbers(t *testing.T) {
 	testStringValue := "hello wor23r2ld 221"
 
-	res, err := transformCharacterScramble(rng.New(time.Now().UnixNano()), &testStringValue, helloWorldRegex)
+	res, err := transformCharacterScramble(
+		rng.New(time.Now().UnixNano()),
+		&testStringValue,
+		helloWorldRegex,
+	)
 
 	assert.NoError(t, err)
 	assert.IsType(t, "", *res)
-	assert.Equal(t, len(testStringValue), len(*res), "The output string should be as long as the input string")
-	assert.True(t, transformer_utils.IsValidChar(*res), "The output string should contain valid characters")
+	assert.Equal(
+		t,
+		len(testStringValue),
+		len(*res),
+		"The output string should be as long as the input string",
+	)
+	assert.True(
+		t,
+		transformer_utils.IsValidChar(*res),
+		"The output string should contain valid characters",
+	)
 }
 
 func Test_TransformCharacterSubstitutionLettersNumbersCharacters(t *testing.T) {
 	testStringValue := "h#*(&lo wor23r2ld 221"
 
-	res, err := transformCharacterScramble(rng.New(time.Now().UnixNano()), &testStringValue, `#\*\(&`)
+	res, err := transformCharacterScramble(
+		rng.New(time.Now().UnixNano()),
+		&testStringValue,
+		`#\*\(&`,
+	)
 
 	assert.NoError(t, err)
 	assert.IsType(t, "", *res)
-	assert.Equal(t, len(testStringValue), len(*res), "The output string should be as long as the input string")
-	assert.True(t, transformer_utils.IsValidChar(*res), "The output string should contain valid characters")
+	assert.Equal(
+		t,
+		len(testStringValue),
+		len(*res),
+		"The output string should be as long as the input string",
+	)
+	assert.True(
+		t,
+		transformer_utils.IsValidChar(*res),
+		"The output string should contain valid characters",
+	)
 }
 
 func Test_TransformCharacterSubstitutionLettersMultipleMatches(t *testing.T) {
@@ -94,8 +168,17 @@ func Test_TransformCharacterSubstitutionLettersMultipleMatches(t *testing.T) {
 
 	assert.NoError(t, err)
 	assert.IsType(t, "", *res)
-	assert.Equal(t, len(helloTest), len(*res), "The output string should be as long as the input string")
-	assert.True(t, transformer_utils.IsValidChar(*res), "The output string should contain valid characters")
+	assert.Equal(
+		t,
+		len(helloTest),
+		len(*res),
+		"The output string should be as long as the input string",
+	)
+	assert.True(
+		t,
+		transformer_utils.IsValidChar(*res),
+		"The output string should contain valid characters",
+	)
 	assert.Equal(t, helloTest[:1], (*res)[:1], "The first letter should be the same")
 	assert.Equal(t, helloTest[9:], (*res)[9:], "The last three letters should be the same")
 }
@@ -106,8 +189,17 @@ func Test_TransformCharacterSubstitutionLettersNoMatches(t *testing.T) {
 
 	assert.NoError(t, err)
 	assert.IsType(t, "", *res)
-	assert.Equal(t, len(helloTest), len(*res), "The output string should be as long as the input string")
-	assert.True(t, transformer_utils.IsValidChar(*res), "The output string should contain valid characters")
+	assert.Equal(
+		t,
+		len(helloTest),
+		len(*res),
+		"The output string should be as long as the input string",
+	)
+	assert.True(
+		t,
+		transformer_utils.IsValidChar(*res),
+		"The output string should contain valid characters",
+	)
 	assert.False(t, helloTest == *res, "The first letter should be the same")
 }
 
@@ -117,8 +209,17 @@ func Test_TransformCharacterSubstitutionLettersNilregex(t *testing.T) {
 
 	assert.NoError(t, err)
 	assert.IsType(t, "", *res)
-	assert.Equal(t, len(testStringValue), len(*res), "The output string should be as long as the input string")
-	assert.True(t, transformer_utils.IsValidChar(*res), "The output string should contain valid characters")
+	assert.Equal(
+		t,
+		len(testStringValue),
+		len(*res),
+		"The output string should be as long as the input string",
+	)
+	assert.True(
+		t,
+		transformer_utils.IsValidChar(*res),
+		"The output string should contain valid characters",
+	)
 	assert.False(t, testStringValue == *res, "The first letter should be the same")
 }
 
@@ -127,12 +228,25 @@ func Test_TransformCharacterSubstitutionLettersMatchNumbers(t *testing.T) {
 	testStringValue := "MED-133-R123"
 	complexRegex := `\d+`
 
-	res, err := transformCharacterScramble(rng.New(time.Now().UnixNano()), &testStringValue, complexRegex)
+	res, err := transformCharacterScramble(
+		rng.New(time.Now().UnixNano()),
+		&testStringValue,
+		complexRegex,
+	)
 
 	assert.NoError(t, err)
 	assert.IsType(t, "", *res)
-	assert.Equal(t, len(testStringValue), len(*res), "The output string should be as long as the input string")
-	assert.True(t, transformer_utils.IsValidChar(*res), "The output string should contain valid characters")
+	assert.Equal(
+		t,
+		len(testStringValue),
+		len(*res),
+		"The output string should be as long as the input string",
+	)
+	assert.True(
+		t,
+		transformer_utils.IsValidChar(*res),
+		"The output string should contain valid characters",
+	)
 	assert.Equal(t, testStringValue[:4], (*res)[:4], "The first letter should be the same")
 
 	numberRegex := regexp.MustCompile(complexRegex)
@@ -140,10 +254,19 @@ func Test_TransformCharacterSubstitutionLettersMatchNumbers(t *testing.T) {
 	matchesTransformed := numberRegex.FindAllString(*res, -1)
 
 	// Aasert that numbers are still numbers and have the same count
-	assert.Equal(t, len(matchesOriginal), len(matchesTransformed), "The number of numeric characters should be the same")
+	assert.Equal(
+		t,
+		len(matchesOriginal),
+		len(matchesTransformed),
+		"The number of numeric characters should be the same",
+	)
 	for _, match := range matchesTransformed {
 		for _, char := range match {
-			assert.True(t, unicode.IsDigit(char), "Each character in the numeric matches should still be a digit")
+			assert.True(
+				t,
+				unicode.IsDigit(char),
+				"Each character in the numeric matches should still be a digit",
+			)
 		}
 	}
 }
@@ -153,12 +276,25 @@ func Test_TransformCharacterSubstitutionLettersSemiComplexRegex(t *testing.T) {
 	testStringValue := "MED-133-L123"
 	complexRegex := `-(.+?)-`
 
-	res, err := transformCharacterScramble(rng.New(time.Now().UnixNano()), &testStringValue, complexRegex)
+	res, err := transformCharacterScramble(
+		rng.New(time.Now().UnixNano()),
+		&testStringValue,
+		complexRegex,
+	)
 
 	assert.NoError(t, err)
 	assert.IsType(t, "", *res)
-	assert.Equal(t, len(testStringValue), len(*res), "The output string should be as long as the input string")
-	assert.True(t, transformer_utils.IsValidChar(*res), "The output string should contain valid characters")
+	assert.Equal(
+		t,
+		len(testStringValue),
+		len(*res),
+		"The output string should be as long as the input string",
+	)
+	assert.True(
+		t,
+		transformer_utils.IsValidChar(*res),
+		"The output string should contain valid characters",
+	)
 	assert.Equal(t, testStringValue[:3], (*res)[:3], "The first letter should be the same")
 	assert.Equal(t, testStringValue[10:], (*res)[10:], "The last three letters should be the same")
 }
@@ -168,12 +304,25 @@ func Test_TransformCharacterSubstitutionLettersComplexRegex(t *testing.T) {
 	testStringValue := "MED-133-A123"
 	complexRegex := `-(.+?)-`
 
-	res, err := transformCharacterScramble(rng.New(time.Now().UnixNano()), &testStringValue, complexRegex)
+	res, err := transformCharacterScramble(
+		rng.New(time.Now().UnixNano()),
+		&testStringValue,
+		complexRegex,
+	)
 
 	assert.NoError(t, err)
 	assert.IsType(t, "", *res)
-	assert.Equal(t, len(testStringValue), len(*res), "The output string should be as long as the input string")
-	assert.True(t, transformer_utils.IsValidChar(*res), "The output string should contain valid characters")
+	assert.Equal(
+		t,
+		len(testStringValue),
+		len(*res),
+		"The output string should be as long as the input string",
+	)
+	assert.True(
+		t,
+		transformer_utils.IsValidChar(*res),
+		"The output string should contain valid characters",
+	)
 	assert.Equal(t, testStringValue[:3], (*res)[:3], "The first letter should be the same")
 	assert.Equal(t, testStringValue[10:], (*res)[10:], "The last three letters should be the same")
 }
@@ -181,7 +330,11 @@ func Test_TransformCharacterSubstitutionLettersComplexRegex(t *testing.T) {
 func Test_TransformCharacterSubstitutionTransformer(t *testing.T) {
 	testStringValue := "hello wor23r2ld 221"
 
-	mapping := fmt.Sprintf(`root = transform_character_scramble(value:%q,user_provided_regex:%q)`, testStringValue, helloWorldRegex)
+	mapping := fmt.Sprintf(
+		`root = transform_character_scramble(value:%q,user_provided_regex:%q)`,
+		testStringValue,
+		helloWorldRegex,
+	)
 	ex, err := bloblang.Parse(mapping)
 	assert.NoError(t, err, "failed to parse the substitution transformer")
 
@@ -198,8 +351,17 @@ func Test_TransformCharacterSubstitutionTransformer(t *testing.T) {
 
 	if resStr != nil {
 		assert.IsType(t, "", *resStr)
-		assert.Equal(t, len(testStringValue), len(*resStr), "The output string should be as long as the input string")
-		assert.True(t, transformer_utils.IsValidChar(*resStr), "The output string should contain valid characters")
+		assert.Equal(
+			t,
+			len(testStringValue),
+			len(*resStr),
+			"The output string should be as long as the input string",
+		)
+		assert.True(
+			t,
+			transformer_utils.IsValidChar(*resStr),
+			"The output string should contain valid characters",
+		)
 	} else {
 		t.Error("Pointer is nil, expected a valid string pointer")
 	}
@@ -214,8 +376,17 @@ func Test_TransformCharacterSubsitutitionRegexEmail(t *testing.T) {
 
 	assert.NoError(t, err)
 	assert.IsType(t, "", *res)
-	assert.Equal(t, len(testEmail), len(*res), "The output string should be as long as the input string")
-	assert.True(t, transformer_utils.IsValidChar(*res), "The output string should contain valid characters")
+	assert.Equal(
+		t,
+		len(testEmail),
+		len(*res),
+		"The output string should be as long as the input string",
+	)
+	assert.True(
+		t,
+		transformer_utils.IsValidChar(*res),
+		"The output string should contain valid characters",
+	)
 	assert.Equal(t, testEmail[:4], (*res)[:4], "The username should be the same")
 }
 

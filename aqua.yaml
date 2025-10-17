@@ -13,3 +13,4 @@ registries:
 packages:
 - name: golang/go@go1.24.1
 - name: golangci/golangci-lint@v2.0.0
+- name: segmentio/golines@v0.13.0

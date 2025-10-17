@@ -13,7 +13,11 @@ func Test_GenerateSSN(t *testing.T) {
 	res := generateRandomSSN(rng.New(int64(1)))
 
 	assert.IsType(t, "", res, "The actual value type should be a string")
-	assert.True(t, isValidSSN(res), `The returned ssn should follow this regex = ^\d{3}-\d{2}-\d{4}$)`)
+	assert.True(
+		t,
+		isValidSSN(res),
+		`The returned ssn should follow this regex = ^\d{3}-\d{2}-\d{4}$)`,
+	)
 }
 
 func Test_SSNTransformer(t *testing.T) {
@@ -25,7 +29,11 @@ func Test_SSNTransformer(t *testing.T) {
 
 	assert.NoError(t, err)
 	assert.IsType(t, "", res, "The actual value type should be a string")
-	assert.True(t, isValidSSN(res.(string)), `The returned ssn should follow this regex = ^\d{3}-\d{2}-\d{4}$)`)
+	assert.True(
+		t,
+		isValidSSN(res.(string)),
+		`The returned ssn should follow this regex = ^\d{3}-\d{2}-\d{4}$)`,
+	)
 }
 
 func isValidSSN(ssn string) bool {

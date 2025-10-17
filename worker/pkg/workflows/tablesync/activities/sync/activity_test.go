@@ -55,7 +55,8 @@ output:
 	mux.Handle(mgmtv1alpha1connect.JobServiceGetRunContextProcedure, connect.NewUnaryHandler(
 		mgmtv1alpha1connect.JobServiceGetRunContextProcedure,
 		func(ctx context.Context, r *connect.Request[mgmtv1alpha1.GetRunContextRequest]) (*connect.Response[mgmtv1alpha1.GetRunContextResponse], error) {
-			if r.Msg.GetId().GetAccountId() == accountId && r.Msg.GetId().GetExternalId() == shared.GetBenthosConfigExternalId("test") {
+			if r.Msg.GetId().GetAccountId() == accountId &&
+				r.Msg.GetId().GetExternalId() == shared.GetBenthosConfigExternalId("test") {
 				return connect.NewResponse(&mgmtv1alpha1.GetRunContextResponse{
 					Value: []byte(benthosConfig),
 				}), nil
@@ -83,12 +84,28 @@ output:
 
 	jobclient := mgmtv1alpha1connect.NewJobServiceClient(srv.Client(), srv.URL)
 	connclient := mgmtv1alpha1connect.NewConnectionServiceClient(srv.Client(), srv.URL)
-	sqlconnmanager := connectionmanager.NewConnectionManager(sqlprovider.NewProvider(&sqlconnect.SqlOpenConnector{}), connectionmanager.WithCloseOnRelease())
-	mongoconnmanager := connectionmanager.NewConnectionManager(mongoprovider.NewProvider(), connectionmanager.WithCloseOnRelease())
+	sqlconnmanager := connectionmanager.NewConnectionManager(
+		sqlprovider.NewProvider(&sqlconnect.SqlOpenConnector{}),
+		connectionmanager.WithCloseOnRelease(),
+	)
+	mongoconnmanager := connectionmanager.NewConnectionManager(
+		mongoprovider.NewProvider(),
+		connectionmanager.WithCloseOnRelease(),
+	)
 	var meter metric.Meter
 	temporalclient := tmprl_mocks.NewClient(t)
 
-	activity := New(connclient, jobclient, sqlconnmanager, mongoconnmanager, meter, benthosStreamManager, temporalclient, nil, nil)
+	activity := New(
+		connclient,
+		jobclient,
+		sqlconnmanager,
+		mongoconnmanager,
+		meter,
+		benthosStreamManager,
+		temporalclient,
+		nil,
+		nil,
+	)
 
 	env.RegisterActivity(activity.SyncTable)
 
@@ -128,7 +145,8 @@ output:
 	mux.Handle(mgmtv1alpha1connect.JobServiceGetRunContextProcedure, connect.NewUnaryHandler(
 		mgmtv1alpha1connect.JobServiceGetRunContextProcedure,
 		func(ctx context.Context, r *connect.Request[mgmtv1alpha1.GetRunContextRequest]) (*connect.Response[mgmtv1alpha1.GetRunContextResponse], error) {
-			if r.Msg.GetId().GetAccountId() == accountId && r.Msg.GetId().GetExternalId() == shared.GetBenthosConfigExternalId("test") {
+			if r.Msg.GetId().GetAccountId() == accountId &&
+				r.Msg.GetId().GetExternalId() == shared.GetBenthosConfigExternalId("test") {
 				return connect.NewResponse(&mgmtv1alpha1.GetRunContextResponse{
 					Value: []byte(benthosConfig),
 				}), nil
@@ -167,7 +185,17 @@ output:
 	var meter metric.Meter
 	temporalclient := tmprl_mocks.NewClient(t)
 
-	activity := New(connclient, jobclient, sqlconnmanager, mongoconnmanager, meter, benthosStreamManager, temporalclient, nil, nil)
+	activity := New(
+		connclient,
+		jobclient,
+		sqlconnmanager,
+		mongoconnmanager,
+		meter,
+		benthosStreamManager,
+		temporalclient,
+		nil,
+		nil,
+	)
 	env.RegisterActivity(activity.SyncTable)
 
 	t.Run("valid continuation token", func(t *testing.T) {
@@ -214,7 +242,11 @@ func Test_Sync_Run_No_BenthosConfig(t *testing.T) {
 
 	env.RegisterActivity(activity.SyncTable)
 
-	val, err := env.ExecuteActivity(activity.SyncTable, &SyncTableRequest{}, &SyncMetadata{Schema: "public", Table: "test"})
+	val, err := env.ExecuteActivity(
+		activity.SyncTable,
+		&SyncTableRequest{},
+		&SyncMetadata{Schema: "public", Table: "test"},
+	)
 	require.Error(t, err)
 	require.Nil(t, val)
 }
@@ -244,7 +276,8 @@ metrics:
 	mux.Handle(mgmtv1alpha1connect.JobServiceGetRunContextProcedure, connect.NewUnaryHandler(
 		mgmtv1alpha1connect.JobServiceGetRunContextProcedure,
 		func(ctx context.Context, r *connect.Request[mgmtv1alpha1.GetRunContextRequest]) (*connect.Response[mgmtv1alpha1.GetRunContextResponse], error) {
-			if r.Msg.GetId().GetAccountId() == accountId && r.Msg.GetId().GetExternalId() == shared.GetBenthosConfigExternalId("test") {
+			if r.Msg.GetId().GetAccountId() == accountId &&
+				r.Msg.GetId().GetExternalId() == shared.GetBenthosConfigExternalId("test") {
 				return connect.NewResponse(&mgmtv1alpha1.GetRunContextResponse{
 					Value: []byte(benthosConfig),
 				}), nil
@@ -275,10 +308,26 @@ metrics:
 	benthosStreamManager := benthosstream.NewBenthosStreamManager()
 	jobclient := mgmtv1alpha1connect.NewJobServiceClient(srv.Client(), srv.URL)
 	connclient := mgmtv1alpha1connect.NewConnectionServiceClient(srv.Client(), srv.URL)
-	sqlconnmanager := connectionmanager.NewConnectionManager(sqlprovider.NewProvider(&sqlconnect.SqlOpenConnector{}), connectionmanager.WithCloseOnRelease())
-	mongoconnmanager := connectionmanager.NewConnectionManager(mongoprovider.NewProvider(), connectionmanager.WithCloseOnRelease())
+	sqlconnmanager := connectionmanager.NewConnectionManager(
+		sqlprovider.NewProvider(&sqlconnect.SqlOpenConnector{}),
+		connectionmanager.WithCloseOnRelease(),
+	)
+	mongoconnmanager := connectionmanager.NewConnectionManager(
+		mongoprovider.NewProvider(),
+		connectionmanager.WithCloseOnRelease(),
+	)
 	temporalclient := tmprl_mocks.NewClient(t)
-	activity := New(connclient, jobclient, sqlconnmanager, mongoconnmanager, meter, benthosStreamManager, temporalclient, nil, nil)
+	activity := New(
+		connclient,
+		jobclient,
+		sqlconnmanager,
+		mongoconnmanager,
+		meter,
+		benthosStreamManager,
+		temporalclient,
+		nil,
+		nil,
+	)
 
 	env.RegisterActivity(activity.SyncTable)
 
@@ -321,7 +370,8 @@ func Test_Sync_Run_Processor_Error(t *testing.T) {
 	mux.Handle(mgmtv1alpha1connect.JobServiceGetRunContextProcedure, connect.NewUnaryHandler(
 		mgmtv1alpha1connect.JobServiceGetRunContextProcedure,
 		func(ctx context.Context, r *connect.Request[mgmtv1alpha1.GetRunContextRequest]) (*connect.Response[mgmtv1alpha1.GetRunContextResponse], error) {
-			if r.Msg.GetId().GetAccountId() == accountId && r.Msg.GetId().GetExternalId() == shared.GetBenthosConfigExternalId("test") {
+			if r.Msg.GetId().GetAccountId() == accountId &&
+				r.Msg.GetId().GetExternalId() == shared.GetBenthosConfigExternalId("test") {
 				return connect.NewResponse(&mgmtv1alpha1.GetRunContextResponse{
 					Value: []byte(benthosConfig),
 				}), nil
@@ -350,11 +400,27 @@ func Test_Sync_Run_Processor_Error(t *testing.T) {
 	benthosStreamManager := benthosstream.NewBenthosStreamManager()
 	jobclient := mgmtv1alpha1connect.NewJobServiceClient(srv.Client(), srv.URL)
 	connclient := mgmtv1alpha1connect.NewConnectionServiceClient(srv.Client(), srv.URL)
-	sqlconnmanager := connectionmanager.NewConnectionManager(sqlprovider.NewProvider(&sqlconnect.SqlOpenConnector{}), connectionmanager.WithCloseOnRelease())
-	mongoconnmanager := connectionmanager.NewConnectionManager(mongoprovider.NewProvider(), connectionmanager.WithCloseOnRelease())
+	sqlconnmanager := connectionmanager.NewConnectionManager(
+		sqlprovider.NewProvider(&sqlconnect.SqlOpenConnector{}),
+		connectionmanager.WithCloseOnRelease(),
+	)
+	mongoconnmanager := connectionmanager.NewConnectionManager(
+		mongoprovider.NewProvider(),
+		connectionmanager.WithCloseOnRelease(),
+	)
 	var meter metric.Meter
 	temporalclient := tmprl_mocks.NewClient(t)
-	activity := New(connclient, jobclient, sqlconnmanager, mongoconnmanager, meter, benthosStreamManager, temporalclient, nil, nil)
+	activity := New(
+		connclient,
+		jobclient,
+		sqlconnmanager,
+		mongoconnmanager,
+		meter,
+		benthosStreamManager,
+		temporalclient,
+		nil,
+		nil,
+	)
 
 	env.RegisterActivity(activity.SyncTable)
 
@@ -389,7 +455,8 @@ output:
 	mux.Handle(mgmtv1alpha1connect.JobServiceGetRunContextProcedure, connect.NewUnaryHandler(
 		mgmtv1alpha1connect.JobServiceGetRunContextProcedure,
 		func(ctx context.Context, r *connect.Request[mgmtv1alpha1.GetRunContextRequest]) (*connect.Response[mgmtv1alpha1.GetRunContextResponse], error) {
-			if r.Msg.GetId().GetAccountId() == accountId && r.Msg.GetId().GetExternalId() == shared.GetBenthosConfigExternalId("test") {
+			if r.Msg.GetId().GetAccountId() == accountId &&
+				r.Msg.GetId().GetExternalId() == shared.GetBenthosConfigExternalId("test") {
 				return connect.NewResponse(&mgmtv1alpha1.GetRunContextResponse{
 					Value: []byte(benthosConfig),
 				}), nil
@@ -420,11 +487,27 @@ output:
 
 	jobclient := mgmtv1alpha1connect.NewJobServiceClient(srv.Client(), srv.URL)
 	connclient := mgmtv1alpha1connect.NewConnectionServiceClient(srv.Client(), srv.URL)
-	sqlconnmanager := connectionmanager.NewConnectionManager(sqlprovider.NewProvider(&sqlconnect.SqlOpenConnector{}), connectionmanager.WithCloseOnRelease())
-	mongoconnmanager := connectionmanager.NewConnectionManager(mongoprovider.NewProvider(), connectionmanager.WithCloseOnRelease())
+	sqlconnmanager := connectionmanager.NewConnectionManager(
+		sqlprovider.NewProvider(&sqlconnect.SqlOpenConnector{}),
+		connectionmanager.WithCloseOnRelease(),
+	)
+	mongoconnmanager := connectionmanager.NewConnectionManager(
+		mongoprovider.NewProvider(),
+		connectionmanager.WithCloseOnRelease(),
+	)
 	var meter metric.Meter
 	temporalclient := tmprl_mocks.NewClient(t)
-	activity := New(connclient, jobclient, sqlconnmanager, mongoconnmanager, meter, mockBenthosStreamManager, temporalclient, nil, nil)
+	activity := New(
+		connclient,
+		jobclient,
+		sqlconnmanager,
+		mongoconnmanager,
+		meter,
+		mockBenthosStreamManager,
+		temporalclient,
+		nil,
+		nil,
+	)
 
 	env.RegisterActivity(activity.SyncTable)
 
@@ -478,7 +561,8 @@ output:
 	mux.Handle(mgmtv1alpha1connect.JobServiceGetRunContextProcedure, connect.NewUnaryHandler(
 		mgmtv1alpha1connect.JobServiceGetRunContextProcedure,
 		func(ctx context.Context, r *connect.Request[mgmtv1alpha1.GetRunContextRequest]) (*connect.Response[mgmtv1alpha1.GetRunContextResponse], error) {
-			if r.Msg.GetId().GetAccountId() == accountId && r.Msg.GetId().GetExternalId() == shared.GetBenthosConfigExternalId("test") {
+			if r.Msg.GetId().GetAccountId() == accountId &&
+				r.Msg.GetId().GetExternalId() == shared.GetBenthosConfigExternalId("test") {
 				return connect.NewResponse(&mgmtv1alpha1.GetRunContextResponse{
 					Value: []byte(benthosConfig),
 				}), nil
@@ -504,18 +588,35 @@ output:
 
 	srv := startHTTPServer(t, mux)
 
-	mockBenthosStreamManager.On("NewBenthosStreamFromBuilder", mock.Anything).Return(mockBenthosStream, nil)
+	mockBenthosStreamManager.On("NewBenthosStreamFromBuilder", mock.Anything).
+		Return(mockBenthosStream, nil)
 	errmsg := "benthos error"
 	mockBenthosStream.On("Run", mock.Anything).Return(errors.New(errmsg))
 	mockBenthosStream.On("StopWithin", mock.Anything).Return(nil).Maybe()
 
 	jobclient := mgmtv1alpha1connect.NewJobServiceClient(srv.Client(), srv.URL)
 	connclient := mgmtv1alpha1connect.NewConnectionServiceClient(srv.Client(), srv.URL)
-	sqlconnmanager := connectionmanager.NewConnectionManager(sqlprovider.NewProvider(&sqlconnect.SqlOpenConnector{}), connectionmanager.WithCloseOnRelease())
-	mongoconnmanager := connectionmanager.NewConnectionManager(mongoprovider.NewProvider(), connectionmanager.WithCloseOnRelease())
+	sqlconnmanager := connectionmanager.NewConnectionManager(
+		sqlprovider.NewProvider(&sqlconnect.SqlOpenConnector{}),
+		connectionmanager.WithCloseOnRelease(),
+	)
+	mongoconnmanager := connectionmanager.NewConnectionManager(
+		mongoprovider.NewProvider(),
+		connectionmanager.WithCloseOnRelease(),
+	)
 	var meter metric.Meter
 	temporalclient := tmprl_mocks.NewClient(t)
-	activity := New(connclient, jobclient, sqlconnmanager, mongoconnmanager, meter, mockBenthosStreamManager, temporalclient, nil, nil)
+	activity := New(
+		connclient,
+		jobclient,
+		sqlconnmanager,
+		mongoconnmanager,
+		meter,
+		mockBenthosStreamManager,
+		temporalclient,
+		nil,
+		nil,
+	)
 
 	env.RegisterActivity(activity.SyncTable)
 	_, err := env.ExecuteActivity(activity.SyncTable, &SyncTableRequest{

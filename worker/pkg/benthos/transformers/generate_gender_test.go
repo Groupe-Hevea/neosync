@@ -29,7 +29,10 @@ func Test_GenerateGenderAbbreviateFalse(t *testing.T) {
 }
 
 func Test_GenderTransformer(t *testing.T) {
-	mapping := fmt.Sprintf(`root = generate_gender(abbreviate:true,max_length:%d)`, maxGenderCharLimit)
+	mapping := fmt.Sprintf(
+		`root = generate_gender(abbreviate:true,max_length:%d)`,
+		maxGenderCharLimit,
+	)
 	ex, err := bloblang.Parse(mapping)
 	assert.NoError(t, err, "failed to parse the gender transformer")
 

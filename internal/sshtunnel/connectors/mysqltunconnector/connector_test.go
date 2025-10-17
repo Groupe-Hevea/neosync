@@ -25,14 +25,20 @@ func Test_New(t *testing.T) {
 	})
 
 	t.Run("WithDialer", func(t *testing.T) {
-		connector, cleanup, err := New("foo:bar@tcp(localhost:3306)/mydb", WithDialer(&net.Dialer{}))
+		connector, cleanup, err := New(
+			"foo:bar@tcp(localhost:3306)/mydb",
+			WithDialer(&net.Dialer{}),
+		)
 		require.NoError(t, err)
 		require.NotNil(t, cleanup)
 		require.NotNil(t, connector)
 		cleanup()
 	})
 	t.Run("WithTls", func(t *testing.T) {
-		connector, cleanup, err := New("foo:bar@tcp(localhost:3306)/mydb", WithTLSConfig(&tls.Config{}))
+		connector, cleanup, err := New(
+			"foo:bar@tcp(localhost:3306)/mydb",
+			WithTLSConfig(&tls.Config{}),
+		)
 		require.NoError(t, err)
 		require.NotNil(t, cleanup)
 		require.NotNil(t, connector)

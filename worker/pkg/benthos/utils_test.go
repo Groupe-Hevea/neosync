@@ -8,7 +8,12 @@ import (
 )
 
 func Test_BuildBenthosTable(t *testing.T) {
-	assert.Equal(t, BuildBenthosTable("public", "users"), "public.users", "Joins schema and table with a dot")
+	assert.Equal(
+		t,
+		BuildBenthosTable("public", "users"),
+		"public.users",
+		"Joins schema and table with a dot",
+	)
 	assert.Equal(t, BuildBenthosTable("", "users"), "users", "Handles an empty schema")
 }
 
@@ -19,7 +24,11 @@ func Test_IsCriticalError(t *testing.T) {
 		expected bool
 	}{
 		{"Partial match", "pq: duplicate key value violates unique constraint jobs_pkey", true},
-		{"Match with different case", "pq: insert or update on table \"employees\" violates foreign key constraint", true},
+		{
+			"Match with different case",
+			"pq: insert or update on table \"employees\" violates foreign key constraint",
+			true,
+		},
 		{"No match", "connection timed out", false},
 		{"Unrelated error message", "could not connect to server: Connection refused", false},
 		{"Unrelated error message", "too many clients already", false},

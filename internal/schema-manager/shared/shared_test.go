@@ -20,21 +20,70 @@ func Test_getFilteredForeignToPrimaryTableMap(t *testing.T) {
 	}
 	dependencies := map[string][]*sqlmanager_shared.ForeignConstraint{
 		"public.countries": {
-			{Columns: []string{"region_id"}, NotNullable: []bool{true}, ForeignKey: &sqlmanager_shared.ForeignKey{Table: "public.regions", Columns: []string{"region_id"}}},
+			{
+				Columns:     []string{"region_id"},
+				NotNullable: []bool{true},
+				ForeignKey: &sqlmanager_shared.ForeignKey{
+					Table:   "public.regions",
+					Columns: []string{"region_id"},
+				},
+			},
 		},
 		"public.departments": {
-			{Columns: []string{"location_id"}, NotNullable: []bool{false}, ForeignKey: &sqlmanager_shared.ForeignKey{Table: "public.locations", Columns: []string{"location_id"}}},
+			{
+				Columns:     []string{"location_id"},
+				NotNullable: []bool{false},
+				ForeignKey: &sqlmanager_shared.ForeignKey{
+					Table:   "public.locations",
+					Columns: []string{"location_id"},
+				},
+			},
 		},
 		"public.dependents": {
-			{Columns: []string{"dependent_id"}, NotNullable: []bool{false}, ForeignKey: &sqlmanager_shared.ForeignKey{Table: "public.employees", Columns: []string{"employees_id"}}},
+			{
+				Columns:     []string{"dependent_id"},
+				NotNullable: []bool{false},
+				ForeignKey: &sqlmanager_shared.ForeignKey{
+					Table:   "public.employees",
+					Columns: []string{"employees_id"},
+				},
+			},
 		},
 		"public.locations": {
-			{Columns: []string{"country_id"}, NotNullable: []bool{false}, ForeignKey: &sqlmanager_shared.ForeignKey{Table: "public.countries", Columns: []string{"country_id"}}},
+			{
+				Columns:     []string{"country_id"},
+				NotNullable: []bool{false},
+				ForeignKey: &sqlmanager_shared.ForeignKey{
+					Table:   "public.countries",
+					Columns: []string{"country_id"},
+				},
+			},
 		},
 		"public.employees": {
-			{Columns: []string{"department_id"}, NotNullable: []bool{false}, ForeignKey: &sqlmanager_shared.ForeignKey{Table: "public.departments", Columns: []string{"department_id"}}},
-			{Columns: []string{"job_id"}, NotNullable: []bool{false}, ForeignKey: &sqlmanager_shared.ForeignKey{Table: "public.jobs", Columns: []string{"job_id"}}},
-			{Columns: []string{"manager_id"}, NotNullable: []bool{false}, ForeignKey: &sqlmanager_shared.ForeignKey{Table: "public.employees", Columns: []string{"employee_id"}}},
+			{
+				Columns:     []string{"department_id"},
+				NotNullable: []bool{false},
+				ForeignKey: &sqlmanager_shared.ForeignKey{
+					Table:   "public.departments",
+					Columns: []string{"department_id"},
+				},
+			},
+			{
+				Columns:     []string{"job_id"},
+				NotNullable: []bool{false},
+				ForeignKey: &sqlmanager_shared.ForeignKey{
+					Table:   "public.jobs",
+					Columns: []string{"job_id"},
+				},
+			},
+			{
+				Columns:     []string{"manager_id"},
+				NotNullable: []bool{false},
+				ForeignKey: &sqlmanager_shared.ForeignKey{
+					Table:   "public.employees",
+					Columns: []string{"employee_id"},
+				},
+			},
 		},
 	}
 
@@ -62,21 +111,70 @@ func Test_getFilteredForeignToPrimaryTableMap_filtered(t *testing.T) {
 	}
 	dependencies := map[string][]*sqlmanager_shared.ForeignConstraint{
 		"public.countries": {
-			{Columns: []string{"region_id"}, NotNullable: []bool{true}, ForeignKey: &sqlmanager_shared.ForeignKey{Table: "public.regions", Columns: []string{"region_id"}}}},
+			{
+				Columns:     []string{"region_id"},
+				NotNullable: []bool{true},
+				ForeignKey: &sqlmanager_shared.ForeignKey{
+					Table:   "public.regions",
+					Columns: []string{"region_id"},
+				},
+			}},
 
 		"public.departments": {
-			{Columns: []string{"location_id"}, NotNullable: []bool{false}, ForeignKey: &sqlmanager_shared.ForeignKey{Table: "public.locations", Columns: []string{"location_id"}}},
+			{
+				Columns:     []string{"location_id"},
+				NotNullable: []bool{false},
+				ForeignKey: &sqlmanager_shared.ForeignKey{
+					Table:   "public.locations",
+					Columns: []string{"location_id"},
+				},
+			},
 		},
 		"public.dependents": {
-			{Columns: []string{"dependent_id"}, NotNullable: []bool{false}, ForeignKey: &sqlmanager_shared.ForeignKey{Table: "public.employees", Columns: []string{"employees_id"}}},
+			{
+				Columns:     []string{"dependent_id"},
+				NotNullable: []bool{false},
+				ForeignKey: &sqlmanager_shared.ForeignKey{
+					Table:   "public.employees",
+					Columns: []string{"employees_id"},
+				},
+			},
 		},
 		"public.locations": {
-			{Columns: []string{"country_id"}, NotNullable: []bool{false}, ForeignKey: &sqlmanager_shared.ForeignKey{Table: "public.countries", Columns: []string{"country_id"}}},
+			{
+				Columns:     []string{"country_id"},
+				NotNullable: []bool{false},
+				ForeignKey: &sqlmanager_shared.ForeignKey{
+					Table:   "public.countries",
+					Columns: []string{"country_id"},
+				},
+			},
 		},
 		"public.employees": {
-			{Columns: []string{"department_id"}, NotNullable: []bool{false}, ForeignKey: &sqlmanager_shared.ForeignKey{Table: "public.departments", Columns: []string{"department_id"}}},
-			{Columns: []string{"job_id"}, NotNullable: []bool{false}, ForeignKey: &sqlmanager_shared.ForeignKey{Table: "public.jobs", Columns: []string{"job_id"}}},
-			{Columns: []string{"manager_id"}, NotNullable: []bool{false}, ForeignKey: &sqlmanager_shared.ForeignKey{Table: "public.employees", Columns: []string{"employee_id"}}},
+			{
+				Columns:     []string{"department_id"},
+				NotNullable: []bool{false},
+				ForeignKey: &sqlmanager_shared.ForeignKey{
+					Table:   "public.departments",
+					Columns: []string{"department_id"},
+				},
+			},
+			{
+				Columns:     []string{"job_id"},
+				NotNullable: []bool{false},
+				ForeignKey: &sqlmanager_shared.ForeignKey{
+					Table:   "public.jobs",
+					Columns: []string{"job_id"},
+				},
+			},
+			{
+				Columns:     []string{"manager_id"},
+				NotNullable: []bool{false},
+				ForeignKey: &sqlmanager_shared.ForeignKey{
+					Table:   "public.employees",
+					Columns: []string{"employee_id"},
+				},
+			},
 		},
 	}
 

@@ -18,7 +18,12 @@ func Test_GenerateRandomBusinessName(t *testing.T) {
 
 	assert.NoError(t, err)
 	assert.NotEmpty(t, res)
-	assert.LessOrEqual(t, int64(len(res)), maxCharacterLimit, "The business name should be less than or equal to the max character limit")
+	assert.LessOrEqual(
+		t,
+		int64(len(res)),
+		maxCharacterLimit,
+		"The business name should be less than or equal to the max character limit",
+	)
 }
 
 func Test_GenerateRandomBusinessName_Random_Seed(t *testing.T) {
@@ -28,7 +33,12 @@ func Test_GenerateRandomBusinessName_Random_Seed(t *testing.T) {
 
 	assert.NoError(t, err, "failed with seed", "seed", seed)
 	assert.NotEmpty(t, res)
-	assert.LessOrEqual(t, int64(len(res)), maxCharacterLimit, "The business name should be less than or equal to the max character limit")
+	assert.LessOrEqual(
+		t,
+		int64(len(res)),
+		maxCharacterLimit,
+		"The business name should be less than or equal to the max character limit",
+	)
 }
 
 func Test_GenerateRandomBusinessName_Clamped(t *testing.T) {
@@ -37,7 +47,12 @@ func Test_GenerateRandomBusinessName_Clamped(t *testing.T) {
 
 	assert.NoError(t, err)
 	assert.NotEmpty(t, res)
-	assert.LessOrEqual(t, int64(len(res)), maxCharacterLimit, "The business name should be less than or equal to the max character limit")
+	assert.LessOrEqual(
+		t,
+		int64(len(res)),
+		maxCharacterLimit,
+		"The business name should be less than or equal to the max character limit",
+	)
 	assert.GreaterOrEqual(t, int64(len(res)), int64(10))
 }
 
@@ -54,7 +69,12 @@ func Test_GenerateRandomBusinessNameTransformer(t *testing.T) {
 	require.True(t, ok)
 
 	assert.NotEmpty(t, resStr)
-	assert.LessOrEqual(t, int64(len(resStr)), maxCharacterLimit, "output should be less than or equal to max char limit")
+	assert.LessOrEqual(
+		t,
+		int64(len(resStr)),
+		maxCharacterLimit,
+		"output should be less than or equal to max char limit",
+	)
 }
 
 func Test_GenerateRandomBusinessNameTransformer_NoOptions(t *testing.T) {

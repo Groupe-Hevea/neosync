@@ -69,7 +69,12 @@ func TestDatabaseConnections(t *testing.T) {
 
 			t.Run("with_dialer", func(t *testing.T) {
 				t.Parallel()
-				dialer := sshtunnel.NewLazySSHDialer(addr, cconfig, dialerConfig, testutil.GetConcurrentTestLogger(t))
+				dialer := sshtunnel.NewLazySSHDialer(
+					addr,
+					cconfig,
+					dialerConfig,
+					testutil.GetConcurrentTestLogger(t),
+				)
 				t.Cleanup(func() { dialer.Close() })
 
 				connector, cleanup, err := postgrestunconnector.New(
@@ -105,7 +110,12 @@ func TestDatabaseConnections(t *testing.T) {
 
 			t.Run("with_dialer", func(t *testing.T) {
 				t.Parallel()
-				dialer := sshtunnel.NewLazySSHDialer(addr, cconfig, dialerConfig, testutil.GetConcurrentTestLogger(t))
+				dialer := sshtunnel.NewLazySSHDialer(
+					addr,
+					cconfig,
+					dialerConfig,
+					testutil.GetConcurrentTestLogger(t),
+				)
 				t.Cleanup(func() { dialer.Close() })
 				connector, cleanup, err := postgrestunconnector.New(
 					container.URL,
@@ -139,7 +149,12 @@ func TestDatabaseConnections(t *testing.T) {
 
 			t.Run("with_dialer", func(t *testing.T) {
 				t.Parallel()
-				dialer := sshtunnel.NewLazySSHDialer(addr, cconfig, dialerConfig, testutil.GetConcurrentTestLogger(t))
+				dialer := sshtunnel.NewLazySSHDialer(
+					addr,
+					cconfig,
+					dialerConfig,
+					testutil.GetConcurrentTestLogger(t),
+				)
 				t.Cleanup(func() { dialer.Close() })
 				connector, cleanup, err := mysqltunconnector.New(
 					container.URL,
@@ -174,7 +189,12 @@ func TestDatabaseConnections(t *testing.T) {
 
 			t.Run("with_dialer", func(t *testing.T) {
 				t.Parallel()
-				dialer := sshtunnel.NewLazySSHDialer(addr, cconfig, dialerConfig, testutil.GetConcurrentTestLogger(t))
+				dialer := sshtunnel.NewLazySSHDialer(
+					addr,
+					cconfig,
+					dialerConfig,
+					testutil.GetConcurrentTestLogger(t),
+				)
 				t.Cleanup(func() { dialer.Close() })
 				connector, cleanup, err := mysqltunconnector.New(
 					container.URL,
@@ -208,7 +228,12 @@ func TestDatabaseConnections(t *testing.T) {
 
 			t.Run("with_dialer", func(t *testing.T) {
 				t.Parallel()
-				dialer := sshtunnel.NewLazySSHDialer(addr, cconfig, dialerConfig, testutil.GetConcurrentTestLogger(t))
+				dialer := sshtunnel.NewLazySSHDialer(
+					addr,
+					cconfig,
+					dialerConfig,
+					testutil.GetConcurrentTestLogger(t),
+				)
 				t.Cleanup(func() { dialer.Close() })
 				connector, cleanup, err := mssqltunconnector.New(
 					container.URL,
@@ -223,7 +248,10 @@ func TestDatabaseConnections(t *testing.T) {
 
 		t.Run("with_tls", func(t *testing.T) {
 			t.Parallel()
-			container, err := testcontainers_sqlserver.NewMssqlTestContainer(ctx, testcontainers_sqlserver.WithTls())
+			container, err := testcontainers_sqlserver.NewMssqlTestContainer(
+				ctx,
+				testcontainers_sqlserver.WithTls(),
+			)
 			require.NoError(t, err)
 
 			tlsConfig, err := container.GetClientTlsConfig(ctx)
@@ -243,7 +271,12 @@ func TestDatabaseConnections(t *testing.T) {
 
 			t.Run("with_dialer", func(t *testing.T) {
 				t.Parallel()
-				dialer := sshtunnel.NewLazySSHDialer(addr, cconfig, dialerConfig, testutil.GetConcurrentTestLogger(t))
+				dialer := sshtunnel.NewLazySSHDialer(
+					addr,
+					cconfig,
+					dialerConfig,
+					testutil.GetConcurrentTestLogger(t),
+				)
 				t.Cleanup(func() { dialer.Close() })
 				connector, cleanup, err := mssqltunconnector.New(
 					container.URL,
@@ -561,14 +594,18 @@ func newSshForwardServer(t testing.TB, addr string) *gssh.Server {
 		Handler: gssh.Handler(func(s gssh.Session) {
 			select {}
 		}),
-		LocalPortForwardingCallback: gssh.LocalPortForwardingCallback(func(ctx gssh.Context, destinationHost string, destinationPort uint32) bool {
-			t.Logf("Accepted forward %s:%d\n", destinationHost, destinationPort)
-			return true
-		}),
-		ReversePortForwardingCallback: gssh.ReversePortForwardingCallback(func(ctx gssh.Context, destinationHost string, destinationPort uint32) bool {
-			t.Logf("attempt to bind %s:%d granted\n", destinationHost, destinationPort)
-			return true
-		}),
+		LocalPortForwardingCallback: gssh.LocalPortForwardingCallback(
+			func(ctx gssh.Context, destinationHost string, destinationPort uint32) bool {
+				t.Logf("Accepted forward %s:%d\n", destinationHost, destinationPort)
+				return true
+			},
+		),
+		ReversePortForwardingCallback: gssh.ReversePortForwardingCallback(
+			func(ctx gssh.Context, destinationHost string, destinationPort uint32) bool {
+				t.Logf("attempt to bind %s:%d granted\n", destinationHost, destinationPort)
+				return true
+			},
+		),
 		RequestHandlers: map[string]gssh.RequestHandler{
 			"tcpip-forward":        forwardHandler.HandleSSHRequest,
 			"cancel-tcpip-forward": forwardHandler.HandleSSHRequest,

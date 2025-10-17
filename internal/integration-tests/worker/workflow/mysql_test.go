@@ -49,10 +49,13 @@ func createMysqlSyncJob(
 			}
 		}
 		w := where
-		subsetMap[schema].Tables = append(subsetMap[schema].Tables, &mgmtv1alpha1.MysqlSourceTableOption{
-			Table:       table,
-			WhereClause: &w,
-		})
+		subsetMap[schema].Tables = append(
+			subsetMap[schema].Tables,
+			&mgmtv1alpha1.MysqlSourceTableOption{
+				Table:       table,
+				WhereClause: &w,
+			},
+		)
 	}
 
 	for _, s := range subsetMap {
@@ -122,11 +125,14 @@ func updateJobMappings(
 	jobsource *mgmtv1alpha1.JobSource,
 ) *mgmtv1alpha1.Job {
 
-	job, err := jobclient.UpdateJobSourceConnection(ctx, connect.NewRequest(&mgmtv1alpha1.UpdateJobSourceConnectionRequest{
-		Id:       jobId,
-		Mappings: mappings,
-		Source:   jobsource,
-	}))
+	job, err := jobclient.UpdateJobSourceConnection(
+		ctx,
+		connect.NewRequest(&mgmtv1alpha1.UpdateJobSourceConnectionRequest{
+			Id:       jobId,
+			Mappings: mappings,
+			Source:   jobsource,
+		}),
+	)
 	require.NoError(t, err)
 
 	return job.Msg.GetJob()
@@ -146,9 +152,16 @@ func test_mysql_types(
 
 	errgrp, errctx := errgroup.WithContext(ctx)
 	errgrp.Go(func() error {
-		return mysql.Source.RunCreateStmtsInDatabase(errctx, mysqlTestdataFolder, []string{"alltypes/create-tables.sql"}, alltypesSchema)
+		return mysql.Source.RunCreateStmtsInDatabase(
+			errctx,
+			mysqlTestdataFolder,
+			[]string{"alltypes/create-tables.sql"},
+			alltypesSchema,
+		)
 	})
-	errgrp.Go(func() error { return mysql.Target.CreateDatabases(errctx, []string{alltypesSchema}) })
+	errgrp.Go(
+		func() error { return mysql.Target.CreateDatabases(errctx, []string{alltypesSchema}) },
+	)
 	err := errgrp.Wait()
 	require.NoError(t, err)
 
@@ -171,7 +184,11 @@ func test_mysql_types(
 	testworkflow := NewTestDataSyncWorkflowEnv(t, neosyncApi, dbManagers)
 	testworkflow.RequireActivitiesCompletedSuccessfully(t)
 	testworkflow.ExecuteTestDataSyncWorkflow(job.GetId())
-	require.Truef(t, testworkflow.TestEnv.IsWorkflowCompleted(), "Workflow did not complete. Test: mysql_all_types")
+	require.Truef(
+		t,
+		testworkflow.TestEnv.IsWorkflowCompleted(),
+		"Workflow did not complete. Test: mysql_all_types",
+	)
 	err = testworkflow.TestEnv.GetWorkflowError()
 	require.NoError(t, err, "Received Temporal Workflow Error: mysql_all_types")
 
@@ -188,12 +205,44 @@ func test_mysql_types(
 	for _, expected := range expectedResults {
 		rowCount, err := mysql.Target.GetTableRowCount(ctx, expected.schema, expected.table)
 		require.NoError(t, err)
-		require.Equalf(t, expected.rowCount, rowCount, fmt.Sprintf("Test: mysql_all_types Table: %s", expected.table))
+		require.Equalf(
+			t,
+			expected.rowCount,
+			rowCount,
+			fmt.Sprintf("Test: mysql_all_types Table: %s", expected.table),
+		)
 	}
 
-	testutil_testdata.VerifySQLTableColumnValues(t, ctx, mysql.Source.DB, mysql.Target.DB, alltypesSchema, "all_data_types", sqlmanager_shared.MysqlDriver, []string{"id"})
-	testutil_testdata.VerifySQLTableColumnValues(t, ctx, mysql.Source.DB, mysql.Target.DB, alltypesSchema, "json_data", sqlmanager_shared.MysqlDriver, []string{"id"})
-	testutil_testdata.VerifySQLTableColumnValues(t, ctx, mysql.Source.DB, mysql.Target.DB, alltypesSchema, "generated_table", sqlmanager_shared.MysqlDriver, []string{"id"})
+	testutil_testdata.VerifySQLTableColumnValues(
+		t,
+		ctx,
+		mysql.Source.DB,
+		mysql.Target.DB,
+		alltypesSchema,
+		"all_data_types",
+		sqlmanager_shared.MysqlDriver,
+		[]string{"id"},
+	)
+	testutil_testdata.VerifySQLTableColumnValues(
+		t,
+		ctx,
+		mysql.Source.DB,
+		mysql.Target.DB,
+		alltypesSchema,
+		"json_data",
+		sqlmanager_shared.MysqlDriver,
+		[]string{"id"},
+	)
+	testutil_testdata.VerifySQLTableColumnValues(
+		t,
+		ctx,
+		mysql.Source.DB,
+		mysql.Target.DB,
+		alltypesSchema,
+		"generated_table",
+		sqlmanager_shared.MysqlDriver,
+		[]string{"id"},
+	)
 
 	// tear down
 	err = cleanupMysqlDatabases(ctx, mysql, []string{alltypesSchema})
@@ -215,12 +264,24 @@ func test_mysql_edgecases(
 
 	errgrp, errctx := errgroup.WithContext(ctx)
 	errgrp.Go(func() error {
-		return mysql.Source.RunCreateStmtsInDatabase(errctx, mysqlTestdataFolder, []string{"edgecases/create-tables.sql"}, schema)
+		return mysql.Source.RunCreateStmtsInDatabase(
+			errctx,
+			mysqlTestdataFolder,
+			[]string{"edgecases/create-tables.sql"},
+			schema,
+		)
 	})
 	errgrp.Go(func() error {
-		return mysql.Source.RunCreateStmtsInDatabase(errctx, mysqlTestdataFolder, []string{"edgecases/create-tables.sql"}, schema2)
+		return mysql.Source.RunCreateStmtsInDatabase(
+			errctx,
+			mysqlTestdataFolder,
+			[]string{"edgecases/create-tables.sql"},
+			schema2,
+		)
 	})
-	errgrp.Go(func() error { return mysql.Target.CreateDatabases(errctx, []string{schema, schema2}) })
+	errgrp.Go(
+		func() error { return mysql.Target.CreateDatabases(errctx, []string{schema, schema2}) },
+	)
 	err := errgrp.Wait()
 	require.NoError(t, err)
 
@@ -244,7 +305,11 @@ func test_mysql_edgecases(
 	testworkflow := NewTestDataSyncWorkflowEnv(t, neosyncApi, dbManagers)
 	testworkflow.RequireActivitiesCompletedSuccessfully(t)
 	testworkflow.ExecuteTestDataSyncWorkflow(job.GetId())
-	require.Truef(t, testworkflow.TestEnv.IsWorkflowCompleted(), "Workflow did not complete. Test: mysql_edgecases")
+	require.Truef(
+		t,
+		testworkflow.TestEnv.IsWorkflowCompleted(),
+		"Workflow did not complete. Test: mysql_edgecases",
+	)
 	err = testworkflow.TestEnv.GetWorkflowError()
 	require.NoError(t, err, "Received Temporal Workflow Error: mysql_edgecases")
 
@@ -274,14 +339,24 @@ func test_mysql_edgecases(
 	for _, expected := range expectedResults {
 		rowCount, err := mysql.Target.GetTableRowCount(ctx, schema, expected.table)
 		require.NoError(t, err)
-		require.Equalf(t, expected.rowCount, rowCount, fmt.Sprintf("Test: mysql_edgecases schema: %s Table: %s", schema, expected.table))
+		require.Equalf(
+			t,
+			expected.rowCount,
+			rowCount,
+			fmt.Sprintf("Test: mysql_edgecases schema: %s Table: %s", schema, expected.table),
+		)
 	}
 
 	// check schema2
 	for _, expected := range expectedResults {
 		rowCount, err := mysql.Target.GetTableRowCount(ctx, schema2, expected.table)
 		require.NoError(t, err)
-		require.Equalf(t, expected.rowCount, rowCount, fmt.Sprintf("Test: mysql_edgecases schema: %s Table: %s", schema2, expected.table))
+		require.Equalf(
+			t,
+			expected.rowCount,
+			rowCount,
+			fmt.Sprintf("Test: mysql_edgecases schema: %s Table: %s", schema2, expected.table),
+		)
 	}
 
 	// tear down
@@ -303,10 +378,20 @@ func test_mysql_composite_keys(
 
 	errgrp, errctx := errgroup.WithContext(ctx)
 	errgrp.Go(func() error {
-		return mysql.Source.RunCreateStmtsInDatabase(errctx, mysqlTestdataFolder, []string{"composite-keys/create-tables.sql"}, schema)
+		return mysql.Source.RunCreateStmtsInDatabase(
+			errctx,
+			mysqlTestdataFolder,
+			[]string{"composite-keys/create-tables.sql"},
+			schema,
+		)
 	})
 	errgrp.Go(func() error {
-		return mysql.Target.RunCreateStmtsInDatabase(errctx, mysqlTestdataFolder, []string{"composite-keys/create-tables.sql"}, schema)
+		return mysql.Target.RunCreateStmtsInDatabase(
+			errctx,
+			mysqlTestdataFolder,
+			[]string{"composite-keys/create-tables.sql"},
+			schema,
+		)
 	})
 	err := errgrp.Wait()
 	require.NoError(t, err)
@@ -330,7 +415,11 @@ func test_mysql_composite_keys(
 	testworkflow := NewTestDataSyncWorkflowEnv(t, neosyncApi, dbManagers)
 	testworkflow.RequireActivitiesCompletedSuccessfully(t)
 	testworkflow.ExecuteTestDataSyncWorkflow(job.GetId())
-	require.Truef(t, testworkflow.TestEnv.IsWorkflowCompleted(), "Workflow did not complete. Test: mysql_composite_keys")
+	require.Truef(
+		t,
+		testworkflow.TestEnv.IsWorkflowCompleted(),
+		"Workflow did not complete. Test: mysql_composite_keys",
+	)
 	err = testworkflow.TestEnv.GetWorkflowError()
 	require.NoError(t, err, "Received Temporal Workflow Error: mysql_composite_keys")
 
@@ -347,7 +436,12 @@ func test_mysql_composite_keys(
 	for _, expected := range expectedResults {
 		rowCount, err := mysql.Target.GetTableRowCount(ctx, schema, expected.table)
 		require.NoError(t, err)
-		require.Equalf(t, expected.rowCount, rowCount, fmt.Sprintf("Test: mysql_composite_keys schema: %s Table: %s", schema, expected.table))
+		require.Equalf(
+			t,
+			expected.rowCount,
+			rowCount,
+			fmt.Sprintf("Test: mysql_composite_keys schema: %s Table: %s", schema, expected.table),
+		)
 	}
 
 	// tear down
@@ -369,10 +463,20 @@ func test_mysql_on_conflict_do_update(
 
 	errgrp, errctx := errgroup.WithContext(ctx)
 	errgrp.Go(func() error {
-		return mysql.Source.RunCreateStmtsInDatabase(errctx, mysqlTestdataFolder, []string{"humanresources/create-tables.sql"}, schema)
+		return mysql.Source.RunCreateStmtsInDatabase(
+			errctx,
+			mysqlTestdataFolder,
+			[]string{"humanresources/create-tables.sql"},
+			schema,
+		)
 	})
 	errgrp.Go(func() error {
-		return mysql.Target.RunCreateStmtsInDatabase(errctx, mysqlTestdataFolder, []string{"humanresources/create-tables.sql"}, schema)
+		return mysql.Target.RunCreateStmtsInDatabase(
+			errctx,
+			mysqlTestdataFolder,
+			[]string{"humanresources/create-tables.sql"},
+			schema,
+		)
 	})
 	err := errgrp.Wait()
 	require.NoError(t, err)
@@ -410,7 +514,11 @@ func test_mysql_on_conflict_do_update(
 	testworkflow := NewTestDataSyncWorkflowEnv(t, neosyncApi, dbManagers)
 	testworkflow.RequireActivitiesCompletedSuccessfully(t)
 	testworkflow.ExecuteTestDataSyncWorkflow(job.GetId())
-	require.Truef(t, testworkflow.TestEnv.IsWorkflowCompleted(), "Workflow did not complete. Test: mysql_human_resources")
+	require.Truef(
+		t,
+		testworkflow.TestEnv.IsWorkflowCompleted(),
+		"Workflow did not complete. Test: mysql_human_resources",
+	)
 	err = testworkflow.TestEnv.GetWorkflowError()
 	require.NoError(t, err, "Received Temporal Workflow Error: mysql_human_resources")
 
@@ -431,10 +539,24 @@ func test_mysql_on_conflict_do_update(
 	for _, expected := range expectedResults {
 		rowCount, err := mysql.Target.GetTableRowCount(ctx, expected.schema, expected.table)
 		require.NoError(t, err)
-		require.Equalf(t, expected.rowCount, rowCount, fmt.Sprintf("Test: mysql_human_resources Table: %s", expected.table))
+		require.Equalf(
+			t,
+			expected.rowCount,
+			rowCount,
+			fmt.Sprintf("Test: mysql_human_resources Table: %s", expected.table),
+		)
 	}
 
-	testutil_testdata.VerifySQLTableColumnValues(t, ctx, mysql.Source.DB, mysql.Target.DB, schema, "regions", sqlmanager_shared.MysqlDriver, []string{"region_id"})
+	testutil_testdata.VerifySQLTableColumnValues(
+		t,
+		ctx,
+		mysql.Source.DB,
+		mysql.Target.DB,
+		schema,
+		"regions",
+		sqlmanager_shared.MysqlDriver,
+		[]string{"region_id"},
+	)
 
 	// tear down
 	err = cleanupMysqlDatabases(ctx, mysql, []string{schema})
@@ -453,7 +575,12 @@ func test_mysql_complex(
 	jobclient := neosyncApi.OSSUnauthenticatedLicensedClients.Jobs()
 	schema := "complex"
 
-	err := mysql.Source.RunCreateStmtsInDatabase(ctx, mysqlTestdataFolder, []string{"complex/create-tables.sql", "complex/inserts.sql"}, schema)
+	err := mysql.Source.RunCreateStmtsInDatabase(
+		ctx,
+		mysqlTestdataFolder,
+		[]string{"complex/create-tables.sql", "complex/inserts.sql"},
+		schema,
+	)
 	require.NoError(t, err)
 
 	neosyncApi.MockTemporalForCreateJob("test-mysql-sync")
@@ -473,10 +600,20 @@ func test_mysql_complex(
 		},
 	})
 
-	testworkflow := NewTestDataSyncWorkflowEnv(t, neosyncApi, dbManagers, WithMaxIterations(10), WithPageLimit(100))
+	testworkflow := NewTestDataSyncWorkflowEnv(
+		t,
+		neosyncApi,
+		dbManagers,
+		WithMaxIterations(10),
+		WithPageLimit(100),
+	)
 	testworkflow.RequireActivitiesCompletedSuccessfully(t)
 	testworkflow.ExecuteTestDataSyncWorkflow(job.GetId())
-	require.Truef(t, testworkflow.TestEnv.IsWorkflowCompleted(), "Workflow did not complete. Test: mysql_complex")
+	require.Truef(
+		t,
+		testworkflow.TestEnv.IsWorkflowCompleted(),
+		"Workflow did not complete. Test: mysql_complex",
+	)
 	err = testworkflow.TestEnv.GetWorkflowError()
 	require.NoError(t, err, "Received Temporal Workflow Error: mysql_complex")
 
@@ -510,30 +647,222 @@ func test_mysql_complex(
 	for _, expected := range expectedResults {
 		rowCount, err := mysql.Target.GetTableRowCount(ctx, expected.schema, expected.table)
 		require.NoError(t, err)
-		assert.Equalf(t, expected.rowCount, rowCount, fmt.Sprintf("Test: mysql_complex Table: %s", expected.table))
+		assert.Equalf(
+			t,
+			expected.rowCount,
+			rowCount,
+			fmt.Sprintf("Test: mysql_complex Table: %s", expected.table),
+		)
 	}
-	test_schema_reconciliation_run_context(t, ctx, jobclient, job.GetId(), job.GetDestinations()[0].GetId(), accountId)
+	test_schema_reconciliation_run_context(
+		t,
+		ctx,
+		jobclient,
+		job.GetId(),
+		job.GetDestinations()[0].GetId(),
+		accountId,
+	)
 
-	testutil_testdata.VerifySQLTableColumnValues(t, ctx, mysql.Source.DB, mysql.Target.DB, schema, "agency", sqlmanager_shared.MysqlDriver, []string{"id"})
-	testutil_testdata.VerifySQLTableColumnValues(t, ctx, mysql.Source.DB, mysql.Target.DB, schema, "astronaut", sqlmanager_shared.MysqlDriver, []string{"id"})
-	testutil_testdata.VerifySQLTableColumnValues(t, ctx, mysql.Source.DB, mysql.Target.DB, schema, "spacecraft", sqlmanager_shared.MysqlDriver, []string{"id"})
-	testutil_testdata.VerifySQLTableColumnValues(t, ctx, mysql.Source.DB, mysql.Target.DB, schema, "celestial_body", sqlmanager_shared.MysqlDriver, []string{"id"})
-	testutil_testdata.VerifySQLTableColumnValues(t, ctx, mysql.Source.DB, mysql.Target.DB, schema, "launch_site", sqlmanager_shared.MysqlDriver, []string{"id"})
-	testutil_testdata.VerifySQLTableColumnValues(t, ctx, mysql.Source.DB, mysql.Target.DB, schema, "mission", sqlmanager_shared.MysqlDriver, []string{"id"})
-	testutil_testdata.VerifySQLTableColumnValues(t, ctx, mysql.Source.DB, mysql.Target.DB, schema, "mission_crew", sqlmanager_shared.MysqlDriver, []string{"mission_id", "astronaut_id"})
-	testutil_testdata.VerifySQLTableColumnValues(t, ctx, mysql.Source.DB, mysql.Target.DB, schema, "research_project", sqlmanager_shared.MysqlDriver, []string{"id"})
-	testutil_testdata.VerifySQLTableColumnValues(t, ctx, mysql.Source.DB, mysql.Target.DB, schema, "project_mission", sqlmanager_shared.MysqlDriver, []string{"project_id", "mission_id"})
-	testutil_testdata.VerifySQLTableColumnValues(t, ctx, mysql.Source.DB, mysql.Target.DB, schema, "mission_log", sqlmanager_shared.MysqlDriver, []string{"log_id"})
-	testutil_testdata.VerifySQLTableColumnValues(t, ctx, mysql.Source.DB, mysql.Target.DB, schema, "observatory", sqlmanager_shared.MysqlDriver, []string{"id"})
-	testutil_testdata.VerifySQLTableColumnValues(t, ctx, mysql.Source.DB, mysql.Target.DB, schema, "telescope", sqlmanager_shared.MysqlDriver, []string{"id"})
-	testutil_testdata.VerifySQLTableColumnValues(t, ctx, mysql.Source.DB, mysql.Target.DB, schema, "instrument", sqlmanager_shared.MysqlDriver, []string{"id"})
-	testutil_testdata.VerifySQLTableColumnValues(t, ctx, mysql.Source.DB, mysql.Target.DB, schema, "observation_session", sqlmanager_shared.MysqlDriver, []string{"id"})
-	testutil_testdata.VerifySQLTableColumnValues(t, ctx, mysql.Source.DB, mysql.Target.DB, schema, "data_set", sqlmanager_shared.MysqlDriver, []string{"id"})
-	testutil_testdata.VerifySQLTableColumnValues(t, ctx, mysql.Source.DB, mysql.Target.DB, schema, "research_paper", sqlmanager_shared.MysqlDriver, []string{"id"})
-	testutil_testdata.VerifySQLTableColumnValues(t, ctx, mysql.Source.DB, mysql.Target.DB, schema, "paper_citation", sqlmanager_shared.MysqlDriver, []string{"citing_paper_id", "cited_paper_id"})
-	testutil_testdata.VerifySQLTableColumnValues(t, ctx, mysql.Source.DB, mysql.Target.DB, schema, "grant", sqlmanager_shared.MysqlDriver, []string{"id"})
-	testutil_testdata.VerifySQLTableColumnValues(t, ctx, mysql.Source.DB, mysql.Target.DB, schema, "grant_research_project", sqlmanager_shared.MysqlDriver, []string{"grant_id", "research_project_id"})
-	testutil_testdata.VerifySQLTableColumnValues(t, ctx, mysql.Source.DB, mysql.Target.DB, schema, "instrument_usage", sqlmanager_shared.MysqlDriver, []string{"id"})
+	testutil_testdata.VerifySQLTableColumnValues(
+		t,
+		ctx,
+		mysql.Source.DB,
+		mysql.Target.DB,
+		schema,
+		"agency",
+		sqlmanager_shared.MysqlDriver,
+		[]string{"id"},
+	)
+	testutil_testdata.VerifySQLTableColumnValues(
+		t,
+		ctx,
+		mysql.Source.DB,
+		mysql.Target.DB,
+		schema,
+		"astronaut",
+		sqlmanager_shared.MysqlDriver,
+		[]string{"id"},
+	)
+	testutil_testdata.VerifySQLTableColumnValues(
+		t,
+		ctx,
+		mysql.Source.DB,
+		mysql.Target.DB,
+		schema,
+		"spacecraft",
+		sqlmanager_shared.MysqlDriver,
+		[]string{"id"},
+	)
+	testutil_testdata.VerifySQLTableColumnValues(
+		t,
+		ctx,
+		mysql.Source.DB,
+		mysql.Target.DB,
+		schema,
+		"celestial_body",
+		sqlmanager_shared.MysqlDriver,
+		[]string{"id"},
+	)
+	testutil_testdata.VerifySQLTableColumnValues(
+		t,
+		ctx,
+		mysql.Source.DB,
+		mysql.Target.DB,
+		schema,
+		"launch_site",
+		sqlmanager_shared.MysqlDriver,
+		[]string{"id"},
+	)
+	testutil_testdata.VerifySQLTableColumnValues(
+		t,
+		ctx,
+		mysql.Source.DB,
+		mysql.Target.DB,
+		schema,
+		"mission",
+		sqlmanager_shared.MysqlDriver,
+		[]string{"id"},
+	)
+	testutil_testdata.VerifySQLTableColumnValues(
+		t,
+		ctx,
+		mysql.Source.DB,
+		mysql.Target.DB,
+		schema,
+		"mission_crew",
+		sqlmanager_shared.MysqlDriver,
+		[]string{"mission_id", "astronaut_id"},
+	)
+	testutil_testdata.VerifySQLTableColumnValues(
+		t,
+		ctx,
+		mysql.Source.DB,
+		mysql.Target.DB,
+		schema,
+		"research_project",
+		sqlmanager_shared.MysqlDriver,
+		[]string{"id"},
+	)
+	testutil_testdata.VerifySQLTableColumnValues(
+		t,
+		ctx,
+		mysql.Source.DB,
+		mysql.Target.DB,
+		schema,
+		"project_mission",
+		sqlmanager_shared.MysqlDriver,
+		[]string{"project_id", "mission_id"},
+	)
+	testutil_testdata.VerifySQLTableColumnValues(
+		t,
+		ctx,
+		mysql.Source.DB,
+		mysql.Target.DB,
+		schema,
+		"mission_log",
+		sqlmanager_shared.MysqlDriver,
+		[]string{"log_id"},
+	)
+	testutil_testdata.VerifySQLTableColumnValues(
+		t,
+		ctx,
+		mysql.Source.DB,
+		mysql.Target.DB,
+		schema,
+		"observatory",
+		sqlmanager_shared.MysqlDriver,
+		[]string{"id"},
+	)
+	testutil_testdata.VerifySQLTableColumnValues(
+		t,
+		ctx,
+		mysql.Source.DB,
+		mysql.Target.DB,
+		schema,
+		"telescope",
+		sqlmanager_shared.MysqlDriver,
+		[]string{"id"},
+	)
+	testutil_testdata.VerifySQLTableColumnValues(
+		t,
+		ctx,
+		mysql.Source.DB,
+		mysql.Target.DB,
+		schema,
+		"instrument",
+		sqlmanager_shared.MysqlDriver,
+		[]string{"id"},
+	)
+	testutil_testdata.VerifySQLTableColumnValues(
+		t,
+		ctx,
+		mysql.Source.DB,
+		mysql.Target.DB,
+		schema,
+		"observation_session",
+		sqlmanager_shared.MysqlDriver,
+		[]string{"id"},
+	)
+	testutil_testdata.VerifySQLTableColumnValues(
+		t,
+		ctx,
+		mysql.Source.DB,
+		mysql.Target.DB,
+		schema,
+		"data_set",
+		sqlmanager_shared.MysqlDriver,
+		[]string{"id"},
+	)
+	testutil_testdata.VerifySQLTableColumnValues(
+		t,
+		ctx,
+		mysql.Source.DB,
+		mysql.Target.DB,
+		schema,
+		"research_paper",
+		sqlmanager_shared.MysqlDriver,
+		[]string{"id"},
+	)
+	testutil_testdata.VerifySQLTableColumnValues(
+		t,
+		ctx,
+		mysql.Source.DB,
+		mysql.Target.DB,
+		schema,
+		"paper_citation",
+		sqlmanager_shared.MysqlDriver,
+		[]string{"citing_paper_id", "cited_paper_id"},
+	)
+	testutil_testdata.VerifySQLTableColumnValues(
+		t,
+		ctx,
+		mysql.Source.DB,
+		mysql.Target.DB,
+		schema,
+		"grant",
+		sqlmanager_shared.MysqlDriver,
+		[]string{"id"},
+	)
+	testutil_testdata.VerifySQLTableColumnValues(
+		t,
+		ctx,
+		mysql.Source.DB,
+		mysql.Target.DB,
+		schema,
+		"grant_research_project",
+		sqlmanager_shared.MysqlDriver,
+		[]string{"grant_id", "research_project_id"},
+	)
+	testutil_testdata.VerifySQLTableColumnValues(
+		t,
+		ctx,
+		mysql.Source.DB,
+		mysql.Target.DB,
+		schema,
+		"instrument_usage",
+		sqlmanager_shared.MysqlDriver,
+		[]string{"id"},
+	)
 
 	// tear down
 	err = cleanupMysqlDatabases(ctx, mysql, []string{schema})
@@ -553,7 +882,12 @@ func test_mysql_schema_reconciliation(
 	jobclient := neosyncApi.OSSUnauthenticatedLicensedClients.Jobs()
 	schema := fmt.Sprintf("reconcile_%v", shouldTruncate)
 
-	err := mysql.Source.RunCreateStmtsInDatabase(ctx, mysqlTestdataFolder, []string{"schema-init/create-tables.sql"}, schema)
+	err := mysql.Source.RunCreateStmtsInDatabase(
+		ctx,
+		mysqlTestdataFolder,
+		[]string{"schema-init/create-tables.sql"},
+		schema,
+	)
 	require.NoError(t, err)
 
 	neosyncApi.MockTemporalForCreateJob("test-mysql-sync")
@@ -574,10 +908,20 @@ func test_mysql_schema_reconciliation(
 	})
 	destinationId := job.GetDestinations()[0].GetId()
 
-	testworkflow := NewTestDataSyncWorkflowEnv(t, neosyncApi, dbManagers, WithMaxIterations(100), WithPageLimit(1000))
+	testworkflow := NewTestDataSyncWorkflowEnv(
+		t,
+		neosyncApi,
+		dbManagers,
+		WithMaxIterations(100),
+		WithPageLimit(1000),
+	)
 	testworkflow.RequireActivitiesCompletedSuccessfully(t)
 	testworkflow.ExecuteTestDataSyncWorkflow(job.GetId())
-	require.Truef(t, testworkflow.TestEnv.IsWorkflowCompleted(), "Workflow did not complete. Test: mysql-schema-reconciliation")
+	require.Truef(
+		t,
+		testworkflow.TestEnv.IsWorkflowCompleted(),
+		"Workflow did not complete. Test: mysql-schema-reconciliation",
+	)
 	err = testworkflow.TestEnv.GetWorkflowError()
 	require.NoError(t, err, "Received Temporal Workflow Error: mysql-schema-reconciliation")
 
@@ -609,7 +953,12 @@ func test_mysql_schema_reconciliation(
 	for _, expected := range expectedResults {
 		rowCount, err := mysql.Target.GetTableRowCount(ctx, expected.schema, expected.table)
 		require.NoError(t, err)
-		assert.Equalf(t, expected.rowCount, rowCount, fmt.Sprintf("Test: mysql-schema-reconciliation Table: %s", expected.table))
+		assert.Equalf(
+			t,
+			expected.rowCount,
+			rowCount,
+			fmt.Sprintf("Test: mysql-schema-reconciliation Table: %s", expected.table),
+		)
 	}
 
 	tables := []string{}
@@ -625,7 +974,12 @@ func test_mysql_schema_reconciliation(
 	test_schema_reconciliation_run_context(t, ctx, jobclient, job.GetId(), destinationId, accountId)
 
 	t.Logf("running alter statements")
-	err = mysql.Source.RunCreateStmtsInDatabase(ctx, mysqlTestdataFolder, []string{"schema-init/alter-statements.sql"}, schema)
+	err = mysql.Source.RunCreateStmtsInDatabase(
+		ctx,
+		mysqlTestdataFolder,
+		[]string{"schema-init/alter-statements.sql"},
+		schema,
+	)
 	require.NoError(t, err)
 	t.Logf("finished running alter statements")
 
@@ -633,10 +987,20 @@ func test_mysql_schema_reconciliation(
 	updatedMappings = append(updatedMappings, mysql_schemainit.GetAlterSyncJobMappings(schema)...)
 	job = updateJobMappings(t, ctx, jobclient, job.GetId(), updatedMappings, job.GetSource())
 
-	testworkflow = NewTestDataSyncWorkflowEnv(t, neosyncApi, dbManagers, WithMaxIterations(100), WithPageLimit(1000))
+	testworkflow = NewTestDataSyncWorkflowEnv(
+		t,
+		neosyncApi,
+		dbManagers,
+		WithMaxIterations(100),
+		WithPageLimit(1000),
+	)
 	testworkflow.RequireActivitiesCompletedSuccessfully(t)
 	testworkflow.ExecuteTestDataSyncWorkflow(job.GetId())
-	require.Truef(t, testworkflow.TestEnv.IsWorkflowCompleted(), "Workflow did not complete. Test: mysql-schema-reconciliation-run-2")
+	require.Truef(
+		t,
+		testworkflow.TestEnv.IsWorkflowCompleted(),
+		"Workflow did not complete. Test: mysql-schema-reconciliation-run-2",
+	)
 	err = testworkflow.TestEnv.GetWorkflowError()
 	require.NoError(t, err, "Received Temporal Workflow Error: mysql-schema-reconciliation-run-2")
 
@@ -646,14 +1010,28 @@ func test_mysql_schema_reconciliation(
 		}
 		rowCount, err := mysql.Target.GetTableRowCount(ctx, expected.schema, expected.table)
 		require.NoError(t, err)
-		assert.Equalf(t, expected.rowCount, rowCount, fmt.Sprintf("Test: mysql-schema-reconciliation-run-2 Table: %s", expected.table))
+		assert.Equalf(
+			t,
+			expected.rowCount,
+			rowCount,
+			fmt.Sprintf("Test: mysql-schema-reconciliation-run-2 Table: %s", expected.table),
+		)
 	}
 
 	t.Logf("verifying destination data after alter statements")
 	test_mysql_schema_reconciliation_column_values(t, ctx, mysql, schema)
 	t.Logf("finished verifying destination data after alter statements")
 
-	testutil_testdata.VerifySQLTableColumnValues(t, ctx, mysql.Source.DB, mysql.Target.DB, schema, "emails", sqlmanager_shared.MysqlDriver, []string{"email_identity"})
+	testutil_testdata.VerifySQLTableColumnValues(
+		t,
+		ctx,
+		mysql.Source.DB,
+		mysql.Target.DB,
+		schema,
+		"emails",
+		sqlmanager_shared.MysqlDriver,
+		[]string{"email_identity"},
+	)
 
 	test_mysql_schema_reconciliation_compare_schemas(t, ctx, mysql, schema, tables)
 	test_schema_reconciliation_run_context(t, ctx, jobclient, job.GetId(), destinationId, accountId)
@@ -671,13 +1049,16 @@ func test_schema_reconciliation_run_context(
 	destinationId string,
 	accountId string,
 ) {
-	runContext, err := jobclient.GetRunContext(ctx, connect.NewRequest(&mgmtv1alpha1.GetRunContextRequest{
-		Id: &mgmtv1alpha1.RunContextKey{
-			JobRunId:   jobId,
-			ExternalId: fmt.Sprintf("reconcile-schema-report-%s", destinationId),
-			AccountId:  accountId,
-		},
-	}))
+	runContext, err := jobclient.GetRunContext(
+		ctx,
+		connect.NewRequest(&mgmtv1alpha1.GetRunContextRequest{
+			Id: &mgmtv1alpha1.RunContextKey{
+				JobRunId:   jobId,
+				ExternalId: fmt.Sprintf("reconcile-schema-report-%s", destinationId),
+				AccountId:  accountId,
+			},
+		}),
+	)
 	require.NoError(t, err)
 
 	var context *reconcileschema_activity.ReconcileSchemaRunContext
@@ -698,7 +1079,10 @@ func test_mysql_schema_reconciliation_compare_schemas(
 
 	schematables := []*sqlmanager_shared.SchemaTable{}
 	for _, table := range tables {
-		schematables = append(schematables, &sqlmanager_shared.SchemaTable{Schema: schema, Table: table})
+		schematables = append(
+			schematables,
+			&sqlmanager_shared.SchemaTable{Schema: schema, Table: table},
+		)
 	}
 
 	t.Logf("checking triggers are the same in source and destination")
@@ -714,17 +1098,33 @@ func test_mysql_schema_reconciliation_compare_schemas(
 	destConstraints, err := destManager.GetTableConstraintsByTables(ctx, schema, tables)
 	require.NoError(t, err, "failed to get destination table constraints")
 
-	require.Len(t, srcConstraints, len(destConstraints), "source and destination have different number of tables with constraints")
+	require.Len(
+		t,
+		srcConstraints,
+		len(destConstraints),
+		"source and destination have different number of tables with constraints",
+	)
 	for table, constraint := range srcConstraints {
 		srcfk := constraint.ForeignKeyConstraints
 		srcNonFk := constraint.NonForeignKeyConstraints
 		destfk := destConstraints[table].ForeignKeyConstraints
 		destNonFk := destConstraints[table].NonForeignKeyConstraints
 		require.Equal(t, srcfk, destfk, "foreign key constraints do not match for table %s", table)
-		require.Equal(t, srcNonFk, destNonFk, "non-foreign key constraints do not match for table %s", table)
+		require.Equal(
+			t,
+			srcNonFk,
+			destNonFk,
+			"non-foreign key constraints do not match for table %s",
+			table,
+		)
 
 		assert_fingerprints_match_in_source_and_target(t, srcfk, destfk, "foreign key constraints")
-		assert_fingerprints_match_in_source_and_target(t, srcNonFk, destNonFk, "non-foreign key constraints")
+		assert_fingerprints_match_in_source_and_target(
+			t,
+			srcNonFk,
+			destNonFk,
+			"non-foreign key constraints",
+		)
 	}
 
 	t.Logf("checking functions are the same in source and destination")
@@ -732,7 +1132,12 @@ func test_mysql_schema_reconciliation_compare_schemas(
 	require.NoError(t, err, "failed to get source functions")
 	destDatatypes, err := destManager.GetSchemaTableDataTypes(ctx, schematables)
 	require.NoError(t, err, "failed to get destination functions")
-	assert_fingerprints_match_in_source_and_target(t, srcDatatypes.Functions, destDatatypes.Functions, "functions")
+	assert_fingerprints_match_in_source_and_target(
+		t,
+		srcDatatypes.Functions,
+		destDatatypes.Functions,
+		"functions",
+	)
 
 	t.Logf("checking columns are the same in source and destination")
 	srcColumns, err := srcManager.GetColumnsByTables(ctx, schematables)
@@ -748,24 +1153,163 @@ func test_mysql_schema_reconciliation_column_values(
 	mysql *tcmysql.MysqlTestSyncContainer,
 	schema string,
 ) {
-	testutil_testdata.VerifySQLTableColumnValues(t, ctx, mysql.Source.DB, mysql.Target.DB, schema, "regions", sqlmanager_shared.MysqlDriver, []string{"region_id"})
-	testutil_testdata.VerifySQLTableColumnValues(t, ctx, mysql.Source.DB, mysql.Target.DB, schema, "employees", sqlmanager_shared.MysqlDriver, []string{"employee_id"})
-	testutil_testdata.VerifySQLTableColumnValues(t, ctx, mysql.Source.DB, mysql.Target.DB, schema, "dependents", sqlmanager_shared.MysqlDriver, []string{"dependent_id"})
-	testutil_testdata.VerifySQLTableColumnValues(t, ctx, mysql.Source.DB, mysql.Target.DB, schema, "jobs", sqlmanager_shared.MysqlDriver, []string{"job_id"})
-	testutil_testdata.VerifySQLTableColumnValues(t, ctx, mysql.Source.DB, mysql.Target.DB, schema, "departments", sqlmanager_shared.MysqlDriver, []string{"department_id"})
-	testutil_testdata.VerifySQLTableColumnValues(t, ctx, mysql.Source.DB, mysql.Target.DB, schema, "countries", sqlmanager_shared.MysqlDriver, []string{"country_id"})
-	testutil_testdata.VerifySQLTableColumnValues(t, ctx, mysql.Source.DB, mysql.Target.DB, schema, "locations", sqlmanager_shared.MysqlDriver, []string{"location_id"})
-	testutil_testdata.VerifySQLTableColumnValues(t, ctx, mysql.Source.DB, mysql.Target.DB, schema, "grandparent", sqlmanager_shared.MysqlDriver, []string{"gp_id"})
-	testutil_testdata.VerifySQLTableColumnValues(t, ctx, mysql.Source.DB, mysql.Target.DB, schema, "parent", sqlmanager_shared.MysqlDriver, []string{"p_id"})
-	testutil_testdata.VerifySQLTableColumnValues(t, ctx, mysql.Source.DB, mysql.Target.DB, schema, "child", sqlmanager_shared.MysqlDriver, []string{"c_id"})
-	testutil_testdata.VerifySQLTableColumnValues(t, ctx, mysql.Source.DB, mysql.Target.DB, schema, "multi_col_parent", sqlmanager_shared.MysqlDriver, []string{"mcp_a", "mcp_b"})
-	testutil_testdata.VerifySQLTableColumnValues(t, ctx, mysql.Source.DB, mysql.Target.DB, schema, "multi_col_child", sqlmanager_shared.MysqlDriver, []string{"mc_child_id"})
-	testutil_testdata.VerifySQLTableColumnValues(t, ctx, mysql.Source.DB, mysql.Target.DB, schema, "cyclic_table", sqlmanager_shared.MysqlDriver, []string{"cycle_id"})
-	testutil_testdata.VerifySQLTableColumnValues(t, ctx, mysql.Source.DB, mysql.Target.DB, schema, "plants", sqlmanager_shared.MysqlDriver, []string{"plant_id"})
-	testutil_testdata.VerifySQLTableColumnValues(t, ctx, mysql.Source.DB, mysql.Target.DB, schema, "test_table_single_col", sqlmanager_shared.MysqlDriver, []string{"name"})
+	testutil_testdata.VerifySQLTableColumnValues(
+		t,
+		ctx,
+		mysql.Source.DB,
+		mysql.Target.DB,
+		schema,
+		"regions",
+		sqlmanager_shared.MysqlDriver,
+		[]string{"region_id"},
+	)
+	testutil_testdata.VerifySQLTableColumnValues(
+		t,
+		ctx,
+		mysql.Source.DB,
+		mysql.Target.DB,
+		schema,
+		"employees",
+		sqlmanager_shared.MysqlDriver,
+		[]string{"employee_id"},
+	)
+	testutil_testdata.VerifySQLTableColumnValues(
+		t,
+		ctx,
+		mysql.Source.DB,
+		mysql.Target.DB,
+		schema,
+		"dependents",
+		sqlmanager_shared.MysqlDriver,
+		[]string{"dependent_id"},
+	)
+	testutil_testdata.VerifySQLTableColumnValues(
+		t,
+		ctx,
+		mysql.Source.DB,
+		mysql.Target.DB,
+		schema,
+		"jobs",
+		sqlmanager_shared.MysqlDriver,
+		[]string{"job_id"},
+	)
+	testutil_testdata.VerifySQLTableColumnValues(
+		t,
+		ctx,
+		mysql.Source.DB,
+		mysql.Target.DB,
+		schema,
+		"departments",
+		sqlmanager_shared.MysqlDriver,
+		[]string{"department_id"},
+	)
+	testutil_testdata.VerifySQLTableColumnValues(
+		t,
+		ctx,
+		mysql.Source.DB,
+		mysql.Target.DB,
+		schema,
+		"countries",
+		sqlmanager_shared.MysqlDriver,
+		[]string{"country_id"},
+	)
+	testutil_testdata.VerifySQLTableColumnValues(
+		t,
+		ctx,
+		mysql.Source.DB,
+		mysql.Target.DB,
+		schema,
+		"locations",
+		sqlmanager_shared.MysqlDriver,
+		[]string{"location_id"},
+	)
+	testutil_testdata.VerifySQLTableColumnValues(
+		t,
+		ctx,
+		mysql.Source.DB,
+		mysql.Target.DB,
+		schema,
+		"grandparent",
+		sqlmanager_shared.MysqlDriver,
+		[]string{"gp_id"},
+	)
+	testutil_testdata.VerifySQLTableColumnValues(
+		t,
+		ctx,
+		mysql.Source.DB,
+		mysql.Target.DB,
+		schema,
+		"parent",
+		sqlmanager_shared.MysqlDriver,
+		[]string{"p_id"},
+	)
+	testutil_testdata.VerifySQLTableColumnValues(
+		t,
+		ctx,
+		mysql.Source.DB,
+		mysql.Target.DB,
+		schema,
+		"child",
+		sqlmanager_shared.MysqlDriver,
+		[]string{"c_id"},
+	)
+	testutil_testdata.VerifySQLTableColumnValues(
+		t,
+		ctx,
+		mysql.Source.DB,
+		mysql.Target.DB,
+		schema,
+		"multi_col_parent",
+		sqlmanager_shared.MysqlDriver,
+		[]string{"mcp_a", "mcp_b"},
+	)
+	testutil_testdata.VerifySQLTableColumnValues(
+		t,
+		ctx,
+		mysql.Source.DB,
+		mysql.Target.DB,
+		schema,
+		"multi_col_child",
+		sqlmanager_shared.MysqlDriver,
+		[]string{"mc_child_id"},
+	)
+	testutil_testdata.VerifySQLTableColumnValues(
+		t,
+		ctx,
+		mysql.Source.DB,
+		mysql.Target.DB,
+		schema,
+		"cyclic_table",
+		sqlmanager_shared.MysqlDriver,
+		[]string{"cycle_id"},
+	)
+	testutil_testdata.VerifySQLTableColumnValues(
+		t,
+		ctx,
+		mysql.Source.DB,
+		mysql.Target.DB,
+		schema,
+		"plants",
+		sqlmanager_shared.MysqlDriver,
+		[]string{"plant_id"},
+	)
+	testutil_testdata.VerifySQLTableColumnValues(
+		t,
+		ctx,
+		mysql.Source.DB,
+		mysql.Target.DB,
+		schema,
+		"test_table_single_col",
+		sqlmanager_shared.MysqlDriver,
+		[]string{"name"},
+	)
 }
 
-func cleanupMysqlDatabases(ctx context.Context, mysql *tcmysql.MysqlTestSyncContainer, databases []string) error {
+func cleanupMysqlDatabases(
+	ctx context.Context,
+	mysql *tcmysql.MysqlTestSyncContainer,
+	databases []string,
+) error {
 	errgrp, errctx := errgroup.WithContext(ctx)
 	errgrp.Go(func() error { return mysql.Source.DropDatabases(errctx, databases) })
 	errgrp.Go(func() error { return mysql.Target.DropDatabases(errctx, databases) })

@@ -46,7 +46,13 @@ func main() {
 							continue
 						}
 						if parts[1] == "transform" {
-							transformers = append(transformers, fmt.Sprintf("New%s()", transformers_utils.CapitalizeFirst(parts[2])))
+							transformers = append(
+								transformers,
+								fmt.Sprintf(
+									"New%s()",
+									transformers_utils.CapitalizeFirst(parts[2]),
+								),
+							)
 						} else if parts[1] == "generate" {
 							generators = append(generators, fmt.Sprintf("New%s()", transformers_utils.CapitalizeFirst(parts[2])))
 						}

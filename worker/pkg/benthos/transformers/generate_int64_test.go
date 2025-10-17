@@ -28,7 +28,12 @@ func Test_GenerateRandomInt(t *testing.T) {
 
 	for _, tc := range testcases {
 		t.Run("", func(t *testing.T) {
-			output, err := generateRandomInt64(rng.New(time.Now().UnixNano()), tc.randomizeSign, tc.min, tc.max)
+			output, err := generateRandomInt64(
+				rng.New(time.Now().UnixNano()),
+				tc.randomizeSign,
+				tc.min,
+				tc.max,
+			)
 			require.NoError(t, err)
 			require.GreaterOrEqual(t, output, tc.floor)
 			require.LessOrEqual(t, output, tc.ceil)
@@ -48,7 +53,14 @@ func Test_GenerateRandomInt_Randomized_Range(t *testing.T) {
 		positiveCeil  int64
 	}
 	testcases := []testcase{
-		{min: 20, max: 40, negativeFloor: -40, negativeCeil: -20, positiveFloor: 20, positiveCeil: 40},
+		{
+			min:           20,
+			max:           40,
+			negativeFloor: -40,
+			negativeCeil:  -20,
+			positiveFloor: 20,
+			positiveCeil:  40,
+		},
 		{min: 0, max: 40, negativeFloor: -40, negativeCeil: 0, positiveFloor: 0, positiveCeil: 40},
 	}
 
@@ -72,7 +84,12 @@ func Test_GenerateRandomInt_Benthos(t *testing.T) {
 	maxValue := int64(9)
 	randomizeSign := false
 
-	mapping := fmt.Sprintf(`root = generate_int64(randomize_sign:%t, min:%d, max:%d)`, randomizeSign, minValue, maxValue)
+	mapping := fmt.Sprintf(
+		`root = generate_int64(randomize_sign:%t, min:%d, max:%d)`,
+		randomizeSign,
+		minValue,
+		maxValue,
+	)
 	ex, err := bloblang.Parse(mapping)
 	assert.NoError(t, err, "failed to parse the random int transformer")
 

@@ -14,13 +14,34 @@ func Test_BuildRunConfigs_NoSubset_SingleCycle(t *testing.T) {
 	t.Run("Single Cycle", func(t *testing.T) {
 		dependencies := map[string][]*sqlmanager_shared.ForeignConstraint{
 			"public.a": {
-				{Columns: []string{"b_id"}, NotNullable: []bool{false}, ForeignKey: &sqlmanager_shared.ForeignKey{Table: "public.b", Columns: []string{"id"}}},
+				{
+					Columns:     []string{"b_id"},
+					NotNullable: []bool{false},
+					ForeignKey: &sqlmanager_shared.ForeignKey{
+						Table:   "public.b",
+						Columns: []string{"id"},
+					},
+				},
 			},
 			"public.b": {
-				{Columns: []string{"c_id"}, NotNullable: []bool{true}, ForeignKey: &sqlmanager_shared.ForeignKey{Table: "public.c", Columns: []string{"id"}}},
+				{
+					Columns:     []string{"c_id"},
+					NotNullable: []bool{true},
+					ForeignKey: &sqlmanager_shared.ForeignKey{
+						Table:   "public.c",
+						Columns: []string{"id"},
+					},
+				},
 			},
 			"public.c": {
-				{Columns: []string{"a_id"}, NotNullable: []bool{true}, ForeignKey: &sqlmanager_shared.ForeignKey{Table: "public.a", Columns: []string{"id"}}},
+				{
+					Columns:     []string{"a_id"},
+					NotNullable: []bool{true},
+					ForeignKey: &sqlmanager_shared.ForeignKey{
+						Table:   "public.a",
+						Columns: []string{"id"},
+					},
+				},
 			},
 		}
 		tableColsMap := map[string][]string{
@@ -35,17 +56,53 @@ func Test_BuildRunConfigs_NoSubset_SingleCycle(t *testing.T) {
 		}
 		subsets := map[string]string{}
 		expect := []*RunConfig{
-			buildRunConfig("public.a", RunTypeInsert, []string{"id"}, &where, []string{"id", "b_id"}, []string{"id"}, []*DependsOn{}, nil),
-			buildRunConfig("public.a", RunTypeUpdate, []string{"id"}, &where, []string{"id", "b_id"}, []string{"b_id"}, []*DependsOn{
-				{Table: "public.a", Columns: []string{"id"}},
-				{Table: "public.b", Columns: []string{"id"}},
-			}, nil),
-			buildRunConfig("public.c", RunTypeInsert, []string{"id"}, &where, []string{"id", "a_id"}, []string{"id", "a_id"}, []*DependsOn{
-				{Table: "public.a", Columns: []string{"id"}},
-			}, nil),
-			buildRunConfig("public.b", RunTypeInsert, []string{"id"}, &where, []string{"id", "c_id"}, []string{"id", "c_id"}, []*DependsOn{
-				{Table: "public.c", Columns: []string{"id"}},
-			}, nil),
+			buildRunConfig(
+				"public.a",
+				RunTypeInsert,
+				[]string{"id"},
+				&where,
+				[]string{"id", "b_id"},
+				[]string{"id"},
+				[]*DependsOn{},
+				nil,
+			),
+			buildRunConfig(
+				"public.a",
+				RunTypeUpdate,
+				[]string{"id"},
+				&where,
+				[]string{"id", "b_id"},
+				[]string{"b_id"},
+				[]*DependsOn{
+					{Table: "public.a", Columns: []string{"id"}},
+					{Table: "public.b", Columns: []string{"id"}},
+				},
+				nil,
+			),
+			buildRunConfig(
+				"public.c",
+				RunTypeInsert,
+				[]string{"id"},
+				&where,
+				[]string{"id", "a_id"},
+				[]string{"id", "a_id"},
+				[]*DependsOn{
+					{Table: "public.a", Columns: []string{"id"}},
+				},
+				nil,
+			),
+			buildRunConfig(
+				"public.b",
+				RunTypeInsert,
+				[]string{"id"},
+				&where,
+				[]string{"id", "c_id"},
+				[]string{"id", "c_id"},
+				[]*DependsOn{
+					{Table: "public.c", Columns: []string{"id"}},
+				},
+				nil,
+			),
 		}
 
 		assertRunConfigs(t, dependencies, subsets, primaryKeyMap, tableColsMap, expect)
@@ -54,14 +111,42 @@ func Test_BuildRunConfigs_NoSubset_SingleCycle(t *testing.T) {
 	t.Run("Single Cycle Non Cycle Start", func(t *testing.T) {
 		dependencies := map[string][]*sqlmanager_shared.ForeignConstraint{
 			"public.a": {
-				{Columns: []string{"b_id"}, NotNullable: []bool{false}, ForeignKey: &sqlmanager_shared.ForeignKey{Table: "public.b", Columns: []string{"id"}}},
-				{Columns: []string{"x_id"}, NotNullable: []bool{true}, ForeignKey: &sqlmanager_shared.ForeignKey{Table: "public.x", Columns: []string{"id"}}},
+				{
+					Columns:     []string{"b_id"},
+					NotNullable: []bool{false},
+					ForeignKey: &sqlmanager_shared.ForeignKey{
+						Table:   "public.b",
+						Columns: []string{"id"},
+					},
+				},
+				{
+					Columns:     []string{"x_id"},
+					NotNullable: []bool{true},
+					ForeignKey: &sqlmanager_shared.ForeignKey{
+						Table:   "public.x",
+						Columns: []string{"id"},
+					},
+				},
 			},
 			"public.b": {
-				{Columns: []string{"c_id"}, NotNullable: []bool{true}, ForeignKey: &sqlmanager_shared.ForeignKey{Table: "public.c", Columns: []string{"id"}}},
+				{
+					Columns:     []string{"c_id"},
+					NotNullable: []bool{true},
+					ForeignKey: &sqlmanager_shared.ForeignKey{
+						Table:   "public.c",
+						Columns: []string{"id"},
+					},
+				},
 			},
 			"public.c": {
-				{Columns: []string{"a_id"}, NotNullable: []bool{true}, ForeignKey: &sqlmanager_shared.ForeignKey{Table: "public.a", Columns: []string{"id"}}},
+				{
+					Columns:     []string{"a_id"},
+					NotNullable: []bool{true},
+					ForeignKey: &sqlmanager_shared.ForeignKey{
+						Table:   "public.a",
+						Columns: []string{"id"},
+					},
+				},
 			},
 		}
 		tableColsMap := map[string][]string{
@@ -78,20 +163,65 @@ func Test_BuildRunConfigs_NoSubset_SingleCycle(t *testing.T) {
 		}
 		subsets := map[string]string{}
 		expect := []*RunConfig{
-			buildRunConfig("public.x", RunTypeInsert, []string{"id"}, &where, []string{"id"}, []string{"id"}, []*DependsOn{}, nil),
-			buildRunConfig("public.a", RunTypeInsert, []string{"id"}, &where, []string{"id", "b_id", "x_id"}, []string{"id", "x_id"}, []*DependsOn{
-				{Table: "public.x", Columns: []string{"id"}},
-			}, nil),
-			buildRunConfig("public.a", RunTypeUpdate, []string{"id"}, &where, []string{"id", "b_id"}, []string{"b_id"}, []*DependsOn{
-				{Table: "public.a", Columns: []string{"id"}},
-				{Table: "public.b", Columns: []string{"id"}},
-			}, nil),
-			buildRunConfig("public.c", RunTypeInsert, []string{"id"}, &where, []string{"id", "a_id"}, []string{"id", "a_id"}, []*DependsOn{
-				{Table: "public.a", Columns: []string{"id"}},
-			}, nil),
-			buildRunConfig("public.b", RunTypeInsert, []string{"id"}, &where, []string{"id", "c_id"}, []string{"id", "c_id"}, []*DependsOn{
-				{Table: "public.c", Columns: []string{"id"}},
-			}, nil),
+			buildRunConfig(
+				"public.x",
+				RunTypeInsert,
+				[]string{"id"},
+				&where,
+				[]string{"id"},
+				[]string{"id"},
+				[]*DependsOn{},
+				nil,
+			),
+			buildRunConfig(
+				"public.a",
+				RunTypeInsert,
+				[]string{"id"},
+				&where,
+				[]string{"id", "b_id", "x_id"},
+				[]string{"id", "x_id"},
+				[]*DependsOn{
+					{Table: "public.x", Columns: []string{"id"}},
+				},
+				nil,
+			),
+			buildRunConfig(
+				"public.a",
+				RunTypeUpdate,
+				[]string{"id"},
+				&where,
+				[]string{"id", "b_id"},
+				[]string{"b_id"},
+				[]*DependsOn{
+					{Table: "public.a", Columns: []string{"id"}},
+					{Table: "public.b", Columns: []string{"id"}},
+				},
+				nil,
+			),
+			buildRunConfig(
+				"public.c",
+				RunTypeInsert,
+				[]string{"id"},
+				&where,
+				[]string{"id", "a_id"},
+				[]string{"id", "a_id"},
+				[]*DependsOn{
+					{Table: "public.a", Columns: []string{"id"}},
+				},
+				nil,
+			),
+			buildRunConfig(
+				"public.b",
+				RunTypeInsert,
+				[]string{"id"},
+				&where,
+				[]string{"id", "c_id"},
+				[]string{"id", "c_id"},
+				[]*DependsOn{
+					{Table: "public.c", Columns: []string{"id"}},
+				},
+				nil,
+			),
 		}
 
 		assertRunConfigs(t, dependencies, subsets, primaryKeyMap, tableColsMap, expect)
@@ -100,7 +230,14 @@ func Test_BuildRunConfigs_NoSubset_SingleCycle(t *testing.T) {
 	t.Run("Self Referencing Cycle", func(t *testing.T) {
 		dependencies := map[string][]*sqlmanager_shared.ForeignConstraint{
 			"public.a": {
-				{Columns: []string{"a_id"}, NotNullable: []bool{false}, ForeignKey: &sqlmanager_shared.ForeignKey{Table: "public.a", Columns: []string{"id"}}},
+				{
+					Columns:     []string{"a_id"},
+					NotNullable: []bool{false},
+					ForeignKey: &sqlmanager_shared.ForeignKey{
+						Table:   "public.a",
+						Columns: []string{"id"},
+					},
+				},
 			},
 		}
 		tableColsMap := map[string][]string{
@@ -111,10 +248,28 @@ func Test_BuildRunConfigs_NoSubset_SingleCycle(t *testing.T) {
 		}
 		subsets := map[string]string{}
 		expect := []*RunConfig{
-			buildRunConfig("public.a", RunTypeInsert, []string{"id"}, &where, []string{"id", "a_id", "other"}, []string{"id", "other"}, []*DependsOn{}, nil),
-			buildRunConfig("public.a", RunTypeUpdate, []string{"id"}, &where, []string{"id", "a_id"}, []string{"a_id"}, []*DependsOn{
-				{Table: "public.a", Columns: []string{"id"}},
-			}, nil),
+			buildRunConfig(
+				"public.a",
+				RunTypeInsert,
+				[]string{"id"},
+				&where,
+				[]string{"id", "a_id", "other"},
+				[]string{"id", "other"},
+				[]*DependsOn{},
+				nil,
+			),
+			buildRunConfig(
+				"public.a",
+				RunTypeUpdate,
+				[]string{"id"},
+				&where,
+				[]string{"id", "a_id"},
+				[]string{"a_id"},
+				[]*DependsOn{
+					{Table: "public.a", Columns: []string{"id"}},
+				},
+				nil,
+			),
 		}
 
 		assertRunConfigs(t, dependencies, subsets, primaryKeyMap, tableColsMap, expect)
@@ -123,8 +278,22 @@ func Test_BuildRunConfigs_NoSubset_SingleCycle(t *testing.T) {
 	t.Run("Double Self Referencing Cycle", func(t *testing.T) {
 		dependencies := map[string][]*sqlmanager_shared.ForeignConstraint{
 			"public.a": {
-				{Columns: []string{"a_id"}, NotNullable: []bool{false}, ForeignKey: &sqlmanager_shared.ForeignKey{Table: "public.a", Columns: []string{"id"}}},
-				{Columns: []string{"aa_id"}, NotNullable: []bool{false}, ForeignKey: &sqlmanager_shared.ForeignKey{Table: "public.a", Columns: []string{"id"}}},
+				{
+					Columns:     []string{"a_id"},
+					NotNullable: []bool{false},
+					ForeignKey: &sqlmanager_shared.ForeignKey{
+						Table:   "public.a",
+						Columns: []string{"id"},
+					},
+				},
+				{
+					Columns:     []string{"aa_id"},
+					NotNullable: []bool{false},
+					ForeignKey: &sqlmanager_shared.ForeignKey{
+						Table:   "public.a",
+						Columns: []string{"id"},
+					},
+				},
 			},
 		}
 		tableColsMap := map[string][]string{
@@ -163,13 +332,34 @@ func Test_BuildRunConfigs_NoSubset_SingleCycle(t *testing.T) {
 	t.Run("Single Cycle Composite Foreign Keys", func(t *testing.T) {
 		dependencies := map[string][]*sqlmanager_shared.ForeignConstraint{
 			"public.a": {
-				{Columns: []string{"b_id"}, NotNullable: []bool{false}, ForeignKey: &sqlmanager_shared.ForeignKey{Table: "public.b", Columns: []string{"id"}}},
+				{
+					Columns:     []string{"b_id"},
+					NotNullable: []bool{false},
+					ForeignKey: &sqlmanager_shared.ForeignKey{
+						Table:   "public.b",
+						Columns: []string{"id"},
+					},
+				},
 			},
 			"public.b": {
-				{Columns: []string{"c_id", "cc_id"}, NotNullable: []bool{true, true}, ForeignKey: &sqlmanager_shared.ForeignKey{Table: "public.c", Columns: []string{"id", "other_id"}}},
+				{
+					Columns:     []string{"c_id", "cc_id"},
+					NotNullable: []bool{true, true},
+					ForeignKey: &sqlmanager_shared.ForeignKey{
+						Table:   "public.c",
+						Columns: []string{"id", "other_id"},
+					},
+				},
 			},
 			"public.c": {
-				{Columns: []string{"a_id"}, NotNullable: []bool{true}, ForeignKey: &sqlmanager_shared.ForeignKey{Table: "public.a", Columns: []string{"id"}}},
+				{
+					Columns:     []string{"a_id"},
+					NotNullable: []bool{true},
+					ForeignKey: &sqlmanager_shared.ForeignKey{
+						Table:   "public.a",
+						Columns: []string{"id"},
+					},
+				},
 			},
 		}
 		tableColsMap := map[string][]string{
@@ -219,13 +409,34 @@ func Test_BuildRunConfigs_NoSubset_SingleCycle(t *testing.T) {
 	t.Run("Single Cycle Composite Foreign Keys Nullable", func(t *testing.T) {
 		dependencies := map[string][]*sqlmanager_shared.ForeignConstraint{
 			"public.a": {
-				{Columns: []string{"b_id"}, NotNullable: []bool{true}, ForeignKey: &sqlmanager_shared.ForeignKey{Table: "public.b", Columns: []string{"id"}}},
+				{
+					Columns:     []string{"b_id"},
+					NotNullable: []bool{true},
+					ForeignKey: &sqlmanager_shared.ForeignKey{
+						Table:   "public.b",
+						Columns: []string{"id"},
+					},
+				},
 			},
 			"public.b": {
-				{Columns: []string{"c_id", "cc_id"}, NotNullable: []bool{false, false}, ForeignKey: &sqlmanager_shared.ForeignKey{Table: "public.c", Columns: []string{"id", "other_id"}}},
+				{
+					Columns:     []string{"c_id", "cc_id"},
+					NotNullable: []bool{false, false},
+					ForeignKey: &sqlmanager_shared.ForeignKey{
+						Table:   "public.c",
+						Columns: []string{"id", "other_id"},
+					},
+				},
 			},
 			"public.c": {
-				{Columns: []string{"a_id"}, NotNullable: []bool{true}, ForeignKey: &sqlmanager_shared.ForeignKey{Table: "public.a", Columns: []string{"id"}}},
+				{
+					Columns:     []string{"a_id"},
+					NotNullable: []bool{true},
+					ForeignKey: &sqlmanager_shared.ForeignKey{
+						Table:   "public.a",
+						Columns: []string{"id"},
+					},
+				},
 			},
 		}
 		tableColsMap := map[string][]string{
@@ -288,13 +499,34 @@ func Test_BuildRunConfigs_Subset_SingleCycle(t *testing.T) {
 			name: "Single Cycle",
 			dependencies: map[string][]*sqlmanager_shared.ForeignConstraint{
 				"public.a": {
-					{Columns: []string{"b_id"}, NotNullable: []bool{false}, ForeignKey: &sqlmanager_shared.ForeignKey{Table: "public.b", Columns: []string{"id"}}},
+					{
+						Columns:     []string{"b_id"},
+						NotNullable: []bool{false},
+						ForeignKey: &sqlmanager_shared.ForeignKey{
+							Table:   "public.b",
+							Columns: []string{"id"},
+						},
+					},
 				},
 				"public.b": {
-					{Columns: []string{"c_id"}, NotNullable: []bool{true}, ForeignKey: &sqlmanager_shared.ForeignKey{Table: "public.c", Columns: []string{"id"}}},
+					{
+						Columns:     []string{"c_id"},
+						NotNullable: []bool{true},
+						ForeignKey: &sqlmanager_shared.ForeignKey{
+							Table:   "public.c",
+							Columns: []string{"id"},
+						},
+					},
 				},
 				"public.c": {
-					{Columns: []string{"a_id"}, NotNullable: []bool{true}, ForeignKey: &sqlmanager_shared.ForeignKey{Table: "public.a", Columns: []string{"id"}}},
+					{
+						Columns:     []string{"a_id"},
+						NotNullable: []bool{true},
+						ForeignKey: &sqlmanager_shared.ForeignKey{
+							Table:   "public.a",
+							Columns: []string{"id"},
+						},
+					},
 				},
 			},
 			tableColsMap: map[string][]string{
@@ -311,47 +543,154 @@ func Test_BuildRunConfigs_Subset_SingleCycle(t *testing.T) {
 				"public.b": where,
 			},
 			expect: []*RunConfig{
-				buildRunConfig("public.a", RunTypeInsert, []string{"id"}, &emptyWhere, []string{"id", "b_id"}, []string{"id"}, []*DependsOn{}, []*SubsetPath{
-					{
-						Subset: where, Root: "public.b", JoinSteps: []*JoinStep{
-							{FromKey: "public.a", ToKey: "public.b", ForeignKey: &ForeignKey{Columns: []string{"b_id"}, NotNullable: []bool{false}, ReferenceSchema: "public", ReferenceTable: "b", ReferenceColumns: []string{"id"}}},
+				buildRunConfig(
+					"public.a",
+					RunTypeInsert,
+					[]string{"id"},
+					&emptyWhere,
+					[]string{"id", "b_id"},
+					[]string{"id"},
+					[]*DependsOn{},
+					[]*SubsetPath{
+						{
+							Subset: where, Root: "public.b", JoinSteps: []*JoinStep{
+								{
+									FromKey: "public.a",
+									ToKey:   "public.b",
+									ForeignKey: &ForeignKey{
+										Columns:          []string{"b_id"},
+										NotNullable:      []bool{false},
+										ReferenceSchema:  "public",
+										ReferenceTable:   "b",
+										ReferenceColumns: []string{"id"},
+									},
+								},
+							},
 						},
 					},
-				}),
-				buildRunConfig("public.a", RunTypeUpdate, []string{"id"}, &emptyWhere, []string{"id", "b_id"}, []string{"b_id"}, []*DependsOn{{Table: "public.a", Columns: []string{"id"}}, {Table: "public.b", Columns: []string{"id"}}}, []*SubsetPath{
-					{
-						Subset: where, Root: "public.b", JoinSteps: []*JoinStep{
-							{FromKey: "public.a", ToKey: "public.b", ForeignKey: &ForeignKey{Columns: []string{"b_id"}, NotNullable: []bool{false}, ReferenceSchema: "public", ReferenceTable: "b", ReferenceColumns: []string{"id"}}},
+				),
+				buildRunConfig(
+					"public.a",
+					RunTypeUpdate,
+					[]string{"id"},
+					&emptyWhere,
+					[]string{"id", "b_id"},
+					[]string{"b_id"},
+					[]*DependsOn{
+						{Table: "public.a", Columns: []string{"id"}},
+						{Table: "public.b", Columns: []string{"id"}},
+					},
+					[]*SubsetPath{
+						{
+							Subset: where, Root: "public.b", JoinSteps: []*JoinStep{
+								{
+									FromKey: "public.a",
+									ToKey:   "public.b",
+									ForeignKey: &ForeignKey{
+										Columns:          []string{"b_id"},
+										NotNullable:      []bool{false},
+										ReferenceSchema:  "public",
+										ReferenceTable:   "b",
+										ReferenceColumns: []string{"id"},
+									},
+								},
+							},
 						},
 					},
-				}),
-				buildRunConfig("public.c", RunTypeInsert, []string{"id"}, &emptyWhere, []string{"id", "a_id"}, []string{"id", "a_id"}, []*DependsOn{{Table: "public.a", Columns: []string{"id"}}}, []*SubsetPath{
-					{
-						Subset: where, Root: "public.b", JoinSteps: []*JoinStep{
-							{FromKey: "public.c", ToKey: "public.a", ForeignKey: &ForeignKey{Columns: []string{"a_id"}, NotNullable: []bool{true}, ReferenceSchema: "public", ReferenceTable: "a", ReferenceColumns: []string{"id"}}},
-							{FromKey: "public.a", ToKey: "public.b", ForeignKey: &ForeignKey{Columns: []string{"b_id"}, NotNullable: []bool{false}, ReferenceSchema: "public", ReferenceTable: "b", ReferenceColumns: []string{"id"}}},
+				),
+				buildRunConfig(
+					"public.c",
+					RunTypeInsert,
+					[]string{"id"},
+					&emptyWhere,
+					[]string{"id", "a_id"},
+					[]string{"id", "a_id"},
+					[]*DependsOn{{Table: "public.a", Columns: []string{"id"}}},
+					[]*SubsetPath{
+						{
+							Subset: where, Root: "public.b", JoinSteps: []*JoinStep{
+								{
+									FromKey: "public.c",
+									ToKey:   "public.a",
+									ForeignKey: &ForeignKey{
+										Columns:          []string{"a_id"},
+										NotNullable:      []bool{true},
+										ReferenceSchema:  "public",
+										ReferenceTable:   "a",
+										ReferenceColumns: []string{"id"},
+									},
+								},
+								{
+									FromKey: "public.a",
+									ToKey:   "public.b",
+									ForeignKey: &ForeignKey{
+										Columns:          []string{"b_id"},
+										NotNullable:      []bool{false},
+										ReferenceSchema:  "public",
+										ReferenceTable:   "b",
+										ReferenceColumns: []string{"id"},
+									},
+								},
+							},
 						},
 					},
-				}),
-				buildRunConfig("public.b", RunTypeInsert, []string{"id"}, &where, []string{"id", "c_id"}, []string{"id", "c_id"}, []*DependsOn{{Table: "public.c", Columns: []string{"id"}}}, []*SubsetPath{
-					{
-						Subset: where, Root: "public.b", JoinSteps: []*JoinStep{},
+				),
+				buildRunConfig(
+					"public.b",
+					RunTypeInsert,
+					[]string{"id"},
+					&where,
+					[]string{"id", "c_id"},
+					[]string{"id", "c_id"},
+					[]*DependsOn{{Table: "public.c", Columns: []string{"id"}}},
+					[]*SubsetPath{
+						{
+							Subset: where, Root: "public.b", JoinSteps: []*JoinStep{},
+						},
 					},
-				}),
+				),
 			},
 		},
 		{
 			name: "Single Cycle Non Cycle Start",
 			dependencies: map[string][]*sqlmanager_shared.ForeignConstraint{
 				"public.a": {
-					{Columns: []string{"b_id"}, NotNullable: []bool{false}, ForeignKey: &sqlmanager_shared.ForeignKey{Table: "public.b", Columns: []string{"id"}}},
-					{Columns: []string{"x_id"}, NotNullable: []bool{true}, ForeignKey: &sqlmanager_shared.ForeignKey{Table: "public.x", Columns: []string{"id"}}},
+					{
+						Columns:     []string{"b_id"},
+						NotNullable: []bool{false},
+						ForeignKey: &sqlmanager_shared.ForeignKey{
+							Table:   "public.b",
+							Columns: []string{"id"},
+						},
+					},
+					{
+						Columns:     []string{"x_id"},
+						NotNullable: []bool{true},
+						ForeignKey: &sqlmanager_shared.ForeignKey{
+							Table:   "public.x",
+							Columns: []string{"id"},
+						},
+					},
 				},
 				"public.b": {
-					{Columns: []string{"c_id"}, NotNullable: []bool{true}, ForeignKey: &sqlmanager_shared.ForeignKey{Table: "public.c", Columns: []string{"id"}}},
+					{
+						Columns:     []string{"c_id"},
+						NotNullable: []bool{true},
+						ForeignKey: &sqlmanager_shared.ForeignKey{
+							Table:   "public.c",
+							Columns: []string{"id"},
+						},
+					},
 				},
 				"public.c": {
-					{Columns: []string{"a_id"}, NotNullable: []bool{true}, ForeignKey: &sqlmanager_shared.ForeignKey{Table: "public.a", Columns: []string{"id"}}},
+					{
+						Columns:     []string{"a_id"},
+						NotNullable: []bool{true},
+						ForeignKey: &sqlmanager_shared.ForeignKey{
+							Table:   "public.a",
+							Columns: []string{"id"},
+						},
+					},
 				},
 			},
 			tableColsMap: map[string][]string{
@@ -370,45 +709,150 @@ func Test_BuildRunConfigs_Subset_SingleCycle(t *testing.T) {
 				"public.x": "where",
 			},
 			expect: []*RunConfig{
-				buildRunConfig("public.x", RunTypeInsert, []string{"id"}, &where, []string{"id"}, []string{"id"}, []*DependsOn{}, []*SubsetPath{
-					{
-						Subset: where, Root: "public.x", JoinSteps: []*JoinStep{},
-					},
-				}),
-				buildRunConfig("public.a", RunTypeInsert, []string{"id"}, &emptyWhere, []string{"id", "b_id", "x_id"}, []string{"id", "x_id"}, []*DependsOn{{Table: "public.x", Columns: []string{"id"}}}, []*SubsetPath{
-					{
-						Subset: where, Root: "public.x", JoinSteps: []*JoinStep{{FromKey: "public.a", ToKey: "public.x", ForeignKey: &ForeignKey{Columns: []string{"x_id"}, NotNullable: []bool{true}, ReferenceSchema: "public", ReferenceTable: "x", ReferenceColumns: []string{"id"}}}},
-					},
-				}),
-				buildRunConfig("public.a", RunTypeUpdate, []string{"id"}, &emptyWhere, []string{"id", "b_id"}, []string{"b_id"}, []*DependsOn{{Table: "public.a", Columns: []string{"id"}}, {Table: "public.b", Columns: []string{"id"}}}, []*SubsetPath{
-					{
-						Subset: where, Root: "public.x", JoinSteps: []*JoinStep{{FromKey: "public.a", ToKey: "public.x", ForeignKey: &ForeignKey{Columns: []string{"x_id"}, NotNullable: []bool{true}, ReferenceSchema: "public", ReferenceTable: "x", ReferenceColumns: []string{"id"}}}},
-					},
-				}),
-				buildRunConfig("public.c", RunTypeInsert, []string{"id"}, &emptyWhere, []string{"id", "a_id"}, []string{"id", "a_id"}, []*DependsOn{{Table: "public.a", Columns: []string{"id"}}}, []*SubsetPath{
-					{
-						Subset: where, Root: "public.x", JoinSteps: []*JoinStep{
-							{FromKey: "public.c", ToKey: "public.a", ForeignKey: &ForeignKey{Columns: []string{"a_id"}, NotNullable: []bool{true}, ReferenceSchema: "public", ReferenceTable: "a", ReferenceColumns: []string{"id"}}},
-							{FromKey: "public.a", ToKey: "public.x", ForeignKey: &ForeignKey{Columns: []string{"x_id"}, NotNullable: []bool{true}, ReferenceSchema: "public", ReferenceTable: "x", ReferenceColumns: []string{"id"}}},
+				buildRunConfig(
+					"public.x",
+					RunTypeInsert,
+					[]string{"id"},
+					&where,
+					[]string{"id"},
+					[]string{"id"},
+					[]*DependsOn{},
+					[]*SubsetPath{
+						{
+							Subset: where, Root: "public.x", JoinSteps: []*JoinStep{},
 						},
 					},
-				}),
-				buildRunConfig("public.b", RunTypeInsert, []string{"id"}, &emptyWhere, []string{"id", "c_id"}, []string{"id", "c_id"}, []*DependsOn{{Table: "public.c", Columns: []string{"id"}}}, []*SubsetPath{
-					{
-						Subset: where, Root: "public.x", JoinSteps: []*JoinStep{
-							{FromKey: "public.b", ToKey: "public.c", ForeignKey: &ForeignKey{Columns: []string{"c_id"}, NotNullable: []bool{true}, ReferenceSchema: "public", ReferenceTable: "c", ReferenceColumns: []string{"id"}}},
-							{FromKey: "public.c", ToKey: "public.a", ForeignKey: &ForeignKey{Columns: []string{"a_id"}, NotNullable: []bool{true}, ReferenceSchema: "public", ReferenceTable: "a", ReferenceColumns: []string{"id"}}},
-							{FromKey: "public.a", ToKey: "public.x", ForeignKey: &ForeignKey{Columns: []string{"x_id"}, NotNullable: []bool{true}, ReferenceSchema: "public", ReferenceTable: "x", ReferenceColumns: []string{"id"}}},
+				),
+				buildRunConfig(
+					"public.a",
+					RunTypeInsert,
+					[]string{"id"},
+					&emptyWhere,
+					[]string{"id", "b_id", "x_id"},
+					[]string{"id", "x_id"},
+					[]*DependsOn{{Table: "public.x", Columns: []string{"id"}}},
+					[]*SubsetPath{
+						{
+							Subset: where, Root: "public.x", JoinSteps: []*JoinStep{{FromKey: "public.a", ToKey: "public.x", ForeignKey: &ForeignKey{Columns: []string{"x_id"}, NotNullable: []bool{true}, ReferenceSchema: "public", ReferenceTable: "x", ReferenceColumns: []string{"id"}}}},
 						},
 					},
-				}),
+				),
+				buildRunConfig(
+					"public.a",
+					RunTypeUpdate,
+					[]string{"id"},
+					&emptyWhere,
+					[]string{"id", "b_id"},
+					[]string{"b_id"},
+					[]*DependsOn{
+						{Table: "public.a", Columns: []string{"id"}},
+						{Table: "public.b", Columns: []string{"id"}},
+					},
+					[]*SubsetPath{
+						{
+							Subset: where, Root: "public.x", JoinSteps: []*JoinStep{{FromKey: "public.a", ToKey: "public.x", ForeignKey: &ForeignKey{Columns: []string{"x_id"}, NotNullable: []bool{true}, ReferenceSchema: "public", ReferenceTable: "x", ReferenceColumns: []string{"id"}}}},
+						},
+					},
+				),
+				buildRunConfig(
+					"public.c",
+					RunTypeInsert,
+					[]string{"id"},
+					&emptyWhere,
+					[]string{"id", "a_id"},
+					[]string{"id", "a_id"},
+					[]*DependsOn{{Table: "public.a", Columns: []string{"id"}}},
+					[]*SubsetPath{
+						{
+							Subset: where, Root: "public.x", JoinSteps: []*JoinStep{
+								{
+									FromKey: "public.c",
+									ToKey:   "public.a",
+									ForeignKey: &ForeignKey{
+										Columns:          []string{"a_id"},
+										NotNullable:      []bool{true},
+										ReferenceSchema:  "public",
+										ReferenceTable:   "a",
+										ReferenceColumns: []string{"id"},
+									},
+								},
+								{
+									FromKey: "public.a",
+									ToKey:   "public.x",
+									ForeignKey: &ForeignKey{
+										Columns:          []string{"x_id"},
+										NotNullable:      []bool{true},
+										ReferenceSchema:  "public",
+										ReferenceTable:   "x",
+										ReferenceColumns: []string{"id"},
+									},
+								},
+							},
+						},
+					},
+				),
+				buildRunConfig(
+					"public.b",
+					RunTypeInsert,
+					[]string{"id"},
+					&emptyWhere,
+					[]string{"id", "c_id"},
+					[]string{"id", "c_id"},
+					[]*DependsOn{{Table: "public.c", Columns: []string{"id"}}},
+					[]*SubsetPath{
+						{
+							Subset: where, Root: "public.x", JoinSteps: []*JoinStep{
+								{
+									FromKey: "public.b",
+									ToKey:   "public.c",
+									ForeignKey: &ForeignKey{
+										Columns:          []string{"c_id"},
+										NotNullable:      []bool{true},
+										ReferenceSchema:  "public",
+										ReferenceTable:   "c",
+										ReferenceColumns: []string{"id"},
+									},
+								},
+								{
+									FromKey: "public.c",
+									ToKey:   "public.a",
+									ForeignKey: &ForeignKey{
+										Columns:          []string{"a_id"},
+										NotNullable:      []bool{true},
+										ReferenceSchema:  "public",
+										ReferenceTable:   "a",
+										ReferenceColumns: []string{"id"},
+									},
+								},
+								{
+									FromKey: "public.a",
+									ToKey:   "public.x",
+									ForeignKey: &ForeignKey{
+										Columns:          []string{"x_id"},
+										NotNullable:      []bool{true},
+										ReferenceSchema:  "public",
+										ReferenceTable:   "x",
+										ReferenceColumns: []string{"id"},
+									},
+								},
+							},
+						},
+					},
+				),
 			},
 		},
 	}
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			assertRunConfigs(t, tt.dependencies, tt.subsets, tt.primaryKeyMap, tt.tableColsMap, tt.expect)
+			assertRunConfigs(
+				t,
+				tt.dependencies,
+				tt.subsets,
+				tt.primaryKeyMap,
+				tt.tableColsMap,
+				tt.expect,
+			)
 		})
 	}
 }
@@ -427,20 +871,62 @@ func Test_BuildRunConfigs_NoSubset_MultiCycle(t *testing.T) {
 			name: "Multi Table Dependencies",
 			dependencies: map[string][]*sqlmanager_shared.ForeignConstraint{
 				"public.a": {
-					{Columns: []string{"b_id"}, NotNullable: []bool{false}, ForeignKey: &sqlmanager_shared.ForeignKey{Table: "public.b", Columns: []string{"id"}}},
+					{
+						Columns:     []string{"b_id"},
+						NotNullable: []bool{false},
+						ForeignKey: &sqlmanager_shared.ForeignKey{
+							Table:   "public.b",
+							Columns: []string{"id"},
+						},
+					},
 				},
 				"public.b": {
-					{Columns: []string{"c_id"}, NotNullable: []bool{false}, ForeignKey: &sqlmanager_shared.ForeignKey{Table: "public.c", Columns: []string{"id"}}},
-					{Columns: []string{"d_id"}, NotNullable: []bool{false}, ForeignKey: &sqlmanager_shared.ForeignKey{Table: "public.d", Columns: []string{"id"}}},
+					{
+						Columns:     []string{"c_id"},
+						NotNullable: []bool{false},
+						ForeignKey: &sqlmanager_shared.ForeignKey{
+							Table:   "public.c",
+							Columns: []string{"id"},
+						},
+					},
+					{
+						Columns:     []string{"d_id"},
+						NotNullable: []bool{false},
+						ForeignKey: &sqlmanager_shared.ForeignKey{
+							Table:   "public.d",
+							Columns: []string{"id"},
+						},
+					},
 				},
 				"public.c": {
-					{Columns: []string{"a_id"}, NotNullable: []bool{true}, ForeignKey: &sqlmanager_shared.ForeignKey{Table: "public.a", Columns: []string{"id"}}},
+					{
+						Columns:     []string{"a_id"},
+						NotNullable: []bool{true},
+						ForeignKey: &sqlmanager_shared.ForeignKey{
+							Table:   "public.a",
+							Columns: []string{"id"},
+						},
+					},
 				},
 				"public.d": {
-					{Columns: []string{"e_id"}, NotNullable: []bool{true}, ForeignKey: &sqlmanager_shared.ForeignKey{Table: "public.e", Columns: []string{"id"}}},
+					{
+						Columns:     []string{"e_id"},
+						NotNullable: []bool{true},
+						ForeignKey: &sqlmanager_shared.ForeignKey{
+							Table:   "public.e",
+							Columns: []string{"id"},
+						},
+					},
 				},
 				"public.e": {
-					{Columns: []string{"b_id"}, NotNullable: []bool{true}, ForeignKey: &sqlmanager_shared.ForeignKey{Table: "public.b", Columns: []string{"id"}}},
+					{
+						Columns:     []string{"b_id"},
+						NotNullable: []bool{true},
+						ForeignKey: &sqlmanager_shared.ForeignKey{
+							Table:   "public.b",
+							Columns: []string{"id"},
+						},
+					},
 				},
 			},
 			tableColsMap: map[string][]string{
@@ -459,34 +945,158 @@ func Test_BuildRunConfigs_NoSubset_MultiCycle(t *testing.T) {
 			},
 			subsets: map[string]string{},
 			expect: []*RunConfig{
-				buildRunConfig("public.b", RunTypeInsert, []string{"id"}, &emptyWhere, []string{"id", "c_id", "d_id", "other_id"}, []string{"id", "other_id"}, []*DependsOn{}, []*SubsetPath{}),
-				buildRunConfig("public.b", RunTypeUpdate, []string{"id"}, &emptyWhere, []string{"id", "c_id"}, []string{"c_id"}, []*DependsOn{{Table: "public.b", Columns: []string{"id"}}, {Table: "public.c", Columns: []string{"id"}}}, []*SubsetPath{}),
-				buildRunConfig("public.b", RunTypeUpdate, []string{"id"}, &emptyWhere, []string{"id", "d_id"}, []string{"d_id"}, []*DependsOn{{Table: "public.b", Columns: []string{"id"}}, {Table: "public.d", Columns: []string{"id"}}, {Table: "public.b", Columns: []string{"c_id"}}}, []*SubsetPath{}),
-				buildRunConfig("public.a", RunTypeInsert, []string{"id"}, &emptyWhere, []string{"id", "b_id"}, []string{"id"}, []*DependsOn{}, []*SubsetPath{}),
-				buildRunConfig("public.a", RunTypeUpdate, []string{"id"}, &emptyWhere, []string{"id", "b_id"}, []string{"b_id"}, []*DependsOn{{Table: "public.a", Columns: []string{"id"}}, {Table: "public.b", Columns: []string{"id"}}}, []*SubsetPath{}),
-				buildRunConfig("public.c", RunTypeInsert, []string{"id"}, &emptyWhere, []string{"id", "a_id"}, []string{"id", "a_id"}, []*DependsOn{{Table: "public.a", Columns: []string{"id"}}}, []*SubsetPath{}),
-				buildRunConfig("public.d", RunTypeInsert, []string{"id"}, &emptyWhere, []string{"id", "e_id"}, []string{"id", "e_id"}, []*DependsOn{{Table: "public.e", Columns: []string{"id"}}}, []*SubsetPath{}),
-				buildRunConfig("public.e", RunTypeInsert, []string{"id"}, &emptyWhere, []string{"id", "b_id"}, []string{"id", "b_id"}, []*DependsOn{{Table: "public.b", Columns: []string{"id"}}}, []*SubsetPath{}),
+				buildRunConfig(
+					"public.b",
+					RunTypeInsert,
+					[]string{"id"},
+					&emptyWhere,
+					[]string{"id", "c_id", "d_id", "other_id"},
+					[]string{"id", "other_id"},
+					[]*DependsOn{},
+					[]*SubsetPath{},
+				),
+				buildRunConfig(
+					"public.b",
+					RunTypeUpdate,
+					[]string{"id"},
+					&emptyWhere,
+					[]string{"id", "c_id"},
+					[]string{"c_id"},
+					[]*DependsOn{
+						{Table: "public.b", Columns: []string{"id"}},
+						{Table: "public.c", Columns: []string{"id"}},
+					},
+					[]*SubsetPath{},
+				),
+				buildRunConfig(
+					"public.b",
+					RunTypeUpdate,
+					[]string{"id"},
+					&emptyWhere,
+					[]string{"id", "d_id"},
+					[]string{"d_id"},
+					[]*DependsOn{
+						{Table: "public.b", Columns: []string{"id"}},
+						{Table: "public.d", Columns: []string{"id"}},
+						{Table: "public.b", Columns: []string{"c_id"}},
+					},
+					[]*SubsetPath{},
+				),
+				buildRunConfig(
+					"public.a",
+					RunTypeInsert,
+					[]string{"id"},
+					&emptyWhere,
+					[]string{"id", "b_id"},
+					[]string{"id"},
+					[]*DependsOn{},
+					[]*SubsetPath{},
+				),
+				buildRunConfig(
+					"public.a",
+					RunTypeUpdate,
+					[]string{"id"},
+					&emptyWhere,
+					[]string{"id", "b_id"},
+					[]string{"b_id"},
+					[]*DependsOn{
+						{Table: "public.a", Columns: []string{"id"}},
+						{Table: "public.b", Columns: []string{"id"}},
+					},
+					[]*SubsetPath{},
+				),
+				buildRunConfig(
+					"public.c",
+					RunTypeInsert,
+					[]string{"id"},
+					&emptyWhere,
+					[]string{"id", "a_id"},
+					[]string{"id", "a_id"},
+					[]*DependsOn{{Table: "public.a", Columns: []string{"id"}}},
+					[]*SubsetPath{},
+				),
+				buildRunConfig(
+					"public.d",
+					RunTypeInsert,
+					[]string{"id"},
+					&emptyWhere,
+					[]string{"id", "e_id"},
+					[]string{"id", "e_id"},
+					[]*DependsOn{{Table: "public.e", Columns: []string{"id"}}},
+					[]*SubsetPath{},
+				),
+				buildRunConfig(
+					"public.e",
+					RunTypeInsert,
+					[]string{"id"},
+					&emptyWhere,
+					[]string{"id", "b_id"},
+					[]string{"id", "b_id"},
+					[]*DependsOn{{Table: "public.b", Columns: []string{"id"}}},
+					[]*SubsetPath{},
+				),
 			},
 		},
 		{
 			name: "Multi Table Dependencies Complex Foreign Keys",
 			dependencies: map[string][]*sqlmanager_shared.ForeignConstraint{
 				"public.a": {
-					{Columns: []string{"b_id"}, NotNullable: []bool{false}, ForeignKey: &sqlmanager_shared.ForeignKey{Table: "public.b", Columns: []string{"id"}}},
+					{
+						Columns:     []string{"b_id"},
+						NotNullable: []bool{false},
+						ForeignKey: &sqlmanager_shared.ForeignKey{
+							Table:   "public.b",
+							Columns: []string{"id"},
+						},
+					},
 				},
 				"public.b": {
-					{Columns: []string{"c_id"}, NotNullable: []bool{true}, ForeignKey: &sqlmanager_shared.ForeignKey{Table: "public.c", Columns: []string{"id"}}},
-					{Columns: []string{"d_id"}, NotNullable: []bool{false}, ForeignKey: &sqlmanager_shared.ForeignKey{Table: "public.d", Columns: []string{"id"}}},
+					{
+						Columns:     []string{"c_id"},
+						NotNullable: []bool{true},
+						ForeignKey: &sqlmanager_shared.ForeignKey{
+							Table:   "public.c",
+							Columns: []string{"id"},
+						},
+					},
+					{
+						Columns:     []string{"d_id"},
+						NotNullable: []bool{false},
+						ForeignKey: &sqlmanager_shared.ForeignKey{
+							Table:   "public.d",
+							Columns: []string{"id"},
+						},
+					},
 				},
 				"public.c": {
-					{Columns: []string{"a_id"}, NotNullable: []bool{true}, ForeignKey: &sqlmanager_shared.ForeignKey{Table: "public.a", Columns: []string{"id"}}},
+					{
+						Columns:     []string{"a_id"},
+						NotNullable: []bool{true},
+						ForeignKey: &sqlmanager_shared.ForeignKey{
+							Table:   "public.a",
+							Columns: []string{"id"},
+						},
+					},
 				},
 				"public.d": {
-					{Columns: []string{"e_id"}, NotNullable: []bool{true}, ForeignKey: &sqlmanager_shared.ForeignKey{Table: "public.e", Columns: []string{"id"}}},
+					{
+						Columns:     []string{"e_id"},
+						NotNullable: []bool{true},
+						ForeignKey: &sqlmanager_shared.ForeignKey{
+							Table:   "public.e",
+							Columns: []string{"id"},
+						},
+					},
 				},
 				"public.e": {
-					{Columns: []string{"b_id"}, NotNullable: []bool{true}, ForeignKey: &sqlmanager_shared.ForeignKey{Table: "public.b", Columns: []string{"id"}}},
+					{
+						Columns:     []string{"b_id"},
+						NotNullable: []bool{true},
+						ForeignKey: &sqlmanager_shared.ForeignKey{
+							Table:   "public.b",
+							Columns: []string{"id"},
+						},
+					},
 				},
 			},
 			tableColsMap: map[string][]string{
@@ -505,27 +1115,124 @@ func Test_BuildRunConfigs_NoSubset_MultiCycle(t *testing.T) {
 			},
 			subsets: map[string]string{},
 			expect: []*RunConfig{
-				buildRunConfig("public.a", RunTypeInsert, []string{"id"}, &emptyWhere, []string{"id", "b_id"}, []string{"id"}, []*DependsOn{}, []*SubsetPath{}),
-				buildRunConfig("public.a", RunTypeUpdate, []string{"id"}, &emptyWhere, []string{"id", "b_id"}, []string{"b_id"}, []*DependsOn{{Table: "public.a", Columns: []string{"id"}}, {Table: "public.b", Columns: []string{"id"}}}, []*SubsetPath{}),
-				buildRunConfig("public.b", RunTypeInsert, []string{"id"}, &emptyWhere, []string{"id", "c_id", "d_id", "other_id"}, []string{"id", "c_id", "other_id"}, []*DependsOn{{Table: "public.c", Columns: []string{"id"}}}, []*SubsetPath{}),
-				buildRunConfig("public.b", RunTypeUpdate, []string{"id"}, &emptyWhere, []string{"id", "d_id"}, []string{"d_id"}, []*DependsOn{{Table: "public.b", Columns: []string{"id"}}, {Table: "public.d", Columns: []string{"id"}}}, []*SubsetPath{}),
-				buildRunConfig("public.c", RunTypeInsert, []string{"id"}, &emptyWhere, []string{"id", "a_id"}, []string{"id", "a_id"}, []*DependsOn{{Table: "public.a", Columns: []string{"id"}}}, []*SubsetPath{}),
-				buildRunConfig("public.d", RunTypeInsert, []string{"id"}, &emptyWhere, []string{"id", "e_id"}, []string{"id", "e_id"}, []*DependsOn{{Table: "public.e", Columns: []string{"id"}}}, []*SubsetPath{}),
-				buildRunConfig("public.e", RunTypeInsert, []string{"id"}, &emptyWhere, []string{"id", "b_id"}, []string{"id", "b_id"}, []*DependsOn{{Table: "public.b", Columns: []string{"id"}}}, []*SubsetPath{}),
+				buildRunConfig(
+					"public.a",
+					RunTypeInsert,
+					[]string{"id"},
+					&emptyWhere,
+					[]string{"id", "b_id"},
+					[]string{"id"},
+					[]*DependsOn{},
+					[]*SubsetPath{},
+				),
+				buildRunConfig(
+					"public.a",
+					RunTypeUpdate,
+					[]string{"id"},
+					&emptyWhere,
+					[]string{"id", "b_id"},
+					[]string{"b_id"},
+					[]*DependsOn{
+						{Table: "public.a", Columns: []string{"id"}},
+						{Table: "public.b", Columns: []string{"id"}},
+					},
+					[]*SubsetPath{},
+				),
+				buildRunConfig(
+					"public.b",
+					RunTypeInsert,
+					[]string{"id"},
+					&emptyWhere,
+					[]string{"id", "c_id", "d_id", "other_id"},
+					[]string{"id", "c_id", "other_id"},
+					[]*DependsOn{{Table: "public.c", Columns: []string{"id"}}},
+					[]*SubsetPath{},
+				),
+				buildRunConfig(
+					"public.b",
+					RunTypeUpdate,
+					[]string{"id"},
+					&emptyWhere,
+					[]string{"id", "d_id"},
+					[]string{"d_id"},
+					[]*DependsOn{
+						{Table: "public.b", Columns: []string{"id"}},
+						{Table: "public.d", Columns: []string{"id"}},
+					},
+					[]*SubsetPath{},
+				),
+				buildRunConfig(
+					"public.c",
+					RunTypeInsert,
+					[]string{"id"},
+					&emptyWhere,
+					[]string{"id", "a_id"},
+					[]string{"id", "a_id"},
+					[]*DependsOn{{Table: "public.a", Columns: []string{"id"}}},
+					[]*SubsetPath{},
+				),
+				buildRunConfig(
+					"public.d",
+					RunTypeInsert,
+					[]string{"id"},
+					&emptyWhere,
+					[]string{"id", "e_id"},
+					[]string{"id", "e_id"},
+					[]*DependsOn{{Table: "public.e", Columns: []string{"id"}}},
+					[]*SubsetPath{},
+				),
+				buildRunConfig(
+					"public.e",
+					RunTypeInsert,
+					[]string{"id"},
+					&emptyWhere,
+					[]string{"id", "b_id"},
+					[]string{"id", "b_id"},
+					[]*DependsOn{{Table: "public.b", Columns: []string{"id"}}},
+					[]*SubsetPath{},
+				),
 			},
 		},
 		{
 			name: "Multi Table Dependencies Self Referencing Circular Dependency Complex",
 			dependencies: map[string][]*sqlmanager_shared.ForeignConstraint{
 				"public.a": {
-					{Columns: []string{"b_id"}, NotNullable: []bool{false}, ForeignKey: &sqlmanager_shared.ForeignKey{Table: "public.b", Columns: []string{"id"}}},
+					{
+						Columns:     []string{"b_id"},
+						NotNullable: []bool{false},
+						ForeignKey: &sqlmanager_shared.ForeignKey{
+							Table:   "public.b",
+							Columns: []string{"id"},
+						},
+					},
 				},
 				"public.b": {
-					{Columns: []string{"c_id"}, NotNullable: []bool{true}, ForeignKey: &sqlmanager_shared.ForeignKey{Table: "public.c", Columns: []string{"id"}}},
-					{Columns: []string{"bb_id"}, NotNullable: []bool{false}, ForeignKey: &sqlmanager_shared.ForeignKey{Table: "public.b", Columns: []string{"id"}}},
+					{
+						Columns:     []string{"c_id"},
+						NotNullable: []bool{true},
+						ForeignKey: &sqlmanager_shared.ForeignKey{
+							Table:   "public.c",
+							Columns: []string{"id"},
+						},
+					},
+					{
+						Columns:     []string{"bb_id"},
+						NotNullable: []bool{false},
+						ForeignKey: &sqlmanager_shared.ForeignKey{
+							Table:   "public.b",
+							Columns: []string{"id"},
+						},
+					},
 				},
 				"public.c": {
-					{Columns: []string{"a_id"}, NotNullable: []bool{true}, ForeignKey: &sqlmanager_shared.ForeignKey{Table: "public.a", Columns: []string{"id"}}},
+					{
+						Columns:     []string{"a_id"},
+						NotNullable: []bool{true},
+						ForeignKey: &sqlmanager_shared.ForeignKey{
+							Table:   "public.a",
+							Columns: []string{"id"},
+						},
+					},
 				},
 			},
 			tableColsMap: map[string][]string{
@@ -540,25 +1247,101 @@ func Test_BuildRunConfigs_NoSubset_MultiCycle(t *testing.T) {
 			},
 			subsets: map[string]string{},
 			expect: []*RunConfig{
-				buildRunConfig("public.a", RunTypeInsert, []string{"id"}, &emptyWhere, []string{"id", "b_id"}, []string{"id"}, []*DependsOn{}, []*SubsetPath{}),
-				buildRunConfig("public.a", RunTypeUpdate, []string{"id"}, &emptyWhere, []string{"id", "b_id"}, []string{"b_id"}, []*DependsOn{{Table: "public.a", Columns: []string{"id"}}, {Table: "public.b", Columns: []string{"id"}}}, []*SubsetPath{}),
-				buildRunConfig("public.b", RunTypeInsert, []string{"id"}, &emptyWhere, []string{"id", "c_id", "bb_id", "other_id"}, []string{"id", "c_id", "other_id"}, []*DependsOn{{Table: "public.c", Columns: []string{"id"}}}, []*SubsetPath{}),
-				buildRunConfig("public.b", RunTypeUpdate, []string{"id"}, &emptyWhere, []string{"id", "bb_id"}, []string{"bb_id"}, []*DependsOn{{Table: "public.b", Columns: []string{"id"}}}, []*SubsetPath{}),
-				buildRunConfig("public.c", RunTypeInsert, []string{"id"}, &emptyWhere, []string{"id", "a_id"}, []string{"id", "a_id"}, []*DependsOn{{Table: "public.a", Columns: []string{"id"}}}, []*SubsetPath{}),
+				buildRunConfig(
+					"public.a",
+					RunTypeInsert,
+					[]string{"id"},
+					&emptyWhere,
+					[]string{"id", "b_id"},
+					[]string{"id"},
+					[]*DependsOn{},
+					[]*SubsetPath{},
+				),
+				buildRunConfig(
+					"public.a",
+					RunTypeUpdate,
+					[]string{"id"},
+					&emptyWhere,
+					[]string{"id", "b_id"},
+					[]string{"b_id"},
+					[]*DependsOn{
+						{Table: "public.a", Columns: []string{"id"}},
+						{Table: "public.b", Columns: []string{"id"}},
+					},
+					[]*SubsetPath{},
+				),
+				buildRunConfig(
+					"public.b",
+					RunTypeInsert,
+					[]string{"id"},
+					&emptyWhere,
+					[]string{"id", "c_id", "bb_id", "other_id"},
+					[]string{"id", "c_id", "other_id"},
+					[]*DependsOn{{Table: "public.c", Columns: []string{"id"}}},
+					[]*SubsetPath{},
+				),
+				buildRunConfig(
+					"public.b",
+					RunTypeUpdate,
+					[]string{"id"},
+					&emptyWhere,
+					[]string{"id", "bb_id"},
+					[]string{"bb_id"},
+					[]*DependsOn{{Table: "public.b", Columns: []string{"id"}}},
+					[]*SubsetPath{},
+				),
+				buildRunConfig(
+					"public.c",
+					RunTypeInsert,
+					[]string{"id"},
+					&emptyWhere,
+					[]string{"id", "a_id"},
+					[]string{"id", "a_id"},
+					[]*DependsOn{{Table: "public.a", Columns: []string{"id"}}},
+					[]*SubsetPath{},
+				),
 			},
 		},
 		{
 			name: "Multi Table Dependencies Self Referencing Circular Dependency Simple",
 			dependencies: map[string][]*sqlmanager_shared.ForeignConstraint{
 				"public.a": {
-					{Columns: []string{"b_id"}, NotNullable: []bool{true}, ForeignKey: &sqlmanager_shared.ForeignKey{Table: "public.b", Columns: []string{"id"}}},
+					{
+						Columns:     []string{"b_id"},
+						NotNullable: []bool{true},
+						ForeignKey: &sqlmanager_shared.ForeignKey{
+							Table:   "public.b",
+							Columns: []string{"id"},
+						},
+					},
 				},
 				"public.b": {
-					{Columns: []string{"c_id"}, NotNullable: []bool{false}, ForeignKey: &sqlmanager_shared.ForeignKey{Table: "public.c", Columns: []string{"id"}}},
-					{Columns: []string{"bb_id"}, NotNullable: []bool{false}, ForeignKey: &sqlmanager_shared.ForeignKey{Table: "public.b", Columns: []string{"id"}}},
+					{
+						Columns:     []string{"c_id"},
+						NotNullable: []bool{false},
+						ForeignKey: &sqlmanager_shared.ForeignKey{
+							Table:   "public.c",
+							Columns: []string{"id"},
+						},
+					},
+					{
+						Columns:     []string{"bb_id"},
+						NotNullable: []bool{false},
+						ForeignKey: &sqlmanager_shared.ForeignKey{
+							Table:   "public.b",
+							Columns: []string{"id"},
+						},
+					},
 				},
 				"public.c": {
-					{Columns: []string{"a_id"}, NotNullable: []bool{true}, ForeignKey: &sqlmanager_shared.ForeignKey{Table: "public.a", Columns: []string{"id"}}},
+					{
+						Columns:     []string{"a_id"},
+						NotNullable: []bool{true},
+						ForeignKey: &sqlmanager_shared.ForeignKey{
+							Table:   "public.a",
+							Columns: []string{"id"},
+						},
+					},
 				},
 			},
 			tableColsMap: map[string][]string{
@@ -573,18 +1356,74 @@ func Test_BuildRunConfigs_NoSubset_MultiCycle(t *testing.T) {
 			},
 			subsets: map[string]string{},
 			expect: []*RunConfig{
-				buildRunConfig("public.a", RunTypeInsert, []string{"id"}, &emptyWhere, []string{"id", "b_id"}, []string{"id", "b_id"}, []*DependsOn{{Table: "public.b", Columns: []string{"id"}}}, []*SubsetPath{}),
-				buildRunConfig("public.b", RunTypeInsert, []string{"id"}, &emptyWhere, []string{"id", "c_id", "bb_id", "other_id"}, []string{"id", "other_id"}, []*DependsOn{}, []*SubsetPath{}),
-				buildRunConfig("public.b", RunTypeUpdate, []string{"id"}, &emptyWhere, []string{"id", "c_id"}, []string{"c_id"}, []*DependsOn{{Table: "public.b", Columns: []string{"id"}}, {Table: "public.c", Columns: []string{"id"}}, {Table: "public.b", Columns: []string{"bb_id"}}}, []*SubsetPath{}),
-				buildRunConfig("public.b", RunTypeUpdate, []string{"id"}, &emptyWhere, []string{"id", "bb_id"}, []string{"bb_id"}, []*DependsOn{{Table: "public.b", Columns: []string{"id"}}}, []*SubsetPath{}),
-				buildRunConfig("public.c", RunTypeInsert, []string{"id"}, &emptyWhere, []string{"id", "a_id"}, []string{"id", "a_id"}, []*DependsOn{{Table: "public.a", Columns: []string{"id"}}}, []*SubsetPath{}),
+				buildRunConfig(
+					"public.a",
+					RunTypeInsert,
+					[]string{"id"},
+					&emptyWhere,
+					[]string{"id", "b_id"},
+					[]string{"id", "b_id"},
+					[]*DependsOn{{Table: "public.b", Columns: []string{"id"}}},
+					[]*SubsetPath{},
+				),
+				buildRunConfig(
+					"public.b",
+					RunTypeInsert,
+					[]string{"id"},
+					&emptyWhere,
+					[]string{"id", "c_id", "bb_id", "other_id"},
+					[]string{"id", "other_id"},
+					[]*DependsOn{},
+					[]*SubsetPath{},
+				),
+				buildRunConfig(
+					"public.b",
+					RunTypeUpdate,
+					[]string{"id"},
+					&emptyWhere,
+					[]string{"id", "c_id"},
+					[]string{"c_id"},
+					[]*DependsOn{
+						{Table: "public.b", Columns: []string{"id"}},
+						{Table: "public.c", Columns: []string{"id"}},
+						{Table: "public.b", Columns: []string{"bb_id"}},
+					},
+					[]*SubsetPath{},
+				),
+				buildRunConfig(
+					"public.b",
+					RunTypeUpdate,
+					[]string{"id"},
+					&emptyWhere,
+					[]string{"id", "bb_id"},
+					[]string{"bb_id"},
+					[]*DependsOn{{Table: "public.b", Columns: []string{"id"}}},
+					[]*SubsetPath{},
+				),
+				buildRunConfig(
+					"public.c",
+					RunTypeInsert,
+					[]string{"id"},
+					&emptyWhere,
+					[]string{"id", "a_id"},
+					[]string{"id", "a_id"},
+					[]*DependsOn{{Table: "public.a", Columns: []string{"id"}}},
+					[]*SubsetPath{},
+				),
 			},
 		},
 	}
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			assertRunConfigs(t, tt.dependencies, tt.subsets, tt.primaryKeyMap, tt.tableColsMap, tt.expect)
+			assertRunConfigs(
+				t,
+				tt.dependencies,
+				tt.subsets,
+				tt.primaryKeyMap,
+				tt.tableColsMap,
+				tt.expect,
+			)
 		})
 	}
 }
@@ -603,10 +1442,24 @@ func Test_BuildRunConfigs_NoSubset_NoCycle(t *testing.T) {
 			name: "Straight dependencies",
 			dependencies: map[string][]*sqlmanager_shared.ForeignConstraint{
 				"public.a": {
-					{Columns: []string{"b_id"}, NotNullable: []bool{false}, ForeignKey: &sqlmanager_shared.ForeignKey{Table: "public.b", Columns: []string{"id"}}},
+					{
+						Columns:     []string{"b_id"},
+						NotNullable: []bool{false},
+						ForeignKey: &sqlmanager_shared.ForeignKey{
+							Table:   "public.b",
+							Columns: []string{"id"},
+						},
+					},
 				},
 				"public.b": {
-					{Columns: []string{"c_id"}, NotNullable: []bool{false}, ForeignKey: &sqlmanager_shared.ForeignKey{Table: "public.c", Columns: []string{"id"}}},
+					{
+						Columns:     []string{"c_id"},
+						NotNullable: []bool{false},
+						ForeignKey: &sqlmanager_shared.ForeignKey{
+							Table:   "public.c",
+							Columns: []string{"id"},
+						},
+					},
 				},
 				"public.c": {},
 			},
@@ -622,19 +1475,60 @@ func Test_BuildRunConfigs_NoSubset_NoCycle(t *testing.T) {
 			},
 			subsets: map[string]string{},
 			expect: []*RunConfig{
-				buildRunConfig("public.c", RunTypeInsert, []string{"id"}, &emptyWhere, []string{"id"}, []string{"id"}, []*DependsOn{}, []*SubsetPath{}),
-				buildRunConfig("public.b", RunTypeInsert, []string{"id"}, &emptyWhere, []string{"id", "c_id", "other_id"}, []string{"id", "c_id", "other_id"}, []*DependsOn{{Table: "public.c", Columns: []string{"id"}}}, []*SubsetPath{}),
-				buildRunConfig("public.a", RunTypeInsert, []string{"id"}, &emptyWhere, []string{"id", "b_id"}, []string{"id", "b_id"}, []*DependsOn{{Table: "public.b", Columns: []string{"id"}}}, []*SubsetPath{}),
+				buildRunConfig(
+					"public.c",
+					RunTypeInsert,
+					[]string{"id"},
+					&emptyWhere,
+					[]string{"id"},
+					[]string{"id"},
+					[]*DependsOn{},
+					[]*SubsetPath{},
+				),
+				buildRunConfig(
+					"public.b",
+					RunTypeInsert,
+					[]string{"id"},
+					&emptyWhere,
+					[]string{"id", "c_id", "other_id"},
+					[]string{"id", "c_id", "other_id"},
+					[]*DependsOn{{Table: "public.c", Columns: []string{"id"}}},
+					[]*SubsetPath{},
+				),
+				buildRunConfig(
+					"public.a",
+					RunTypeInsert,
+					[]string{"id"},
+					&emptyWhere,
+					[]string{"id", "b_id"},
+					[]string{"id", "b_id"},
+					[]*DependsOn{{Table: "public.b", Columns: []string{"id"}}},
+					[]*SubsetPath{},
+				),
 			},
 		},
 		{
 			name: "Duplicate Columns",
 			dependencies: map[string][]*sqlmanager_shared.ForeignConstraint{
 				"public.a": {
-					{Columns: []string{"b_id"}, NotNullable: []bool{false}, ForeignKey: &sqlmanager_shared.ForeignKey{Table: "public.b", Columns: []string{"id"}}},
+					{
+						Columns:     []string{"b_id"},
+						NotNullable: []bool{false},
+						ForeignKey: &sqlmanager_shared.ForeignKey{
+							Table:   "public.b",
+							Columns: []string{"id"},
+						},
+					},
 				},
 				"public.b": {
-					{Columns: []string{"c_id"}, NotNullable: []bool{false}, ForeignKey: &sqlmanager_shared.ForeignKey{Table: "public.c", Columns: []string{"id"}}},
+					{
+						Columns:     []string{"c_id"},
+						NotNullable: []bool{false},
+						ForeignKey: &sqlmanager_shared.ForeignKey{
+							Table:   "public.c",
+							Columns: []string{"id"},
+						},
+					},
 				},
 				"public.c": {},
 			},
@@ -650,19 +1544,60 @@ func Test_BuildRunConfigs_NoSubset_NoCycle(t *testing.T) {
 			},
 			subsets: map[string]string{},
 			expect: []*RunConfig{
-				buildRunConfig("public.c", RunTypeInsert, []string{"id"}, &emptyWhere, []string{"id"}, []string{"id"}, []*DependsOn{}, []*SubsetPath{}),
-				buildRunConfig("public.b", RunTypeInsert, []string{"id"}, &emptyWhere, []string{"id", "c_id", "other_id"}, []string{"id", "c_id", "other_id"}, []*DependsOn{{Table: "public.c", Columns: []string{"id"}}}, []*SubsetPath{}),
-				buildRunConfig("public.a", RunTypeInsert, []string{"id"}, &emptyWhere, []string{"id", "b_id"}, []string{"id", "b_id"}, []*DependsOn{{Table: "public.b", Columns: []string{"id"}}}, []*SubsetPath{}),
+				buildRunConfig(
+					"public.c",
+					RunTypeInsert,
+					[]string{"id"},
+					&emptyWhere,
+					[]string{"id"},
+					[]string{"id"},
+					[]*DependsOn{},
+					[]*SubsetPath{},
+				),
+				buildRunConfig(
+					"public.b",
+					RunTypeInsert,
+					[]string{"id"},
+					&emptyWhere,
+					[]string{"id", "c_id", "other_id"},
+					[]string{"id", "c_id", "other_id"},
+					[]*DependsOn{{Table: "public.c", Columns: []string{"id"}}},
+					[]*SubsetPath{},
+				),
+				buildRunConfig(
+					"public.a",
+					RunTypeInsert,
+					[]string{"id"},
+					&emptyWhere,
+					[]string{"id", "b_id"},
+					[]string{"id", "b_id"},
+					[]*DependsOn{{Table: "public.b", Columns: []string{"id"}}},
+					[]*SubsetPath{},
+				),
 			},
 		},
 		{
 			name: "Sub Tree",
 			dependencies: map[string][]*sqlmanager_shared.ForeignConstraint{
 				"public.a": {
-					{Columns: []string{"b_id"}, NotNullable: []bool{false}, ForeignKey: &sqlmanager_shared.ForeignKey{Table: "public.b", Columns: []string{"id"}}},
+					{
+						Columns:     []string{"b_id"},
+						NotNullable: []bool{false},
+						ForeignKey: &sqlmanager_shared.ForeignKey{
+							Table:   "public.b",
+							Columns: []string{"id"},
+						},
+					},
 				},
 				"public.b": {
-					{Columns: []string{"c_id"}, NotNullable: []bool{false}, ForeignKey: &sqlmanager_shared.ForeignKey{Table: "public.c", Columns: []string{"id"}}},
+					{
+						Columns:     []string{"c_id"},
+						NotNullable: []bool{false},
+						ForeignKey: &sqlmanager_shared.ForeignKey{
+							Table:   "public.c",
+							Columns: []string{"id"},
+						},
+					},
 				},
 				"public.c": {},
 			},
@@ -676,15 +1611,40 @@ func Test_BuildRunConfigs_NoSubset_NoCycle(t *testing.T) {
 			},
 			subsets: map[string]string{},
 			expect: []*RunConfig{
-				buildRunConfig("public.b", RunTypeInsert, []string{"id"}, &emptyWhere, []string{"id", "c_id", "other_id"}, []string{"id", "c_id", "other_id"}, []*DependsOn{}, []*SubsetPath{}),
-				buildRunConfig("public.a", RunTypeInsert, []string{"id"}, &emptyWhere, []string{"id", "b_id"}, []string{"id", "b_id"}, []*DependsOn{{Table: "public.b", Columns: []string{"id"}}}, []*SubsetPath{}),
+				buildRunConfig(
+					"public.b",
+					RunTypeInsert,
+					[]string{"id"},
+					&emptyWhere,
+					[]string{"id", "c_id", "other_id"},
+					[]string{"id", "c_id", "other_id"},
+					[]*DependsOn{},
+					[]*SubsetPath{},
+				),
+				buildRunConfig(
+					"public.a",
+					RunTypeInsert,
+					[]string{"id"},
+					&emptyWhere,
+					[]string{"id", "b_id"},
+					[]string{"id", "b_id"},
+					[]*DependsOn{{Table: "public.b", Columns: []string{"id"}}},
+					[]*SubsetPath{},
+				),
 			},
 		},
 	}
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			assertRunConfigs(t, tt.dependencies, tt.subsets, tt.primaryKeyMap, tt.tableColsMap, tt.expect)
+			assertRunConfigs(
+				t,
+				tt.dependencies,
+				tt.subsets,
+				tt.primaryKeyMap,
+				tt.tableColsMap,
+				tt.expect,
+			)
 		})
 	}
 }
@@ -693,10 +1653,24 @@ func Test_BuildRunConfigs_CompositeKey(t *testing.T) {
 	emptyWhere := ""
 	dependencies := map[string][]*sqlmanager_shared.ForeignConstraint{
 		"public.employees": {
-			{Columns: []string{"department_id"}, NotNullable: []bool{true}, ForeignKey: &sqlmanager_shared.ForeignKey{Table: "public.department", Columns: []string{"department_id"}}},
+			{
+				Columns:     []string{"department_id"},
+				NotNullable: []bool{true},
+				ForeignKey: &sqlmanager_shared.ForeignKey{
+					Table:   "public.department",
+					Columns: []string{"department_id"},
+				},
+			},
 		},
 		"public.projects": {
-			{Columns: []string{"responsible_employee_id", "responsible_department_id"}, NotNullable: []bool{false, false}, ForeignKey: &sqlmanager_shared.ForeignKey{Table: "public.employees", Columns: []string{"employee_id", "department_id"}}},
+			{
+				Columns:     []string{"responsible_employee_id", "responsible_department_id"},
+				NotNullable: []bool{false, false},
+				ForeignKey: &sqlmanager_shared.ForeignKey{
+					Table:   "public.employees",
+					Columns: []string{"employee_id", "department_id"},
+				},
+			},
 		},
 	}
 	primaryKeyMap := map[string][]string{
@@ -735,18 +1709,48 @@ func Test_BuildRunConfigs_CompositeKey(t *testing.T) {
 	}
 
 	expect := []*RunConfig{
-		buildRunConfig("public.employees", RunTypeInsert, []string{"employee_id", "department_id"}, &emptyWhere,
+		buildRunConfig(
+			"public.employees",
+			RunTypeInsert,
+			[]string{"employee_id", "department_id"},
+			&emptyWhere,
 			[]string{"employee_id", "department_id", "first_name", "last_name", "email"},
 			[]string{"employee_id", "department_id", "first_name", "last_name", "email"},
-			[]*DependsOn{{Table: "public.department", Columns: []string{"department_id"}}}, []*SubsetPath{}),
+			[]*DependsOn{
+				{Table: "public.department", Columns: []string{"department_id"}},
+			},
+			[]*SubsetPath{},
+		),
 		buildRunConfig("public.department", RunTypeInsert, []string{"department_id"}, &emptyWhere,
 			[]string{"department_id", "department_name", "location"},
 			[]string{"department_id", "department_name", "location"},
 			[]*DependsOn{}, []*SubsetPath{}),
-		buildRunConfig("public.projects", RunTypeInsert, []string{"project_id"}, &emptyWhere,
-			[]string{"project_id", "project_name", "start_date", "end_date", "responsible_employee_id", "responsible_department_id"},
-			[]string{"project_id", "project_name", "start_date", "end_date", "responsible_employee_id", "responsible_department_id"},
-			[]*DependsOn{{Table: "public.employees", Columns: []string{"employee_id", "department_id"}}}, []*SubsetPath{}),
+		buildRunConfig(
+			"public.projects",
+			RunTypeInsert,
+			[]string{"project_id"},
+			&emptyWhere,
+			[]string{
+				"project_id",
+				"project_name",
+				"start_date",
+				"end_date",
+				"responsible_employee_id",
+				"responsible_department_id",
+			},
+			[]string{
+				"project_id",
+				"project_name",
+				"start_date",
+				"end_date",
+				"responsible_employee_id",
+				"responsible_department_id",
+			},
+			[]*DependsOn{
+				{Table: "public.employees", Columns: []string{"employee_id", "department_id"}},
+			},
+			[]*SubsetPath{},
+		),
 	}
 
 	assertRunConfigs(t, dependencies, map[string]string{}, primaryKeyMap, tablesColMap, expect)
@@ -756,21 +1760,70 @@ func Test_BuildRunConfigs_HumanResources(t *testing.T) {
 	emptyWhere := ""
 	dependencies := map[string][]*sqlmanager_shared.ForeignConstraint{
 		"public.countries": {
-			{Columns: []string{"region_id"}, NotNullable: []bool{true}, ForeignKey: &sqlmanager_shared.ForeignKey{Table: "public.regions", Columns: []string{"region_id"}}},
+			{
+				Columns:     []string{"region_id"},
+				NotNullable: []bool{true},
+				ForeignKey: &sqlmanager_shared.ForeignKey{
+					Table:   "public.regions",
+					Columns: []string{"region_id"},
+				},
+			},
 		},
 		"public.departments": {
-			{Columns: []string{"location_id"}, NotNullable: []bool{false}, ForeignKey: &sqlmanager_shared.ForeignKey{Table: "public.locations", Columns: []string{"location_id"}}},
+			{
+				Columns:     []string{"location_id"},
+				NotNullable: []bool{false},
+				ForeignKey: &sqlmanager_shared.ForeignKey{
+					Table:   "public.locations",
+					Columns: []string{"location_id"},
+				},
+			},
 		},
 		"public.dependents": {
-			{Columns: []string{"employee_id"}, NotNullable: []bool{true}, ForeignKey: &sqlmanager_shared.ForeignKey{Table: "public.employees", Columns: []string{"employee_id"}}},
+			{
+				Columns:     []string{"employee_id"},
+				NotNullable: []bool{true},
+				ForeignKey: &sqlmanager_shared.ForeignKey{
+					Table:   "public.employees",
+					Columns: []string{"employee_id"},
+				},
+			},
 		},
 		"public.employees": {
-			{Columns: []string{"job_id"}, NotNullable: []bool{true}, ForeignKey: &sqlmanager_shared.ForeignKey{Table: "public.jobs", Columns: []string{"job_id"}}},
-			{Columns: []string{"department_id"}, NotNullable: []bool{false}, ForeignKey: &sqlmanager_shared.ForeignKey{Table: "public.departments", Columns: []string{"department_id"}}},
-			{Columns: []string{"manager_id"}, NotNullable: []bool{false}, ForeignKey: &sqlmanager_shared.ForeignKey{Table: "public.employees", Columns: []string{"employee_id"}}},
+			{
+				Columns:     []string{"job_id"},
+				NotNullable: []bool{true},
+				ForeignKey: &sqlmanager_shared.ForeignKey{
+					Table:   "public.jobs",
+					Columns: []string{"job_id"},
+				},
+			},
+			{
+				Columns:     []string{"department_id"},
+				NotNullable: []bool{false},
+				ForeignKey: &sqlmanager_shared.ForeignKey{
+					Table:   "public.departments",
+					Columns: []string{"department_id"},
+				},
+			},
+			{
+				Columns:     []string{"manager_id"},
+				NotNullable: []bool{false},
+				ForeignKey: &sqlmanager_shared.ForeignKey{
+					Table:   "public.employees",
+					Columns: []string{"employee_id"},
+				},
+			},
 		},
 		"public.locations": {
-			{Columns: []string{"country_id"}, NotNullable: []bool{true}, ForeignKey: &sqlmanager_shared.ForeignKey{Table: "public.countries", Columns: []string{"country_id"}}},
+			{
+				Columns:     []string{"country_id"},
+				NotNullable: []bool{true},
+				ForeignKey: &sqlmanager_shared.ForeignKey{
+					Table:   "public.countries",
+					Columns: []string{"country_id"},
+				},
+			},
 		},
 	}
 	primaryKeyMap := map[string][]string{
@@ -826,38 +1879,88 @@ func Test_BuildRunConfigs_HumanResources(t *testing.T) {
 			[]string{"region_id", "region_name"},
 			[]string{"region_id", "region_name"},
 			[]*DependsOn{}, []*SubsetPath{}),
-		buildRunConfig("public.countries", RunTypeInsert, []string{"country_id"}, &emptyWhere,
+		buildRunConfig(
+			"public.countries",
+			RunTypeInsert,
+			[]string{"country_id"},
+			&emptyWhere,
 			[]string{"country_id", "country_name", "region_id"},
 			[]string{"country_id", "country_name", "region_id"},
-			[]*DependsOn{{Table: "public.regions", Columns: []string{"region_id"}}}, []*SubsetPath{}),
-		buildRunConfig("public.locations", RunTypeInsert, []string{"location_id"}, &emptyWhere,
+			[]*DependsOn{
+				{Table: "public.regions", Columns: []string{"region_id"}},
+			},
+			[]*SubsetPath{},
+		),
+		buildRunConfig(
+			"public.locations",
+			RunTypeInsert,
+			[]string{"location_id"},
+			&emptyWhere,
 			[]string{"location_id", "street_address", "country_id"},
 			[]string{"location_id", "street_address", "country_id"},
-			[]*DependsOn{{Table: "public.countries", Columns: []string{"country_id"}}}, []*SubsetPath{}),
+			[]*DependsOn{
+				{Table: "public.countries", Columns: []string{"country_id"}},
+			},
+			[]*SubsetPath{},
+		),
 		buildRunConfig("public.jobs", RunTypeInsert, []string{"job_id"}, &emptyWhere,
 			[]string{"job_id", "job_title"},
 			[]string{"job_id", "job_title"},
 			[]*DependsOn{}, []*SubsetPath{}),
-		buildRunConfig("public.departments", RunTypeInsert, []string{"department_id"}, &emptyWhere,
+		buildRunConfig(
+			"public.departments",
+			RunTypeInsert,
+			[]string{"department_id"},
+			&emptyWhere,
 			[]string{"department_id", "department_name", "location_id"},
 			[]string{"department_id", "department_name", "location_id"},
-			[]*DependsOn{{Table: "public.locations", Columns: []string{"location_id"}}}, []*SubsetPath{}),
+			[]*DependsOn{
+				{Table: "public.locations", Columns: []string{"location_id"}},
+			},
+			[]*SubsetPath{},
+		),
 		buildRunConfig("public.employees", RunTypeInsert, []string{"employee_id"}, &emptyWhere,
 			[]string{"employee_id", "email", "name", "job_id", "manager_id", "department_id"},
 			[]string{"employee_id", "email", "name", "job_id"},
 			[]*DependsOn{{Table: "public.jobs", Columns: []string{"job_id"}}}, []*SubsetPath{}),
-		buildRunConfig("public.dependents", RunTypeInsert, []string{"dependent_id"}, &emptyWhere,
+		buildRunConfig(
+			"public.dependents",
+			RunTypeInsert,
+			[]string{"dependent_id"},
+			&emptyWhere,
 			[]string{"dependent_id", "name", "employee_id"},
 			[]string{"dependent_id", "name", "employee_id"},
-			[]*DependsOn{{Table: "public.employees", Columns: []string{"employee_id"}}}, []*SubsetPath{}),
-		buildRunConfig("public.employees", RunTypeUpdate, []string{"employee_id"}, &emptyWhere,
+			[]*DependsOn{
+				{Table: "public.employees", Columns: []string{"employee_id"}},
+			},
+			[]*SubsetPath{},
+		),
+		buildRunConfig(
+			"public.employees",
+			RunTypeUpdate,
+			[]string{"employee_id"},
+			&emptyWhere,
 			[]string{"employee_id", "manager_id"},
 			[]string{"manager_id"},
-			[]*DependsOn{{Table: "public.employees", Columns: []string{"employee_id"}}, {Table: "public.employees", Columns: []string{"department_id"}}}, []*SubsetPath{}),
-		buildRunConfig("public.employees", RunTypeUpdate, []string{"employee_id"}, &emptyWhere,
+			[]*DependsOn{
+				{Table: "public.employees", Columns: []string{"employee_id"}},
+				{Table: "public.employees", Columns: []string{"department_id"}},
+			},
+			[]*SubsetPath{},
+		),
+		buildRunConfig(
+			"public.employees",
+			RunTypeUpdate,
+			[]string{"employee_id"},
+			&emptyWhere,
 			[]string{"employee_id", "department_id"},
 			[]string{"department_id"},
-			[]*DependsOn{{Table: "public.employees", Columns: []string{"employee_id"}}, {Table: "public.departments", Columns: []string{"department_id"}}}, []*SubsetPath{}),
+			[]*DependsOn{
+				{Table: "public.employees", Columns: []string{"employee_id"}},
+				{Table: "public.departments", Columns: []string{"department_id"}},
+			},
+			[]*SubsetPath{},
+		),
 	}
 
 	assertRunConfigs(t, dependencies, map[string]string{}, primaryKeyMap, tablesColMap, expect)
@@ -867,21 +1970,70 @@ func Test_BuildRunConfigs_SingleTable_WithFks(t *testing.T) {
 	emptyWhere := ""
 	dependencies := map[string][]*sqlmanager_shared.ForeignConstraint{
 		"public.countries": {
-			{Columns: []string{"region_id"}, NotNullable: []bool{true}, ForeignKey: &sqlmanager_shared.ForeignKey{Table: "public.regions", Columns: []string{"region_id"}}},
+			{
+				Columns:     []string{"region_id"},
+				NotNullable: []bool{true},
+				ForeignKey: &sqlmanager_shared.ForeignKey{
+					Table:   "public.regions",
+					Columns: []string{"region_id"},
+				},
+			},
 		},
 		"public.departments": {
-			{Columns: []string{"location_id"}, NotNullable: []bool{false}, ForeignKey: &sqlmanager_shared.ForeignKey{Table: "public.locations", Columns: []string{"location_id"}}},
+			{
+				Columns:     []string{"location_id"},
+				NotNullable: []bool{false},
+				ForeignKey: &sqlmanager_shared.ForeignKey{
+					Table:   "public.locations",
+					Columns: []string{"location_id"},
+				},
+			},
 		},
 		"public.dependents": {
-			{Columns: []string{"employee_id"}, NotNullable: []bool{true}, ForeignKey: &sqlmanager_shared.ForeignKey{Table: "public.employees", Columns: []string{"employee_id"}}},
+			{
+				Columns:     []string{"employee_id"},
+				NotNullable: []bool{true},
+				ForeignKey: &sqlmanager_shared.ForeignKey{
+					Table:   "public.employees",
+					Columns: []string{"employee_id"},
+				},
+			},
 		},
 		"public.employees": {
-			{Columns: []string{"job_id"}, NotNullable: []bool{true}, ForeignKey: &sqlmanager_shared.ForeignKey{Table: "public.jobs", Columns: []string{"job_id"}}},
-			{Columns: []string{"department_id"}, NotNullable: []bool{false}, ForeignKey: &sqlmanager_shared.ForeignKey{Table: "public.departments", Columns: []string{"department_id"}}},
-			{Columns: []string{"manager_id"}, NotNullable: []bool{false}, ForeignKey: &sqlmanager_shared.ForeignKey{Table: "public.employees", Columns: []string{"employee_id"}}},
+			{
+				Columns:     []string{"job_id"},
+				NotNullable: []bool{true},
+				ForeignKey: &sqlmanager_shared.ForeignKey{
+					Table:   "public.jobs",
+					Columns: []string{"job_id"},
+				},
+			},
+			{
+				Columns:     []string{"department_id"},
+				NotNullable: []bool{false},
+				ForeignKey: &sqlmanager_shared.ForeignKey{
+					Table:   "public.departments",
+					Columns: []string{"department_id"},
+				},
+			},
+			{
+				Columns:     []string{"manager_id"},
+				NotNullable: []bool{false},
+				ForeignKey: &sqlmanager_shared.ForeignKey{
+					Table:   "public.employees",
+					Columns: []string{"employee_id"},
+				},
+			},
 		},
 		"public.locations": {
-			{Columns: []string{"country_id"}, NotNullable: []bool{true}, ForeignKey: &sqlmanager_shared.ForeignKey{Table: "public.countries", Columns: []string{"country_id"}}},
+			{
+				Columns:     []string{"country_id"},
+				NotNullable: []bool{true},
+				ForeignKey: &sqlmanager_shared.ForeignKey{
+					Table:   "public.countries",
+					Columns: []string{"country_id"},
+				},
+			},
 		},
 	}
 	primaryKeyMap := map[string][]string{
@@ -909,10 +2061,18 @@ func Test_BuildRunConfigs_SingleTable_WithFks(t *testing.T) {
 			[]string{"employee_id", "email", "name", "job_id", "manager_id", "department_id"},
 			[]string{"employee_id", "email", "name", "job_id", "department_id"},
 			[]*DependsOn{}, []*SubsetPath{}),
-		buildRunConfig("public.employees", RunTypeUpdate, []string{"employee_id"}, &emptyWhere,
+		buildRunConfig(
+			"public.employees",
+			RunTypeUpdate,
+			[]string{"employee_id"},
+			&emptyWhere,
 			[]string{"employee_id", "manager_id"},
 			[]string{"manager_id"},
-			[]*DependsOn{{Table: "public.employees", Columns: []string{"employee_id"}}}, []*SubsetPath{}),
+			[]*DependsOn{
+				{Table: "public.employees", Columns: []string{"employee_id"}},
+			},
+			[]*SubsetPath{},
+		),
 	}
 
 	assertRunConfigs(t, dependencies, map[string]string{}, primaryKeyMap, tablesColMap, expect)
@@ -922,20 +2082,76 @@ func Test_BuildRunConfigs_Complex_CircularDependency(t *testing.T) {
 	emptyWhere := ""
 	dependencies := map[string][]*sqlmanager_shared.ForeignConstraint{
 		"public.table_1": {
-			{Columns: []string{"prev_id_1"}, NotNullable: []bool{true}, ForeignKey: &sqlmanager_shared.ForeignKey{Table: "public.table_4", Columns: []string{"id_4"}}},
-			{Columns: []string{"next_id_1"}, NotNullable: []bool{true}, ForeignKey: &sqlmanager_shared.ForeignKey{Table: "public.table_2", Columns: []string{"id_2"}}},
+			{
+				Columns:     []string{"prev_id_1"},
+				NotNullable: []bool{true},
+				ForeignKey: &sqlmanager_shared.ForeignKey{
+					Table:   "public.table_4",
+					Columns: []string{"id_4"},
+				},
+			},
+			{
+				Columns:     []string{"next_id_1"},
+				NotNullable: []bool{true},
+				ForeignKey: &sqlmanager_shared.ForeignKey{
+					Table:   "public.table_2",
+					Columns: []string{"id_2"},
+				},
+			},
 		},
 		"public.table_2": {
-			{Columns: []string{"prev_id_2"}, NotNullable: []bool{false}, ForeignKey: &sqlmanager_shared.ForeignKey{Table: "public.table_1", Columns: []string{"id_1"}}},
-			{Columns: []string{"next_id_2"}, NotNullable: []bool{false}, ForeignKey: &sqlmanager_shared.ForeignKey{Table: "public.table_3", Columns: []string{"id_3"}}},
+			{
+				Columns:     []string{"prev_id_2"},
+				NotNullable: []bool{false},
+				ForeignKey: &sqlmanager_shared.ForeignKey{
+					Table:   "public.table_1",
+					Columns: []string{"id_1"},
+				},
+			},
+			{
+				Columns:     []string{"next_id_2"},
+				NotNullable: []bool{false},
+				ForeignKey: &sqlmanager_shared.ForeignKey{
+					Table:   "public.table_3",
+					Columns: []string{"id_3"},
+				},
+			},
 		},
 		"public.table_3": {
-			{Columns: []string{"prev_id_3"}, NotNullable: []bool{true}, ForeignKey: &sqlmanager_shared.ForeignKey{Table: "public.table_2", Columns: []string{"id_2"}}},
-			{Columns: []string{"next_id_3"}, NotNullable: []bool{true}, ForeignKey: &sqlmanager_shared.ForeignKey{Table: "public.table_4", Columns: []string{"id_4"}}},
+			{
+				Columns:     []string{"prev_id_3"},
+				NotNullable: []bool{true},
+				ForeignKey: &sqlmanager_shared.ForeignKey{
+					Table:   "public.table_2",
+					Columns: []string{"id_2"},
+				},
+			},
+			{
+				Columns:     []string{"next_id_3"},
+				NotNullable: []bool{true},
+				ForeignKey: &sqlmanager_shared.ForeignKey{
+					Table:   "public.table_4",
+					Columns: []string{"id_4"},
+				},
+			},
 		},
 		"public.table_4": {
-			{Columns: []string{"prev_id_4"}, NotNullable: []bool{false}, ForeignKey: &sqlmanager_shared.ForeignKey{Table: "public.table_3", Columns: []string{"id_3"}}},
-			{Columns: []string{"next_id_4"}, NotNullable: []bool{false}, ForeignKey: &sqlmanager_shared.ForeignKey{Table: "public.table_1", Columns: []string{"id_1"}}},
+			{
+				Columns:     []string{"prev_id_4"},
+				NotNullable: []bool{false},
+				ForeignKey: &sqlmanager_shared.ForeignKey{
+					Table:   "public.table_3",
+					Columns: []string{"id_3"},
+				},
+			},
+			{
+				Columns:     []string{"next_id_4"},
+				NotNullable: []bool{false},
+				ForeignKey: &sqlmanager_shared.ForeignKey{
+					Table:   "public.table_1",
+					Columns: []string{"id_1"},
+				},
+			},
 		},
 	}
 	primaryKeyMap := map[string][]string{
@@ -1013,15 +2229,50 @@ func Test_BuildRunConfigs_Multiple_CircularDependency(t *testing.T) {
 	emptyWhere := ""
 	dependencies := map[string][]*sqlmanager_shared.ForeignConstraint{
 		"public.a": {
-			{Columns: []string{"c_id"}, NotNullable: []bool{false}, ForeignKey: &sqlmanager_shared.ForeignKey{Table: "public.c", Columns: []string{"id"}}},
+			{
+				Columns:     []string{"c_id"},
+				NotNullable: []bool{false},
+				ForeignKey: &sqlmanager_shared.ForeignKey{
+					Table:   "public.c",
+					Columns: []string{"id"},
+				},
+			},
 		},
 		"public.b": {
-			{Columns: []string{"a_id"}, NotNullable: []bool{true}, ForeignKey: &sqlmanager_shared.ForeignKey{Table: "public.a", Columns: []string{"id"}}},
-			{Columns: []string{"ac_id"}, NotNullable: []bool{false}, ForeignKey: &sqlmanager_shared.ForeignKey{Table: "public.a", Columns: []string{"c_id"}}},
+			{
+				Columns:     []string{"a_id"},
+				NotNullable: []bool{true},
+				ForeignKey: &sqlmanager_shared.ForeignKey{
+					Table:   "public.a",
+					Columns: []string{"id"},
+				},
+			},
+			{
+				Columns:     []string{"ac_id"},
+				NotNullable: []bool{false},
+				ForeignKey: &sqlmanager_shared.ForeignKey{
+					Table:   "public.a",
+					Columns: []string{"c_id"},
+				},
+			},
 		},
 		"public.c": {
-			{Columns: []string{"b_id"}, NotNullable: []bool{true}, ForeignKey: &sqlmanager_shared.ForeignKey{Table: "public.b", Columns: []string{"id"}}},
-			{Columns: []string{"acb_id"}, NotNullable: []bool{false}, ForeignKey: &sqlmanager_shared.ForeignKey{Table: "public.b", Columns: []string{"ac_id"}}},
+			{
+				Columns:     []string{"b_id"},
+				NotNullable: []bool{true},
+				ForeignKey: &sqlmanager_shared.ForeignKey{
+					Table:   "public.b",
+					Columns: []string{"id"},
+				},
+			},
+			{
+				Columns:     []string{"acb_id"},
+				NotNullable: []bool{false},
+				ForeignKey: &sqlmanager_shared.ForeignKey{
+					Table:   "public.b",
+					Columns: []string{"ac_id"},
+				},
+			},
 		},
 	}
 	primaryKeyMap := map[string][]string{
@@ -1082,15 +2333,50 @@ func Test_BuildRunConfigs_CircularDependency_MultipleFksPerTable(t *testing.T) {
 	emptyWhere := ""
 	dependencies := map[string][]*sqlmanager_shared.ForeignConstraint{
 		"public.a": {
-			{Columns: []string{"c_id"}, NotNullable: []bool{false}, ForeignKey: &sqlmanager_shared.ForeignKey{Table: "public.c", Columns: []string{"id"}}},
+			{
+				Columns:     []string{"c_id"},
+				NotNullable: []bool{false},
+				ForeignKey: &sqlmanager_shared.ForeignKey{
+					Table:   "public.c",
+					Columns: []string{"id"},
+				},
+			},
 		},
 		"public.b": {
-			{Columns: []string{"a_id"}, NotNullable: []bool{true}, ForeignKey: &sqlmanager_shared.ForeignKey{Table: "public.a", Columns: []string{"id"}}},
-			{Columns: []string{"ac_id"}, NotNullable: []bool{true}, ForeignKey: &sqlmanager_shared.ForeignKey{Table: "public.a", Columns: []string{"c_id"}}},
+			{
+				Columns:     []string{"a_id"},
+				NotNullable: []bool{true},
+				ForeignKey: &sqlmanager_shared.ForeignKey{
+					Table:   "public.a",
+					Columns: []string{"id"},
+				},
+			},
+			{
+				Columns:     []string{"ac_id"},
+				NotNullable: []bool{true},
+				ForeignKey: &sqlmanager_shared.ForeignKey{
+					Table:   "public.a",
+					Columns: []string{"c_id"},
+				},
+			},
 		},
 		"public.c": {
-			{Columns: []string{"b_id"}, NotNullable: []bool{false}, ForeignKey: &sqlmanager_shared.ForeignKey{Table: "public.b", Columns: []string{"id"}}},
-			{Columns: []string{"acb_id"}, NotNullable: []bool{false}, ForeignKey: &sqlmanager_shared.ForeignKey{Table: "public.b", Columns: []string{"ac_id"}}},
+			{
+				Columns:     []string{"b_id"},
+				NotNullable: []bool{false},
+				ForeignKey: &sqlmanager_shared.ForeignKey{
+					Table:   "public.b",
+					Columns: []string{"id"},
+				},
+			},
+			{
+				Columns:     []string{"acb_id"},
+				NotNullable: []bool{false},
+				ForeignKey: &sqlmanager_shared.ForeignKey{
+					Table:   "public.b",
+					Columns: []string{"ac_id"},
+				},
+			},
 		},
 	}
 	primaryKeyMap := map[string][]string{
@@ -1150,13 +2436,34 @@ func Test_BuildRunConfigs_CircularDependency_MultipleFksPerTable(t *testing.T) {
 func Test_BuildRunConfigs_CircularDependencyNoneNullable(t *testing.T) {
 	dependencies := map[string][]*sqlmanager_shared.ForeignConstraint{
 		"public.a": {
-			{Columns: []string{"b_id"}, NotNullable: []bool{true}, ForeignKey: &sqlmanager_shared.ForeignKey{Table: "public.b", Columns: []string{"id"}}},
+			{
+				Columns:     []string{"b_id"},
+				NotNullable: []bool{true},
+				ForeignKey: &sqlmanager_shared.ForeignKey{
+					Table:   "public.b",
+					Columns: []string{"id"},
+				},
+			},
 		},
 		"public.b": {
-			{Columns: []string{"a_id"}, NotNullable: []bool{true}, ForeignKey: &sqlmanager_shared.ForeignKey{Table: "public.a", Columns: []string{"id"}}},
+			{
+				Columns:     []string{"a_id"},
+				NotNullable: []bool{true},
+				ForeignKey: &sqlmanager_shared.ForeignKey{
+					Table:   "public.a",
+					Columns: []string{"id"},
+				},
+			},
 		},
 	}
-	_, err := BuildRunConfigs(dependencies, map[string]string{}, map[string][]string{}, map[string][]string{"public.a": {}, "public.b": {}}, map[string][][]string{}, map[string][][]string{})
+	_, err := BuildRunConfigs(
+		dependencies,
+		map[string]string{},
+		map[string][]string{},
+		map[string][]string{"public.a": {}, "public.b": {}},
+		map[string][][]string{},
+		map[string][][]string{},
+	)
 	require.Error(t, err)
 }
 
@@ -1195,8 +2502,11 @@ func Test_isValidRunOrder(t *testing.T) {
 					insertColumns: []string{"id", "name"},
 				},
 				{
-					id:            "public.products.insert",
-					table:         sqlmanager_shared.SchemaTable{Schema: "public", Table: "products"},
+					id: "public.products.insert",
+					table: sqlmanager_shared.SchemaTable{
+						Schema: "public",
+						Table:  "products",
+					},
 					runType:       RunTypeInsert,
 					selectColumns: []string{"id", "name"},
 					insertColumns: []string{"id", "name"},
@@ -1237,7 +2547,9 @@ func Test_isValidRunOrder(t *testing.T) {
 					primaryKeys:   []string{"id"},
 					selectColumns: []string{"id"},
 					insertColumns: []string{"id"},
-					dependsOn:     []*DependsOn{{Table: "public.orders", Columns: []string{"user_id"}}},
+					dependsOn: []*DependsOn{
+						{Table: "public.orders", Columns: []string{"user_id"}},
+					},
 				},
 				{
 					id:            "public.orders.insert",
@@ -1255,28 +2567,42 @@ func Test_isValidRunOrder(t *testing.T) {
 			name: "multiple dependencies",
 			configs: []*RunConfig{
 				{
-					id:             "public.referral_codes.insert",
-					table:          sqlmanager_shared.SchemaTable{Schema: "public", Table: "referral_codes"},
+					id: "public.referral_codes.insert",
+					table: sqlmanager_shared.SchemaTable{
+						Schema: "public",
+						Table:  "referral_codes",
+					},
 					runType:        RunTypeInsert,
 					primaryKeys:    []string{"id"},
 					selectColumns:  []string{"id", "customer_id"},
 					insertColumns:  []string{"id", "customer_id"},
 					orderByColumns: []string{"id"},
-					dependsOn:      []*DependsOn{{Table: "public.store_customers", Columns: []string{"id"}}},
+					dependsOn: []*DependsOn{
+						{Table: "public.store_customers", Columns: []string{"id"}},
+					},
 				},
 				{
-					id:             "public.store_customers.insert",
-					table:          sqlmanager_shared.SchemaTable{Schema: "public", Table: "store_customers"},
+					id: "public.store_customers.insert",
+					table: sqlmanager_shared.SchemaTable{
+						Schema: "public",
+						Table:  "store_customers",
+					},
 					runType:        RunTypeInsert,
 					primaryKeys:    []string{"id"},
 					selectColumns:  []string{"id", "store_id", "referred_by_code"},
 					insertColumns:  []string{"id", "store_id", "referred_by_code"},
 					orderByColumns: []string{"id"},
-					dependsOn:      []*DependsOn{{Table: "public.referral_codes", Columns: []string{"id"}}, {Table: "public.stores", Columns: []string{"id"}}},
+					dependsOn: []*DependsOn{
+						{Table: "public.referral_codes", Columns: []string{"id"}},
+						{Table: "public.stores", Columns: []string{"id"}},
+					},
 				},
 				{
-					id:             "public.store_notifications.insert",
-					table:          sqlmanager_shared.SchemaTable{Schema: "public", Table: "store_notifications"},
+					id: "public.store_notifications.insert",
+					table: sqlmanager_shared.SchemaTable{
+						Schema: "public",
+						Table:  "store_notifications",
+					},
 					runType:        RunTypeInsert,
 					primaryKeys:    []string{"id"},
 					selectColumns:  []string{"id"},
@@ -1284,14 +2610,19 @@ func Test_isValidRunOrder(t *testing.T) {
 					orderByColumns: []string{"id"},
 				},
 				{
-					id:             "public.stores.insert",
-					table:          sqlmanager_shared.SchemaTable{Schema: "public", Table: "stores"},
+					id: "public.stores.insert",
+					table: sqlmanager_shared.SchemaTable{
+						Schema: "public",
+						Table:  "stores",
+					},
 					runType:        RunTypeInsert,
 					primaryKeys:    []string{"id"},
 					selectColumns:  []string{"id", "notifications_id"},
 					insertColumns:  []string{"id", "notifications_id"},
 					orderByColumns: []string{"id"},
-					dependsOn:      []*DependsOn{{Table: "public.store_notifications", Columns: []string{"id"}}},
+					dependsOn: []*DependsOn{
+						{Table: "public.store_notifications", Columns: []string{"id"}},
+					},
 				},
 			},
 			expected: false,
@@ -1374,7 +2705,12 @@ func Test_AreConfigDependenciesSatisfied(t *testing.T) {
 	})
 }
 
-func getConfigByTableAndType(table string, runtype RunType, insertCols []string, configs []*RunConfig) *RunConfig {
+func getConfigByTableAndType(
+	table string,
+	runtype RunType,
+	insertCols []string,
+	configs []*RunConfig,
+) *RunConfig {
 	for _, c := range configs {
 		cCols := slices.Clone(c.InsertColumns())
 		iCols := slices.Clone(insertCols)
@@ -1414,14 +2750,35 @@ func buildRunConfig(
 	return rc
 }
 
-func assertRunConfigs(t *testing.T, dependencies map[string][]*sqlmanager_shared.ForeignConstraint, subsets map[string]string, primaryKeyMap map[string][]string, tableColsMap map[string][]string, expect []*RunConfig) {
-	actual, err := BuildRunConfigs(dependencies, subsets, primaryKeyMap, tableColsMap, map[string][][]string{}, map[string][][]string{})
+func assertRunConfigs(
+	t *testing.T,
+	dependencies map[string][]*sqlmanager_shared.ForeignConstraint,
+	subsets map[string]string,
+	primaryKeyMap map[string][]string,
+	tableColsMap map[string][]string,
+	expect []*RunConfig,
+) {
+	actual, err := BuildRunConfigs(
+		dependencies,
+		subsets,
+		primaryKeyMap,
+		tableColsMap,
+		map[string][][]string{},
+		map[string][][]string{},
+	)
 	require.NoError(t, err)
 	assert.Len(t, actual, len(expect), "expected %d configs but got %d", len(expect), len(actual))
 	for _, e := range expect {
 		acutalConfig := getConfigByTableAndType(e.Table(), e.RunType(), e.InsertColumns(), actual)
 
-		require.NotNil(t, acutalConfig, "expected config for table %s (type: %s, insert columns: %v) to exist", e.Table(), e.RunType(), e.InsertColumns())
+		require.NotNil(
+			t,
+			acutalConfig,
+			"expected config for table %s (type: %s, insert columns: %v) to exist",
+			e.Table(),
+			e.RunType(),
+			e.InsertColumns(),
+		)
 		assert.ElementsMatch(t, e.SelectColumns(), acutalConfig.SelectColumns(),
 			"Select columns mismatch for table %s (type: %s) - expected %v but got %v",
 			e.Table(), e.RunType(), e.SelectColumns(), acutalConfig.SelectColumns())
@@ -1448,10 +2805,17 @@ func assertRunConfigs(t *testing.T, dependencies map[string][]*sqlmanager_shared
 			for _, expectedPath := range e.SubsetPaths() {
 				found := false
 				for _, actualPath := range acutalConfig.SubsetPaths() {
-					if expectedPath.Root == actualPath.Root && expectedPath.Subset == actualPath.Subset {
-						assert.Len(t, actualPath.JoinSteps, len(expectedPath.JoinSteps),
+					if expectedPath.Root == actualPath.Root &&
+						expectedPath.Subset == actualPath.Subset {
+						assert.Len(
+							t,
+							actualPath.JoinSteps,
+							len(expectedPath.JoinSteps),
 							"Join steps count mismatch for table %s (type: %s) in subset path to %s",
-							e.Table(), e.RunType(), expectedPath.Root)
+							e.Table(),
+							e.RunType(),
+							expectedPath.Root,
+						)
 
 						// Compare join steps if lengths match
 						if len(actualPath.JoinSteps) == len(expectedPath.JoinSteps) {
@@ -1469,8 +2833,15 @@ func assertRunConfigs(t *testing.T, dependencies map[string][]*sqlmanager_shared
 						break
 					}
 				}
-				assert.True(t, found, "Could not find matching subset path for Root=%s, Subset=%s in table %s (type: %s)",
-					expectedPath.Root, expectedPath.Subset, e.Table(), e.RunType())
+				assert.True(
+					t,
+					found,
+					"Could not find matching subset path for Root=%s, Subset=%s in table %s (type: %s)",
+					expectedPath.Root,
+					expectedPath.Subset,
+					e.Table(),
+					e.RunType(),
+				)
 			}
 		}
 	}

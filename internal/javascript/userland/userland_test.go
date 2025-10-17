@@ -31,7 +31,12 @@ func Test_sanitizeFunctionName(t *testing.T) {
 		t.Run(tt.input, func(t *testing.T) {
 			actual := sanitizeFunctionName(tt.input)
 			if actual != tt.expected {
-				t.Errorf("sanitizeJsFunctionName(%q) = %q; expected %q", tt.input, actual, tt.expected)
+				t.Errorf(
+					"sanitizeJsFunctionName(%q) = %q; expected %q",
+					tt.input,
+					actual,
+					tt.expected,
+				)
 			}
 		})
 	}
@@ -279,7 +284,12 @@ func Test_GetSingleTransformFunction(t *testing.T) {
 		%s
 		`, propertyPath, code)
 
-		runTestProgram(t, wrappedCode, propertyPath, map[string]any{"a": int64(1), "b": int64(2), "c": int64(3)})
+		runTestProgram(
+			t,
+			wrappedCode,
+			propertyPath,
+			map[string]any{"a": int64(1), "b": int64(2), "c": int64(3)},
+		)
 	})
 
 	t.Run("array", func(t *testing.T) {
@@ -351,7 +361,11 @@ func Test_GetSingleTransformFunction(t *testing.T) {
 func Test_convertJsObjPathToOptionalChain(t *testing.T) {
 	require.Equal(t, "address", convertJsObjPathToOptionalChain("address"))
 	require.Equal(t, "address?.['city']", convertJsObjPathToOptionalChain("address.city"))
-	require.Equal(t, "address?.['city']?.['state']", convertJsObjPathToOptionalChain("address.city.state"))
+	require.Equal(
+		t,
+		"address?.['city']?.['state']",
+		convertJsObjPathToOptionalChain("address.city.state"),
+	)
 }
 
 func runTestProgram(t testing.TB, code string, propertyPath string, expectedOutput any) {

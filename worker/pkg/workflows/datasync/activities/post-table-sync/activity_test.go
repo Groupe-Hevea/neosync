@@ -25,7 +25,11 @@ import (
 
 func Test_New(t *testing.T) {
 	sqlmanagerMock := mockSqlManager()
-	a := New(mgmtv1alpha1connect.NewMockJobServiceClient(t), sqlmanagerMock, mgmtv1alpha1connect.NewMockConnectionServiceClient((t)))
+	a := New(
+		mgmtv1alpha1connect.NewMockJobServiceClient(t),
+		sqlmanagerMock,
+		mgmtv1alpha1connect.NewMockConnectionServiceClient((t)),
+	)
 	require.NotNil(t, a)
 }
 
@@ -45,7 +49,8 @@ func Test_Activity_Success(t *testing.T) {
 	mux.Handle(mgmtv1alpha1connect.JobServiceGetRunContextProcedure, connect.NewUnaryHandler(
 		mgmtv1alpha1connect.JobServiceGetRunContextProcedure,
 		func(ctx context.Context, r *connect.Request[mgmtv1alpha1.GetRunContextRequest]) (*connect.Response[mgmtv1alpha1.GetRunContextResponse], error) {
-			if r.Msg.GetId().GetAccountId() == accountId && r.Msg.GetId().GetExternalId() == shared.GetPostTableSyncConfigExternalId(name) {
+			if r.Msg.GetId().GetAccountId() == accountId &&
+				r.Msg.GetId().GetExternalId() == shared.GetPostTableSyncConfigExternalId(name) {
 				return connect.NewResponse(&mgmtv1alpha1.GetRunContextResponse{
 					Value: configBits,
 				}), nil
@@ -86,7 +91,10 @@ func Test_Activity_Success(t *testing.T) {
 
 	env.RegisterActivity(activity)
 
-	val, err := env.ExecuteActivity(activity.RunPostTableSync, &RunPostTableSyncRequest{Name: name, AccountId: accountId})
+	val, err := env.ExecuteActivity(
+		activity.RunPostTableSync,
+		&RunPostTableSyncRequest{Name: name, AccountId: accountId},
+	)
 	require.NoError(t, err)
 	res := &RunPostTableSyncResponse{}
 	err = val.Get(res)
@@ -143,7 +151,10 @@ func Test_Activity_RunContextNotFound(t *testing.T) {
 
 	env.RegisterActivity(activity)
 
-	_, err := env.ExecuteActivity(activity.RunPostTableSync, &RunPostTableSyncRequest{Name: name, AccountId: accountId})
+	_, err := env.ExecuteActivity(
+		activity.RunPostTableSync,
+		&RunPostTableSyncRequest{Name: name, AccountId: accountId},
+	)
 	require.NoError(t, err)
 }
 
@@ -196,7 +207,10 @@ func Test_Activity_Error(t *testing.T) {
 
 	env.RegisterActivity(activity)
 
-	_, err := env.ExecuteActivity(activity.RunPostTableSync, &RunPostTableSyncRequest{Name: name, AccountId: accountId})
+	_, err := env.ExecuteActivity(
+		activity.RunPostTableSync,
+		&RunPostTableSyncRequest{Name: name, AccountId: accountId},
+	)
 	require.Error(t, err)
 }
 

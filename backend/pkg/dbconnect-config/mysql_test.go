@@ -234,7 +234,10 @@ func Test_NewFromMysqlConnection(t *testing.T) {
 
 	t.Run("URL from Env", func(t *testing.T) {
 		t.Run("ok", func(t *testing.T) {
-			viper.Set(fmt.Sprintf("%s%s", userDefinedEnvPrefix, "MYSQL_URL"), "mysql://test-user:testpass@localhost:3309/mydb")
+			viper.Set(
+				fmt.Sprintf("%s%s", userDefinedEnvPrefix, "MYSQL_URL"),
+				"mysql://test-user:testpass@localhost:3309/mydb",
+			)
 			actual, err := NewFromMysqlConnection(
 				&mgmtv1alpha1.ConnectionConfig_MysqlConfig{
 					MysqlConfig: &mgmtv1alpha1.MysqlConnectionConfig{
