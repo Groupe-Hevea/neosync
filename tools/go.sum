@@ -131,8 +131,8 @@ github.com/nexus-rpc/sdk-go v0.3.0 h1:Y3B0kLYbMhd4C2u00kcYajvmOrfozEtTV/nHSnV57j
 github.com/nexus-rpc/sdk-go v0.3.0/go.mod h1:TpfkM2Cw0Rlk9drGkoiSMpFqflKTiQLWUNyKJjF8mKQ=
 github.com/nsf/jsondiff v0.0.0-20230430225905-43f6cf3098c1 h1:dOYG7LS/WK00RWZc8XGgcUTlTxpp3mKhdR2Q9z9HbXM=
 github.com/nsf/jsondiff v0.0.0-20230430225905-43f6cf3098c1/go.mod h1:mpRZBD8SJ55OIICQ3iWH0Yz3cjzA61JdqMLoWXeB2+8=
-github.com/Groupe-Hevea/go-antlrv4-parser v0.0.0-20240830015744-041b46c70aa5 h1:MRc2C7I88nGhKbk1VRT3nnr6XtpClkHT35lhKbg6kD4=
-github.com/Groupe-Hevea/go-antlrv4-parser v0.0.0-20240830015744-041b46c70aa5/go.mod h1:MtI3ufP40Bql/YkhZFvDcR9h479JKb+hEUElwweQMzo=
+github.com/nucleuscloud/go-antlrv4-parser v0.0.0-20240830015744-041b46c70aa5 h1:MRc2C7I88nGhKbk1VRT3nnr6XtpClkHT35lhKbg6kD4=
+github.com/nucleuscloud/go-antlrv4-parser v0.0.0-20240830015744-041b46c70aa5/go.mod h1:MtI3ufP40Bql/YkhZFvDcR9h479JKb+hEUElwweQMzo=
 github.com/opentracing/opentracing-go v1.1.0/go.mod h1:UkNAQd3GIcIGf0SeVgPpRdFStlNbqXla1AfSYxPUl2o=
 github.com/pborman/uuid v1.2.1 h1:+ZZIw58t/ozdjRaXh/3awHfmWRbzYxJoAdNJxe/3pvw=
 github.com/pborman/uuid v1.2.1/go.mod h1:X/NO0urCmaxf9VXbdlT7C2Yzkj2IKimNn4k+gtPdI/k=

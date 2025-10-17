@@ -18,5 +18,6 @@
   },
   "typescript.tsdk": "frontend/node_modules/typescript/lib",
   "makefile.configureOnOpen": false,
-  "prettier.configPath": "frontend/.prettierrc.json"
+  "prettier.configPath": "frontend/.prettierrc.json",
+  "ansible.python.interpreterPath": "/usr/bin/python"
 }

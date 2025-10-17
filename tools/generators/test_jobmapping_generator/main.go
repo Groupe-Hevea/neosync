@@ -13,7 +13,7 @@ import (
 	"text/template"
 
 	"github.com/antlr4-go/antlr/v4"
-	parser "github.com/Groupe-Hevea/go-antlrv4-parser/tsql"
+	parser "github.com/nucleuscloud/go-antlrv4-parser/tsql"
 	pg_query "github.com/pganalyze/pg_query_go/v5"
 )
 

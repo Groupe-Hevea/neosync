@@ -25,7 +25,7 @@ jobs:
       packages: write
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
         with:
           fetch-depth: 0
       - name: Calculate Next Pre-release version
@@ -79,11 +79,8 @@ jobs:
           username: ${{ github.repository_owner }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Set up Depot CLI
-        uses: depot/setup-action@v1
-
       - name: Build and push
-        uses: depot/build-push-action@v1
+        uses: docker/build-push-action@v6
         with:
           context: .
           file: docker/Dockerfile.backend
@@ -105,7 +102,7 @@ jobs:
       packages: write
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
         with:
           fetch-depth: 0
       - name: Calculate Next Pre-release version
@@ -152,11 +149,8 @@ jobs:
           username: ${{ github.repository_owner }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Set up Depot CLI
-        uses: depot/setup-action@v1
-
       - name: Build and push
-        uses: depot/build-push-action@v1
+        uses: docker/build-push-action@v6
         with:
           file: docker/Dockerfile.frontend
           context: frontend
@@ -174,7 +168,7 @@ jobs:
       packages: write
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
         with:
           fetch-depth: 0
       - name: Calculate Next Pre-release version
@@ -221,11 +215,8 @@ jobs:
           username: ${{ github.repository_owner }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Set up Depot CLI
-        uses: depot/setup-action@v1
-
       - name: Build and push
-        uses: depot/build-push-action@v1
+        uses: docker/build-push-action@v6
         with:
           context: .
           file: docker/Dockerfile.worker
@@ -241,7 +232,7 @@ jobs:
       - docker-backend
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
         with:
           fetch-depth: 0
       - name: Calculate Next Pre-release version
@@ -342,7 +333,7 @@ jobs:
       - docker-frontend
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
         with:
           fetch-depth: 0
       - name: Calculate Next Pre-release version
@@ -443,7 +434,7 @@ jobs:
       - docker-worker
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
         with:
           fetch-depth: 0
       - name: Calculate Next Pre-release version
@@ -547,7 +538,7 @@ jobs:
       - helm-worker
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
         with:
           fetch-depth: 0
       - name: Calculate Next Pre-release version
@@ -653,20 +644,16 @@ jobs:
         working-directory: cli
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
         with:
           fetch-depth: 0
 
       - name: Set up Go
-        uses: actions/setup-go@v5
+        uses: actions/setup-go@v6
         with:
           go-version-file: go.mod
           cache-dependency-path: go.sum
 
-      - name: Set up QEMU
-        uses: docker/setup-qemu-action@v3
-        with:
-          platforms: linux/arm64
 
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
@@ -696,11 +683,9 @@ jobs:
           args: release --clean
           workdir: cli
         env:
-          GITHUB_TOKEN: ${{ secrets.PUBLISH_PAT }} # needs to be a non-action token because this also pushes to the homebrew repo
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} # needs to be a non-action token if also pushes to the homebrew repo
           GPG_FINGERPRINT: ${{ steps.import_gpg.outputs.fingerprint }}
-          AUR_KEY: ${{ secrets.AUR_PRIVATE_KEY }}
           DISABLE_CHANGELOG: false
-          NEOSYNC_BASE_URL: ${{ vars.DEFAULT_NEOSYNC_ENDPOINT }}
 
   py-sdk-build:
     name: Python SDK Build
@@ -712,7 +697,7 @@ jobs:
         working-directory: python
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
 
       - name: Setup Package Version
         id: package_version
@@ -724,7 +709,7 @@ jobs:
           echo "PACKAGE_VERSION=$TRIMMED_VERSION" >> $GITHUB_OUTPUT
 
       - name: Set up Python
-        uses: actions/setup-python@v5
+        uses: actions/setup-python@v6
         with:
           python-version: "3.11"
       - name: Build SDK
@@ -747,7 +732,7 @@ jobs:
       id-token: write
     steps:
       - name: Retrieve release distributions
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v5
         with:
           name: py-package
           path: python/dist/
@@ -757,61 +742,62 @@ jobs:
           packages-dir: python/dist/
           attestations: true
 
-  ts-sdk:
-    name: TypeScript SDK Release
-    runs-on: ubuntu-latest
-    #  for now, only build when we cut a new tag
-    if: startsWith(github.ref, 'refs/tags/')
-    permissions:
-      contents: read
-      id-token: write
-    defaults:
-      run:
-        working-directory: frontend
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
+  # On désactive la publication du SDK TS pour le moment, le temps de voir si on se sent de le maintenir
+  # ts-sdk:
+  #   name: TypeScript SDK Release
+  #   runs-on: ubuntu-latest
+  #   #  for now, only build when we cut a new tag
+  #   if: startsWith(github.ref, 'refs/tags/')
+  #   permissions:
+  #     contents: read
+  #     id-token: write
+  #   defaults:
+  #     run:
+  #       working-directory: frontend
+  #   steps:
+  #     - name: Checkout
+  #       uses: actions/checkout@v5
 
-      - name: Install jq
-        run: sudo apt-get install jq
+  #     - name: Install jq
+  #       run: sudo apt-get install jq
 
-      - name: Set up Node
-        uses: actions/setup-node@v4
-        with:
-          registry-url: "https://registry.npmjs.org"
-          scope: "@neosync"
+  #     - name: Set up Node
+  #       uses: actions/setup-node@v6
+  #       with:
+  #         registry-url: "https://registry.npmjs.org"
+  #         scope: "@neosync"
 
-      - name: Cache node modules
-        id: cache-npm
-        uses: actions/cache@v4
-        with:
-          # npm cache files are stored in `~/.npm` on Linux/macOS
-          path: |
-            ~/.npm
-            ${{ github.workspace }}/.next/cache
-          key: ${{ runner.os }}-nextjs-${{ hashFiles('**/package-lock.json') }}-${{ hashFiles('**/*.js', '**/*.jsx', '**/*.ts', '**/*.tsx') }}
-          restore-keys: |
-            ${{ runner.os }}-nextjs-${{ hashFiles('**/package-lock.json') }}-
+  #     - name: Cache node modules
+  #       id: cache-npm
+  #       uses: actions/cache@v4
+  #       with:
+  #         # npm cache files are stored in `~/.npm` on Linux/macOS
+  #         path: |
+  #           ~/.npm
+  #           ${{ github.workspace }}/.next/cache
+  #         key: ${{ runner.os }}-nextjs-${{ hashFiles('**/package-lock.json') }}-${{ hashFiles('**/*.js', '**/*.jsx', '**/*.ts', '**/*.tsx') }}
+  #         restore-keys: |
+  #           ${{ runner.os }}-nextjs-${{ hashFiles('**/package-lock.json') }}-
 
-      - run: npm install
-      - name: Build
-        run: npm run build
+  #     - run: npm install
+  #     - name: Build
+  #       run: npm run build
 
-      - name: Setup Trimmed package.json version
-        run: |
-          V_PREFIX="v"
-          VERSION="${{ github.ref_name }}"
-          TRIMMED_VERSION="${VERSION/#$V_PREFIX}"
-          echo "$TRIMMED_VERSION"
-          echo "NEW_PACKAGE_VERSION=$TRIMMED_VERSION" >> $GITHUB_ENV
+  #     - name: Setup Trimmed package.json version
+  #       run: |
+  #         V_PREFIX="v"
+  #         VERSION="${{ github.ref_name }}"
+  #         TRIMMED_VERSION="${VERSION/#$V_PREFIX}"
+  #         echo "$TRIMMED_VERSION"
+  #         echo "NEW_PACKAGE_VERSION=$TRIMMED_VERSION" >> $GITHUB_ENV
 
-      - name: Update package.json version
-        working-directory: frontend/packages/sdk
-        run: |
-          jq '.version = "${{ env.NEW_PACKAGE_VERSION }}"' package.json > temp.json && mv temp.json package.json
+  #     - name: Update package.json version
+  #       working-directory: frontend/packages/sdk
+  #       run: |
+  #         jq '.version = "${{ env.NEW_PACKAGE_VERSION }}"' package.json > temp.json && mv temp.json package.json
 
-      - name: Publish SDK
-        working-directory: frontend/packages/sdk
-        run: npm publish --provenance
-        env:
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_DEPLOY_KEY }}
+  #     - name: Publish SDK
+  #       working-directory: frontend/packages/sdk
+  #       run: npm publish --provenance
+  #       env:
+  #         NODE_AUTH_TOKEN: ${{ secrets.NPM_DEPLOY_KEY }}

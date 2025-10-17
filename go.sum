@@ -1552,10 +1552,10 @@ github.com/nexus-rpc/sdk-go v0.3.0/go.mod h1:TpfkM2Cw0Rlk9drGkoiSMpFqflKTiQLWUNy
 github.com/niemeyer/pretty v0.0.0-20200227124842-a10e7caefd8e/go.mod h1:zD1mROLANZcx1PVRCS0qkT7pwLkGfwJo4zjcN/Tysno=
 github.com/nsf/jsondiff v0.0.0-20230430225905-43f6cf3098c1 h1:dOYG7LS/WK00RWZc8XGgcUTlTxpp3mKhdR2Q9z9HbXM=
 github.com/nsf/jsondiff v0.0.0-20230430225905-43f6cf3098c1/go.mod h1:mpRZBD8SJ55OIICQ3iWH0Yz3cjzA61JdqMLoWXeB2+8=
-github.com/Groupe-Hevea/go-antlrv4-parser v0.0.0-20240830015744-041b46c70aa5 h1:MRc2C7I88nGhKbk1VRT3nnr6XtpClkHT35lhKbg6kD4=
-github.com/Groupe-Hevea/go-antlrv4-parser v0.0.0-20240830015744-041b46c70aa5/go.mod h1:MtI3ufP40Bql/YkhZFvDcR9h479JKb+hEUElwweQMzo=
-github.com/Groupe-Hevea/sql-adapter v0.0.0-20250327235651-6f5a05a7cedc h1:vqsKzzlgVJ98R1uwgEae/TCEg7vebRWQV6d8/o1MtS4=
-github.com/Groupe-Hevea/sql-adapter v0.0.0-20250327235651-6f5a05a7cedc/go.mod h1:AihNaUaSXxf8+ankrCj+6FKsZP91vLLzDMgNPVmF7cE=
+github.com/nucleuscloud/go-antlrv4-parser v0.0.0-20240830015744-041b46c70aa5 h1:MRc2C7I88nGhKbk1VRT3nnr6XtpClkHT35lhKbg6kD4=
+github.com/nucleuscloud/go-antlrv4-parser v0.0.0-20240830015744-041b46c70aa5/go.mod h1:MtI3ufP40Bql/YkhZFvDcR9h479JKb+hEUElwweQMzo=
+github.com/nucleuscloud/sql-adapter v0.0.0-20250327235651-6f5a05a7cedc h1:vqsKzzlgVJ98R1uwgEae/TCEg7vebRWQV6d8/o1MtS4=
+github.com/nucleuscloud/sql-adapter v0.0.0-20250327235651-6f5a05a7cedc/go.mod h1:AihNaUaSXxf8+ankrCj+6FKsZP91vLLzDMgNPVmF7cE=
 github.com/nxadm/tail v1.4.4/go.mod h1:kenIhsEOeOJmVchQTgglprH7qJGnHDVpk1VPCcaMI8A=
 github.com/nxadm/tail v1.4.8/go.mod h1:+ncqLTQzXmGhMZNUePPaPqPvBxHAIsmXswZKocGu+AU=
 github.com/nxadm/tail v1.4.11 h1:8feyoE3OzPrcshW5/MJ4sGESc5cqmGkGCWlco4l0bqY=

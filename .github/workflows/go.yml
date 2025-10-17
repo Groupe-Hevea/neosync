@@ -27,10 +27,10 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
 
       - name: Set up Go
-        uses: actions/setup-go@v5
+        uses: actions/setup-go@v6
         with:
           go-version-file: go.mod
           cache-dependency-path: go.sum
@@ -46,10 +46,10 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
 
       - name: Set up Go
-        uses: actions/setup-go@v5
+        uses: actions/setup-go@v6
         with:
           go-version-file: go.mod
           cache-dependency-path: go.sum
@@ -63,10 +63,10 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
 
       - name: Set up Go
-        uses: actions/setup-go@v5
+        uses: actions/setup-go@v6
         with:
           go-version-file: go.mod
           cache-dependency-path: go.sum
@@ -87,10 +87,10 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
 
       - name: Set up Go
-        uses: actions/setup-go@v5
+        uses: actions/setup-go@v6
         with:
           go-version-file: go.mod
           cache-dependency-path: go.sum
@@ -99,59 +99,61 @@ jobs:
         run: |
           go test -race -coverprofile=unit-coverage.out -covermode=atomic ./...
 
-      - name: Upload coverage to Codecov
-        uses: codecov/codecov-action@v5
-        env:
-          CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
+      # TODO RE-ENABLE When we have codedov set up
+      # - name: Upload coverage to Codecov
+      #   uses: codecov/codecov-action@v5
+      #   env:
+      #     CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
 
-  cli-integration-tests:
-    name: CLI Integration Tests
-    runs-on: ubuntu-latest
-    permissions:
-      id-token: write # required for requesting JWT for use with retrieving AWS creds
-      contents: read # required for actions/checkout
-    env:
-      AWS_REGION: "us-west-2"
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
+  # TODO: RE-ENABLE WHEN WE HAVE AWS CREDENTIALS SET UP
+  # cli-integration-tests:
+  #   name: CLI Integration Tests
+  #   runs-on: ubuntu-latest
+  #   permissions:
+  #     id-token: write # required for requesting JWT for use with retrieving AWS creds
+  #     contents: read # required for actions/checkout
+  #   env:
+  #     AWS_REGION: "us-west-2"
+  #   steps:
+  #     - name: Checkout
+  #       uses: actions/checkout@v5
 
-      - name: Set up Go
-        uses: actions/setup-go@v5
-        with:
-          go-version-file: go.mod
-          cache-dependency-path: go.sum
+  #     - name: Set up Go
+  #       uses: actions/setup-go@v6
+  #       with:
+  #         go-version-file: go.mod
+  #         cache-dependency-path: go.sum
 
-      - name: Configure AWS Credentials
-        uses: aws-actions/configure-aws-credentials@v4
-        with:
-          aws-region: ${{ env.AWS_REGION }}
-          role-to-assume: ${{ vars.INTEGRATION_TEST_AWS_ROLE_ARN }}
-          role-session-name: NeosyncCiIntegrationTests
+  #     - name: Configure AWS Credentials
+  #       uses: aws-actions/configure-aws-credentials@v4
+  #       with:
+  #         aws-region: ${{ env.AWS_REGION }}
+  #         role-to-assume: ${{ vars.INTEGRATION_TEST_AWS_ROLE_ARN }}
+  #         role-session-name: NeosyncCiIntegrationTests
 
-      - name: Run Integration Tests
-        run: |
-          go test -race -timeout 1800s -coverprofile=integration-coverage.out -covermode=atomic ./cli/...
-        env:
-          CLI_INTEGRATION_TESTS_ENABLED: 1
-          S3_INTEGRATION_TESTS_ENABLED: 1
-          TEST_S3_REGION: ${{ env.AWS_REGION }}
-          TEST_S3_BUCKET: ${{ vars.INTEGRATION_TEST_BUCKET_NAME }}
+  #     - name: Run Integration Tests
+  #       run: |
+  #         go test -race -timeout 1800s -coverprofile=integration-coverage.out -covermode=atomic ./cli/...
+  #       env:
+  #         CLI_INTEGRATION_TESTS_ENABLED: 1
+  #         S3_INTEGRATION_TESTS_ENABLED: 1
+  #         TEST_S3_REGION: ${{ env.AWS_REGION }}
+  #         TEST_S3_BUCKET: ${{ vars.INTEGRATION_TEST_BUCKET_NAME }}
 
-      - name: Upload coverage to Codecov
-        uses: codecov/codecov-action@v5
-        env:
-          CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
+  #     - name: Upload coverage to Codecov
+  #       uses: codecov/codecov-action@v5
+  #       env:
+  #         CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
 
   worker-integration-tests:
     name: Worker Integration Tests
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
 
       - name: Set up Go
-        uses: actions/setup-go@v5
+        uses: actions/setup-go@v6
         with:
           go-version-file: go.mod
           cache-dependency-path: go.sum
@@ -162,20 +164,21 @@ jobs:
         env:
           WORKER_INTEGRATION_TESTS_ENABLED: 1
 
-      - name: Upload coverage to Codecov
-        uses: codecov/codecov-action@v5
-        env:
-          CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}        
+      # TODO RE-ENABLE When we have codedov set up
+      # - name: Upload coverage to Codecov
+      #   uses: codecov/codecov-action@v5
+      #   env:
+      #    CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
 
   integration-tests:
     name: Integration Tests
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
 
       - name: Set up Go
-        uses: actions/setup-go@v5
+        uses: actions/setup-go@v6
         with:
           go-version-file: go.mod
           cache-dependency-path: go.sum
@@ -186,20 +189,21 @@ jobs:
         env:
           INTEGRATION_TESTS_ENABLED: 1
 
-      - name: Upload coverage to Codecov
-        uses: codecov/codecov-action@v5
-        env:
-          CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
+      # TODO RE-ENABLE When we have codedov set up
+      # - name: Upload coverage to Codecov
+      #   uses: codecov/codecov-action@v5
+      #   env:
+      #     CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
 
   go-mod-tidy-check:
     name: go-mod-tidy-check
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
 
       - name: Set up Go
-        uses: actions/setup-go@v5
+        uses: actions/setup-go@v6
         with:
           go-version-file: go.mod
           cache-dependency-path: go.sum
@@ -223,10 +227,10 @@ jobs:
         working-directory: tools
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
 
       - name: Set up Go
-        uses: actions/setup-go@v5
+        uses: actions/setup-go@v6
         with:
           go-version-file: tools/go.mod
           cache-dependency-path: tools/go.sum
@@ -247,10 +251,10 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
 
       - name: Set up Go
-        uses: actions/setup-go@v5
+        uses: actions/setup-go@v6
         with:
           go-version-file: go.mod
           cache-dependency-path: go.sum
