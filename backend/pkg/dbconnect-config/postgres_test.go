@@ -4,8 +4,8 @@ import (
 	"fmt"
 	"testing"
 
-	mgmtv1alpha1 "github.com/nucleuscloud/neosync/backend/gen/go/protos/mgmt/v1alpha1"
-	"github.com/nucleuscloud/neosync/internal/testutil"
+	mgmtv1alpha1 "github.com/Groupe-Hevea/neosync/backend/gen/go/protos/mgmt/v1alpha1"
+	"github.com/Groupe-Hevea/neosync/internal/testutil"
 	"github.com/spf13/viper"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
@@ -220,7 +220,10 @@ func Test_NewFromPostgresConnection(t *testing.T) {
 
 	t.Run("URL from Env", func(t *testing.T) {
 		t.Run("ok", func(t *testing.T) {
-			viper.Set(fmt.Sprintf("%s%s", userDefinedEnvPrefix, "PG_URL"), "postgres://test-user:testpass@localhost:3309/mydb")
+			viper.Set(
+				fmt.Sprintf("%s%s", userDefinedEnvPrefix, "PG_URL"),
+				"postgres://test-user:testpass@localhost:3309/mydb",
+			)
 			actual, err := NewFromPostgresConnection(
 				&mgmtv1alpha1.ConnectionConfig_PgConfig{
 					PgConfig: &mgmtv1alpha1.PostgresConnectionConfig{

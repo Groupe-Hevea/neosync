@@ -40,14 +40,14 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/nucleuscloud/neosync.git"
+    "url": "git+https://github.com/Groupe-Hevea/neosync.git"
   },
   "keywords": [
     "neosync",
     "sdk"
   ],
   "bugs": {
-    "url": "https://github.com/nucleuscloud/neosync/issues"
+    "url": "https://github.com/Groupe-Hevea/neosync/issues"
   },
-  "homepage": "https://github.com/nucleuscloud/neosync#readme"
+  "homepage": "https://github.com/Groupe-Hevea/neosync#readme"
 }

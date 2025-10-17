@@ -8,8 +8,8 @@ package db_queries
 import (
 	"context"
 
+	pg_models "github.com/Groupe-Hevea/neosync/backend/sql/postgresql/models"
 	"github.com/jackc/pgx/v5/pgtype"
-	pg_models "github.com/nucleuscloud/neosync/backend/sql/postgresql/models"
 )
 
 const createJob = `-- name: CreateJob :one

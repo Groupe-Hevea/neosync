@@ -4,7 +4,7 @@ import (
 	"testing"
 	"time"
 
-	mgmtv1alpha1 "github.com/nucleuscloud/neosync/backend/gen/go/protos/mgmt/v1alpha1"
+	mgmtv1alpha1 "github.com/Groupe-Hevea/neosync/backend/gen/go/protos/mgmt/v1alpha1"
 	"github.com/stretchr/testify/require"
 )
 
@@ -119,15 +119,50 @@ func Test_compareDates(t *testing.T) {
 		name     string
 	}
 	testcases := []testcase{
-		{&mgmtv1alpha1.Date{Year: 2024, Month: 9, Day: 23}, &mgmtv1alpha1.Date{Year: 2024, Month: 9, Day: 23}, 0, "equal"},
-		{&mgmtv1alpha1.Date{Year: 2024, Month: 9, Day: 22}, &mgmtv1alpha1.Date{Year: 2024, Month: 9, Day: 23}, -1, "day before"},
-		{&mgmtv1alpha1.Date{Year: 2024, Month: 9, Day: 24}, &mgmtv1alpha1.Date{Year: 2024, Month: 9, Day: 23}, 1, "day after"},
+		{
+			&mgmtv1alpha1.Date{Year: 2024, Month: 9, Day: 23},
+			&mgmtv1alpha1.Date{Year: 2024, Month: 9, Day: 23},
+			0,
+			"equal",
+		},
+		{
+			&mgmtv1alpha1.Date{Year: 2024, Month: 9, Day: 22},
+			&mgmtv1alpha1.Date{Year: 2024, Month: 9, Day: 23},
+			-1,
+			"day before",
+		},
+		{
+			&mgmtv1alpha1.Date{Year: 2024, Month: 9, Day: 24},
+			&mgmtv1alpha1.Date{Year: 2024, Month: 9, Day: 23},
+			1,
+			"day after",
+		},
 
-		{&mgmtv1alpha1.Date{Year: 2023, Month: 9, Day: 23}, &mgmtv1alpha1.Date{Year: 2024, Month: 9, Day: 23}, -1, "year before"},
-		{&mgmtv1alpha1.Date{Year: 2025, Month: 9, Day: 23}, &mgmtv1alpha1.Date{Year: 2024, Month: 9, Day: 23}, 1, "year after"},
+		{
+			&mgmtv1alpha1.Date{Year: 2023, Month: 9, Day: 23},
+			&mgmtv1alpha1.Date{Year: 2024, Month: 9, Day: 23},
+			-1,
+			"year before",
+		},
+		{
+			&mgmtv1alpha1.Date{Year: 2025, Month: 9, Day: 23},
+			&mgmtv1alpha1.Date{Year: 2024, Month: 9, Day: 23},
+			1,
+			"year after",
+		},
 
-		{&mgmtv1alpha1.Date{Year: 2024, Month: 8, Day: 23}, &mgmtv1alpha1.Date{Year: 2024, Month: 9, Day: 23}, -1, "month before"},
-		{&mgmtv1alpha1.Date{Year: 2024, Month: 10, Day: 23}, &mgmtv1alpha1.Date{Year: 2024, Month: 9, Day: 23}, 1, "month after"},
+		{
+			&mgmtv1alpha1.Date{Year: 2024, Month: 8, Day: 23},
+			&mgmtv1alpha1.Date{Year: 2024, Month: 9, Day: 23},
+			-1,
+			"month before",
+		},
+		{
+			&mgmtv1alpha1.Date{Year: 2024, Month: 10, Day: 23},
+			&mgmtv1alpha1.Date{Year: 2024, Month: 9, Day: 23},
+			1,
+			"month after",
+		},
 	}
 
 	for _, tc := range testcases {

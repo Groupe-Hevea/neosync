@@ -83,7 +83,7 @@ spec:
       {{- if .Values.migrations.enabled }}
       initContainers:
         - name: db-migration
-          image: '{{ .Values.image.repository | default "ghcr.io/nucleuscloud/neosync/api" }}:{{ .Values.image.tag | default .Chart.AppVersion  }}'
+          image: '{{ .Values.image.repository | default "ghcr.io/Groupe-Hevea/neosync/api" }}:{{ .Values.image.tag | default .Chart.AppVersion  }}'
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           args:
             - migrate
@@ -126,7 +126,7 @@ spec:
 
       containers:
         - name: user-container
-          image: '{{ .Values.image.repository | default "ghcr.io/nucleuscloud/neosync/api" }}:{{ .Values.image.tag | default .Chart.AppVersion  }}'
+          image: '{{ .Values.image.repository | default "ghcr.io/Groupe-Hevea/neosync/api" }}:{{ .Values.image.tag | default .Chart.AppVersion  }}'
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           args:
             - serve

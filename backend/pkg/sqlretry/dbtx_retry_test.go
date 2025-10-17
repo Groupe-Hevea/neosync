@@ -8,10 +8,10 @@ import (
 	"io"
 	"testing"
 
+	"github.com/Groupe-Hevea/neosync/backend/pkg/sqldbtx"
 	"github.com/cenkalti/backoff/v5"
 	"github.com/go-sql-driver/mysql"
 	"github.com/lib/pq"
-	"github.com/nucleuscloud/neosync/backend/pkg/sqldbtx"
 	"github.com/stretchr/testify/mock"
 )
 
@@ -231,7 +231,11 @@ func TestIsRetryableError(t *testing.T) {
 			t.Run(tc.name, func(t *testing.T) {
 				result := isRetryableError(tc.err)
 				if result != tc.expected {
-					t.Errorf("expected isRetryableError to return %v for error: %v", tc.expected, tc.err)
+					t.Errorf(
+						"expected isRetryableError to return %v for error: %v",
+						tc.expected,
+						tc.err,
+					)
 				}
 			})
 		}
@@ -356,8 +360,10 @@ func TestRetryDBTX(t *testing.T) {
 				expectedRetry bool
 			}{
 				{
-					name:          "retries on connection reset",
-					initialError:  errors.New("write tcp 127.0.0.1:35645: connection reset by peer"),
+					name: "retries on connection reset",
+					initialError: errors.New(
+						"write tcp 127.0.0.1:35645: connection reset by peer",
+					),
 					expectedRetry: true,
 				},
 				{

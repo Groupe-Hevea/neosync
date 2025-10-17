@@ -4,8 +4,8 @@ import (
 	"fmt"
 	"slices"
 
-	sqlmanager_shared "github.com/nucleuscloud/neosync/backend/pkg/sqlmanager/shared"
-	"github.com/nucleuscloud/neosync/internal/runconfigs"
+	sqlmanager_shared "github.com/Groupe-Hevea/neosync/backend/pkg/sqlmanager/shared"
+	"github.com/Groupe-Hevea/neosync/internal/runconfigs"
 )
 
 type OrderedTablesResult struct {

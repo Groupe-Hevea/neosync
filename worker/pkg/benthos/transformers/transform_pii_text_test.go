@@ -4,7 +4,7 @@ import (
 	"context"
 	"testing"
 
-	mgmtv1alpha1 "github.com/nucleuscloud/neosync/backend/gen/go/protos/mgmt/v1alpha1"
+	mgmtv1alpha1 "github.com/Groupe-Hevea/neosync/backend/gen/go/protos/mgmt/v1alpha1"
 	"github.com/redpanda-data/benthos/v4/public/bloblang"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
@@ -14,7 +14,11 @@ type mockTransformPiiTextApi struct {
 	transformFn func(ctx context.Context, config *mgmtv1alpha1.TransformPiiText, value string) (string, error)
 }
 
-func (m *mockTransformPiiTextApi) Transform(ctx context.Context, config *mgmtv1alpha1.TransformPiiText, value string) (string, error) {
+func (m *mockTransformPiiTextApi) Transform(
+	ctx context.Context,
+	config *mgmtv1alpha1.TransformPiiText,
+	value string,
+) (string, error) {
 	return m.transformFn(ctx, config, value)
 }
 

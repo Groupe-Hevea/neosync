@@ -4,9 +4,9 @@ import (
 	"context"
 	"testing"
 
-	mgmtv1alpha1 "github.com/nucleuscloud/neosync/backend/gen/go/protos/mgmt/v1alpha1"
-	"github.com/nucleuscloud/neosync/internal/testutil"
-	"github.com/nucleuscloud/neosync/worker/pkg/benthos/transformer_executor"
+	mgmtv1alpha1 "github.com/Groupe-Hevea/neosync/backend/gen/go/protos/mgmt/v1alpha1"
+	"github.com/Groupe-Hevea/neosync/internal/testutil"
+	"github.com/Groupe-Hevea/neosync/worker/pkg/benthos/transformer_executor"
 
 	"github.com/stretchr/testify/require"
 )

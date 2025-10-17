@@ -3,7 +3,7 @@ package neosync_benthos_defaulttransform
 import (
 	"testing"
 
-	transformer_executor "github.com/nucleuscloud/neosync/worker/pkg/benthos/transformer_executor"
+	transformer_executor "github.com/Groupe-Hevea/neosync/worker/pkg/benthos/transformer_executor"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )

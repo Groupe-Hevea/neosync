@@ -3,8 +3,8 @@ package schemamanager_shared
 import (
 	"testing"
 
-	sqlmanager_shared "github.com/nucleuscloud/neosync/backend/pkg/sqlmanager/shared"
-	"github.com/nucleuscloud/neosync/internal/testutil"
+	sqlmanager_shared "github.com/Groupe-Hevea/neosync/backend/pkg/sqlmanager/shared"
+	"github.com/Groupe-Hevea/neosync/internal/testutil"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -127,9 +127,23 @@ func Test_BuildOrderedForeignKeyConstraintsToDrop(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			result := BuildOrderedForeignKeyConstraintsToDrop(logger, tt.diff)
-			assert.Equal(t, len(tt.expected), len(result), "expected %d foreign keys, got %d", len(tt.expected), len(result))
+			assert.Equal(
+				t,
+				len(tt.expected),
+				len(result),
+				"expected %d foreign keys, got %d",
+				len(tt.expected),
+				len(result),
+			)
 			for i, fk := range result {
-				assert.Equal(t, tt.expected[i].ConstraintName, fk.ConstraintName, "expected foreign key %s, got %s", tt.expected[i].ConstraintName, fk.ConstraintName)
+				assert.Equal(
+					t,
+					tt.expected[i].ConstraintName,
+					fk.ConstraintName,
+					"expected foreign key %s, got %s",
+					tt.expected[i].ConstraintName,
+					fk.ConstraintName,
+				)
 			}
 		})
 	}

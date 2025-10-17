@@ -3,8 +3,8 @@ package rbac
 import (
 	"fmt"
 
+	"github.com/Groupe-Hevea/neosync/internal/neosyncdb"
 	"github.com/jackc/pgx/v5/pgtype"
-	"github.com/nucleuscloud/neosync/internal/neosyncdb"
 )
 
 const (

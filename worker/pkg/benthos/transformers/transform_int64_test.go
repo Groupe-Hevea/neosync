@@ -5,7 +5,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/nucleuscloud/neosync/worker/pkg/rng"
+	"github.com/Groupe-Hevea/neosync/worker/pkg/rng"
 	"github.com/redpanda-data/benthos/v4/public/bloblang"
 	"github.com/stretchr/testify/require"
 )
@@ -27,7 +27,12 @@ func Test_TransformInt64_Benthos(t *testing.T) {
 	rMin := int64(5)
 	rMax := int64(5)
 
-	mapping := fmt.Sprintf(`root = transform_int64(value:%d, randomization_range_min:%d,randomization_range_max: %d)`, val, rMin, rMax)
+	mapping := fmt.Sprintf(
+		`root = transform_int64(value:%d, randomization_range_min:%d,randomization_range_max: %d)`,
+		val,
+		rMin,
+		rMax,
+	)
 	ex, err := bloblang.Parse(mapping)
 	require.NoError(t, err, "failed to parse the email transformer")
 

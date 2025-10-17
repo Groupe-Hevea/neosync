@@ -1,13 +1,13 @@
 package v1alpha1_jobservice
 
 import (
-	"github.com/nucleuscloud/neosync/backend/gen/go/protos/mgmt/v1alpha1/mgmtv1alpha1connect"
-	jobhooks "github.com/nucleuscloud/neosync/backend/internal/ee/hooks/jobs"
-	"github.com/nucleuscloud/neosync/backend/internal/userdata"
-	sql_manager "github.com/nucleuscloud/neosync/backend/pkg/sqlmanager"
-	"github.com/nucleuscloud/neosync/internal/connectiondata"
-	"github.com/nucleuscloud/neosync/internal/neosyncdb"
-	clientmanager "github.com/nucleuscloud/neosync/internal/temporal/clientmanager"
+	"github.com/Groupe-Hevea/neosync/backend/gen/go/protos/mgmt/v1alpha1/mgmtv1alpha1connect"
+	jobhooks "github.com/Groupe-Hevea/neosync/backend/internal/ee/hooks/jobs"
+	"github.com/Groupe-Hevea/neosync/backend/internal/userdata"
+	sql_manager "github.com/Groupe-Hevea/neosync/backend/pkg/sqlmanager"
+	"github.com/Groupe-Hevea/neosync/internal/connectiondata"
+	"github.com/Groupe-Hevea/neosync/internal/neosyncdb"
+	clientmanager "github.com/Groupe-Hevea/neosync/internal/temporal/clientmanager"
 )
 
 type Service struct {

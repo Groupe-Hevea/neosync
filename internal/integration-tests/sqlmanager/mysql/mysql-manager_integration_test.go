@@ -6,12 +6,12 @@ import (
 	"fmt"
 	"testing"
 
+	mysql_queries "github.com/Groupe-Hevea/neosync/backend/gen/go/db/dbschemas/mysql"
+	mysql "github.com/Groupe-Hevea/neosync/backend/pkg/sqlmanager/mysql"
+	sqlmanager_shared "github.com/Groupe-Hevea/neosync/backend/pkg/sqlmanager/shared"
+	"github.com/Groupe-Hevea/neosync/internal/testutil"
+	tcmysql "github.com/Groupe-Hevea/neosync/internal/testutil/testcontainers/mysql"
 	_ "github.com/go-sql-driver/mysql"
-	mysql_queries "github.com/nucleuscloud/neosync/backend/gen/go/db/dbschemas/mysql"
-	mysql "github.com/nucleuscloud/neosync/backend/pkg/sqlmanager/mysql"
-	sqlmanager_shared "github.com/nucleuscloud/neosync/backend/pkg/sqlmanager/shared"
-	"github.com/nucleuscloud/neosync/internal/testutil"
-	tcmysql "github.com/nucleuscloud/neosync/internal/testutil/testcontainers/mysql"
 	"github.com/stretchr/testify/require"
 	"golang.org/x/sync/errgroup"
 )
@@ -25,7 +25,11 @@ func Test_MysqlManager(t *testing.T) {
 	t.Parallel()
 
 	ctx := context.Background()
-	containers, err := tcmysql.NewMysqlTestSyncContainer(ctx, []tcmysql.Option{}, []tcmysql.Option{})
+	containers, err := tcmysql.NewMysqlTestSyncContainer(
+		ctx,
+		[]tcmysql.Option{},
+		[]tcmysql.Option{},
+	)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -50,16 +54,24 @@ func Test_MysqlManager(t *testing.T) {
 		expected := &sqlmanager_shared.TableConstraints{
 			ForeignKeyConstraints: map[string][]*sqlmanager_shared.ForeignConstraint{
 				"sqlmanagermysql.container": {
-					{Columns: []string{"container_status_id"}, NotNullable: []bool{true}, ForeignKey: &sqlmanager_shared.ForeignKey{
-						Table:   "sqlmanagermysql.container_status",
-						Columns: []string{"id"},
-					}},
+					{
+						Columns:     []string{"container_status_id"},
+						NotNullable: []bool{true},
+						ForeignKey: &sqlmanager_shared.ForeignKey{
+							Table:   "sqlmanagermysql.container_status",
+							Columns: []string{"id"},
+						},
+					},
 				},
 				"sqlmanagermysql2.container": {
-					{Columns: []string{"container_status_id"}, NotNullable: []bool{true}, ForeignKey: &sqlmanager_shared.ForeignKey{
-						Table:   "sqlmanagermysql2.container_status",
-						Columns: []string{"id"},
-					}},
+					{
+						Columns:     []string{"container_status_id"},
+						NotNullable: []bool{true},
+						ForeignKey: &sqlmanager_shared.ForeignKey{
+							Table:   "sqlmanagermysql2.container_status",
+							Columns: []string{"id"},
+						},
+					},
 				},
 			},
 			PrimaryKeyConstraints: map[string][]string{
@@ -70,7 +82,10 @@ func Test_MysqlManager(t *testing.T) {
 			},
 		}
 
-		actual, err := manager.GetTableConstraintsBySchema(context.Background(), []string{"sqlmanagermysql", "sqlmanagermysql2"})
+		actual, err := manager.GetTableConstraintsBySchema(
+			context.Background(),
+			[]string{"sqlmanagermysql", "sqlmanagermysql2"},
+		)
 		require.NoError(t, err)
 		require.Equal(t, expected.ForeignKeyConstraints, actual.ForeignKeyConstraints)
 		require.Equal(t, expected.PrimaryKeyConstraints, actual.PrimaryKeyConstraints)
@@ -120,7 +135,10 @@ func Test_MysqlManager(t *testing.T) {
 			{
 				Columns:     []string{"b"},
 				NotNullable: []bool{false},
-				ForeignKey:  &sqlmanager_shared.ForeignKey{Table: buildTable(schema, "t1"), Columns: []string{"a"}},
+				ForeignKey: &sqlmanager_shared.ForeignKey{
+					Table:   buildTable(schema, "t1"),
+					Columns: []string{"a"},
+				},
 			},
 		})
 
@@ -131,7 +149,10 @@ func Test_MysqlManager(t *testing.T) {
 			{
 				Columns:     []string{"b"},
 				NotNullable: []bool{false},
-				ForeignKey:  &sqlmanager_shared.ForeignKey{Table: buildTable(schema, "t3"), Columns: []string{"a"}},
+				ForeignKey: &sqlmanager_shared.ForeignKey{
+					Table:   buildTable(schema, "t3"),
+					Columns: []string{"a"},
+				},
 			},
 		})
 
@@ -142,7 +163,10 @@ func Test_MysqlManager(t *testing.T) {
 			{
 				Columns:     []string{"b"},
 				NotNullable: []bool{false},
-				ForeignKey:  &sqlmanager_shared.ForeignKey{Table: buildTable(schema, "t2"), Columns: []string{"a"}},
+				ForeignKey: &sqlmanager_shared.ForeignKey{
+					Table:   buildTable(schema, "t2"),
+					Columns: []string{"a"},
+				},
 			},
 		})
 	})
@@ -161,7 +185,10 @@ func Test_MysqlManager(t *testing.T) {
 			{
 				Columns:     []string{"b"},
 				NotNullable: []bool{false},
-				ForeignKey:  &sqlmanager_shared.ForeignKey{Table: buildTable(schema, "t1"), Columns: []string{"a"}},
+				ForeignKey: &sqlmanager_shared.ForeignKey{
+					Table:   buildTable(schema, "t1"),
+					Columns: []string{"a"},
+				},
 			},
 		})
 
@@ -172,7 +199,10 @@ func Test_MysqlManager(t *testing.T) {
 			{
 				Columns:     []string{"b"},
 				NotNullable: []bool{false},
-				ForeignKey:  &sqlmanager_shared.ForeignKey{Table: buildTable(schema, "t3"), Columns: []string{"a"}},
+				ForeignKey: &sqlmanager_shared.ForeignKey{
+					Table:   buildTable(schema, "t3"),
+					Columns: []string{"a"},
+				},
 			},
 		})
 
@@ -183,7 +213,10 @@ func Test_MysqlManager(t *testing.T) {
 			{
 				Columns:     []string{"b"},
 				NotNullable: []bool{false},
-				ForeignKey:  &sqlmanager_shared.ForeignKey{Table: buildTable(schema, "t2"), Columns: []string{"a"}},
+				ForeignKey: &sqlmanager_shared.ForeignKey{
+					Table:   buildTable(schema, "t2"),
+					Columns: []string{"a"},
+				},
 			},
 		})
 	})
@@ -203,7 +236,10 @@ func Test_MysqlManager(t *testing.T) {
 			{
 				Columns:     []string{"x", "y"},
 				NotNullable: []bool{true, true},
-				ForeignKey:  &sqlmanager_shared.ForeignKey{Table: buildTable(schema, "t4"), Columns: []string{"a", "b"}},
+				ForeignKey: &sqlmanager_shared.ForeignKey{
+					Table:   buildTable(schema, "t4"),
+					Columns: []string{"a", "b"},
+				},
 			},
 		})
 	})
@@ -315,7 +351,10 @@ func Test_MysqlManager(t *testing.T) {
 		t.Parallel()
 		schema := "sqlmanagermysql3"
 
-		err := manager.Exec(context.Background(), fmt.Sprintf("SELECT 1 FROM %s.%s", schema, "users"))
+		err := manager.Exec(
+			context.Background(),
+			fmt.Sprintf("SELECT 1 FROM %s.%s", schema, "users"),
+		)
 		require.NoError(t, err)
 	})
 
@@ -324,7 +363,12 @@ func Test_MysqlManager(t *testing.T) {
 		schema := "sqlmanagermysql3"
 
 		stmt := fmt.Sprintf("SELECT 1 FROM %s.%s;", schema, "users")
-		err := manager.BatchExec(context.Background(), 2, []string{stmt, stmt, stmt}, &sqlmanager_shared.BatchExecOpts{})
+		err := manager.BatchExec(
+			context.Background(),
+			2,
+			[]string{stmt, stmt, stmt},
+			&sqlmanager_shared.BatchExecOpts{},
+		)
 		require.NoError(t, err)
 	})
 
@@ -333,9 +377,14 @@ func Test_MysqlManager(t *testing.T) {
 		schema := "sqlmanagermysql3"
 
 		stmt := fmt.Sprintf("SELECT 1 FROM %s.%s;", schema, "users")
-		err := manager.BatchExec(context.Background(), 2, []string{stmt}, &sqlmanager_shared.BatchExecOpts{
-			Prefix: &stmt,
-		})
+		err := manager.BatchExec(
+			context.Background(),
+			2,
+			[]string{stmt},
+			&sqlmanager_shared.BatchExecOpts{
+				Prefix: &stmt,
+			},
+		)
 		require.NoError(t, err)
 	})
 
@@ -343,19 +392,22 @@ func Test_MysqlManager(t *testing.T) {
 		t.Parallel()
 		schema := "sqlmanagermysql3"
 
-		statements, err := manager.GetSchemaInitStatements(context.Background(), []*sqlmanager_shared.SchemaTable{
-			{Schema: schema, Table: "parent1"},
-			{Schema: schema, Table: "child1"},
-			{Schema: schema, Table: "custom_table"},
-			{Schema: schema, Table: "unique_emails_and_usernames"},
-			{Schema: schema, Table: "t1"},
-			{Schema: schema, Table: "t2"},
-			{Schema: schema, Table: "t3"},
-			{Schema: schema, Table: "t4"},
-			{Schema: schema, Table: "t5"},
-			{Schema: schema, Table: "employee_log"},
-			// {Schema: schema, Table: "users"},
-		})
+		statements, err := manager.GetSchemaInitStatements(
+			context.Background(),
+			[]*sqlmanager_shared.SchemaTable{
+				{Schema: schema, Table: "parent1"},
+				{Schema: schema, Table: "child1"},
+				{Schema: schema, Table: "custom_table"},
+				{Schema: schema, Table: "unique_emails_and_usernames"},
+				{Schema: schema, Table: "t1"},
+				{Schema: schema, Table: "t2"},
+				{Schema: schema, Table: "t3"},
+				{Schema: schema, Table: "t4"},
+				{Schema: schema, Table: "t5"},
+				{Schema: schema, Table: "employee_log"},
+				// {Schema: schema, Table: "users"},
+			},
+		)
 		require.NoError(t, err)
 		require.NotEmpty(t, statements)
 		for _, block := range statements {
@@ -371,7 +423,10 @@ func Test_MysqlManager(t *testing.T) {
 		t.Parallel()
 		schema := "sqlmanagermysql3"
 
-		statements, err := manager.GetSchemaInitStatements(context.Background(), []*sqlmanager_shared.SchemaTable{{Schema: schema, Table: "custom_table"}})
+		statements, err := manager.GetSchemaInitStatements(
+			context.Background(),
+			[]*sqlmanager_shared.SchemaTable{{Schema: schema, Table: "custom_table"}},
+		)
 		require.NoError(t, err)
 		require.NotEmpty(t, statements)
 	})
@@ -380,7 +435,10 @@ func Test_MysqlManager(t *testing.T) {
 		t.Parallel()
 		schema := "sqlmanagermysql3"
 
-		triggers, err := manager.GetSchemaTableTriggers(context.Background(), []*sqlmanager_shared.SchemaTable{{Schema: schema, Table: "employee_log"}})
+		triggers, err := manager.GetSchemaTableTriggers(
+			context.Background(),
+			[]*sqlmanager_shared.SchemaTable{{Schema: schema, Table: "employee_log"}},
+		)
 		require.NoError(t, err)
 		require.NotEmpty(t, triggers)
 	})
@@ -389,7 +447,10 @@ func Test_MysqlManager(t *testing.T) {
 		t.Parallel()
 		schema := "sqlmanagermysql3"
 
-		resp, err := manager.GetSchemaTableDataTypes(context.Background(), []*sqlmanager_shared.SchemaTable{{Schema: schema, Table: "custom_table"}})
+		resp, err := manager.GetSchemaTableDataTypes(
+			context.Background(),
+			[]*sqlmanager_shared.SchemaTable{{Schema: schema, Table: "custom_table"}},
+		)
 		require.NoError(t, err)
 		require.NotNil(t, resp)
 		require.NotEmptyf(t, resp.GetStatements(), "statements")

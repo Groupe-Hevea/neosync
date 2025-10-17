@@ -6,7 +6,7 @@ A Helm chart for Neosync that contains the api, app, and worker
 
 ## Source Code
 
-* <https://github.com/nucleuscloud/neosync>
+* <https://github.com/Groupe-Hevea/neosync>
 
 ## Requirements
 
@@ -53,7 +53,7 @@ A Helm chart for Neosync that contains the api, app, and worker
 | api.fullnameOverride | string | `nil` | Fully overrides the chart name |
 | api.host | string | `"0.0.0.0"` | Sets the host that the backend will listen on. 0.0.0.0 is common for Kubernetes workloads. |
 | api.image.pullPolicy | string | `nil` | Overrides the default K8s pull policy |
-| api.image.repository | string | `"ghcr.io/nucleuscloud/neosync/api"` | The default image repository |
+| api.image.repository | string | `"ghcr.io/Groupe-Hevea/neosync/api"` | The default image repository |
 | api.image.tag | string | `nil` | Overrides the image tag whose default is {{ printf "v%s" .Chart.AppVersion }} |
 | api.imagePullSecrets | list | `[]` | Define a list of image pull secrets that will be used by the deployment |
 | api.ingress.enabled | bool | `false` | Enable this if using K8s ingress to expose the backend to the internet |
@@ -132,7 +132,7 @@ A Helm chart for Neosync that contains the api, app, and worker
 | app.fullnameOverride | string | `nil` | Fully overrides the chart name |
 | app.host | string | `"0.0.0.0"` | Sets the host that the backend will listen on. 0.0.0.0 is common for Kubernetes workloads. |
 | app.image.pullPolicy | string | `nil` | Overrides the default K8s pull policy |
-| app.image.repository | string | `"ghcr.io/nucleuscloud/neosync/app"` | The default image repository |
+| app.image.repository | string | `"ghcr.io/Groupe-Hevea/neosync/app"` | The default image repository |
 | app.image.tag | string | `nil` | Overrides the image tag whose default is {{ printf "v%s" .Chart.AppVersion }} |
 | app.imagePullSecrets | list | `[]` | Define a list of image pull secrets that will be used by the deployment |
 | app.ingress.enabled | bool | `false` | Enable this if using K8s ingress to expose the backend to the internet |
@@ -178,7 +178,7 @@ A Helm chart for Neosync that contains the api, app, and worker
 | worker.fullnameOverride | string | `nil` | Fully overrides the chart name |
 | worker.host | string | `"0.0.0.0"` | Sets the host that the backend will listen on. 0.0.0.0 is common for Kubernetes workloads. |
 | worker.image.pullPolicy | string | `nil` | Overrides the default K8s pull policy |
-| worker.image.repository | string | `"ghcr.io/nucleuscloud/neosync/worker"` | The default image repository |
+| worker.image.repository | string | `"ghcr.io/Groupe-Hevea/neosync/worker"` | The default image repository |
 | worker.image.tag | string | `nil` | Overrides the image tag whose default is {{ printf "v%s" .Chart.AppVersion }} |
 | worker.imagePullSecrets | list | `[]` | Define a list of image pull secrets that will be used by the deployment |
 | worker.istio.enabled | bool | `false` | Whether or not to apply the default istio annotations/labels to the deployment |

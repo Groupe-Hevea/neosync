@@ -8,12 +8,12 @@ import (
 	"time"
 
 	"connectrpc.com/connect"
-	db_queries "github.com/nucleuscloud/neosync/backend/gen/go/db"
-	"github.com/nucleuscloud/neosync/backend/internal/utils"
-	pkg_utils "github.com/nucleuscloud/neosync/backend/pkg/utils"
-	"github.com/nucleuscloud/neosync/internal/apikey"
-	nucleuserrors "github.com/nucleuscloud/neosync/internal/errors"
-	"github.com/nucleuscloud/neosync/internal/neosyncdb"
+	db_queries "github.com/Groupe-Hevea/neosync/backend/gen/go/db"
+	"github.com/Groupe-Hevea/neosync/backend/internal/utils"
+	pkg_utils "github.com/Groupe-Hevea/neosync/backend/pkg/utils"
+	"github.com/Groupe-Hevea/neosync/internal/apikey"
+	nucleuserrors "github.com/Groupe-Hevea/neosync/internal/errors"
+	"github.com/Groupe-Hevea/neosync/internal/neosyncdb"
 )
 
 type TokenContextKey struct{}

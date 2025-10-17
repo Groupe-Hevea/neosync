@@ -4,9 +4,9 @@ import (
 	context "context"
 	"testing"
 
+	mgmtv1alpha1 "github.com/Groupe-Hevea/neosync/backend/gen/go/protos/mgmt/v1alpha1"
+	"github.com/Groupe-Hevea/neosync/backend/pkg/sqlmanager"
 	"github.com/google/uuid"
-	mgmtv1alpha1 "github.com/nucleuscloud/neosync/backend/gen/go/protos/mgmt/v1alpha1"
-	"github.com/nucleuscloud/neosync/backend/pkg/sqlmanager"
 	"github.com/stretchr/testify/require"
 	testmssql "github.com/testcontainers/testcontainers-go/modules/mssql"
 
@@ -14,10 +14,10 @@ import (
 	_ "github.com/jackc/pgx/v5/stdlib"
 	_ "github.com/microsoft/go-mssqldb"
 
-	connectionmanager "github.com/nucleuscloud/neosync/internal/connection-manager"
-	"github.com/nucleuscloud/neosync/internal/testutil"
-	tcmysql "github.com/nucleuscloud/neosync/internal/testutil/testcontainers/mysql"
-	tcpostgres "github.com/nucleuscloud/neosync/internal/testutil/testcontainers/postgres"
+	connectionmanager "github.com/Groupe-Hevea/neosync/internal/connection-manager"
+	"github.com/Groupe-Hevea/neosync/internal/testutil"
+	tcmysql "github.com/Groupe-Hevea/neosync/internal/testutil/testcontainers/mysql"
+	tcpostgres "github.com/Groupe-Hevea/neosync/internal/testutil/testcontainers/postgres"
 )
 
 func Test_Manager_NewSqlConnection(t *testing.T) {
@@ -48,7 +48,12 @@ func Test_Manager_NewSqlConnection(t *testing.T) {
 				},
 			},
 		}
-		conn, err := manager.NewSqlConnection(ctx, connectionmanager.NewUniqueSession(), mgmtconn, testutil.GetTestLogger(t))
+		conn, err := manager.NewSqlConnection(
+			ctx,
+			connectionmanager.NewUniqueSession(),
+			mgmtconn,
+			testutil.GetTestLogger(t),
+		)
 		requireNoConnErr(t, conn, err)
 		defer conn.Db().Close()
 		requireValidDatabase(t, ctx, conn, "pgx", "SELECT 1")
@@ -72,7 +77,12 @@ func Test_Manager_NewSqlConnection(t *testing.T) {
 				},
 			},
 		}
-		conn, err := manager.NewSqlConnection(ctx, connectionmanager.NewUniqueSession(), mgmtconn, testutil.GetTestLogger(t))
+		conn, err := manager.NewSqlConnection(
+			ctx,
+			connectionmanager.NewUniqueSession(),
+			mgmtconn,
+			testutil.GetTestLogger(t),
+		)
 		requireNoConnErr(t, conn, err)
 		defer conn.Db().Close()
 		requireValidDatabase(t, ctx, conn, "mysql", "SELECT 1")
@@ -101,7 +111,12 @@ func Test_Manager_NewSqlConnection(t *testing.T) {
 			},
 		}
 
-		conn, err := manager.NewSqlConnection(ctx, connectionmanager.NewUniqueSession(), mgmtconn, testutil.GetTestLogger(t))
+		conn, err := manager.NewSqlConnection(
+			ctx,
+			connectionmanager.NewUniqueSession(),
+			mgmtconn,
+			testutil.GetTestLogger(t),
+		)
 		requireNoConnErr(t, conn, err)
 		defer conn.Db().Close()
 		requireValidDatabase(t, ctx, conn, "sqlserver", "SELECT 1")
@@ -113,7 +128,12 @@ func requireNoConnErr(t testing.TB, conn *sqlmanager.SqlConnection, err error) {
 	require.NotNil(t, conn)
 }
 
-func requireValidDatabase(t testing.TB, ctx context.Context, conn *sqlmanager.SqlConnection, driver, statement string) { //nolint
+func requireValidDatabase(
+	t testing.TB,
+	ctx context.Context,
+	conn *sqlmanager.SqlConnection,
+	driver, statement string,
+) { //nolint
 	require.Equal(t, conn.Driver(), driver)
 	err := conn.Db().Exec(ctx, statement)
 	require.NoError(t, err)

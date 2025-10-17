@@ -4,10 +4,10 @@ import (
 	"context"
 	"testing"
 
+	dynamodbmapper "github.com/Groupe-Hevea/neosync/internal/database-record-mapper/dynamodb"
 	"github.com/aws/aws-sdk-go-v2/aws"
 	"github.com/aws/aws-sdk-go-v2/service/dynamodb"
 	"github.com/aws/aws-sdk-go-v2/service/dynamodb/types"
-	dynamodbmapper "github.com/nucleuscloud/neosync/internal/database-record-mapper/dynamodb"
 	"github.com/redpanda-data/benthos/v4/public/service"
 	"github.com/stretchr/testify/mock"
 	"github.com/stretchr/testify/require"
@@ -24,8 +24,18 @@ func Test_isTableActive(t *testing.T) {
 		{&dynamodb.DescribeTableOutput{}, false},
 		{&dynamodb.DescribeTableOutput{Table: nil}, false},
 		{&dynamodb.DescribeTableOutput{Table: &types.TableDescription{}}, false},
-		{&dynamodb.DescribeTableOutput{Table: &types.TableDescription{TableStatus: types.TableStatusArchived}}, false},
-		{&dynamodb.DescribeTableOutput{Table: &types.TableDescription{TableStatus: types.TableStatusActive}}, true},
+		{
+			&dynamodb.DescribeTableOutput{
+				Table: &types.TableDescription{TableStatus: types.TableStatusArchived},
+			},
+			false,
+		},
+		{
+			&dynamodb.DescribeTableOutput{
+				Table: &types.TableDescription{TableStatus: types.TableStatusActive},
+			},
+			true,
+		},
 	}
 
 	for _, tc := range testcases {
@@ -58,14 +68,19 @@ func Test_dynamoDbBatchInput_ReadBatch_EndOfInput(t *testing.T) {
 
 func Test_dynamoDbBatchInput_ReadBatch_SinglePage(t *testing.T) {
 	mockClient := NewMockdynamoDBAPIV2(t)
-	input := &dynamodbInput{client: mockClient, table: "foo", recordMapper: dynamodbmapper.NewDynamoBuilder()}
+	input := &dynamodbInput{
+		client:       mockClient,
+		table:        "foo",
+		recordMapper: dynamodbmapper.NewDynamoBuilder(),
+	}
 
-	mockClient.On("ExecuteStatement", mock.Anything, mock.Anything).Return(&dynamodb.ExecuteStatementOutput{
-		Items: []map[string]types.AttributeValue{
-			{"f": &types.AttributeValueMemberBOOL{Value: false}},
-			{"g": &types.AttributeValueMemberBOOL{Value: true}},
-		},
-	}, nil)
+	mockClient.On("ExecuteStatement", mock.Anything, mock.Anything).
+		Return(&dynamodb.ExecuteStatementOutput{
+			Items: []map[string]types.AttributeValue{
+				{"f": &types.AttributeValueMemberBOOL{Value: false}},
+				{"g": &types.AttributeValueMemberBOOL{Value: true}},
+			},
+		}, nil)
 
 	batch, _, err := input.ReadBatch(context.Background())
 	require.NoError(t, err)
@@ -76,15 +91,20 @@ func Test_dynamoDbBatchInput_ReadBatch_SinglePage(t *testing.T) {
 
 func Test_dynamoDbBatchInput_ReadBatch_MultiPage(t *testing.T) {
 	mockClient := NewMockdynamoDBAPIV2(t)
-	input := &dynamodbInput{client: mockClient, table: "foo", recordMapper: dynamodbmapper.NewDynamoBuilder()}
+	input := &dynamodbInput{
+		client:       mockClient,
+		table:        "foo",
+		recordMapper: dynamodbmapper.NewDynamoBuilder(),
+	}
 
-	mockClient.On("ExecuteStatement", mock.Anything, mock.Anything).Return(&dynamodb.ExecuteStatementOutput{
-		Items: []map[string]types.AttributeValue{
-			{"f": &types.AttributeValueMemberBOOL{Value: false}},
-			{"g": &types.AttributeValueMemberBOOL{Value: true}},
-		},
-		NextToken: aws.String("foo"),
-	}, nil)
+	mockClient.On("ExecuteStatement", mock.Anything, mock.Anything).
+		Return(&dynamodb.ExecuteStatementOutput{
+			Items: []map[string]types.AttributeValue{
+				{"f": &types.AttributeValueMemberBOOL{Value: false}},
+				{"g": &types.AttributeValueMemberBOOL{Value: true}},
+			},
+			NextToken: aws.String("foo"),
+		}, nil)
 
 	batch, _, err := input.ReadBatch(context.Background())
 	require.NoError(t, err)

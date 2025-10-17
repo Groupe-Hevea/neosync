@@ -81,7 +81,10 @@ func main() {
 	}
 }
 
-func generateBusinessNames(industries, prefixes, baseWords, suffixes []string, fileName string) error {
+func generateBusinessNames(
+	industries, prefixes, baseWords, suffixes []string,
+	fileName string,
+) error {
 	// create file to write to
 	file, err := os.Create(fileName)
 	if err != nil {

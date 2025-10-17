@@ -4,7 +4,7 @@ import (
 	"database/sql"
 	"testing"
 
-	mssql_queries "github.com/nucleuscloud/neosync/backend/pkg/mssql-querier"
+	mssql_queries "github.com/Groupe-Hevea/neosync/backend/pkg/mssql-querier"
 	"github.com/stretchr/testify/require"
 )
 
@@ -87,43 +87,49 @@ func Test_isInvalidCircularSelfReferencingFk(t *testing.T) {
 		require.True(t, result)
 	})
 
-	t.Run("circular reference with multiple matching columns should return true", func(t *testing.T) {
-		row := &mssql_queries.GetTableConstraintsBySchemasRow{
-			SchemaName: "dbo",
-			TableName:  "CompositeKey",
-			ReferencedSchema: sql.NullString{
-				String: "dbo",
-				Valid:  true,
-			},
-			ReferencedTable: sql.NullString{
-				String: "CompositeKey",
-				Valid:  true,
-			},
-		}
-		result := isInvalidCircularSelfReferencingFk(row,
-			[]string{"Id", "SubId"},
-			[]string{"SubId", "Id"})
-		require.True(t, result)
-	})
+	t.Run(
+		"circular reference with multiple matching columns should return true",
+		func(t *testing.T) {
+			row := &mssql_queries.GetTableConstraintsBySchemasRow{
+				SchemaName: "dbo",
+				TableName:  "CompositeKey",
+				ReferencedSchema: sql.NullString{
+					String: "dbo",
+					Valid:  true,
+				},
+				ReferencedTable: sql.NullString{
+					String: "CompositeKey",
+					Valid:  true,
+				},
+			}
+			result := isInvalidCircularSelfReferencingFk(row,
+				[]string{"Id", "SubId"},
+				[]string{"SubId", "Id"})
+			require.True(t, result)
+		},
+	)
 
-	t.Run("circular reference with some non-matching columns should return false", func(t *testing.T) {
-		row := &mssql_queries.GetTableConstraintsBySchemasRow{
-			SchemaName: "dbo",
-			TableName:  "CompositeKey",
-			ReferencedSchema: sql.NullString{
-				String: "dbo",
-				Valid:  true,
-			},
-			ReferencedTable: sql.NullString{
-				String: "CompositeKey",
-				Valid:  true,
-			},
-		}
-		result := isInvalidCircularSelfReferencingFk(row,
-			[]string{"Id", "SubId"},
-			[]string{"Id", "DifferentId"})
-		require.False(t, result)
-	})
+	t.Run(
+		"circular reference with some non-matching columns should return false",
+		func(t *testing.T) {
+			row := &mssql_queries.GetTableConstraintsBySchemasRow{
+				SchemaName: "dbo",
+				TableName:  "CompositeKey",
+				ReferencedSchema: sql.NullString{
+					String: "dbo",
+					Valid:  true,
+				},
+				ReferencedTable: sql.NullString{
+					String: "CompositeKey",
+					Valid:  true,
+				},
+			}
+			result := isInvalidCircularSelfReferencingFk(row,
+				[]string{"Id", "SubId"},
+				[]string{"Id", "DifferentId"})
+			require.False(t, result)
+		},
+	)
 
 	t.Run("same table with empty columns should return true", func(t *testing.T) {
 		row := &mssql_queries.GetTableConstraintsBySchemasRow{

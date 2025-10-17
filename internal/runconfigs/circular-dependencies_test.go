@@ -58,7 +58,10 @@ func Test_FindCircularDependencies(t *testing.T) {
 				"public.d": {"public.e"},
 				"public.e": {"public.b"},
 			},
-			expect: [][]string{{"public.a", "public.b", "public.c"}, {"public.b", "public.d", "public.e"}},
+			expect: [][]string{
+				{"public.a", "public.b", "public.c"},
+				{"public.b", "public.d", "public.e"},
+			},
 		},
 		{
 			name: "Both circular dependencies",
@@ -205,9 +208,22 @@ func Test_uniqueCycles(t *testing.T) {
 		expect [][]string
 	}{
 		{
-			name:   "duplicates",
-			cycles: [][]string{{"a", "b", "c", "d"}, {"a", "b"}, {"b", "c"}, {"c", "d"}, {"d", "a"}, {"c", "a", "d", "b"}},
-			expect: [][]string{{"a", "b", "c", "d"}, {"a", "b"}, {"b", "c"}, {"c", "d"}, {"d", "a"}},
+			name: "duplicates",
+			cycles: [][]string{
+				{"a", "b", "c", "d"},
+				{"a", "b"},
+				{"b", "c"},
+				{"c", "d"},
+				{"d", "a"},
+				{"c", "a", "d", "b"},
+			},
+			expect: [][]string{
+				{"a", "b", "c", "d"},
+				{"a", "b"},
+				{"b", "c"},
+				{"c", "d"},
+				{"d", "a"},
+			},
 		},
 	}
 

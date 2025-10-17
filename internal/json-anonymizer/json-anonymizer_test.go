@@ -5,8 +5,8 @@ import (
 	"os"
 	"testing"
 
-	mgmtv1alpha1 "github.com/nucleuscloud/neosync/backend/gen/go/protos/mgmt/v1alpha1"
-	"github.com/nucleuscloud/neosync/internal/testutil"
+	mgmtv1alpha1 "github.com/Groupe-Hevea/neosync/backend/gen/go/protos/mgmt/v1alpha1"
+	"github.com/Groupe-Hevea/neosync/internal/testutil"
 	"github.com/stretchr/testify/require"
 )
 
@@ -148,7 +148,11 @@ func Test_AnonymizeJSONObjects(t *testing.T) {
 		anonymizer, err := NewAnonymizer(WithTransformerMappings(mappings), WithHaltOnFailure(true))
 		require.NoError(t, err)
 
-		inputs := []string{`{"id": 1, "name": "John Doe", "city": "New York"}`, `{"id": 2, "name": 1, "city": "New York"}`, `{"id": 3, "name": "John Doe", "city": "New York"}`}
+		inputs := []string{
+			`{"id": 1, "name": "John Doe", "city": "New York"}`,
+			`{"id": 2, "name": 1, "city": "New York"}`,
+			`{"id": 3, "name": "John Doe", "city": "New York"}`,
+		}
 		outputs, anonErrors := anonymizer.AnonymizeJSONObjects(inputs)
 		require.Len(t, anonErrors, 1)
 		require.Equal(t, int64(1), anonErrors[0].InputIndex)
@@ -171,10 +175,17 @@ func Test_AnonymizeJSONObjects(t *testing.T) {
 				},
 			},
 		}
-		anonymizer, err := NewAnonymizer(WithTransformerMappings(mappings), WithHaltOnFailure(false))
+		anonymizer, err := NewAnonymizer(
+			WithTransformerMappings(mappings),
+			WithHaltOnFailure(false),
+		)
 		require.NoError(t, err)
 
-		inputs := []string{`{"id": 0, "name": "John Doe", "city": "New York"}`, `{"id": 1, "name": 1, "city": "New York"}`, `{"id": 2, "name": "John Doe", "city": "New York"}`}
+		inputs := []string{
+			`{"id": 0, "name": "John Doe", "city": "New York"}`,
+			`{"id": 1, "name": 1, "city": "New York"}`,
+			`{"id": 2, "name": "John Doe", "city": "New York"}`,
+		}
 		outputs, anonErrors := anonymizer.AnonymizeJSONObjects(inputs)
 		require.Len(t, anonErrors, 1)
 		require.Equal(t, int64(1), anonErrors[0].InputIndex)
@@ -261,7 +272,12 @@ func Test_InitDefaultTransformerExecutors(t *testing.T) {
 				Config: &mgmtv1alpha1.TransformerConfig_GenerateBoolConfig{},
 			},
 		}
-		executors, err := initDefaultTransformerExecutors(defaults, nil, nil, testutil.GetTestLogger(t))
+		executors, err := initDefaultTransformerExecutors(
+			defaults,
+			nil,
+			nil,
+			testutil.GetTestLogger(t),
+		)
 		require.NoError(t, err)
 		require.NotNil(t, executors.S)
 		require.NotNil(t, executors.N)
@@ -276,7 +292,12 @@ func Test_InitDefaultTransformerExecutors(t *testing.T) {
 				},
 			},
 		}
-		executors, err := initDefaultTransformerExecutors(defaults, nil, nil, testutil.GetTestLogger(t))
+		executors, err := initDefaultTransformerExecutors(
+			defaults,
+			nil,
+			nil,
+			testutil.GetTestLogger(t),
+		)
 		require.NoError(t, err)
 		require.NotNil(t, executors.S)
 		require.Nil(t, executors.N)
@@ -295,7 +316,9 @@ func Test_AnonymizeJSON_Largedata(t *testing.T) {
 			Expression: ".companyName",
 			Transformer: &mgmtv1alpha1.TransformerConfig{
 				Config: &mgmtv1alpha1.TransformerConfig_TransformStringConfig{
-					TransformStringConfig: &mgmtv1alpha1.TransformString{PreserveLength: &preserveLength},
+					TransformStringConfig: &mgmtv1alpha1.TransformString{
+						PreserveLength: &preserveLength,
+					},
 				},
 			},
 		},
@@ -353,7 +376,11 @@ func Test_AnonymizeJSON_Largedata(t *testing.T) {
 
 		// Check if non-anonymized fields remain unchanged
 		require.Equal(t, inputObjects[i]["foundedYear"], result["foundedYear"])
-		require.Equal(t, inputObjects[i]["headquarters"].(map[string]any)["address"].(map[string]any)["city"], result["headquarters"].(map[string]any)["address"].(map[string]any)["city"])
+		require.Equal(
+			t,
+			inputObjects[i]["headquarters"].(map[string]any)["address"].(map[string]any)["city"],
+			result["headquarters"].(map[string]any)["address"].(map[string]any)["city"],
+		)
 	}
 }
 
@@ -408,7 +435,10 @@ func Test_AnonymizeJSON_Largedata_WithDefaults(t *testing.T) {
 		},
 	}
 
-	anonymizer, err := NewAnonymizer(WithTransformerMappings(mappings), WithDefaultTransformers(defaults))
+	anonymizer, err := NewAnonymizer(
+		WithTransformerMappings(mappings),
+		WithDefaultTransformers(defaults),
+	)
 	require.NoError(t, err)
 
 	outputs, anonErrors := anonymizer.AnonymizeJSONObjects(inputStrings)
@@ -444,7 +474,11 @@ func Test_AnonymizeJSON_Largedata_WithDefaults(t *testing.T) {
 
 		// Check if other fields where anonymized
 		require.NotEqual(t, inputObjects[i]["foundedYear"], result["foundedYear"])
-		require.NotEqual(t, inputObjects[i]["headquarters"].(map[string]any)["address"].(map[string]any)["city"], result["headquarters"].(map[string]any)["address"].(map[string]any)["city"])
+		require.NotEqual(
+			t,
+			inputObjects[i]["headquarters"].(map[string]any)["address"].(map[string]any)["city"],
+			result["headquarters"].(map[string]any)["address"].(map[string]any)["city"],
+		)
 	}
 }
 
@@ -466,7 +500,10 @@ func Test_AnonymizeJSON_Largedata_Advanced(t *testing.T) {
 
 	defaults := &mgmtv1alpha1.DefaultTransformersConfig{}
 
-	anonymizer, err := NewAnonymizer(WithTransformerMappings(mappings), WithDefaultTransformers(defaults))
+	anonymizer, err := NewAnonymizer(
+		WithTransformerMappings(mappings),
+		WithDefaultTransformers(defaults),
+	)
 	require.NoError(t, err)
 
 	outputs, anonErrors := anonymizer.AnonymizeJSONObjects(inputStrings)
@@ -502,7 +539,11 @@ func Test_AnonymizeJSON_Largedata_Advanced(t *testing.T) {
 
 		// Check if non-anonymized fields remain unchanged
 		require.Equal(t, inputObjects[i]["foundedYear"], result["foundedYear"])
-		require.Equal(t, inputObjects[i]["headquarters"].(map[string]any)["address"].(map[string]any)["city"], result["headquarters"].(map[string]any)["address"].(map[string]any)["city"])
+		require.Equal(
+			t,
+			inputObjects[i]["headquarters"].(map[string]any)["address"].(map[string]any)["city"],
+			result["headquarters"].(map[string]any)["address"].(map[string]any)["city"],
+		)
 	}
 }
 

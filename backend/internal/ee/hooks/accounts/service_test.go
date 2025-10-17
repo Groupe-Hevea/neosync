@@ -3,7 +3,7 @@ package accounthooks
 import (
 	"testing"
 
-	mgmtv1alpha1 "github.com/nucleuscloud/neosync/backend/gen/go/protos/mgmt/v1alpha1"
+	mgmtv1alpha1 "github.com/Groupe-Hevea/neosync/backend/gen/go/protos/mgmt/v1alpha1"
 	"github.com/stretchr/testify/require"
 )
 
@@ -45,7 +45,11 @@ func Test_hasSlackChannelIdChanged(t *testing.T) {
 			},
 		}
 		result := hasSlackChannelIdChanged(oldHook, newHook)
-		require.False(t, result, "hasSlackChannelIdChanged() with same channel ID should return false")
+		require.False(
+			t,
+			result,
+			"hasSlackChannelIdChanged() with same channel ID should return false",
+		)
 	})
 
 	t.Run("different channel id", func(t *testing.T) {
@@ -68,7 +72,11 @@ func Test_hasSlackChannelIdChanged(t *testing.T) {
 			},
 		}
 		result := hasSlackChannelIdChanged(oldHook, newHook)
-		require.True(t, result, "hasSlackChannelIdChanged() with different channel ID should return true")
+		require.True(
+			t,
+			result,
+			"hasSlackChannelIdChanged() with different channel ID should return true",
+		)
 	})
 
 	t.Run("old hook missing slack config", func(t *testing.T) {
@@ -85,7 +93,11 @@ func Test_hasSlackChannelIdChanged(t *testing.T) {
 			},
 		}
 		result := hasSlackChannelIdChanged(oldHook, newHook)
-		require.True(t, result, "hasSlackChannelIdChanged() with old hook missing slack config should return true")
+		require.True(
+			t,
+			result,
+			"hasSlackChannelIdChanged() with old hook missing slack config should return true",
+		)
 	})
 
 	t.Run("new hook missing slack config", func(t *testing.T) {
@@ -102,6 +114,10 @@ func Test_hasSlackChannelIdChanged(t *testing.T) {
 			Config: &mgmtv1alpha1.AccountHookConfig{},
 		}
 		result := hasSlackChannelIdChanged(oldHook, newHook)
-		require.True(t, result, "hasSlackChannelIdChanged() with new hook missing slack config should return true")
+		require.True(
+			t,
+			result,
+			"hasSlackChannelIdChanged() with new hook missing slack config should return true",
+		)
 	})
 }

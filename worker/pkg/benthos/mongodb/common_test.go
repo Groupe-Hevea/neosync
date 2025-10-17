@@ -4,7 +4,7 @@ import (
 	"math/big"
 	"testing"
 
-	neosync_types "github.com/nucleuscloud/neosync/internal/types"
+	neosync_types "github.com/Groupe-Hevea/neosync/internal/types"
 	"github.com/stretchr/testify/require"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
@@ -94,9 +94,12 @@ func Test_MarshalJSONToBSONDocument(t *testing.T) {
 				"timestamp": neosync_types.Timestamp,
 			},
 			expected: bson.M{
-				"id":        bson.E{Key: "id", Value: objId},
-				"amount":    bson.E{Key: "amount", Value: dec128},
-				"timestamp": bson.E{Key: "timestamp", Value: primitive.Timestamp{T: 1630000000, I: 1}},
+				"id":     bson.E{Key: "id", Value: objId},
+				"amount": bson.E{Key: "amount", Value: dec128},
+				"timestamp": bson.E{
+					Key:   "timestamp",
+					Value: primitive.Timestamp{T: 1630000000, I: 1},
+				},
 			},
 			expectError: false,
 		},

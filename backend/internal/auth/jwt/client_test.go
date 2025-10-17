@@ -65,10 +65,22 @@ func Test_New(t *testing.T) {
 	_, err := New(nil)
 	assert.Error(t, err)
 
-	_, err = New(&ClientConfig{BackendIssuerUrl: "http://example.com", SignatureAlgorithm: validator.RS256, ApiAudiences: []string{"foo"}})
+	_, err = New(
+		&ClientConfig{
+			BackendIssuerUrl:   "http://example.com",
+			SignatureAlgorithm: validator.RS256,
+			ApiAudiences:       []string{"foo"},
+		},
+	)
 	assert.Nil(t, err)
 
-	_, err = New(&ClientConfig{BackendIssuerUrl: "http://example.com", SignatureAlgorithm: validator.RS256, ApiAudiences: nil})
+	_, err = New(
+		&ClientConfig{
+			BackendIssuerUrl:   "http://example.com",
+			SignatureAlgorithm: validator.RS256,
+			ApiAudiences:       nil,
+		},
+	)
 	assert.Error(t, err, "fails if api audiences is nil")
 }
 
@@ -86,7 +98,11 @@ func Test_Client_InjectTokenCtx(t *testing.T) {
 	jwtValidator.On("ValidateToken", mock.Anything, "123").Return(validatedClaims, nil)
 	client := &Client{jwtValidator: jwtValidator}
 
-	newCtx, err := client.InjectTokenCtx(context.Background(), http.Header{"Authorization": []string{"Bearer 123"}}, connect.Spec{})
+	newCtx, err := client.InjectTokenCtx(
+		context.Background(),
+		http.Header{"Authorization": []string{"Bearer 123"}},
+		connect.Spec{},
+	)
 	assert.Nil(t, err)
 
 	data, err := GetTokenDataFromCtx(newCtx)
@@ -106,7 +122,11 @@ func Test_Client_InjectTokenCtx(t *testing.T) {
 
 func Test_Client_InjectTokenCtx_InvalidHeader(t *testing.T) {
 	client := &Client{}
-	_, err := client.InjectTokenCtx(context.Background(), http.Header{"Authorization": []string{}}, connect.Spec{})
+	_, err := client.InjectTokenCtx(
+		context.Background(),
+		http.Header{"Authorization": []string{}},
+		connect.Spec{},
+	)
 	assert.Error(t, err)
 }
 
@@ -115,7 +135,11 @@ func Test_Client_InjectTokenCtx_InvalidToken(t *testing.T) {
 	jwtValidator.On("ValidateToken", mock.Anything, "123").Return(nil, errors.New("invalid token"))
 	client := &Client{jwtValidator: jwtValidator}
 
-	_, err := client.InjectTokenCtx(context.Background(), http.Header{"Authorization": []string{"Bearer 123"}}, connect.Spec{})
+	_, err := client.InjectTokenCtx(
+		context.Background(),
+		http.Header{"Authorization": []string{"Bearer 123"}},
+		connect.Spec{},
+	)
 	assert.Error(t, err)
 }
 
@@ -125,7 +149,11 @@ func Test_Client_InjectTokenCtx_InvalidTokenClaims(t *testing.T) {
 	jwtValidator.On("ValidateToken", mock.Anything, "123").Return(validatedClaims, nil)
 	client := &Client{jwtValidator: jwtValidator}
 
-	_, err := client.InjectTokenCtx(context.Background(), http.Header{"Authorization": []string{"Bearer 123"}}, connect.Spec{})
+	_, err := client.InjectTokenCtx(
+		context.Background(),
+		http.Header{"Authorization": []string{"Bearer 123"}},
+		connect.Spec{},
+	)
 	assert.Error(t, err)
 }
 
@@ -140,6 +168,10 @@ func Test_Client_InjectTokenCtx_InvalidClaims(t *testing.T) {
 	jwtValidator.On("ValidateToken", mock.Anything, "123").Return(validatedClaims, nil)
 	client := &Client{jwtValidator: jwtValidator}
 
-	_, err := client.InjectTokenCtx(context.Background(), http.Header{"Authorization": []string{"Bearer 123"}}, connect.Spec{})
+	_, err := client.InjectTokenCtx(
+		context.Background(),
+		http.Header{"Authorization": []string{"Bearer 123"}},
+		connect.Spec{},
+	)
 	assert.Error(t, err)
 }

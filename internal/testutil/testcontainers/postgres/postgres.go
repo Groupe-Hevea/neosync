@@ -8,8 +8,8 @@ import (
 	"os"
 	"time"
 
+	"github.com/Groupe-Hevea/neosync/internal/testutil"
 	"github.com/jackc/pgx/v5/pgxpool"
-	"github.com/nucleuscloud/neosync/internal/testutil"
 	"github.com/testcontainers/testcontainers-go"
 	testpg "github.com/testcontainers/testcontainers-go/modules/postgres"
 	"github.com/testcontainers/testcontainers-go/wait"

@@ -9,12 +9,12 @@ import (
 	"time"
 
 	"connectrpc.com/connect"
+	db_queries "github.com/Groupe-Hevea/neosync/backend/gen/go/db"
+	pkg_utils "github.com/Groupe-Hevea/neosync/backend/pkg/utils"
+	"github.com/Groupe-Hevea/neosync/internal/apikey"
+	"github.com/Groupe-Hevea/neosync/internal/neosyncdb"
 	"github.com/jackc/pgx/v5"
 	"github.com/jackc/pgx/v5/pgtype"
-	db_queries "github.com/nucleuscloud/neosync/backend/gen/go/db"
-	pkg_utils "github.com/nucleuscloud/neosync/backend/pkg/utils"
-	"github.com/nucleuscloud/neosync/internal/apikey"
-	"github.com/nucleuscloud/neosync/internal/neosyncdb"
 	"github.com/stretchr/testify/mock"
 	"github.com/zeebo/assert"
 )
@@ -94,7 +94,11 @@ func Test_Client_InjectTokenCtx_Account_Expired(t *testing.T) {
 
 func Test_Client_InjectTokenCtx_InvalidHeader(t *testing.T) {
 	client := &Client{}
-	_, err := client.InjectTokenCtx(context.Background(), http.Header{"Authorization": []string{}}, connect.Spec{})
+	_, err := client.InjectTokenCtx(
+		context.Background(),
+		http.Header{"Authorization": []string{}},
+		connect.Spec{},
+	)
 	assert.Error(t, err)
 }
 
@@ -149,7 +153,12 @@ func Test_Client_InjectTokenCtx_Worker_Allowed(t *testing.T) {
 
 	fakeToken := apikey.NewV1WorkerKey()
 
-	client := New(mockQuerier, mockDbTx, []string{fakeToken, apikey.NewV1WorkerKey()}, []string{"/foo"})
+	client := New(
+		mockQuerier,
+		mockDbTx,
+		[]string{fakeToken, apikey.NewV1WorkerKey()},
+		[]string{"/foo"},
+	)
 
 	newctx, err := client.InjectTokenCtx(context.Background(), http.Header{
 		"Authorization": []string{fmt.Sprintf("Bearer %s", fakeToken)},
@@ -176,7 +185,12 @@ func Test_Client_InjectTokenCtx_Worker_DisAllowed_ApiKey(t *testing.T) {
 
 	fakeToken := apikey.NewV1WorkerKey()
 
-	client := New(mockQuerier, mockDbTx, []string{apikey.NewV1WorkerKey(), apikey.NewV1WorkerKey()}, []string{})
+	client := New(
+		mockQuerier,
+		mockDbTx,
+		[]string{apikey.NewV1WorkerKey(), apikey.NewV1WorkerKey()},
+		[]string{},
+	)
 
 	newctx, err := client.InjectTokenCtx(context.Background(), http.Header{
 		"Authorization": []string{fmt.Sprintf("Bearer %s", fakeToken)},

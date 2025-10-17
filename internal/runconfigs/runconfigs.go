@@ -6,8 +6,8 @@ import (
 	"slices"
 	"strings"
 
-	sqlmanager_shared "github.com/nucleuscloud/neosync/backend/pkg/sqlmanager/shared"
-	"github.com/nucleuscloud/neosync/backend/pkg/utils"
+	sqlmanager_shared "github.com/Groupe-Hevea/neosync/backend/pkg/sqlmanager/shared"
+	"github.com/Groupe-Hevea/neosync/backend/pkg/utils"
 )
 
 type RunType string

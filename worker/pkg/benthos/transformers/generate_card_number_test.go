@@ -5,7 +5,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/nucleuscloud/neosync/worker/pkg/rng"
+	"github.com/Groupe-Hevea/neosync/worker/pkg/rng"
 	"github.com/redpanda-data/benthos/v4/public/bloblang"
 	"github.com/stretchr/testify/assert"
 )
@@ -14,7 +14,12 @@ func Test_GenerateValidLuhnCardNumber(t *testing.T) {
 	val, err := generateValidLuhnCheckCardNumber(rng.New(time.Now().UnixNano()))
 
 	assert.NoError(t, err)
-	assert.Equal(t, len(strconv.FormatInt(val, 10)), 16, "The output card should be 16 characters long")
+	assert.Equal(
+		t,
+		len(strconv.FormatInt(val, 10)),
+		16,
+		"The output card should be 16 characters long",
+	)
 	assert.Equal(t, true, isValidLuhn(val), "The card number should pass luhn validation")
 }
 
@@ -33,8 +38,18 @@ func Test_GenerateCardNumberTransformer(t *testing.T) {
 	res, err := ex.Query(nil)
 	assert.NoError(t, err)
 
-	assert.Len(t, strconv.FormatInt(res.(int64), 10), 16, "The output card should be 16 characters long")
-	assert.Equal(t, true, isValidLuhn(res.(int64)), "The output card number should pass luhn validation")
+	assert.Len(
+		t,
+		strconv.FormatInt(res.(int64), 10),
+		16,
+		"The output card should be 16 characters long",
+	)
+	assert.Equal(
+		t,
+		true,
+		isValidLuhn(res.(int64)),
+		"The output card number should pass luhn validation",
+	)
 }
 
 func Test_GenerateCardNumberTransformer_NoOptions(t *testing.T) {
@@ -45,7 +60,12 @@ func Test_GenerateCardNumberTransformer_NoOptions(t *testing.T) {
 	res, err := ex.Query(nil)
 	assert.NoError(t, err)
 
-	assert.Len(t, strconv.FormatInt(res.(int64), 10), 16, "The output card should be 16 characters long")
+	assert.Len(
+		t,
+		strconv.FormatInt(res.(int64), 10),
+		16,
+		"The output card should be 16 characters long",
+	)
 }
 
 func isValidLuhn(cc int64) bool {

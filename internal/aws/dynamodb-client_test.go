@@ -21,7 +21,8 @@ func Test_DynamoDbClient_ListAllTables(t *testing.T) {
 	client := NewDynamoDbClient(mockApi)
 
 	mockApi.On("ListTables", mock.Anything, mock.Anything, mock.Anything).
-		Return(&dynamodb.ListTablesOutput{TableNames: []string{"foo"}, LastEvaluatedTableName: aws.String("foo")}, nil).Once()
+		Return(&dynamodb.ListTablesOutput{TableNames: []string{"foo"}, LastEvaluatedTableName: aws.String("foo")}, nil).
+		Once()
 	mockApi.On("ListTables", mock.Anything, mock.Anything, mock.Anything).
 		Return(&dynamodb.ListTablesOutput{TableNames: []string{"bar"}}, nil).Once()
 

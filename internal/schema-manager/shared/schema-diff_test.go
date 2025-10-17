@@ -3,7 +3,7 @@ package schemamanager_shared
 import (
 	"testing"
 
-	sqlmanager_shared "github.com/nucleuscloud/neosync/backend/pkg/sqlmanager/shared"
+	sqlmanager_shared "github.com/Groupe-Hevea/neosync/backend/pkg/sqlmanager/shared"
 	"github.com/stretchr/testify/require"
 )
 
@@ -63,7 +63,12 @@ func Test_NewSchemaDifferencesBuilder(t *testing.T) {
 		Triggers:                 map[string]*sqlmanager_shared.TableTrigger{},
 	}
 
-	builder := NewSchemaDifferencesBuilder(jobmappingTables, sourceData, destData, findMatchingColumnTest)
+	builder := NewSchemaDifferencesBuilder(
+		jobmappingTables,
+		sourceData,
+		destData,
+		findMatchingColumnTest,
+	)
 
 	require.NotNil(t, builder)
 	require.NotNil(t, builder.diff)
@@ -100,15 +105,17 @@ func Test_BuildTableColumnDifferences_AllActions(t *testing.T) {
 					IdentityGeneration: nil,
 				},
 				"name": {
-					Name:               "name",
-					Schema:             "public",
-					Table:              "users",
-					Fingerprint:        "2",
-					OrdinalPosition:    2,
-					DataType:           "varchar",
-					IsNullable:         true,
-					ColumnDefault:      "''",
-					IdentityGeneration: new(string), // Fix: Set IdentityGeneration to new(string) to match destination
+					Name:            "name",
+					Schema:          "public",
+					Table:           "users",
+					Fingerprint:     "2",
+					OrdinalPosition: 2,
+					DataType:        "varchar",
+					IsNullable:      true,
+					ColumnDefault:   "''",
+					IdentityGeneration: new(
+						string,
+					), // Fix: Set IdentityGeneration to new(string) to match destination
 				},
 			},
 		},
@@ -143,7 +150,12 @@ func Test_BuildTableColumnDifferences_AllActions(t *testing.T) {
 		},
 	}
 
-	builder := NewSchemaDifferencesBuilder(jobmappingTables, sourceData, destData, findMatchingColumnTest)
+	builder := NewSchemaDifferencesBuilder(
+		jobmappingTables,
+		sourceData,
+		destData,
+		findMatchingColumnTest,
+	)
 	builder.buildTableColumnDifferences()
 	diff := builder.diff
 
@@ -217,7 +229,12 @@ func Test_Build_TableColumnDifferences_NameChangeAndSetIdentity(t *testing.T) {
 		Triggers:                 map[string]*sqlmanager_shared.TableTrigger{},
 	}
 
-	builder := NewSchemaDifferencesBuilder(jobmappingTables, sourceData, destData, findMatchingColumnTest)
+	builder := NewSchemaDifferencesBuilder(
+		jobmappingTables,
+		sourceData,
+		destData,
+		findMatchingColumnTest,
+	)
 	builder.buildTableColumnDifferences()
 	diff := builder.diff
 
@@ -307,7 +324,12 @@ func Test_Build_TableConstraintDifferences(t *testing.T) {
 		Triggers: map[string]*sqlmanager_shared.TableTrigger{},
 	}
 
-	builder := NewSchemaDifferencesBuilder(jobmappingTables, sourceData, destData, findMatchingColumnTest)
+	builder := NewSchemaDifferencesBuilder(
+		jobmappingTables,
+		sourceData,
+		destData,
+		findMatchingColumnTest,
+	)
 	diff := builder.Build()
 
 	require.NotNil(t, diff)
@@ -316,9 +338,17 @@ func Test_Build_TableConstraintDifferences(t *testing.T) {
 	require.Len(t, diff.ExistsInSource.ForeignKeyConstraints, 1)
 	require.Equal(t, "fk_users_roles", diff.ExistsInSource.ForeignKeyConstraints[0].ConstraintName)
 	require.Len(t, diff.ExistsInDestination.NonForeignKeyConstraints, 1)
-	require.Equal(t, "unique_email", diff.ExistsInDestination.NonForeignKeyConstraints[0].ConstraintName)
+	require.Equal(
+		t,
+		"unique_email",
+		diff.ExistsInDestination.NonForeignKeyConstraints[0].ConstraintName,
+	)
 	require.Len(t, diff.ExistsInDestination.ForeignKeyConstraints, 1)
-	require.Equal(t, "fk_users_teams", diff.ExistsInDestination.ForeignKeyConstraints[0].ConstraintName)
+	require.Equal(
+		t,
+		"fk_users_teams",
+		diff.ExistsInDestination.ForeignKeyConstraints[0].ConstraintName,
+	)
 }
 
 func Test_Build_TableTriggerDifferences(t *testing.T) {
@@ -386,7 +416,12 @@ func Test_Build_TableTriggerDifferences(t *testing.T) {
 		},
 	}
 
-	builder := NewSchemaDifferencesBuilder(jobmappingTables, sourceData, destData, findMatchingColumnTest)
+	builder := NewSchemaDifferencesBuilder(
+		jobmappingTables,
+		sourceData,
+		destData,
+		findMatchingColumnTest,
+	)
 	diff := builder.Build()
 
 	require.NotNil(t, diff)
@@ -457,7 +492,12 @@ func Test_buildTableCompositeDifferences(t *testing.T) {
 		},
 	}
 
-	builder := NewSchemaDifferencesBuilder(jobmappingTables, sourceData, destData, findMatchingColumnTest)
+	builder := NewSchemaDifferencesBuilder(
+		jobmappingTables,
+		sourceData,
+		destData,
+		findMatchingColumnTest,
+	)
 	diff := builder.Build()
 
 	require.NotNil(t, diff)
@@ -525,7 +565,12 @@ func TestBuildTableEnumDifferences(t *testing.T) {
 		},
 	}
 
-	builder := NewSchemaDifferencesBuilder(jobmappingTables, sourceData, destData, findMatchingColumnTest)
+	builder := NewSchemaDifferencesBuilder(
+		jobmappingTables,
+		sourceData,
+		destData,
+		findMatchingColumnTest,
+	)
 	diff := builder.Build()
 
 	require.NotNil(t, diff)

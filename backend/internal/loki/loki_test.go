@@ -43,8 +43,17 @@ func Test_GetStreamsFromResponseData(t *testing.T) {
 func Test_GetEntriesFromStreams(t *testing.T) {
 	time := time.Now()
 	actual := GetEntriesFromStreams(Streams{
-		{Entries: []Entry{{Line: "foo-line", Timestamp: time}}, Labels: LabelSet{"Attempt": "1", "willberemoved": "true"}},
-		{Entries: []Entry{{Line: "bar-line", Timestamp: time}, {Line: "baz-line", Timestamp: time}}, Labels: LabelSet{"Attempt": "2"}},
+		{
+			Entries: []Entry{{Line: "foo-line", Timestamp: time}},
+			Labels:  LabelSet{"Attempt": "1", "willberemoved": "true"},
+		},
+		{
+			Entries: []Entry{
+				{Line: "bar-line", Timestamp: time},
+				{Line: "baz-line", Timestamp: time},
+			},
+			Labels: LabelSet{"Attempt": "2"},
+		},
 	})
 	require.Equal(
 		t,

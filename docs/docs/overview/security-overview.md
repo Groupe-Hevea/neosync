@@ -14,8 +14,8 @@ This page is mostly relevant to Neosync Cloud.
 
 ## Code
 
-All of the Neosync code is open source and can be found on our [Github](https://github.com/nucleuscloud/neosync).
-If you find a security vulnerability, please refer to our [Security.md](https://github.com/nucleuscloud/neosync/blob/main/SECURITY.md) for what to do.
+All of the Neosync code is open source and can be found on our [Github](https://github.com/Groupe-Hevea/neosync).
+If you find a security vulnerability, please refer to our [Security.md](https://github.com/Groupe-Hevea/neosync/blob/main/SECURITY.md) for what to do.
 If all else fails, please email `security@neosync.dev` directly.
 
 Otherwise, the code that is found in our repo is the same code that we deploy on our servers.

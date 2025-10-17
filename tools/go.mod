@@ -1,13 +1,13 @@
-module github.com/nucleuscloud/neosync/tools
+module github.com/Groupe-Hevea/neosync/tools
 
 go 1.24.1
 
-replace github.com/nucleuscloud/neosync => ../
+replace github.com/Groupe-Hevea/neosync => ../
 
 require (
+	github.com/Groupe-Hevea/neosync v0.5.1
 	github.com/antlr4-go/antlr/v4 v4.13.1
 	github.com/nucleuscloud/go-antlrv4-parser v0.0.0-20240830015744-041b46c70aa5
-	github.com/nucleuscloud/neosync v0.5.1
 	github.com/pganalyze/pg_query_go/v5 v5.1.0
 )
 

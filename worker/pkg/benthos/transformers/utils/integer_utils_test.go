@@ -6,8 +6,8 @@ import (
 	"testing"
 	"time"
 
-	"github.com/nucleuscloud/neosync/worker/pkg/rng"
-	"github.com/nucleuscloud/neosync/worker/pkg/workflows/datasync/activities/shared"
+	"github.com/Groupe-Hevea/neosync/worker/pkg/rng"
+	"github.com/Groupe-Hevea/neosync/worker/pkg/workflows/datasync/activities/shared"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
@@ -35,8 +35,18 @@ func Test_GenerateRandomInt64InLengthRange(t *testing.T) {
 	val, err := GenerateRandomInt64InLengthRange(rng.New(time.Now().UnixNano()), minValue, maxValue)
 	assert.NoError(t, err)
 
-	assert.GreaterOrEqual(t, GetInt64Length(val), minValue, "The expected value should be greater than or equal to the minimum length.")
-	assert.LessOrEqual(t, GetInt64Length(val), maxValue, "The expected value should be less than or equal to the maximum length")
+	assert.GreaterOrEqual(
+		t,
+		GetInt64Length(val),
+		minValue,
+		"The expected value should be greater than or equal to the minimum length.",
+	)
+	assert.LessOrEqual(
+		t,
+		GetInt64Length(val),
+		maxValue,
+		"The expected value should be less than or equal to the maximum length",
+	)
 }
 
 func Test_GenerateRandomInt64InLengthRangeError(t *testing.T) {
@@ -88,21 +98,33 @@ func Test_GenerateRandomInt64InValueRange(t *testing.T) {
 	})
 
 	t.Run("max int64", func(t *testing.T) {
-		output, err := GenerateRandomInt64InValueRange(rng.New(time.Now().UnixNano()), int64(0), math.MaxInt64)
+		output, err := GenerateRandomInt64InValueRange(
+			rng.New(time.Now().UnixNano()),
+			int64(0),
+			math.MaxInt64,
+		)
 		require.NoError(t, err)
 		assert.GreaterOrEqual(t, output, int64(0))
 		assert.LessOrEqual(t, output, int64(math.MaxInt64))
 	})
 
 	t.Run("near max int64", func(t *testing.T) {
-		output, err := GenerateRandomInt64InValueRange(rng.New(time.Now().UnixNano()), math.MaxInt64-int64(10), math.MaxInt64)
+		output, err := GenerateRandomInt64InValueRange(
+			rng.New(time.Now().UnixNano()),
+			math.MaxInt64-int64(10),
+			math.MaxInt64,
+		)
 		require.NoError(t, err)
 		assert.GreaterOrEqual(t, output, math.MaxInt64-int64(10))
 		assert.LessOrEqual(t, output, int64(math.MaxInt64))
 	})
 
 	t.Run("large range near max int64", func(t *testing.T) {
-		output, err := GenerateRandomInt64InValueRange(rng.New(time.Now().UnixNano()), math.MaxInt64/int64(2), math.MaxInt64)
+		output, err := GenerateRandomInt64InValueRange(
+			rng.New(time.Now().UnixNano()),
+			math.MaxInt64/int64(2),
+			math.MaxInt64,
+		)
 		require.NoError(t, err)
 		assert.GreaterOrEqual(t, output, math.MaxInt64/int64(2))
 		assert.LessOrEqual(t, output, int64(math.MaxInt64))
@@ -112,7 +134,11 @@ func Test_GenerateRandomInt64InValueRange(t *testing.T) {
 func Test_GenerateRandomInt64InValueRange_Swapped_MinMax(t *testing.T) {
 	minValue := int64(2)
 	maxValue := int64(1)
-	output, err := GenerateRandomInt64InValueRange(rng.New(time.Now().UnixNano()), minValue, maxValue)
+	output, err := GenerateRandomInt64InValueRange(
+		rng.New(time.Now().UnixNano()),
+		minValue,
+		maxValue,
+	)
 	assert.NoError(t, err)
 	assert.GreaterOrEqual(t, output, maxValue)
 	assert.LessOrEqual(t, output, minValue)

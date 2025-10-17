@@ -6,8 +6,8 @@ import (
 	"log/slog"
 	"os"
 
-	neomigrate "github.com/nucleuscloud/neosync/internal/migrate"
-	"github.com/nucleuscloud/neosync/internal/neosyncdb"
+	neomigrate "github.com/Groupe-Hevea/neosync/internal/migrate"
+	"github.com/Groupe-Hevea/neosync/internal/neosyncdb"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 )

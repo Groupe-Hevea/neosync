@@ -5,9 +5,9 @@ import (
 	"database/sql/driver"
 	"fmt"
 
+	"github.com/Groupe-Hevea/neosync/internal/sshtunnel"
 	mssql "github.com/microsoft/go-mssqldb"
 	"github.com/microsoft/go-mssqldb/msdsn"
-	"github.com/nucleuscloud/neosync/internal/sshtunnel"
 )
 
 type Connector struct {

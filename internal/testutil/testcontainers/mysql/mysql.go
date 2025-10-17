@@ -9,8 +9,8 @@ import (
 	"os"
 	"time"
 
-	"github.com/nucleuscloud/neosync/internal/sshtunnel/connectors/mysqltunconnector"
-	"github.com/nucleuscloud/neosync/internal/testutil"
+	"github.com/Groupe-Hevea/neosync/internal/sshtunnel/connectors/mysqltunconnector"
+	"github.com/Groupe-Hevea/neosync/internal/testutil"
 	"github.com/testcontainers/testcontainers-go"
 	testmysql "github.com/testcontainers/testcontainers-go/modules/mysql"
 	"github.com/testcontainers/testcontainers-go/wait"

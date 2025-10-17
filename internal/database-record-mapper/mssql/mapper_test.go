@@ -4,8 +4,8 @@ import (
 	"testing"
 	"time"
 
+	neosynctypes "github.com/Groupe-Hevea/neosync/internal/neosync-types"
 	mssql "github.com/microsoft/go-mssqldb"
-	neosynctypes "github.com/nucleuscloud/neosync/internal/neosync-types"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
@@ -14,7 +14,24 @@ func Test_parseRowValues(t *testing.T) {
 	t.Parallel()
 
 	testTime := time.Now()
-	testUUID := mssql.UniqueIdentifier{0x12, 0x34, 0x56, 0x78, 0x90, 0xAB, 0xCD, 0xEF, 0x12, 0x34, 0x56, 0x78, 0x90, 0xAB, 0xCD, 0xEF}
+	testUUID := mssql.UniqueIdentifier{
+		0x12,
+		0x34,
+		0x56,
+		0x78,
+		0x90,
+		0xAB,
+		0xCD,
+		0xEF,
+		0x12,
+		0x34,
+		0x56,
+		0x78,
+		0x90,
+		0xAB,
+		0xCD,
+		0xEF,
+	}
 	testBinary := []byte{0x12, 0x34}
 	testVarBinary := []byte{0x56, 0x78}
 	testString := []byte("test string")

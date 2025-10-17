@@ -26,7 +26,7 @@ const config: Config = {
 
   // GitHub pages deployment config.
   // If you aren't using GitHub pages, you don't need these.
-  organizationName: 'nucleuscloud', // Usually your GitHub org/user name.
+  organizationName: 'Groupe-Hevea', // Usually your GitHub org/user name.
   projectName: 'neosync', // Usually your repo name.
 
   onBrokenLinks: 'throw',
@@ -73,11 +73,11 @@ const config: Config = {
           routeBasePath: '/',
           sidebarPath: './sidebars.ts',
           // Remove this to remove the "edit this page" links.
-          editUrl: 'https://github.com/nucleuscloud/neosync/blob/main/docs',
+          editUrl: 'https://github.com/Groupe-Hevea/neosync/blob/main/docs',
         },
         blog: {
           routeBasePath: '/changelog',
-          editUrl: 'https://github.com/nucleuscloud/neosync/blob/main/docs',
+          editUrl: 'https://github.com/Groupe-Hevea/neosync/blob/main/docs',
           blogTitle: 'Neosync Changelog',
           blogDescription: 'Neosync Changelog',
           blogSidebarTitle: ' Changelog',
@@ -132,7 +132,7 @@ const config: Config = {
 
       items: [
         {
-          href: 'https://github.com/nucleuscloud/neosync',
+          href: 'https://github.com/Groupe-Hevea/neosync',
           position: 'right',
           className: 'header-github-link',
           'aria-label': 'GitHub repository',

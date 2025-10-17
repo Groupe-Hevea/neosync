@@ -14,21 +14,13 @@ jobs:
     steps:
       - name: Checkout
         id: checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
 
       - name: Compute tag for devcontainer image
         id: meta
         run: |
           tag="${GITHUB_REF#refs/tags/devcontainer/v}"
           echo "tag=$tag" >> "$GITHUB_OUTPUT"
-
-      - name: Set up Depot CLI
-        uses: depot/setup-action@v1
-        with:
-          oidc: true
-
-      - name: Setup Docker to use Depot
-        run: depot configure-docker
 
       - name: Login to GHCR
         uses: docker/login-action@v3
@@ -44,7 +36,7 @@ jobs:
             --workspace-folder .github \
             --image-name ghcr.io/${{ github.repository }}/devcontainer:${{ steps.meta.outputs.tag }} \
             --image-name ghcr.io/${{ github.repository }}/devcontainer:latest \
-            --platform linux/amd64,linux/arm64 \
+            --platform linux/amd64 \
             --push
         env:
           # see: https://github.com/devcontainers/ci/issues/191#issuecomment-1603857155

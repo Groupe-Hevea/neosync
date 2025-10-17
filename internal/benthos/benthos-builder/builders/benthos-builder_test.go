@@ -6,21 +6,21 @@ import (
 	"testing"
 
 	"connectrpc.com/connect"
+	mgmtv1alpha1 "github.com/Groupe-Hevea/neosync/backend/gen/go/protos/mgmt/v1alpha1"
+	"github.com/Groupe-Hevea/neosync/backend/gen/go/protos/mgmt/v1alpha1/mgmtv1alpha1connect"
+	sqlmanager_shared "github.com/Groupe-Hevea/neosync/backend/pkg/sqlmanager/shared"
+	bb_internal "github.com/Groupe-Hevea/neosync/internal/benthos/benthos-builder/internal"
+	"github.com/Groupe-Hevea/neosync/internal/gotypeutil"
+	rc "github.com/Groupe-Hevea/neosync/internal/runconfigs"
+	"github.com/Groupe-Hevea/neosync/internal/testutil"
+	"github.com/Groupe-Hevea/neosync/worker/pkg/workflows/datasync/activities/shared"
 	"github.com/google/uuid"
-	mgmtv1alpha1 "github.com/nucleuscloud/neosync/backend/gen/go/protos/mgmt/v1alpha1"
-	"github.com/nucleuscloud/neosync/backend/gen/go/protos/mgmt/v1alpha1/mgmtv1alpha1connect"
-	sqlmanager_shared "github.com/nucleuscloud/neosync/backend/pkg/sqlmanager/shared"
-	bb_internal "github.com/nucleuscloud/neosync/internal/benthos/benthos-builder/internal"
-	"github.com/nucleuscloud/neosync/internal/gotypeutil"
-	rc "github.com/nucleuscloud/neosync/internal/runconfigs"
-	"github.com/nucleuscloud/neosync/internal/testutil"
-	"github.com/nucleuscloud/neosync/worker/pkg/workflows/datasync/activities/shared"
 	"github.com/redpanda-data/benthos/v4/public/bloblang"
 	"github.com/stretchr/testify/mock"
 	"github.com/stretchr/testify/require"
 
-	neosync_benthos "github.com/nucleuscloud/neosync/worker/pkg/benthos"
-	neosync_benthos_transformers "github.com/nucleuscloud/neosync/worker/pkg/benthos/transformers"
+	neosync_benthos "github.com/Groupe-Hevea/neosync/worker/pkg/benthos"
+	neosync_benthos_transformers "github.com/Groupe-Hevea/neosync/worker/pkg/benthos/transformers"
 )
 
 const (
@@ -95,7 +95,17 @@ func Test_ProcessorConfigEmpty(t *testing.T) {
 		"public.users.insert": {Query: ""},
 	}
 	runconfigs := []*rc.RunConfig{
-		rc.NewRunConfig(runconfigId, sqlmanager_shared.SchemaTable{Schema: "public", Table: "users"}, rc.RunTypeInsert, []string{"id"}, nil, []string{"id", "name"}, []string{"id", "name"}, []*rc.DependsOn{}, false),
+		rc.NewRunConfig(
+			runconfigId,
+			sqlmanager_shared.SchemaTable{Schema: "public", Table: "users"},
+			rc.RunTypeInsert,
+			[]string{"id"},
+			nil,
+			[]string{"id", "name"},
+			[]string{"id", "name"},
+			[]*rc.DependsOn{},
+			false,
+		),
 	}
 	logger := testutil.GetTestLogger(t)
 	connectionId := uuid.NewString()
@@ -145,7 +155,9 @@ func Test_ProcessorConfigEmptyJavascript(t *testing.T) {
 					Transformer: &mgmtv1alpha1.JobMappingTransformer{
 						Config: &mgmtv1alpha1.TransformerConfig{
 							Config: &mgmtv1alpha1.TransformerConfig_TransformJavascriptConfig{
-								TransformJavascriptConfig: &mgmtv1alpha1.TransformJavascript{Code: ""},
+								TransformJavascriptConfig: &mgmtv1alpha1.TransformJavascript{
+									Code: "",
+								},
 							},
 						},
 					},
@@ -185,7 +197,17 @@ func Test_ProcessorConfigEmptyJavascript(t *testing.T) {
 
 	schemaTable := sqlmanager_shared.SchemaTable{Schema: "public", Table: "users"}
 	runconfigs := []*rc.RunConfig{
-		rc.NewRunConfig(schemaTable.String(), schemaTable, rc.RunTypeInsert, []string{"id"}, nil, []string{"id", "name"}, []string{"id", "name"}, []*rc.DependsOn{}, false),
+		rc.NewRunConfig(
+			schemaTable.String(),
+			schemaTable,
+			rc.RunTypeInsert,
+			[]string{"id"},
+			nil,
+			[]string{"id", "name"},
+			[]string{"id", "name"},
+			[]*rc.DependsOn{},
+			false,
+		),
 	}
 
 	queryMap := map[string]*sqlmanager_shared.SelectQuery{
@@ -282,16 +304,60 @@ func Test_buildProcessorConfigsMutation(t *testing.T) {
 	ctx := context.Background()
 
 	schemaTable := sqlmanager_shared.SchemaTable{Schema: "public", Table: "users"}
-	runconfig := rc.NewRunConfig(schemaTable.String(), schemaTable, rc.RunTypeInsert, []string{}, nil, []string{}, []string{}, []*rc.DependsOn{}, false)
-	output, err := buildProcessorConfigs(ctx, mockTransformerClient, []*mgmtv1alpha1.JobMapping{}, map[string]*sqlmanager_shared.DatabaseSchemaRow{}, map[string][]*bb_internal.ReferenceKey{}, []string{}, mockJobId, mockRunId, runconfig, nil, []string{})
+	runconfig := rc.NewRunConfig(
+		schemaTable.String(),
+		schemaTable,
+		rc.RunTypeInsert,
+		[]string{},
+		nil,
+		[]string{},
+		[]string{},
+		[]*rc.DependsOn{},
+		false,
+	)
+	output, err := buildProcessorConfigs(
+		ctx,
+		mockTransformerClient,
+		[]*mgmtv1alpha1.JobMapping{},
+		map[string]*sqlmanager_shared.DatabaseSchemaRow{},
+		map[string][]*bb_internal.ReferenceKey{},
+		[]string{},
+		mockJobId,
+		mockRunId,
+		runconfig,
+		nil,
+		[]string{},
+	)
 	require.Nil(t, err)
 	require.Empty(t, output)
 
-	output, err = buildProcessorConfigs(ctx, mockTransformerClient, []*mgmtv1alpha1.JobMapping{}, map[string]*sqlmanager_shared.DatabaseSchemaRow{}, map[string][]*bb_internal.ReferenceKey{}, []string{}, mockJobId, mockRunId, runconfig, nil, []string{})
+	output, err = buildProcessorConfigs(
+		ctx,
+		mockTransformerClient,
+		[]*mgmtv1alpha1.JobMapping{},
+		map[string]*sqlmanager_shared.DatabaseSchemaRow{},
+		map[string][]*bb_internal.ReferenceKey{},
+		[]string{},
+		mockJobId,
+		mockRunId,
+		runconfig,
+		nil,
+		[]string{},
+	)
 	require.Nil(t, err)
 	require.Empty(t, output)
 
-	runconfig = rc.NewRunConfig(schemaTable.String(), schemaTable, rc.RunTypeInsert, []string{}, nil, []string{}, []string{"id"}, []*rc.DependsOn{}, false)
+	runconfig = rc.NewRunConfig(
+		schemaTable.String(),
+		schemaTable,
+		rc.RunTypeInsert,
+		[]string{},
+		nil,
+		[]string{},
+		[]string{"id"},
+		[]*rc.DependsOn{},
+		false,
+	)
 	output, err = buildProcessorConfigs(ctx, mockTransformerClient, []*mgmtv1alpha1.JobMapping{
 		{Schema: "public", Table: "users", Column: "id"},
 	}, map[string]*sqlmanager_shared.DatabaseSchemaRow{}, map[string][]*bb_internal.ReferenceKey{}, []string{}, mockJobId, mockRunId, runconfig, nil, []string{})
@@ -299,31 +365,67 @@ func Test_buildProcessorConfigsMutation(t *testing.T) {
 	require.Empty(t, output)
 
 	output, err = buildProcessorConfigs(ctx, mockTransformerClient, []*mgmtv1alpha1.JobMapping{
-		{Schema: "public", Table: "users", Column: "id", Transformer: &mgmtv1alpha1.JobMappingTransformer{}},
+		{
+			Schema:      "public",
+			Table:       "users",
+			Column:      "id",
+			Transformer: &mgmtv1alpha1.JobMappingTransformer{},
+		},
 	}, map[string]*sqlmanager_shared.DatabaseSchemaRow{}, map[string][]*bb_internal.ReferenceKey{}, []string{}, mockJobId, mockRunId, runconfig, nil, []string{})
 	require.Nil(t, err)
 	require.Empty(t, output)
 
 	output, err = buildProcessorConfigs(ctx, mockTransformerClient, []*mgmtv1alpha1.JobMapping{
-		{Schema: "public", Table: "users", Column: "id", Transformer: &mgmtv1alpha1.JobMappingTransformer{Config: &mgmtv1alpha1.TransformerConfig{
-			Config: &mgmtv1alpha1.TransformerConfig_PassthroughConfig{},
-		}}},
+		{
+			Schema: "public",
+			Table:  "users",
+			Column: "id",
+			Transformer: &mgmtv1alpha1.JobMappingTransformer{
+				Config: &mgmtv1alpha1.TransformerConfig{
+					Config: &mgmtv1alpha1.TransformerConfig_PassthroughConfig{},
+				},
+			},
+		},
 	}, map[string]*sqlmanager_shared.DatabaseSchemaRow{}, map[string][]*bb_internal.ReferenceKey{}, []string{}, mockJobId, mockRunId, runconfig, nil, []string{})
 	require.Nil(t, err)
 	require.Empty(t, output)
 
-	runconfig = rc.NewRunConfig(schemaTable.String(), schemaTable, rc.RunTypeInsert, []string{}, nil, []string{}, []string{"id", "name"}, []*rc.DependsOn{}, false)
+	runconfig = rc.NewRunConfig(
+		schemaTable.String(),
+		schemaTable,
+		rc.RunTypeInsert,
+		[]string{},
+		nil,
+		[]string{},
+		[]string{"id", "name"},
+		[]*rc.DependsOn{},
+		false,
+	)
 	output, err = buildProcessorConfigs(ctx, mockTransformerClient, []*mgmtv1alpha1.JobMapping{
-		{Schema: "public", Table: "users", Column: "id", Transformer: &mgmtv1alpha1.JobMappingTransformer{Config: &mgmtv1alpha1.TransformerConfig{
-			Config: &mgmtv1alpha1.TransformerConfig_Nullconfig{
-				Nullconfig: &mgmtv1alpha1.Null{},
+		{
+			Schema: "public",
+			Table:  "users",
+			Column: "id",
+			Transformer: &mgmtv1alpha1.JobMappingTransformer{
+				Config: &mgmtv1alpha1.TransformerConfig{
+					Config: &mgmtv1alpha1.TransformerConfig_Nullconfig{
+						Nullconfig: &mgmtv1alpha1.Null{},
+					},
+				},
 			},
-		}}},
-		{Schema: "public", Table: "users", Column: "name", Transformer: &mgmtv1alpha1.JobMappingTransformer{Config: &mgmtv1alpha1.TransformerConfig{
-			Config: &mgmtv1alpha1.TransformerConfig_Nullconfig{
-				Nullconfig: &mgmtv1alpha1.Null{},
+		},
+		{
+			Schema: "public",
+			Table:  "users",
+			Column: "name",
+			Transformer: &mgmtv1alpha1.JobMappingTransformer{
+				Config: &mgmtv1alpha1.TransformerConfig{
+					Config: &mgmtv1alpha1.TransformerConfig_Nullconfig{
+						Nullconfig: &mgmtv1alpha1.Null{},
+					},
+				},
 			},
-		}}},
+		},
 	}, map[string]*sqlmanager_shared.DatabaseSchemaRow{}, map[string][]*bb_internal.ReferenceKey{}, []string{}, mockJobId, mockRunId, runconfig, nil, []string{})
 
 	require.Nil(t, err)
@@ -357,12 +459,31 @@ func Test_buildProcessorConfigsMutation(t *testing.T) {
 		},
 	}
 
-	runconfig = rc.NewRunConfig(schemaTable.String(), schemaTable, rc.RunTypeInsert, []string{"id"}, nil, []string{"email"}, []string{"email"}, []*rc.DependsOn{}, false)
+	runconfig = rc.NewRunConfig(
+		schemaTable.String(),
+		schemaTable,
+		rc.RunTypeInsert,
+		[]string{"id"},
+		nil,
+		[]string{"email"},
+		[]string{"email"},
+		[]*rc.DependsOn{},
+		false,
+	)
 	output, err = buildProcessorConfigs(ctx, mockTransformerClient, []*mgmtv1alpha1.JobMapping{
-		{Schema: "public", Table: "users", Column: "email", Transformer: &mgmtv1alpha1.JobMappingTransformer{Config: jsT.Config}}}, groupedSchemas, map[string][]*bb_internal.ReferenceKey{}, []string{}, mockJobId, mockRunId, runconfig, nil, []string{})
+		{
+			Schema:      "public",
+			Table:       "users",
+			Column:      "email",
+			Transformer: &mgmtv1alpha1.JobMappingTransformer{Config: jsT.Config},
+		}}, groupedSchemas, map[string][]*bb_internal.ReferenceKey{}, []string{}, mockJobId, mockRunId, runconfig, nil, []string{})
 
 	require.Nil(t, err)
-	require.Equal(t, `root."email" = transform_email(value:this."email",preserve_length:false,preserve_domain:true,excluded_domains:[],max_length:40,email_type:"uuidv4",invalid_email_action:"reject")`, *output[0].Mutation)
+	require.Equal(
+		t,
+		`root."email" = transform_email(value:this."email",preserve_length:false,preserve_domain:true,excluded_domains:[],max_length:40,email_type:"uuidv4",invalid_email_action:"reject")`,
+		*output[0].Mutation,
+	)
 }
 
 func Test_ShouldProcessColumnTrue(t *testing.T) {
@@ -406,9 +527,24 @@ func Test_buildProcessorConfigsJavascriptEmpty(t *testing.T) {
 	}
 
 	schemaTable := sqlmanager_shared.SchemaTable{Schema: "public", Table: "users"}
-	runconfig := rc.NewRunConfig(schemaTable.String(), schemaTable, rc.RunTypeInsert, []string{"id"}, nil, []string{"id"}, []string{"id"}, []*rc.DependsOn{}, false)
+	runconfig := rc.NewRunConfig(
+		schemaTable.String(),
+		schemaTable,
+		rc.RunTypeInsert,
+		[]string{"id"},
+		nil,
+		[]string{"id"},
+		[]string{"id"},
+		[]*rc.DependsOn{},
+		false,
+	)
 	resp, err := buildProcessorConfigs(ctx, mockTransformerClient, []*mgmtv1alpha1.JobMapping{
-		{Schema: "public", Table: "users", Column: "id", Transformer: &mgmtv1alpha1.JobMappingTransformer{Config: jsT.Config}}}, map[string]*sqlmanager_shared.DatabaseSchemaRow{}, map[string][]*bb_internal.ReferenceKey{}, []string{}, mockJobId, mockRunId, runconfig, nil, []string{})
+		{
+			Schema:      "public",
+			Table:       "users",
+			Column:      "id",
+			Transformer: &mgmtv1alpha1.JobMappingTransformer{Config: jsT.Config},
+		}}, map[string]*sqlmanager_shared.DatabaseSchemaRow{}, map[string][]*bb_internal.ReferenceKey{}, []string{}, mockJobId, mockRunId, runconfig, nil, []string{})
 
 	require.NoError(t, err)
 	require.Empty(t, resp)
@@ -505,7 +641,9 @@ func Test_buildBenthosS3Credentials(t *testing.T) {
 	)
 	require.Equal(
 		t,
-		buildBenthosS3Credentials(&mgmtv1alpha1.AwsS3Credentials{SecretAccessKey: shared.Ptr("foo")}),
+		buildBenthosS3Credentials(
+			&mgmtv1alpha1.AwsS3Credentials{SecretAccessKey: shared.Ptr("foo")},
+		),
 		&neosync_benthos.AwsCredentials{Secret: "foo"},
 	)
 	require.Equal(
@@ -525,7 +663,9 @@ func Test_buildBenthosS3Credentials(t *testing.T) {
 	)
 	require.Equal(
 		t,
-		buildBenthosS3Credentials(&mgmtv1alpha1.AwsS3Credentials{RoleExternalId: shared.Ptr("foo")}),
+		buildBenthosS3Credentials(
+			&mgmtv1alpha1.AwsS3Credentials{RoleExternalId: shared.Ptr("foo")},
+		),
 		&neosync_benthos.AwsCredentials{RoleExternalId: "foo"},
 	)
 	require.Equal(
@@ -555,7 +695,9 @@ func Test_computeMutationFunction_null(t *testing.T) {
 	val, err := computeMutationFunction(
 		&mgmtv1alpha1.JobMapping{
 			Transformer: &mgmtv1alpha1.JobMappingTransformer{
-				Config: &mgmtv1alpha1.TransformerConfig{Config: &mgmtv1alpha1.TransformerConfig_Nullconfig{}},
+				Config: &mgmtv1alpha1.TransformerConfig{
+					Config: &mgmtv1alpha1.TransformerConfig_Nullconfig{},
+				},
 			},
 		}, &sqlmanager_shared.DatabaseSchemaRow{}, false)
 	require.NoError(t, err)
@@ -981,7 +1123,14 @@ func Test_computeMutationFunction_Validate_Bloblang_Output(t *testing.T) {
 				}, emailColInfo, false)
 			require.NoError(t, err)
 			ex, err := blobenv.Parse(val)
-			require.NoError(t, err, fmt.Sprintf("transformer lint failed, check that the transformer string is being constructed correctly. Failing Config: %T", transformer.Config.Config))
+			require.NoError(
+				t,
+				err,
+				fmt.Sprintf(
+					"transformer lint failed, check that the transformer string is being constructed correctly. Failing Config: %T",
+					transformer.Config.Config,
+				),
+			)
 			_, err = ex.Query(nil)
 			require.NoError(t, err)
 		})
@@ -991,127 +1140,209 @@ func Test_computeMutationFunction_Validate_Bloblang_Output(t *testing.T) {
 func Test_computeMutationFunction_Validate_Bloblang_Output_EmptyConfigs(t *testing.T) {
 	transformers := []*mgmtv1alpha1.SystemTransformer{
 		{
-			Config: &mgmtv1alpha1.TransformerConfig{Config: &mgmtv1alpha1.TransformerConfig_GenerateEmailConfig{}},
+			Config: &mgmtv1alpha1.TransformerConfig{
+				Config: &mgmtv1alpha1.TransformerConfig_GenerateEmailConfig{},
+			},
 		},
 		{
-			Config: &mgmtv1alpha1.TransformerConfig{Config: &mgmtv1alpha1.TransformerConfig_TransformEmailConfig{}},
+			Config: &mgmtv1alpha1.TransformerConfig{
+				Config: &mgmtv1alpha1.TransformerConfig_TransformEmailConfig{},
+			},
 		},
 		{
-			Config: &mgmtv1alpha1.TransformerConfig{Config: &mgmtv1alpha1.TransformerConfig_GenerateBoolConfig{}},
+			Config: &mgmtv1alpha1.TransformerConfig{
+				Config: &mgmtv1alpha1.TransformerConfig_GenerateBoolConfig{},
+			},
 		},
 		{
-			Config: &mgmtv1alpha1.TransformerConfig{Config: &mgmtv1alpha1.TransformerConfig_GenerateCardNumberConfig{}},
+			Config: &mgmtv1alpha1.TransformerConfig{
+				Config: &mgmtv1alpha1.TransformerConfig_GenerateCardNumberConfig{},
+			},
 		},
 		{
-			Config: &mgmtv1alpha1.TransformerConfig{Config: &mgmtv1alpha1.TransformerConfig_GenerateCityConfig{}},
+			Config: &mgmtv1alpha1.TransformerConfig{
+				Config: &mgmtv1alpha1.TransformerConfig_GenerateCityConfig{},
+			},
 		},
 		{
-			Config: &mgmtv1alpha1.TransformerConfig{Config: &mgmtv1alpha1.TransformerConfig_GenerateE164PhoneNumberConfig{}},
+			Config: &mgmtv1alpha1.TransformerConfig{
+				Config: &mgmtv1alpha1.TransformerConfig_GenerateE164PhoneNumberConfig{},
+			},
 		},
 		{
-			Config: &mgmtv1alpha1.TransformerConfig{Config: &mgmtv1alpha1.TransformerConfig_GenerateFirstNameConfig{}},
+			Config: &mgmtv1alpha1.TransformerConfig{
+				Config: &mgmtv1alpha1.TransformerConfig_GenerateFirstNameConfig{},
+			},
 		},
 		{
-			Config: &mgmtv1alpha1.TransformerConfig{Config: &mgmtv1alpha1.TransformerConfig_GenerateFloat64Config{}},
+			Config: &mgmtv1alpha1.TransformerConfig{
+				Config: &mgmtv1alpha1.TransformerConfig_GenerateFloat64Config{},
+			},
 		},
 		{
-			Config: &mgmtv1alpha1.TransformerConfig{Config: &mgmtv1alpha1.TransformerConfig_GenerateFullAddressConfig{}},
+			Config: &mgmtv1alpha1.TransformerConfig{
+				Config: &mgmtv1alpha1.TransformerConfig_GenerateFullAddressConfig{},
+			},
 		},
 		{
-			Config: &mgmtv1alpha1.TransformerConfig{Config: &mgmtv1alpha1.TransformerConfig_GenerateFullNameConfig{}},
+			Config: &mgmtv1alpha1.TransformerConfig{
+				Config: &mgmtv1alpha1.TransformerConfig_GenerateFullNameConfig{},
+			},
 		},
 		{
-			Config: &mgmtv1alpha1.TransformerConfig{Config: &mgmtv1alpha1.TransformerConfig_GenerateGenderConfig{}},
+			Config: &mgmtv1alpha1.TransformerConfig{
+				Config: &mgmtv1alpha1.TransformerConfig_GenerateGenderConfig{},
+			},
 		},
 		{
-			Config: &mgmtv1alpha1.TransformerConfig{Config: &mgmtv1alpha1.TransformerConfig_GenerateInt64PhoneNumberConfig{}},
+			Config: &mgmtv1alpha1.TransformerConfig{
+				Config: &mgmtv1alpha1.TransformerConfig_GenerateInt64PhoneNumberConfig{},
+			},
 		},
 		{
-			Config: &mgmtv1alpha1.TransformerConfig{Config: &mgmtv1alpha1.TransformerConfig_GenerateInt64Config{}},
+			Config: &mgmtv1alpha1.TransformerConfig{
+				Config: &mgmtv1alpha1.TransformerConfig_GenerateInt64Config{},
+			},
 		},
 		{
-			Config: &mgmtv1alpha1.TransformerConfig{Config: &mgmtv1alpha1.TransformerConfig_GenerateLastNameConfig{}},
+			Config: &mgmtv1alpha1.TransformerConfig{
+				Config: &mgmtv1alpha1.TransformerConfig_GenerateLastNameConfig{},
+			},
 		},
 		{
-			Config: &mgmtv1alpha1.TransformerConfig{Config: &mgmtv1alpha1.TransformerConfig_GenerateSha256HashConfig{}},
+			Config: &mgmtv1alpha1.TransformerConfig{
+				Config: &mgmtv1alpha1.TransformerConfig_GenerateSha256HashConfig{},
+			},
 		},
 		{
-			Config: &mgmtv1alpha1.TransformerConfig{Config: &mgmtv1alpha1.TransformerConfig_GenerateSsnConfig{}},
+			Config: &mgmtv1alpha1.TransformerConfig{
+				Config: &mgmtv1alpha1.TransformerConfig_GenerateSsnConfig{},
+			},
 		},
 		{
-			Config: &mgmtv1alpha1.TransformerConfig{Config: &mgmtv1alpha1.TransformerConfig_GenerateStateConfig{}},
+			Config: &mgmtv1alpha1.TransformerConfig{
+				Config: &mgmtv1alpha1.TransformerConfig_GenerateStateConfig{},
+			},
 		},
 		{
-			Config: &mgmtv1alpha1.TransformerConfig{Config: &mgmtv1alpha1.TransformerConfig_GenerateStreetAddressConfig{}},
+			Config: &mgmtv1alpha1.TransformerConfig{
+				Config: &mgmtv1alpha1.TransformerConfig_GenerateStreetAddressConfig{},
+			},
 		},
 		{
-			Config: &mgmtv1alpha1.TransformerConfig{Config: &mgmtv1alpha1.TransformerConfig_GenerateStringPhoneNumberConfig{}},
+			Config: &mgmtv1alpha1.TransformerConfig{
+				Config: &mgmtv1alpha1.TransformerConfig_GenerateStringPhoneNumberConfig{},
+			},
 		},
 		{
-			Config: &mgmtv1alpha1.TransformerConfig{Config: &mgmtv1alpha1.TransformerConfig_GenerateStringConfig{}},
+			Config: &mgmtv1alpha1.TransformerConfig{
+				Config: &mgmtv1alpha1.TransformerConfig_GenerateStringConfig{},
+			},
 		},
 		{
-			Config: &mgmtv1alpha1.TransformerConfig{Config: &mgmtv1alpha1.TransformerConfig_GenerateUnixtimestampConfig{}},
+			Config: &mgmtv1alpha1.TransformerConfig{
+				Config: &mgmtv1alpha1.TransformerConfig_GenerateUnixtimestampConfig{},
+			},
 		},
 		{
-			Config: &mgmtv1alpha1.TransformerConfig{Config: &mgmtv1alpha1.TransformerConfig_GenerateUsernameConfig{}},
+			Config: &mgmtv1alpha1.TransformerConfig{
+				Config: &mgmtv1alpha1.TransformerConfig_GenerateUsernameConfig{},
+			},
 		},
 		{
-			Config: &mgmtv1alpha1.TransformerConfig{Config: &mgmtv1alpha1.TransformerConfig_GenerateUtctimestampConfig{}},
+			Config: &mgmtv1alpha1.TransformerConfig{
+				Config: &mgmtv1alpha1.TransformerConfig_GenerateUtctimestampConfig{},
+			},
 		},
 		{
-			Config: &mgmtv1alpha1.TransformerConfig{Config: &mgmtv1alpha1.TransformerConfig_GenerateUuidConfig{}},
+			Config: &mgmtv1alpha1.TransformerConfig{
+				Config: &mgmtv1alpha1.TransformerConfig_GenerateUuidConfig{},
+			},
 		},
 		{
-			Config: &mgmtv1alpha1.TransformerConfig{Config: &mgmtv1alpha1.TransformerConfig_GenerateZipcodeConfig{}},
+			Config: &mgmtv1alpha1.TransformerConfig{
+				Config: &mgmtv1alpha1.TransformerConfig_GenerateZipcodeConfig{},
+			},
 		},
 		{
-			Config: &mgmtv1alpha1.TransformerConfig{Config: &mgmtv1alpha1.TransformerConfig_TransformE164PhoneNumberConfig{}},
+			Config: &mgmtv1alpha1.TransformerConfig{
+				Config: &mgmtv1alpha1.TransformerConfig_TransformE164PhoneNumberConfig{},
+			},
 		},
 		{
-			Config: &mgmtv1alpha1.TransformerConfig{Config: &mgmtv1alpha1.TransformerConfig_GenerateFirstNameConfig{}},
+			Config: &mgmtv1alpha1.TransformerConfig{
+				Config: &mgmtv1alpha1.TransformerConfig_GenerateFirstNameConfig{},
+			},
 		},
 		{
-			Config: &mgmtv1alpha1.TransformerConfig{Config: &mgmtv1alpha1.TransformerConfig_GenerateFloat64Config{}},
+			Config: &mgmtv1alpha1.TransformerConfig{
+				Config: &mgmtv1alpha1.TransformerConfig_GenerateFloat64Config{},
+			},
 		},
 		{
-			Config: &mgmtv1alpha1.TransformerConfig{Config: &mgmtv1alpha1.TransformerConfig_TransformFullNameConfig{}},
+			Config: &mgmtv1alpha1.TransformerConfig{
+				Config: &mgmtv1alpha1.TransformerConfig_TransformFullNameConfig{},
+			},
 		},
 		{
-			Config: &mgmtv1alpha1.TransformerConfig{Config: &mgmtv1alpha1.TransformerConfig_TransformInt64PhoneNumberConfig{}},
+			Config: &mgmtv1alpha1.TransformerConfig{
+				Config: &mgmtv1alpha1.TransformerConfig_TransformInt64PhoneNumberConfig{},
+			},
 		},
 		{
-			Config: &mgmtv1alpha1.TransformerConfig{Config: &mgmtv1alpha1.TransformerConfig_TransformInt64Config{}},
+			Config: &mgmtv1alpha1.TransformerConfig{
+				Config: &mgmtv1alpha1.TransformerConfig_TransformInt64Config{},
+			},
 		},
 		{
-			Config: &mgmtv1alpha1.TransformerConfig{Config: &mgmtv1alpha1.TransformerConfig_TransformLastNameConfig{}},
+			Config: &mgmtv1alpha1.TransformerConfig{
+				Config: &mgmtv1alpha1.TransformerConfig_TransformLastNameConfig{},
+			},
 		},
 		{
-			Config: &mgmtv1alpha1.TransformerConfig{Config: &mgmtv1alpha1.TransformerConfig_TransformPhoneNumberConfig{}},
+			Config: &mgmtv1alpha1.TransformerConfig{
+				Config: &mgmtv1alpha1.TransformerConfig_TransformPhoneNumberConfig{},
+			},
 		},
 		{
-			Config: &mgmtv1alpha1.TransformerConfig{Config: &mgmtv1alpha1.TransformerConfig_TransformStringConfig{}},
+			Config: &mgmtv1alpha1.TransformerConfig{
+				Config: &mgmtv1alpha1.TransformerConfig_TransformStringConfig{},
+			},
 		},
 		{
-			Config: &mgmtv1alpha1.TransformerConfig{Config: &mgmtv1alpha1.TransformerConfig_GenerateCategoricalConfig{}},
+			Config: &mgmtv1alpha1.TransformerConfig{
+				Config: &mgmtv1alpha1.TransformerConfig_GenerateCategoricalConfig{},
+			},
 		},
 		{
-			Config: &mgmtv1alpha1.TransformerConfig{Config: &mgmtv1alpha1.TransformerConfig_TransformCharacterScrambleConfig{}},
+			Config: &mgmtv1alpha1.TransformerConfig{
+				Config: &mgmtv1alpha1.TransformerConfig_TransformCharacterScrambleConfig{},
+			},
 		},
 		{
-			Config: &mgmtv1alpha1.TransformerConfig{Config: &mgmtv1alpha1.TransformerConfig_GenerateDefaultConfig{}},
+			Config: &mgmtv1alpha1.TransformerConfig{
+				Config: &mgmtv1alpha1.TransformerConfig_GenerateDefaultConfig{},
+			},
 		},
 		{
-			Config: &mgmtv1alpha1.TransformerConfig{Config: &mgmtv1alpha1.TransformerConfig_Nullconfig{}},
+			Config: &mgmtv1alpha1.TransformerConfig{
+				Config: &mgmtv1alpha1.TransformerConfig_Nullconfig{},
+			},
 		},
 		{
-			Config: &mgmtv1alpha1.TransformerConfig{Config: &mgmtv1alpha1.TransformerConfig_GenerateCountryConfig{}},
+			Config: &mgmtv1alpha1.TransformerConfig{
+				Config: &mgmtv1alpha1.TransformerConfig_GenerateCountryConfig{},
+			},
 		},
 		{
-			Config: &mgmtv1alpha1.TransformerConfig{Config: &mgmtv1alpha1.TransformerConfig_TransformScrambleIdentityConfig{}},
+			Config: &mgmtv1alpha1.TransformerConfig{
+				Config: &mgmtv1alpha1.TransformerConfig_TransformScrambleIdentityConfig{},
+			},
 		},
 		{
-			Config: &mgmtv1alpha1.TransformerConfig{Config: &mgmtv1alpha1.TransformerConfig_TransformPiiTextConfig{}},
+			Config: &mgmtv1alpha1.TransformerConfig{
+				Config: &mgmtv1alpha1.TransformerConfig_TransformPiiTextConfig{},
+			},
 		},
 	}
 
@@ -1140,7 +1371,14 @@ func Test_computeMutationFunction_Validate_Bloblang_Output_EmptyConfigs(t *testi
 				}, emailColInfo, false)
 			require.NoError(t, err)
 			ex, err := blobenv.Parse(val)
-			require.NoError(t, err, fmt.Sprintf("transformer lint failed, check that the transformer string is being constructed correctly. Failing Config: %T", transformer.Config.Config))
+			require.NoError(
+				t,
+				err,
+				fmt.Sprintf(
+					"transformer lint failed, check that the transformer string is being constructed correctly. Failing Config: %T",
+					transformer.Config.Config,
+				),
+			)
 			_, err = ex.Query(nil)
 			require.NoError(t, err)
 		})
@@ -1276,7 +1514,11 @@ func Test_buildBranchCacheConfigs_success(t *testing.T) {
 	resp := buildBranchCacheConfigs(cols, constraints, mockJobId, mockRunId)
 
 	require.Len(t, resp, 1)
-	require.Equal(t, *resp[0].RequestMap, `root = if this."user_id" == null { deleted() } else { this }`)
+	require.Equal(
+		t,
+		*resp[0].RequestMap,
+		`root = if this."user_id" == null { deleted() } else { this }`,
+	)
 	require.Equal(t, *resp[0].ResultMap, `root."user_id" = this`)
 }
 

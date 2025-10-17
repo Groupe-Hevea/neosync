@@ -5,8 +5,8 @@ import (
 	"reflect"
 	"testing"
 
+	neosync_types "github.com/Groupe-Hevea/neosync/internal/types"
 	"github.com/aws/aws-sdk-go-v2/service/dynamodb/types"
-	neosync_types "github.com/nucleuscloud/neosync/internal/types"
 	"github.com/stretchr/testify/require"
 )
 
@@ -54,7 +54,11 @@ func Test_UnmarshalAttributeValueMap(t *testing.T) {
 
 	actual, keyTypeMap, err := mapper.MapRecordWithKeyType(input)
 	require.NoError(t, err)
-	require.True(t, reflect.DeepEqual(actual, expected), fmt.Sprintf("expected %v, got %v", expected, actual))
+	require.True(
+		t,
+		reflect.DeepEqual(actual, expected),
+		fmt.Sprintf("expected %v, got %v", expected, actual),
+	)
 	require.Equal(t, keyTypeMap["StrSet"], neosync_types.StringSet)
 	require.Equal(t, keyTypeMap["NumSet"], neosync_types.NumberSet)
 }
@@ -128,7 +132,17 @@ func Test_ParseAttributeValue(t *testing.T) {
 			ktm := map[string]neosync_types.KeyType{}
 			actual, err := parseAttributeValue(tt.name, tt.input, ktm)
 			require.NoError(t, err)
-			require.True(t, reflect.DeepEqual(actual, tt.expected), fmt.Sprintf("expected %v %v, got %v %v", tt.expected, reflect.TypeOf(tt.expected), actual, reflect.TypeOf(actual)))
+			require.True(
+				t,
+				reflect.DeepEqual(actual, tt.expected),
+				fmt.Sprintf(
+					"expected %v %v, got %v %v",
+					tt.expected,
+					reflect.TypeOf(tt.expected),
+					actual,
+					reflect.TypeOf(actual),
+				),
+			)
 		})
 	}
 }

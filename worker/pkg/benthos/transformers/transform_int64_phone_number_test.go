@@ -7,8 +7,8 @@ import (
 	"testing"
 	"time"
 
-	transformer_utils "github.com/nucleuscloud/neosync/worker/pkg/benthos/transformers/utils"
-	"github.com/nucleuscloud/neosync/worker/pkg/rng"
+	transformer_utils "github.com/Groupe-Hevea/neosync/worker/pkg/benthos/transformers/utils"
+	"github.com/Groupe-Hevea/neosync/worker/pkg/rng"
 	"github.com/redpanda-data/benthos/v4/public/bloblang"
 	"github.com/stretchr/testify/assert"
 )
@@ -20,7 +20,12 @@ func Test_GenerateIntPhoneNumberPreserveLengthTrue(t *testing.T) {
 	assert.NoError(t, err)
 
 	numStr := strconv.FormatInt(*res, 10)
-	assert.Equal(t, int64(len(numStr)), transformer_utils.GetInt64Length(testValue), "The length of the output phone number should be the same as the input phone number")
+	assert.Equal(
+		t,
+		int64(len(numStr)),
+		transformer_utils.GetInt64Length(testValue),
+		"The length of the output phone number should be the same as the input phone number",
+	)
 }
 
 func Test_GenerateIntPhoneNumberPreserveLengthFalse(t *testing.T) {
@@ -28,7 +33,12 @@ func Test_GenerateIntPhoneNumberPreserveLengthFalse(t *testing.T) {
 	assert.NoError(t, err)
 
 	numStr := strconv.FormatInt(*res, 10)
-	assert.Equal(t, int64(len(numStr)), transformer_utils.GetInt64Length(testValue), "The length of the output phone number should be the same as the input phone number")
+	assert.Equal(
+		t,
+		int64(len(numStr)),
+		transformer_utils.GetInt64Length(testValue),
+		"The length of the output phone number should be the same as the input phone number",
+	)
 }
 
 func Test_GenerateIntPhoneNumberPreserveLengthFunction(t *testing.T) {
@@ -36,11 +46,18 @@ func Test_GenerateIntPhoneNumberPreserveLengthFunction(t *testing.T) {
 	assert.NoError(t, err)
 
 	numStr := strconv.FormatInt(res, 10)
-	assert.False(t, strings.Contains(numStr, "-"), "The output int phone number should not contain hyphens and may not be the same length as the input")
+	assert.False(
+		t,
+		strings.Contains(numStr, "-"),
+		"The output int phone number should not contain hyphens and may not be the same length as the input",
+	)
 }
 
 func Test_IntPhoneNumberTransformer(t *testing.T) {
-	mapping := fmt.Sprintf(`root = transform_int64_phone_number(value:%d,preserve_length:true)`, testValue)
+	mapping := fmt.Sprintf(
+		`root = transform_int64_phone_number(value:%d,preserve_length:true)`,
+		testValue,
+	)
 	ex, err := bloblang.Parse(mapping)
 	assert.NoError(t, err, "failed to parse the int64 phone transformer")
 
@@ -59,7 +76,12 @@ func Test_IntPhoneNumberTransformer(t *testing.T) {
 
 	if resInt != nil {
 		resStr := strconv.FormatInt(*resInt, 10)
-		assert.Equal(t, len(resStr), len(numStr), "Generated phone number must be the same length as the input phone number")
+		assert.Equal(
+			t,
+			len(resStr),
+			len(numStr),
+			"Generated phone number must be the same length as the input phone number",
+		)
 		assert.IsType(t, *resInt, testValue, "The phone number should be of type int64")
 	} else {
 		t.Error("Pointer is nil, expected a valid int64 pointer")
@@ -68,7 +90,10 @@ func Test_IntPhoneNumberTransformer(t *testing.T) {
 
 func Test_TransformIntPhoneTransformerWithEmptyValue(t *testing.T) {
 	nilNum := 0
-	mapping := fmt.Sprintf(`root = transform_int64_phone_number(value:%d,preserve_length:true)`, nilNum)
+	mapping := fmt.Sprintf(
+		`root = transform_int64_phone_number(value:%d,preserve_length:true)`,
+		nilNum,
+	)
 	ex, err := bloblang.Parse(mapping)
 	assert.NoError(t, err, "failed to parse the int phone number transformer")
 

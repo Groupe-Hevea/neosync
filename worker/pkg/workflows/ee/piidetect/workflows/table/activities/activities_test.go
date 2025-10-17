@@ -6,10 +6,10 @@ import (
 	"testing"
 
 	"connectrpc.com/connect"
-	mgmtv1alpha1 "github.com/nucleuscloud/neosync/backend/gen/go/protos/mgmt/v1alpha1"
-	"github.com/nucleuscloud/neosync/backend/gen/go/protos/mgmt/v1alpha1/mgmtv1alpha1connect"
-	"github.com/nucleuscloud/neosync/internal/connectiondata"
-	"github.com/nucleuscloud/neosync/internal/testutil"
+	mgmtv1alpha1 "github.com/Groupe-Hevea/neosync/backend/gen/go/protos/mgmt/v1alpha1"
+	"github.com/Groupe-Hevea/neosync/backend/gen/go/protos/mgmt/v1alpha1/mgmtv1alpha1connect"
+	"github.com/Groupe-Hevea/neosync/internal/connectiondata"
+	"github.com/Groupe-Hevea/neosync/internal/testutil"
 	"github.com/openai/openai-go"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
@@ -39,23 +39,27 @@ func Test_GetColumnData_Success(t *testing.T) {
 	mockConnDataBuilder := connectiondata.NewMockConnectionDataBuilder(t)
 	mockJobClient := mgmtv1alpha1connect.NewMockJobServiceClient(t)
 
-	mockConnDataBuilder.EXPECT().NewDataConnection(mock.Anything, mock.Anything).Return(mockConnData, nil)
-	mockConnData.EXPECT().GetTableSchema(mock.Anything, "public", "users").Return([]*mgmtv1alpha1.DatabaseColumn{
-		{
-			Schema:     "public",
-			Table:      "users",
-			Column:     "id",
-			DataType:   "uuid",
-			IsNullable: "NO",
-		},
-		{
-			Schema:     "public",
-			Table:      "users",
-			Column:     "email",
-			DataType:   "varchar",
-			IsNullable: "YES",
-		},
-	}, nil)
+	mockConnDataBuilder.EXPECT().
+		NewDataConnection(mock.Anything, mock.Anything).
+		Return(mockConnData, nil)
+	mockConnData.EXPECT().
+		GetTableSchema(mock.Anything, "public", "users").
+		Return([]*mgmtv1alpha1.DatabaseColumn{
+			{
+				Schema:     "public",
+				Table:      "users",
+				Column:     "id",
+				DataType:   "uuid",
+				IsNullable: "NO",
+			},
+			{
+				Schema:     "public",
+				Table:      "users",
+				Column:     "email",
+				DataType:   "varchar",
+				IsNullable: "YES",
+			},
+		}, nil)
 
 	mockConnClient.EXPECT().GetConnection(mock.Anything, mock.Anything).
 		Return(connect.NewResponse(&mgmtv1alpha1.GetConnectionResponse{
@@ -137,14 +141,20 @@ func Test_DetectPiiLLM_Success(t *testing.T) {
 	mockConnDataBuilder := connectiondata.NewMockConnectionDataBuilder(t)
 	mockJobClient := mgmtv1alpha1connect.NewMockJobServiceClient(t)
 
-	mockConnDataBuilder.EXPECT().NewDataConnection(mock.Anything, mock.Anything).Return(mockConnData, nil)
-	mockConnData.EXPECT().SampleData(mock.Anything, mock.Anything, "public", "users", uint(5)).Return(nil)
+	mockConnDataBuilder.EXPECT().
+		NewDataConnection(mock.Anything, mock.Anything).
+		Return(mockConnData, nil)
+	mockConnData.EXPECT().
+		SampleData(mock.Anything, mock.Anything, "public", "users", uint(5)).
+		Return(nil)
 
-	mockConnClient.EXPECT().GetConnection(mock.Anything, mock.Anything).Return(connect.NewResponse(&mgmtv1alpha1.GetConnectionResponse{
-		Connection: &mgmtv1alpha1.Connection{
-			Id: "test-conn",
-		},
-	}), nil)
+	mockConnClient.EXPECT().
+		GetConnection(mock.Anything, mock.Anything).
+		Return(connect.NewResponse(&mgmtv1alpha1.GetConnectionResponse{
+			Connection: &mgmtv1alpha1.Connection{
+				Id: "test-conn",
+			},
+		}), nil)
 
 	mockOpenAIClient.EXPECT().New(mock.Anything, mock.Anything).Return(&openai.ChatCompletion{
 		Choices: []openai.ChatCompletionChoice{
@@ -197,30 +207,36 @@ func Test_SaveTablePiiDetectReport_Success(t *testing.T) {
 	mockConnDataBuilder := connectiondata.NewMockConnectionDataBuilder(t)
 	mockJobClient := mgmtv1alpha1connect.NewMockJobServiceClient(t)
 
-	mockJobClient.EXPECT().SetRunContext(mock.Anything, mock.Anything).Return(connect.NewResponse(&mgmtv1alpha1.SetRunContextResponse{}), nil)
+	mockJobClient.EXPECT().
+		SetRunContext(mock.Anything, mock.Anything).
+		Return(connect.NewResponse(&mgmtv1alpha1.SetRunContextResponse{}), nil)
 
 	activities := New(mockConnClient, mockOpenAIClient, mockConnDataBuilder, mockJobClient)
 
 	env.RegisterActivity(activities)
 
 	parentRunId := "test-run"
-	val, err := env.ExecuteActivity(activities.SaveTablePiiDetectReport, &SaveTablePiiDetectReportRequest{
-		ParentRunId: &parentRunId,
-		AccountId:   "test-account",
-		TableSchema: "public",
-		TableName:   "users",
-		Report: map[string]CombinedPiiDetectReport{
-			"email": {
-				Regex: &RegexPiiDetectReport{
-					Category: PiiCategoryContact,
-				},
-				LLM: &LLMPiiDetectReport{
-					Category:   PiiCategoryContact,
-					Confidence: 0.95,
+	val, err := env.ExecuteActivity(
+		activities.SaveTablePiiDetectReport,
+		&SaveTablePiiDetectReportRequest{
+			ParentRunId: &parentRunId,
+			AccountId:   "test-account",
+			TableSchema: "public",
+			TableName:   "users",
+			Report: map[string]CombinedPiiDetectReport{
+				"email": {
+					Regex: &RegexPiiDetectReport{
+						Category: PiiCategoryContact,
+					},
+					LLM: &LLMPiiDetectReport{
+						Category:   PiiCategoryContact,
+						Confidence: 0.95,
+					},
 				},
 			},
 		},
-	}, nil)
+		nil,
+	)
 
 	require.NoError(t, err)
 	res := &SaveTablePiiDetectReportResponse{}
@@ -316,7 +332,11 @@ func TestRecords_ToPromptString(t *testing.T) {
 		maxRecords := uint(5)
 		result, err := records.ToPromptString(maxRecords)
 		assert.NoError(t, err)
-		assert.Equal(t, `{"email":["john@example.com","jane@example.com"],"name":["John","Jane"]}`, result)
+		assert.Equal(
+			t,
+			`{"email":["john@example.com","jane@example.com"],"name":["John","Jane"]}`,
+			result,
+		)
 	})
 
 	t.Run("limit records", func(t *testing.T) {

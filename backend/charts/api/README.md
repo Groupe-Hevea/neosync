@@ -6,7 +6,7 @@ A Helm chart for the Neosync Backend API
 
 ## Source Code
 
-* <https://github.com/nucleuscloud/neosync>
+* <https://github.com/Groupe-Hevea/neosync>
 
 ## Values
 
@@ -42,7 +42,7 @@ A Helm chart for the Neosync Backend API
 | fullnameOverride | string | `nil` | Fully overrides the chart name |
 | host | string | `"0.0.0.0"` | Sets the host that the backend will listen on. 0.0.0.0 is common for Kubernetes workloads. |
 | image.pullPolicy | string | `nil` | Overrides the default K8s pull policy |
-| image.repository | string | `"ghcr.io/nucleuscloud/neosync/api"` | The default image repository |
+| image.repository | string | `"ghcr.io/Groupe-Hevea/neosync/api"` | The default image repository |
 | image.tag | string | `nil` | Overrides the image tag whose default is {{ printf "v%s" .Chart.AppVersion }} |
 | imagePullSecrets | list | `[]` | Define a list of image pull secrets that will be used by the deployment |
 | ingress.enabled | bool | `false` | Enable this if using K8s ingress to expose the backend to the internet |

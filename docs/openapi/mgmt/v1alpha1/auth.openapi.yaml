@@ -8,7 +8,7 @@ info:
     email: support@neosync.dev
   license:
     name: MIT
-    url: https://github.com/nucleuscloud/neosync/blob/main/LICENSE.md
+    url: https://github.com/Groupe-Hevea/neosync/blob/main/LICENSE.md
   title: mgmt.v1alpha1
 externalDocs:
   description: API and SDK Documentation

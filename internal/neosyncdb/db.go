@@ -5,12 +5,12 @@ import (
 	"fmt"
 	"log/slog"
 
+	db_queries "github.com/Groupe-Hevea/neosync/backend/gen/go/db"
+	pgxslog "github.com/Groupe-Hevea/neosync/internal/pgx-slog"
 	"github.com/jackc/pgx/v5"
 	"github.com/jackc/pgx/v5/pgconn"
 	"github.com/jackc/pgx/v5/pgxpool"
 	"github.com/jackc/pgx/v5/tracelog"
-	db_queries "github.com/nucleuscloud/neosync/backend/gen/go/db"
-	pgxslog "github.com/nucleuscloud/neosync/internal/pgx-slog"
 )
 
 type DBTX interface {

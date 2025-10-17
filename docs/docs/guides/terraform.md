@@ -41,7 +41,7 @@ If self-hosting Neosync and running without authentication, or simply wanting to
 
 ## Terraform Registry Docs
 
-To dive deeper into the provider documentation, head over to the latest docs page on the [Terraform Registry](https://registry.terraform.io/providers/nucleuscloud/neosync/latest/docs).
+To dive deeper into the provider documentation, head over to the latest docs page on the [Terraform Registry](https://registry.terraform.io/providers/Groupe-Hevea/neosync/latest/docs).
 The registry documentation provided a better look into what resources are available, as well as examples of how to use them.
 
 ## Bugs or Features

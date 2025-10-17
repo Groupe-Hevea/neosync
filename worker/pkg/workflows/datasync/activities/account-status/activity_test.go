@@ -7,10 +7,10 @@ import (
 	"testing"
 
 	"connectrpc.com/connect"
+	mgmtv1alpha1 "github.com/Groupe-Hevea/neosync/backend/gen/go/protos/mgmt/v1alpha1"
+	"github.com/Groupe-Hevea/neosync/backend/gen/go/protos/mgmt/v1alpha1/mgmtv1alpha1connect"
+	"github.com/Groupe-Hevea/neosync/internal/testutil"
 	"github.com/google/uuid"
-	mgmtv1alpha1 "github.com/nucleuscloud/neosync/backend/gen/go/protos/mgmt/v1alpha1"
-	"github.com/nucleuscloud/neosync/backend/gen/go/protos/mgmt/v1alpha1/mgmtv1alpha1connect"
-	"github.com/nucleuscloud/neosync/internal/testutil"
 	"github.com/stretchr/testify/require"
 	"go.temporal.io/sdk/log"
 	"go.temporal.io/sdk/testsuite"
@@ -29,15 +29,22 @@ func Test_Activity_Success(t *testing.T) {
 	accountId := uuid.NewString()
 
 	mux := http.NewServeMux()
-	mux.Handle(mgmtv1alpha1connect.UserAccountServiceIsAccountStatusValidProcedure, connect.NewUnaryHandler(
+	mux.Handle(
 		mgmtv1alpha1connect.UserAccountServiceIsAccountStatusValidProcedure,
-		func(ctx context.Context, r *connect.Request[mgmtv1alpha1.IsAccountStatusValidRequest]) (*connect.Response[mgmtv1alpha1.IsAccountStatusValidResponse], error) {
-			if r.Msg.GetAccountId() == accountId {
-				return connect.NewResponse(&mgmtv1alpha1.IsAccountStatusValidResponse{IsValid: true}), nil
-			}
-			return connect.NewResponse(&mgmtv1alpha1.IsAccountStatusValidResponse{IsValid: false}), nil
-		},
-	))
+		connect.NewUnaryHandler(
+			mgmtv1alpha1connect.UserAccountServiceIsAccountStatusValidProcedure,
+			func(ctx context.Context, r *connect.Request[mgmtv1alpha1.IsAccountStatusValidRequest]) (*connect.Response[mgmtv1alpha1.IsAccountStatusValidResponse], error) {
+				if r.Msg.GetAccountId() == accountId {
+					return connect.NewResponse(
+						&mgmtv1alpha1.IsAccountStatusValidResponse{IsValid: true},
+					), nil
+				}
+				return connect.NewResponse(
+					&mgmtv1alpha1.IsAccountStatusValidResponse{IsValid: false},
+				), nil
+			},
+		),
+	)
 	srv := startHTTPServer(t, mux)
 
 	userclient := mgmtv1alpha1connect.NewUserAccountServiceClient(srv.Client(), srv.URL)
@@ -45,7 +52,10 @@ func Test_Activity_Success(t *testing.T) {
 
 	env.RegisterActivity(activity)
 
-	val, err := env.ExecuteActivity(activity.CheckAccountStatus, &CheckAccountStatusRequest{AccountId: accountId})
+	val, err := env.ExecuteActivity(
+		activity.CheckAccountStatus,
+		&CheckAccountStatusRequest{AccountId: accountId},
+	)
 	require.NoError(t, err)
 	res := &CheckAccountStatusResponse{}
 	err = val.Get(res)
@@ -62,16 +72,24 @@ func Test_Activity_Success_With_RequestedRecordCount(t *testing.T) {
 	accountId := uuid.NewString()
 
 	mux := http.NewServeMux()
-	mux.Handle(mgmtv1alpha1connect.UserAccountServiceIsAccountStatusValidProcedure, connect.NewUnaryHandler(
+	mux.Handle(
 		mgmtv1alpha1connect.UserAccountServiceIsAccountStatusValidProcedure,
-		func(ctx context.Context, r *connect.Request[mgmtv1alpha1.IsAccountStatusValidRequest]) (*connect.Response[mgmtv1alpha1.IsAccountStatusValidResponse], error) {
-			if r.Msg.GetAccountId() == accountId && r.Msg.GetRequestedRecordCount() == uint64(5) {
-				reason := "foo"
-				return connect.NewResponse(&mgmtv1alpha1.IsAccountStatusValidResponse{IsValid: false, Reason: &reason}), nil
-			}
-			return connect.NewResponse(&mgmtv1alpha1.IsAccountStatusValidResponse{IsValid: true}), nil
-		},
-	))
+		connect.NewUnaryHandler(
+			mgmtv1alpha1connect.UserAccountServiceIsAccountStatusValidProcedure,
+			func(ctx context.Context, r *connect.Request[mgmtv1alpha1.IsAccountStatusValidRequest]) (*connect.Response[mgmtv1alpha1.IsAccountStatusValidResponse], error) {
+				if r.Msg.GetAccountId() == accountId &&
+					r.Msg.GetRequestedRecordCount() == uint64(5) {
+					reason := "foo"
+					return connect.NewResponse(
+						&mgmtv1alpha1.IsAccountStatusValidResponse{IsValid: false, Reason: &reason},
+					), nil
+				}
+				return connect.NewResponse(
+					&mgmtv1alpha1.IsAccountStatusValidResponse{IsValid: true},
+				), nil
+			},
+		),
+	)
 	srv := startHTTPServer(t, mux)
 
 	userclient := mgmtv1alpha1connect.NewUserAccountServiceClient(srv.Client(), srv.URL)
@@ -80,7 +98,10 @@ func Test_Activity_Success_With_RequestedRecordCount(t *testing.T) {
 	env.RegisterActivity(activity)
 
 	requestedCount := uint64(5)
-	val, err := env.ExecuteActivity(activity.CheckAccountStatus, &CheckAccountStatusRequest{AccountId: accountId, RequestedRecordCount: &requestedCount})
+	val, err := env.ExecuteActivity(
+		activity.CheckAccountStatus,
+		&CheckAccountStatusRequest{AccountId: accountId, RequestedRecordCount: &requestedCount},
+	)
 	require.NoError(t, err)
 	res := &CheckAccountStatusResponse{}
 	err = val.Get(res)

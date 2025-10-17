@@ -10,12 +10,12 @@ import (
 	"sync"
 	"testing"
 
+	mssql_queries "github.com/Groupe-Hevea/neosync/backend/pkg/mssql-querier"
+	mssql "github.com/Groupe-Hevea/neosync/backend/pkg/sqlmanager/mssql"
+	sqlmanager_shared "github.com/Groupe-Hevea/neosync/backend/pkg/sqlmanager/shared"
+	"github.com/Groupe-Hevea/neosync/internal/testutil"
+	tcmssql "github.com/Groupe-Hevea/neosync/internal/testutil/testcontainers/sqlserver"
 	_ "github.com/microsoft/go-mssqldb"
-	mssql_queries "github.com/nucleuscloud/neosync/backend/pkg/mssql-querier"
-	mssql "github.com/nucleuscloud/neosync/backend/pkg/sqlmanager/mssql"
-	sqlmanager_shared "github.com/nucleuscloud/neosync/backend/pkg/sqlmanager/shared"
-	"github.com/nucleuscloud/neosync/internal/testutil"
-	tcmssql "github.com/nucleuscloud/neosync/internal/testutil/testcontainers/sqlserver"
 	"golang.org/x/sync/errgroup"
 
 	"github.com/stretchr/testify/require"
@@ -35,7 +35,11 @@ func Test_MssqlManager(t *testing.T) {
 	t.Parallel()
 
 	ctx := context.Background()
-	containers, err := tcmssql.NewMssqlTestSyncContainer(ctx, []tcmssql.Option{}, []tcmssql.Option{})
+	containers, err := tcmssql.NewMssqlTestSyncContainer(
+		ctx,
+		[]tcmssql.Option{},
+		[]tcmssql.Option{},
+	)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -100,23 +104,35 @@ func Test_MssqlManager(t *testing.T) {
 		expected := &sqlmanager_shared.TableConstraints{
 			ForeignKeyConstraints: map[string][]*sqlmanager_shared.ForeignConstraint{
 				"sqlmanagermssql2.child1": {
-					{Columns: []string{"parent_id1", "parent_id2"}, NotNullable: []bool{false, false}, ForeignKey: &sqlmanager_shared.ForeignKey{
-						Table:   "sqlmanagermssql2.parent1",
-						Columns: []string{"id1", "id2"},
-					}},
+					{
+						Columns:     []string{"parent_id1", "parent_id2"},
+						NotNullable: []bool{false, false},
+						ForeignKey: &sqlmanager_shared.ForeignKey{
+							Table:   "sqlmanagermssql2.parent1",
+							Columns: []string{"id1", "id2"},
+						},
+					},
 				},
 
 				"sqlmanagermssql2.TableA": {
-					{Columns: []string{"IdB1", "IdB2"}, NotNullable: []bool{false, false}, ForeignKey: &sqlmanager_shared.ForeignKey{
-						Table:   "sqlmanagermssql2.TableB",
-						Columns: []string{"IdB1", "IdB2"},
-					}},
+					{
+						Columns:     []string{"IdB1", "IdB2"},
+						NotNullable: []bool{false, false},
+						ForeignKey: &sqlmanager_shared.ForeignKey{
+							Table:   "sqlmanagermssql2.TableB",
+							Columns: []string{"IdB1", "IdB2"},
+						},
+					},
 				},
 				"sqlmanagermssql2.TableB": {
-					{Columns: []string{"IdA1", "IdA2"}, NotNullable: []bool{true, true}, ForeignKey: &sqlmanager_shared.ForeignKey{
-						Table:   "sqlmanagermssql2.TableA",
-						Columns: []string{"IdA1", "IdA2"},
-					}},
+					{
+						Columns:     []string{"IdA1", "IdA2"},
+						NotNullable: []bool{true, true},
+						ForeignKey: &sqlmanager_shared.ForeignKey{
+							Table:   "sqlmanagermssql2.TableA",
+							Columns: []string{"IdA1", "IdA2"},
+						},
+					},
 				},
 			},
 			PrimaryKeyConstraints: map[string][]string{
@@ -178,8 +194,20 @@ func Test_MssqlManager(t *testing.T) {
 			needsOverride, needsReset := mssql.GetMssqlColumnOverrideAndResetProperties(colInfo)
 			expected, ok := expectedProperties[col]
 			require.Truef(t, ok, "Missing expected column %q", col)
-			require.Equalf(t, expected.needsOverride, needsOverride, "Incorrect needsOverride value for column %q", col)
-			require.Equalf(t, expected.needsReset, needsReset, "Incorrect needsReset value for column %q", col)
+			require.Equalf(
+				t,
+				expected.needsOverride,
+				needsOverride,
+				"Incorrect needsOverride value for column %q",
+				col,
+			)
+			require.Equalf(
+				t,
+				expected.needsReset,
+				needsReset,
+				"Incorrect needsReset value for column %q",
+				col,
+			)
 		}
 	})
 
@@ -226,7 +254,10 @@ func Test_MssqlManager(t *testing.T) {
 
 		schematables := []*sqlmanager_shared.SchemaTable{}
 		for _, t := range tables {
-			schematables = append(schematables, &sqlmanager_shared.SchemaTable{Schema: schema, Table: t})
+			schematables = append(
+				schematables,
+				&sqlmanager_shared.SchemaTable{Schema: schema, Table: t},
+			)
 		}
 
 		statements, err := manager.GetSchemaInitStatements(ctx, schematables)
@@ -428,7 +459,13 @@ func Test_MssqlManager(t *testing.T) {
 
 func containsSubset[T any](t testing.TB, array, subset []T) {
 	for idx, elem := range subset {
-		require.Contains(t, array, elem, "array does not contain expected subset element at index %d", idx)
+		require.Contains(
+			t,
+			array,
+			elem,
+			"array does not contain expected subset element at index %d",
+			idx,
+		)
 	}
 }
 
@@ -458,7 +495,11 @@ func setup(ctx context.Context, containers *tcmssql.MssqlTestSyncContainer) erro
 		for i, stmt := range sourceSetupContents {
 			_, err := containers.Source.DB.ExecContext(errctx, stmt)
 			if err != nil {
-				return fmt.Errorf("encountered error when executing source setup statement %d: %w", i+1, err)
+				return fmt.Errorf(
+					"encountered error when executing source setup statement %d: %w",
+					i+1,
+					err,
+				)
 			}
 		}
 		return nil
@@ -467,7 +508,11 @@ func setup(ctx context.Context, containers *tcmssql.MssqlTestSyncContainer) erro
 		for i, stmt := range destSetupContents {
 			_, err := containers.Target.DB.ExecContext(errctx, stmt)
 			if err != nil {
-				return fmt.Errorf("encountered error when executing dest setup statement: %d: %w", i+1, err)
+				return fmt.Errorf(
+					"encountered error when executing dest setup statement: %d: %w",
+					i+1,
+					err,
+				)
 			}
 		}
 		return nil

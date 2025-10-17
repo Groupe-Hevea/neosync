@@ -20,7 +20,7 @@ We currently publish four different helm charts for maximum flexibility.
 This page will detail the purpose of each one and how it can be used to deploy to Kubernetes.
 
 All of our helm charts are deployed as OCI helm charts and require Helm3 to use.
-Our images are published directly to the Github Container registry at: `ghcr.io/nucleuscloud/neosync/helm`.
+Our images are published directly to the Github Container registry at: `ghcr.io/Groupe-Hevea/neosync/helm`.
 
 When a release of Neosync is made, all of these resources are tagged and released at the same version.
 If using the Neosync AIO chart at version `v1.0.0`, it will use `v1.0.0` of the api, app, and worker.
@@ -28,39 +28,39 @@ If using the Neosync AIO chart at version `v1.0.0`, it will use `v1.0.0` of the 
 ### API
 
 The API Helm chart can be used to deploy just the backend API server.
-The chart itself can be found [here](https://github.com/nucleuscloud/neosync/tree/main/backend/charts/api).
+The chart itself can be found [here](https://github.com/Groupe-Hevea/neosync/tree/main/backend/charts/api).
 
-The local dev edition can be found in the [helmfile](https://github.com/nucleuscloud/neosync/blob/main/backend/dev/helm/api/helmfile.yaml) that is used by our dev Tilt instance.
+The local dev edition can be found in the [helmfile](https://github.com/Groupe-Hevea/neosync/blob/main/backend/dev/helm/api/helmfile.yaml) that is used by our dev Tilt instance.
 
-The full image can be docker pulled via: `docker pull ghcr.io/nucleuscloud/neosync/helm/api:latest`
+The full image can be docker pulled via: `docker pull ghcr.io/Groupe-Hevea/neosync/helm/api:latest`
 
 ### App
 
 The APP Helm chart can be used to deploy just the frontend APP.
-The chart itself can be found [here](https://github.com/nucleuscloud/neosync/tree/main/frontend/charts/app).
+The chart itself can be found [here](https://github.com/Groupe-Hevea/neosync/tree/main/frontend/charts/app).
 
-The local dev edition can be found in the [helmfile](https://github.com/nucleuscloud/neosync/blob/main/frontend/apps/web/dev/helm/app/helmfile.yaml) that is used by our dev Tilt instance.
+The local dev edition can be found in the [helmfile](https://github.com/Groupe-Hevea/neosync/blob/main/frontend/apps/web/dev/helm/app/helmfile.yaml) that is used by our dev Tilt instance.
 
-The full image can be docker pulled via: `docker pull ghcr.io/nucleuscloud/neosync/helm/app:latest`
+The full image can be docker pulled via: `docker pull ghcr.io/Groupe-Hevea/neosync/helm/app:latest`
 
 ### Worker
 
 The APP Helm chart can be used to deploy just the worker.
-The chart itself can be found [here](https://github.com/nucleuscloud/neosync/tree/main/worker/charts/worker).
+The chart itself can be found [here](https://github.com/Groupe-Hevea/neosync/tree/main/worker/charts/worker).
 
-The local dev edition can be found in the [helmfile](https://github.com/nucleuscloud/neosync/blob/main/worker/dev/helm/helmfile.yaml) that is used by our dev Tilt instance.
+The local dev edition can be found in the [helmfile](https://github.com/Groupe-Hevea/neosync/blob/main/worker/dev/helm/helmfile.yaml) that is used by our dev Tilt instance.
 
-The full image can be docker pulled via: `docker pull ghcr.io/nucleuscloud/neosync/helm/worker:latest`
+The full image can be docker pulled via: `docker pull ghcr.io/Groupe-Hevea/neosync/helm/worker:latest`
 
 ### Neosync Umbrella Chart
 
 The Neosync Umbrella Helm chart can be used to deploy all three resources listed above.
-The chart itself can be found [here](https://github.com/nucleuscloud/neosync/blob/main/charts/neosync).
+The chart itself can be found [here](https://github.com/Groupe-Hevea/neosync/blob/main/charts/neosync).
 
 This chart has no templates of its own and merely acts as a single helm entrypoint to deploy all of the Neosync services.
 It only contains a `Chart.yaml` that defines the three Neosync dependencies.
 
-The full image can be docker pulled via: `docker pull ghcr.io/nucleuscloud/neosync/helm/neosync:latest`
+The full image can be docker pulled via: `docker pull ghcr.io/Groupe-Hevea/neosync/helm/neosync:latest`
 
 When running this within the repo, it points to the local copies of the helm chart. The OCI image will point to the OCI images of the published API, APP, and Worker charts.
 
@@ -152,7 +152,7 @@ Install the chart:
 When specifying the version, be sure to omit the `v` from the github release. So if the current version if `v0.4.38`, specify `0.4.38` as the helm version.
 
 ```
-helm install oci://ghcr.io/nucleuscloud/neosync/helm/neosync --version <version> -f values.yaml
+helm install oci://ghcr.io/Groupe-Hevea/neosync/helm/neosync --version <version> -f values.yaml
 ```
 
 ## External Dependencies for Production Deployments

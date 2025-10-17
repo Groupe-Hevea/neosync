@@ -4,11 +4,11 @@ import (
 	"fmt"
 	"time"
 
-	mgmtv1alpha1 "github.com/nucleuscloud/neosync/backend/gen/go/protos/mgmt/v1alpha1"
-	"github.com/nucleuscloud/neosync/internal/ee/license"
-	piidetect_job_activities "github.com/nucleuscloud/neosync/worker/pkg/workflows/ee/piidetect/workflows/job/activities"
-	piidetect_table_workflow "github.com/nucleuscloud/neosync/worker/pkg/workflows/ee/piidetect/workflows/table"
-	workflow_shared "github.com/nucleuscloud/neosync/worker/pkg/workflows/shared"
+	mgmtv1alpha1 "github.com/Groupe-Hevea/neosync/backend/gen/go/protos/mgmt/v1alpha1"
+	"github.com/Groupe-Hevea/neosync/internal/ee/license"
+	piidetect_job_activities "github.com/Groupe-Hevea/neosync/worker/pkg/workflows/ee/piidetect/workflows/job/activities"
+	piidetect_table_workflow "github.com/Groupe-Hevea/neosync/worker/pkg/workflows/ee/piidetect/workflows/table"
+	workflow_shared "github.com/Groupe-Hevea/neosync/worker/pkg/workflows/shared"
 	"github.com/spf13/viper"
 	"go.temporal.io/sdk/log"
 	"go.temporal.io/sdk/temporal"
@@ -160,7 +160,7 @@ func executeWorkflow(
 		return nil, err
 	}
 
-	report, err := orchestrateTables(
+	report := orchestrateTables(
 		ctx,
 		jobDetailsResp.AccountId,
 		tablesToScanResp,
@@ -170,9 +170,6 @@ func executeWorkflow(
 		piiDetectConfig.GetUserPrompt(),
 		logger,
 	)
-	if err != nil {
-		return nil, fmt.Errorf("unable to orchestrate tables: %w", err)
-	}
 
 	report = buildFinalReport(tablesToScanResp.PreviousReports, report)
 
@@ -241,7 +238,7 @@ func orchestrateTables(
 	shouldSampleData bool,
 	userPrompt string,
 	logger log.Logger,
-) (*piidetect_job_activities.JobPiiDetectReport, error) {
+) *piidetect_job_activities.JobPiiDetectReport {
 	maxConcurrency := getTablePiiDetectMaxConcurrency()
 
 	tableWf := piidetect_table_workflow.New()
@@ -297,7 +294,15 @@ func orchestrateTables(
 					return // Channel closed, no more work
 				}
 
-				logger.Debug("worker processing table", "workerIndex", i, "table", work.table.Table, "schema", work.table.Schema)
+				logger.Debug(
+					"worker processing table",
+					"workerIndex",
+					i,
+					"table",
+					work.table.Table,
+					"schema",
+					work.table.Schema,
+				)
 
 				var previousResultsKey *mgmtv1alpha1.RunContextKey
 				if work.previousReport != nil {
@@ -378,7 +383,7 @@ func orchestrateTables(
 	logger.Debug("all tables processed", "total_processed", len(tableResultKeys))
 	return &piidetect_job_activities.JobPiiDetectReport{
 		SuccessfulTableReports: tableResultKeys,
-	}, nil
+	}
 }
 
 func getTablePiiDetectMaxConcurrency() int {

@@ -4,10 +4,10 @@ import (
 	"context"
 	"fmt"
 
+	db_queries "github.com/Groupe-Hevea/neosync/backend/gen/go/db"
+	pg_models "github.com/Groupe-Hevea/neosync/backend/sql/postgresql/models"
+	"github.com/Groupe-Hevea/neosync/internal/neosyncdb"
 	"github.com/jackc/pgx/v5/pgtype"
-	db_queries "github.com/nucleuscloud/neosync/backend/gen/go/db"
-	pg_models "github.com/nucleuscloud/neosync/backend/sql/postgresql/models"
-	"github.com/nucleuscloud/neosync/internal/neosyncdb"
 )
 
 type ConfigProvider interface {

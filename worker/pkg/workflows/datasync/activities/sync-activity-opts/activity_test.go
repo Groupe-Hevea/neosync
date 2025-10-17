@@ -9,11 +9,11 @@ import (
 	"time"
 
 	"connectrpc.com/connect"
+	mgmtv1alpha1 "github.com/Groupe-Hevea/neosync/backend/gen/go/protos/mgmt/v1alpha1"
+	"github.com/Groupe-Hevea/neosync/backend/gen/go/protos/mgmt/v1alpha1/mgmtv1alpha1connect"
+	"github.com/Groupe-Hevea/neosync/internal/testutil"
+	"github.com/Groupe-Hevea/neosync/worker/pkg/workflows/datasync/activities/shared"
 	"github.com/google/uuid"
-	mgmtv1alpha1 "github.com/nucleuscloud/neosync/backend/gen/go/protos/mgmt/v1alpha1"
-	"github.com/nucleuscloud/neosync/backend/gen/go/protos/mgmt/v1alpha1/mgmtv1alpha1connect"
-	"github.com/nucleuscloud/neosync/internal/testutil"
-	"github.com/nucleuscloud/neosync/worker/pkg/workflows/datasync/activities/shared"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 	"go.temporal.io/sdk/log"
@@ -149,7 +149,10 @@ func Test_Activity(t *testing.T) {
 	env.RegisterActivity(activity.RetrieveActivityOptions)
 
 	t.Run("sync activity options", func(t *testing.T) {
-		val, err := env.ExecuteActivity(activity.RetrieveActivityOptions, &RetrieveActivityOptionsRequest{JobId: syncActivityJobId})
+		val, err := env.ExecuteActivity(
+			activity.RetrieveActivityOptions,
+			&RetrieveActivityOptionsRequest{JobId: syncActivityJobId},
+		)
 		require.NoError(t, err)
 		res := &RetrieveActivityOptionsResponse{}
 		err = val.Get(res)
@@ -159,7 +162,10 @@ func Test_Activity(t *testing.T) {
 		require.NotNil(t, res.SyncActivityOptions)
 	})
 	t.Run("generate requested row count", func(t *testing.T) {
-		val, err := env.ExecuteActivity(activity.RetrieveActivityOptions, &RetrieveActivityOptionsRequest{JobId: generatedRequestedJobId})
+		val, err := env.ExecuteActivity(
+			activity.RetrieveActivityOptions,
+			&RetrieveActivityOptionsRequest{JobId: generatedRequestedJobId},
+		)
 		require.NoError(t, err)
 		res := &RetrieveActivityOptionsResponse{}
 		err = val.Get(res)
@@ -169,7 +175,10 @@ func Test_Activity(t *testing.T) {
 		require.Equal(t, uint64(6), *res.RequestedRecordCount)
 	})
 	t.Run("aigenerate requested row count", func(t *testing.T) {
-		val, err := env.ExecuteActivity(activity.RetrieveActivityOptions, &RetrieveActivityOptionsRequest{JobId: aiGeneratedRequestedJobId})
+		val, err := env.ExecuteActivity(
+			activity.RetrieveActivityOptions,
+			&RetrieveActivityOptionsRequest{JobId: aiGeneratedRequestedJobId},
+		)
 		require.NoError(t, err)
 		res := &RetrieveActivityOptionsResponse{}
 		err = val.Get(res)
@@ -181,7 +190,10 @@ func Test_Activity(t *testing.T) {
 }
 
 func Test_getSyncActivityOptionsFromJob(t *testing.T) {
-	defaultOpts := &workflow.ActivityOptions{StartToCloseTimeout: 10 * time.Minute, RetryPolicy: &temporal.RetryPolicy{MaximumAttempts: 1}}
+	defaultOpts := &workflow.ActivityOptions{
+		StartToCloseTimeout: 10 * time.Minute,
+		RetryPolicy:         &temporal.RetryPolicy{MaximumAttempts: 1},
+	}
 	type testcase struct {
 		name     string
 		input    *mgmtv1alpha1.Job

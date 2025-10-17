@@ -12,7 +12,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
 
       - name: Retrieve SQLC Version
         run: |
@@ -42,7 +42,7 @@ jobs:
 
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
 
       - name: Patch sqlc.yaml with db-prepare lint
         uses: mikefarah/yq@v4.45.2
@@ -50,7 +50,7 @@ jobs:
           cmd: sh ./backend/scripts/sqlc-prepare-patch.sh postgresql://postgres:postgres@localhost:5432/nucleus ./sqlc.yaml
 
       - name: Set up Go
-        uses: actions/setup-go@v5
+        uses: actions/setup-go@v6
         with:
           go-version-file: go.mod
           cache-dependency-path: go.sum

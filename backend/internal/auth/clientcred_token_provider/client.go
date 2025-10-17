@@ -12,7 +12,7 @@ import (
 	"sync"
 	"time"
 
-	auth_client "github.com/nucleuscloud/neosync/backend/internal/auth/client"
+	auth_client "github.com/Groupe-Hevea/neosync/backend/internal/auth/client"
 )
 
 type tokenProvider interface {

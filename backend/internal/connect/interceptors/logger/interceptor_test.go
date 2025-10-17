@@ -8,9 +8,9 @@ import (
 	"testing"
 
 	"connectrpc.com/connect"
-	mgmtv1alpha1 "github.com/nucleuscloud/neosync/backend/gen/go/protos/mgmt/v1alpha1"
-	"github.com/nucleuscloud/neosync/backend/gen/go/protos/mgmt/v1alpha1/mgmtv1alpha1connect"
-	"github.com/nucleuscloud/neosync/internal/testutil"
+	mgmtv1alpha1 "github.com/Groupe-Hevea/neosync/backend/gen/go/protos/mgmt/v1alpha1"
+	"github.com/Groupe-Hevea/neosync/backend/gen/go/protos/mgmt/v1alpha1/mgmtv1alpha1connect"
+	"github.com/Groupe-Hevea/neosync/internal/testutil"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -33,7 +33,10 @@ func Test_Interceptor_WrapUnary_InjectLogger(t *testing.T) {
 
 	assert.Nil(t, ctxlogger, "ctxlogger has not been set yet")
 	client := mgmtv1alpha1connect.NewUserAccountServiceClient(srv.Client(), srv.URL)
-	_, err := client.GetUser(context.Background(), connect.NewRequest(&mgmtv1alpha1.GetUserRequest{}))
+	_, err := client.GetUser(
+		context.Background(),
+		connect.NewRequest(&mgmtv1alpha1.GetUserRequest{}),
+	)
 	assert.Nil(t, err)
 	assert.NotNil(t, ctxlogger)
 }

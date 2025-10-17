@@ -7,16 +7,16 @@ import (
 	"time"
 
 	"connectrpc.com/connect"
-	mgmtv1alpha1 "github.com/nucleuscloud/neosync/backend/gen/go/protos/mgmt/v1alpha1"
-	"github.com/nucleuscloud/neosync/backend/gen/go/protos/mgmt/v1alpha1/mgmtv1alpha1connect"
+	mgmtv1alpha1 "github.com/Groupe-Hevea/neosync/backend/gen/go/protos/mgmt/v1alpha1"
+	"github.com/Groupe-Hevea/neosync/backend/gen/go/protos/mgmt/v1alpha1/mgmtv1alpha1connect"
 	"github.com/stretchr/testify/require"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"golang.org/x/sync/errgroup"
 
-	tcneosyncapi "github.com/nucleuscloud/neosync/backend/pkg/integration-test"
-	"github.com/nucleuscloud/neosync/internal/gotypeutil"
-	tcmongodb "github.com/nucleuscloud/neosync/internal/testutil/testcontainers/mongodb"
+	tcneosyncapi "github.com/Groupe-Hevea/neosync/backend/pkg/integration-test"
+	"github.com/Groupe-Hevea/neosync/internal/gotypeutil"
+	tcmongodb "github.com/Groupe-Hevea/neosync/internal/testutil/testcontainers/mongodb"
 )
 
 func createMongodbSyncJob(
@@ -109,7 +109,11 @@ func test_mongodb_alltypes(
 	testworkflow := NewTestDataSyncWorkflowEnv(t, neosyncApi, dbManagers)
 	testworkflow.RequireActivitiesCompletedSuccessfully(t)
 	testworkflow.ExecuteTestDataSyncWorkflow(job.GetId())
-	require.Truef(t, testworkflow.TestEnv.IsWorkflowCompleted(), "Workflow did not complete. Test: mongo_all_types")
+	require.Truef(
+		t,
+		testworkflow.TestEnv.IsWorkflowCompleted(),
+		"Workflow did not complete. Test: mongo_all_types",
+	)
 	err = testworkflow.TestEnv.GetWorkflowError()
 	require.NoError(t, err, "Received Temporal Workflow Error: mongo_all_types")
 
@@ -124,7 +128,12 @@ func test_mongodb_alltypes(
 		results = append(results, doc)
 	}
 	cursor.Close(ctx)
-	require.Equal(t, 1, len(results), fmt.Sprintf("Test: mongo_all_types collection: %s", collectionName))
+	require.Equal(
+		t,
+		1,
+		len(results),
+		fmt.Sprintf("Test: mongo_all_types collection: %s", collectionName),
+	)
 	err = cleanupMongodb(ctx, mongo, dbName, collectionName)
 	require.NoError(t, err)
 }
@@ -230,7 +239,11 @@ func test_mongodb_transform(
 	testworkflow := NewTestDataSyncWorkflowEnv(t, neosyncApi, dbManagers)
 	testworkflow.RequireActivitiesCompletedSuccessfully(t)
 	testworkflow.ExecuteTestDataSyncWorkflow(job.GetId())
-	require.Truef(t, testworkflow.TestEnv.IsWorkflowCompleted(), "Workflow did not complete. Test: mongo_transform")
+	require.Truef(
+		t,
+		testworkflow.TestEnv.IsWorkflowCompleted(),
+		"Workflow did not complete. Test: mongo_transform",
+	)
 	err = testworkflow.TestEnv.GetWorkflowError()
 	require.NoError(t, err, "Received Temporal Workflow Error: mongo_transform")
 
@@ -245,15 +258,28 @@ func test_mongodb_transform(
 		results = append(results, doc)
 	}
 	cursor.Close(ctx)
-	require.Equal(t, 1, len(results), fmt.Sprintf("Test: mongo_transform collection: %s", collectionName))
+	require.Equal(
+		t,
+		1,
+		len(results),
+		fmt.Sprintf("Test: mongo_transform collection: %s", collectionName),
+	)
 	err = cleanupMongodb(ctx, mongo, dbName, collectionName)
 	require.NoError(t, err)
 }
 
-func cleanupMongodb(ctx context.Context, mongo *tcmongodb.MongoDBTestSyncContainer, dbName, collectionName string) error {
+func cleanupMongodb(
+	ctx context.Context,
+	mongo *tcmongodb.MongoDBTestSyncContainer,
+	dbName, collectionName string,
+) error {
 	errgrp, errctx := errgroup.WithContext(ctx)
-	errgrp.Go(func() error { return mongo.Source.DropMongoDbCollection(errctx, dbName, collectionName) })
-	errgrp.Go(func() error { return mongo.Target.DropMongoDbCollection(errctx, dbName, collectionName) })
+	errgrp.Go(
+		func() error { return mongo.Source.DropMongoDbCollection(errctx, dbName, collectionName) },
+	)
+	errgrp.Go(
+		func() error { return mongo.Target.DropMongoDbCollection(errctx, dbName, collectionName) },
+	)
 	err := errgrp.Wait()
 	return err
 }

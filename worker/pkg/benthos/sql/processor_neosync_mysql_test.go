@@ -5,8 +5,8 @@ import (
 	"encoding/json"
 	"testing"
 
+	neosync_benthos "github.com/Groupe-Hevea/neosync/worker/pkg/benthos"
 	"github.com/doug-martin/goqu/v9"
-	neosync_benthos "github.com/nucleuscloud/neosync/worker/pkg/benthos"
 	"github.com/redpanda-data/benthos/v4/public/service"
 	"github.com/stretchr/testify/require"
 )
@@ -32,7 +32,12 @@ func Test_transformNeosyncToMysql(t *testing.T) {
 			"default_col": "should be default",
 		}
 
-		result, err := transformNeosyncToMysql(input, columns, columnDataTypes, columnDefaultProperties)
+		result, err := transformNeosyncToMysql(
+			input,
+			columns,
+			columnDataTypes,
+			columnDefaultProperties,
+		)
 		require.NoError(t, err)
 
 		require.Equal(t, 1, result["id"])
@@ -48,7 +53,12 @@ func Test_transformNeosyncToMysql(t *testing.T) {
 			"name": nil,
 		}
 
-		result, err := transformNeosyncToMysql(input, columns, columnDataTypes, columnDefaultProperties)
+		result, err := transformNeosyncToMysql(
+			input,
+			columns,
+			columnDataTypes,
+			columnDefaultProperties,
+		)
 		require.NoError(t, err)
 
 		require.Nil(t, result["id"])
@@ -62,7 +72,12 @@ func Test_transformNeosyncToMysql(t *testing.T) {
 			"unknown_column": "should not appear",
 		}
 
-		result, err := transformNeosyncToMysql(input, columns, columnDataTypes, columnDefaultProperties)
+		result, err := transformNeosyncToMysql(
+			input,
+			columns,
+			columnDataTypes,
+			columnDefaultProperties,
+		)
 		require.NoError(t, err)
 
 		require.Equal(t, 1, result["id"])
@@ -72,7 +87,12 @@ func Test_transformNeosyncToMysql(t *testing.T) {
 	})
 
 	t.Run("returns error for invalid root type", func(t *testing.T) {
-		result, err := transformNeosyncToMysql("invalid", columns, columnDataTypes, columnDefaultProperties)
+		result, err := transformNeosyncToMysql(
+			"invalid",
+			columns,
+			columnDataTypes,
+			columnDefaultProperties,
+		)
 		require.Error(t, err)
 		require.Nil(t, result)
 		require.Contains(t, err.Error(), "root value must be a map[string]any")

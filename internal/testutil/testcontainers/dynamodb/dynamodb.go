@@ -5,11 +5,11 @@ import (
 	"fmt"
 	"testing"
 
+	mgmtv1alpha1 "github.com/Groupe-Hevea/neosync/backend/gen/go/protos/mgmt/v1alpha1"
+	awsmanager "github.com/Groupe-Hevea/neosync/internal/aws"
 	"github.com/aws/aws-sdk-go-v2/service/dynamodb"
 	dyntypes "github.com/aws/aws-sdk-go-v2/service/dynamodb/types"
 	"github.com/docker/go-connections/nat"
-	mgmtv1alpha1 "github.com/nucleuscloud/neosync/backend/gen/go/protos/mgmt/v1alpha1"
-	awsmanager "github.com/nucleuscloud/neosync/internal/aws"
 	"github.com/testcontainers/testcontainers-go"
 	"github.com/testcontainers/testcontainers-go/wait"
 	"golang.org/x/sync/errgroup"

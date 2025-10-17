@@ -1,4 +1,4 @@
 {
   "name": "neosync",
-  "image": "ghcr.io/nucleuscloud/neosync/devcontainer:latest"
+  "image": "ghcr.io/Groupe-Hevea/neosync/devcontainer:latest"
 }

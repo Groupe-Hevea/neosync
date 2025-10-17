@@ -5,7 +5,7 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/nucleuscloud/neosync/worker/pkg/rng"
+	"github.com/Groupe-Hevea/neosync/worker/pkg/rng"
 	"github.com/redpanda-data/benthos/v4/public/bloblang"
 	"github.com/stretchr/testify/assert"
 )
@@ -29,7 +29,12 @@ func Test_TransformFullNamePreserveLengthTrue(t *testing.T) {
 	res, err := transformFullName(randomizer, fullName, true, maxCharacterLimit)
 
 	assert.NoError(t, err)
-	assert.Equal(t, nameLength, int64(len(*res)), "The first name output should be the same length as the input")
+	assert.Equal(
+		t,
+		nameLength,
+		int64(len(*res)),
+		"The first name output should be the same length as the input",
+	)
 	assert.IsType(t, "", *res, "The first name should be a string")
 }
 
@@ -45,7 +50,11 @@ func Test_TransformFullNameMaxLengthBetween12And5(t *testing.T) {
 
 func Test_FullNameTransformerWithValue(t *testing.T) {
 	fn := "john smith"
-	mapping := fmt.Sprintf(`root = transform_full_name(value:%q,preserve_length:true,max_length:%d)`, fn, maxCharacterLimit)
+	mapping := fmt.Sprintf(
+		`root = transform_full_name(value:%q,preserve_length:true,max_length:%d)`,
+		fn,
+		maxCharacterLimit,
+	)
 	ex, err := bloblang.Parse(mapping)
 	assert.NoError(t, err, "failed to parse the full name transformer")
 
@@ -61,7 +70,12 @@ func Test_FullNameTransformerWithValue(t *testing.T) {
 	}
 
 	if resStr != nil {
-		assert.Equal(t, len(*resStr), len(fn), "Generated full name must be as long as input full name")
+		assert.Equal(
+			t,
+			len(*resStr),
+			len(fn),
+			"Generated full name must be as long as input full name",
+		)
 	} else {
 		t.Error("Pointer is nil, expected a valid string pointer")
 	}
@@ -69,7 +83,11 @@ func Test_FullNameTransformerWithValue(t *testing.T) {
 
 func Test_TransformFullNamelTransformerWithEmptyValue(t *testing.T) {
 	nilName := ""
-	mapping := fmt.Sprintf(`root = transform_full_name(value:%q,preserve_length:true,max_length:%d)`, nilName, maxCharacterLimit)
+	mapping := fmt.Sprintf(
+		`root = transform_full_name(value:%q,preserve_length:true,max_length:%d)`,
+		nilName,
+		maxCharacterLimit,
+	)
 	ex, err := bloblang.Parse(mapping)
 	assert.NoError(t, err, "failed to parse the full name transformer")
 
@@ -104,13 +122,22 @@ func Test_TransformFullNamePreserveLengthSingleName(t *testing.T) {
 		assert.NotNil(t, res)
 		t.Logf("Input: '%s' (len: %d), Output: '%s' (len: %d)",
 			singleName, len(singleName), *res, len(*res))
-		assert.Equal(t, expectedLength, int64(len(*res)), "The output should be the same length as the input")
+		assert.Equal(
+			t,
+			expectedLength,
+			int64(len(*res)),
+			"The output should be the same length as the input",
+		)
 		assert.Contains(t, *res, " ", "Should contain a space between first and last name")
 	})
 
 	t.Run("single name with preserve length via bloblang", func(t *testing.T) {
 		singleName := "John"
-		mapping := fmt.Sprintf(`root = transform_full_name(value:%q,preserve_length:true,max_length:%d)`, singleName, maxCharacterLimit)
+		mapping := fmt.Sprintf(
+			`root = transform_full_name(value:%q,preserve_length:true,max_length:%d)`,
+			singleName,
+			maxCharacterLimit,
+		)
 		ex, err := bloblang.Parse(mapping)
 		assert.NoError(t, err, "failed to parse the full name transformer")
 
@@ -126,7 +153,12 @@ func Test_TransformFullNamePreserveLengthSingleName(t *testing.T) {
 		assert.NotNil(t, resStr)
 		t.Logf("Bloblang Input: '%s' (len: %d), Output: '%s' (len: %d)",
 			singleName, len(singleName), *resStr, len(*resStr))
-		assert.Equal(t, len(singleName), len(*resStr), "Generated full name must be as long as input name")
+		assert.Equal(
+			t,
+			len(singleName),
+			len(*resStr),
+			"Generated full name must be as long as input name",
+		)
 		assert.Contains(t, *resStr, " ", "Should contain a space between first and last name")
 	})
 }
@@ -141,7 +173,12 @@ func Test_TransformFullNamePreserveLengthShortLastName(t *testing.T) {
 
 		assert.NoError(t, err)
 		assert.NotNil(t, res)
-		assert.Equal(t, expectedLength, int64(len(*res)), "The output should be the same length as the input")
+		assert.Equal(
+			t,
+			expectedLength,
+			int64(len(*res)),
+			"The output should be the same length as the input",
+		)
 		assert.Contains(t, *res, " ", "Should contain a space between first and last name")
 	})
 }
@@ -156,7 +193,12 @@ func Test_TransformFullNamePreserveLengthMultipleWords(t *testing.T) {
 
 		assert.NoError(t, err)
 		assert.NotNil(t, res)
-		assert.Equal(t, expectedLength, int64(len(*res)), "The output should be the same length as the input")
+		assert.Equal(
+			t,
+			expectedLength,
+			int64(len(*res)),
+			"The output should be the same length as the input",
+		)
 		assert.Contains(t, *res, " ", "Should contain spaces between name parts")
 	})
 }
@@ -171,7 +213,12 @@ func Test_TransformFullNamePreserveLengthEdgeCases(t *testing.T) {
 
 		assert.NoError(t, err)
 		assert.NotNil(t, res)
-		assert.Equal(t, expectedLength, int64(len(*res)), "The output should be the same length as the input")
+		assert.Equal(
+			t,
+			expectedLength,
+			int64(len(*res)),
+			"The output should be the same length as the input",
+		)
 	})
 
 	t.Run("name with only spaces", func(t *testing.T) {
@@ -182,7 +229,12 @@ func Test_TransformFullNamePreserveLengthEdgeCases(t *testing.T) {
 
 		assert.NoError(t, err)
 		assert.NotNil(t, res)
-		assert.Equal(t, int64(len(spaceName)), int64(len(*res)), "The output should be the same length as the input")
+		assert.Equal(
+			t,
+			int64(len(spaceName)),
+			int64(len(*res)),
+			"The output should be the same length as the input",
+		)
 	})
 }
 

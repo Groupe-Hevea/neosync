@@ -6,10 +6,10 @@ import (
 	"encoding/json"
 	"testing"
 
+	neosynctypes "github.com/Groupe-Hevea/neosync/internal/neosync-types"
+	neosync_benthos "github.com/Groupe-Hevea/neosync/worker/pkg/benthos"
 	"github.com/doug-martin/goqu/v9"
 	"github.com/lib/pq"
-	neosynctypes "github.com/nucleuscloud/neosync/internal/neosync-types"
-	neosync_benthos "github.com/nucleuscloud/neosync/worker/pkg/benthos"
 	"github.com/redpanda-data/benthos/v4/public/service"
 	"github.com/stretchr/testify/require"
 )
@@ -147,7 +147,12 @@ func Test_transformNeosyncToPgx(t *testing.T) {
 	})
 
 	t.Run("invalid input type", func(t *testing.T) {
-		_, err := transformNeosyncToPgx("not a map", columns, columnDataTypes, columnDefaultProperties)
+		_, err := transformNeosyncToPgx(
+			"not a map",
+			columns,
+			columnDataTypes,
+			columnDefaultProperties,
+		)
 		require.Error(t, err)
 	})
 }
@@ -469,7 +474,12 @@ func Test_FormatPgArrayLiteral(t *testing.T) {
 		input := []any{[]any{1, "a"}, []any{true, 3.14}}
 		expected := "ARRAY[[1,'a'],[true,3.14]]"
 		result := formatPgArrayLiteral(input, "")
-		require.Equal(t, expected, result, "Array with nested mixed types should be formatted correctly")
+		require.Equal(
+			t,
+			expected,
+			result,
+			"Array with nested mixed types should be formatted correctly",
+		)
 	})
 
 	t.Run("Array with null values", func(t *testing.T) {
@@ -503,6 +513,11 @@ func Test_FormatPgArrayLiteral(t *testing.T) {
 		}
 		expected := `ARRAY['simple string','{"details":{"age":"30","city":"New York"},"name":"John"}']::jsonb[]`
 		result := formatPgArrayLiteral(input, "jsonb[]")
-		require.Equal(t, expected, result, "Array with nested key-value pairs should be formatted correctly")
+		require.Equal(
+			t,
+			expected,
+			result,
+			"Array with nested key-value pairs should be formatted correctly",
+		)
 	})
 }

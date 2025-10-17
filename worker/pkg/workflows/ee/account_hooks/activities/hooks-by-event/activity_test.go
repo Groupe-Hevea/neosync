@@ -7,10 +7,10 @@ import (
 	"testing"
 
 	"connectrpc.com/connect"
+	mgmtv1alpha1 "github.com/Groupe-Hevea/neosync/backend/gen/go/protos/mgmt/v1alpha1"
+	"github.com/Groupe-Hevea/neosync/backend/gen/go/protos/mgmt/v1alpha1/mgmtv1alpha1connect"
+	"github.com/Groupe-Hevea/neosync/internal/testutil"
 	"github.com/google/uuid"
-	mgmtv1alpha1 "github.com/nucleuscloud/neosync/backend/gen/go/protos/mgmt/v1alpha1"
-	"github.com/nucleuscloud/neosync/backend/gen/go/protos/mgmt/v1alpha1/mgmtv1alpha1connect"
-	"github.com/nucleuscloud/neosync/internal/testutil"
 	"github.com/stretchr/testify/require"
 	"go.temporal.io/sdk/log"
 	"go.temporal.io/sdk/testsuite"
@@ -31,19 +31,23 @@ func Test_Activity_Success(t *testing.T) {
 	hookId := uuid.NewString()
 
 	mux := http.NewServeMux()
-	mux.Handle(mgmtv1alpha1connect.AccountHookServiceGetActiveAccountHooksByEventProcedure, connect.NewUnaryHandler(
+	mux.Handle(
 		mgmtv1alpha1connect.AccountHookServiceGetActiveAccountHooksByEventProcedure,
-		func(ctx context.Context, r *connect.Request[mgmtv1alpha1.GetActiveAccountHooksByEventRequest]) (*connect.Response[mgmtv1alpha1.GetActiveAccountHooksByEventResponse], error) {
-			if r.Msg.GetAccountId() == accountId && r.Msg.GetEvent() == mgmtv1alpha1.AccountHookEvent_ACCOUNT_HOOK_EVENT_JOB_RUN_SUCCEEDED {
-				return connect.NewResponse(&mgmtv1alpha1.GetActiveAccountHooksByEventResponse{
-					Hooks: []*mgmtv1alpha1.AccountHook{
-						{Id: hookId},
-					},
-				}), nil
-			}
-			return nil, nil
-		},
-	))
+		connect.NewUnaryHandler(
+			mgmtv1alpha1connect.AccountHookServiceGetActiveAccountHooksByEventProcedure,
+			func(ctx context.Context, r *connect.Request[mgmtv1alpha1.GetActiveAccountHooksByEventRequest]) (*connect.Response[mgmtv1alpha1.GetActiveAccountHooksByEventResponse], error) {
+				if r.Msg.GetAccountId() == accountId &&
+					r.Msg.GetEvent() == mgmtv1alpha1.AccountHookEvent_ACCOUNT_HOOK_EVENT_JOB_RUN_SUCCEEDED {
+					return connect.NewResponse(&mgmtv1alpha1.GetActiveAccountHooksByEventResponse{
+						Hooks: []*mgmtv1alpha1.AccountHook{
+							{Id: hookId},
+						},
+					}), nil
+				}
+				return nil, nil
+			},
+		),
+	)
 	srv := startHTTPServer(t, mux)
 	accounthookclient := mgmtv1alpha1connect.NewAccountHookServiceClient(srv.Client(), srv.URL)
 	activity := New(accounthookclient)

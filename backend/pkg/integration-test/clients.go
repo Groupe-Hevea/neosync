@@ -3,8 +3,8 @@ package integrationtests_test
 import (
 	"net/http"
 
-	"github.com/nucleuscloud/neosync/backend/gen/go/protos/mgmt/v1alpha1/mgmtv1alpha1connect"
-	http_client "github.com/nucleuscloud/neosync/internal/http/client"
+	"github.com/Groupe-Hevea/neosync/backend/gen/go/protos/mgmt/v1alpha1/mgmtv1alpha1connect"
+	http_client "github.com/Groupe-Hevea/neosync/internal/http/client"
 )
 
 type NeosyncClients struct {

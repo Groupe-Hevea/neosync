@@ -5,10 +5,10 @@ import (
 	"testing"
 	"time"
 
+	mgmtv1alpha1 "github.com/Groupe-Hevea/neosync/backend/gen/go/protos/mgmt/v1alpha1"
+	presidioapi "github.com/Groupe-Hevea/neosync/internal/ee/presidio"
+	ee_transformer_fns "github.com/Groupe-Hevea/neosync/internal/ee/transformers/functions"
 	"github.com/google/uuid"
-	mgmtv1alpha1 "github.com/nucleuscloud/neosync/backend/gen/go/protos/mgmt/v1alpha1"
-	presidioapi "github.com/nucleuscloud/neosync/internal/ee/presidio"
-	ee_transformer_fns "github.com/nucleuscloud/neosync/internal/ee/transformers/functions"
 	"github.com/stretchr/testify/mock"
 	"github.com/stretchr/testify/require"
 )
@@ -43,14 +43,18 @@ func Test_InitializeTransformerByConfigType(t *testing.T) {
 		}
 		mockResolver := NewMockUserDefinedTransformerResolver(t)
 		categories := "A"
-		mockResolver.On("GetUserDefinedTransformer", mock.Anything, "test_id").Return(&mgmtv1alpha1.TransformerConfig{
-			Config: &mgmtv1alpha1.TransformerConfig_GenerateCategoricalConfig{
-				GenerateCategoricalConfig: &mgmtv1alpha1.GenerateCategorical{
-					Categories: &categories,
+		mockResolver.On("GetUserDefinedTransformer", mock.Anything, "test_id").
+			Return(&mgmtv1alpha1.TransformerConfig{
+				Config: &mgmtv1alpha1.TransformerConfig_GenerateCategoricalConfig{
+					GenerateCategoricalConfig: &mgmtv1alpha1.GenerateCategorical{
+						Categories: &categories,
+					},
 				},
-			},
-		}, nil)
-		executor, err := InitializeTransformerByConfigType(config, WithUserDefinedTransformerResolver(mockResolver))
+			}, nil)
+		executor, err := InitializeTransformerByConfigType(
+			config,
+			WithUserDefinedTransformerResolver(mockResolver),
+		)
 		require.NoError(t, err)
 		require.NotNil(t, executor)
 		result, err := executor.Mutate("test", executor.Opts)
@@ -1638,7 +1642,10 @@ func Test_InitializeTransformerByConfigType(t *testing.T) {
 		mockText := "bar"
 		mockanon.On("PostAnonymizeWithResponse", mock.Anything, mock.Anything).
 			Return(&presidioapi.PostAnonymizeResponse{
-				JSON200: &presidioapi.AnonymizeResponse{Text: &mockText, Items: &[]presidioapi.OperatorResult{}},
+				JSON200: &presidioapi.AnonymizeResponse{
+					Text:  &mockText,
+					Items: &[]presidioapi.OperatorResult{},
+				},
 			}, nil)
 		defaultLan := "en"
 
@@ -1676,7 +1683,10 @@ func Test_InitializeTransformerByConfigType(t *testing.T) {
 		mockText := "bar"
 		mockanon.On("PostAnonymizeWithResponse", mock.Anything, mock.Anything).
 			Return(&presidioapi.PostAnonymizeResponse{
-				JSON200: &presidioapi.AnonymizeResponse{Text: &mockText, Items: &[]presidioapi.OperatorResult{}},
+				JSON200: &presidioapi.AnonymizeResponse{
+					Text:  &mockText,
+					Items: &[]presidioapi.OperatorResult{},
+				},
 			}, nil)
 		defaultLan := "en"
 		execOpts := []TransformerExecutorOption{

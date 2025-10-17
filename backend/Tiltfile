@@ -65,7 +65,7 @@ k8s_resource('neosync-postgresql', labels=['db'], port_forwards=5432)
 #       'AWS_SECURITY_TOKEN'        : os.getenv('AWS_SECURITY_TOKEN'),
 #       'AWS_REGION'                : os.getenv('AWS_REGION'),
 #       'CUST_INGRESS_DNS_ZONE_ID' : os.getenv('NUCLEUS_DEV_DNS_ZONE_ID'),
-#       'CUST_INGRESS_HOSTNAME'     : str(os.getenv('NUCLEUS_DEV_DOMAIN_PREFIX')) + '.nucleuscloud.dev',
+#       'CUST_INGRESS_HOSTNAME'     : str(os.getenv('NUCLEUS_DEV_DOMAIN_PREFIX')) + '.Groupe-Hevea.dev',
 #       'EVENTS_QUEUE_URL' : os.getenv('NUCLEUS_DEV_EVENTS_QUEUE_URL'),
 #       'NOTIFICATIONS_QUEUE_URL' : os.getenv('NUCLEUS_DEV_NOTIFICATIONS_QUEUE_URL'),
 #       'EVENTS_TOPIC_ARN' : os.getenv('NUCLEUS_DEV_EVENTS_TOPIC_ARN'),

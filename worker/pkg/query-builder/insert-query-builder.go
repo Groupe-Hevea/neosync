@@ -7,10 +7,10 @@ import (
 	"slices"
 	"strings"
 
+	sqlmanager_postgres "github.com/Groupe-Hevea/neosync/backend/pkg/sqlmanager/postgres"
+	sqlmanager_shared "github.com/Groupe-Hevea/neosync/backend/pkg/sqlmanager/shared"
 	"github.com/doug-martin/goqu/v9"
 	"github.com/doug-martin/goqu/v9/exp"
-	sqlmanager_postgres "github.com/nucleuscloud/neosync/backend/pkg/sqlmanager/postgres"
-	sqlmanager_shared "github.com/nucleuscloud/neosync/backend/pkg/sqlmanager/shared"
 )
 
 func GetInsertBuilder(

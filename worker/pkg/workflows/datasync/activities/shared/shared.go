@@ -6,13 +6,13 @@ import (
 	"net/http"
 
 	"connectrpc.com/connect"
-	mgmtv1alpha1 "github.com/nucleuscloud/neosync/backend/gen/go/protos/mgmt/v1alpha1"
-	"github.com/nucleuscloud/neosync/backend/gen/go/protos/mgmt/v1alpha1/mgmtv1alpha1connect"
-	sqlmanager_shared "github.com/nucleuscloud/neosync/backend/pkg/sqlmanager/shared"
+	mgmtv1alpha1 "github.com/Groupe-Hevea/neosync/backend/gen/go/protos/mgmt/v1alpha1"
+	"github.com/Groupe-Hevea/neosync/backend/gen/go/protos/mgmt/v1alpha1/mgmtv1alpha1connect"
+	sqlmanager_shared "github.com/Groupe-Hevea/neosync/backend/pkg/sqlmanager/shared"
 
-	benthosbuilder_shared "github.com/nucleuscloud/neosync/internal/benthos/benthos-builder/shared"
-	http_client "github.com/nucleuscloud/neosync/internal/http/client"
-	neosync_redis "github.com/nucleuscloud/neosync/internal/redis"
+	benthosbuilder_shared "github.com/Groupe-Hevea/neosync/internal/benthos/benthos-builder/shared"
+	http_client "github.com/Groupe-Hevea/neosync/internal/http/client"
+	neosync_redis "github.com/Groupe-Hevea/neosync/internal/redis"
 	"github.com/spf13/viper"
 )
 

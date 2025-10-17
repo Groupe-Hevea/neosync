@@ -8,10 +8,10 @@ import (
 	"testing"
 
 	"connectrpc.com/connect"
-	mgmtv1alpha1 "github.com/nucleuscloud/neosync/backend/gen/go/protos/mgmt/v1alpha1"
-	"github.com/nucleuscloud/neosync/backend/gen/go/protos/mgmt/v1alpha1/mgmtv1alpha1connect"
-	logger_interceptor "github.com/nucleuscloud/neosync/backend/internal/connect/interceptors/logger"
-	"github.com/nucleuscloud/neosync/internal/testutil"
+	mgmtv1alpha1 "github.com/Groupe-Hevea/neosync/backend/gen/go/protos/mgmt/v1alpha1"
+	"github.com/Groupe-Hevea/neosync/backend/gen/go/protos/mgmt/v1alpha1/mgmtv1alpha1connect"
+	logger_interceptor "github.com/Groupe-Hevea/neosync/backend/internal/connect/interceptors/logger"
+	"github.com/Groupe-Hevea/neosync/internal/testutil"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -30,7 +30,10 @@ func Test_Interceptor_WrapUnary_Without_Error(t *testing.T) {
 	srv := startHTTPServer(t, mux)
 
 	client := mgmtv1alpha1connect.NewUserAccountServiceClient(srv.Client(), srv.URL)
-	_, err := client.GetUser(context.Background(), connect.NewRequest(&mgmtv1alpha1.GetUserRequest{}))
+	_, err := client.GetUser(
+		context.Background(),
+		connect.NewRequest(&mgmtv1alpha1.GetUserRequest{}),
+	)
 	assert.Nil(t, err)
 }
 
@@ -49,7 +52,10 @@ func Test_Interceptor_WrapUnary_With_Generic_Error(t *testing.T) {
 	srv := startHTTPServer(t, mux)
 
 	client := mgmtv1alpha1connect.NewUserAccountServiceClient(srv.Client(), srv.URL)
-	_, err := client.GetUser(context.Background(), connect.NewRequest(&mgmtv1alpha1.GetUserRequest{}))
+	_, err := client.GetUser(
+		context.Background(),
+		connect.NewRequest(&mgmtv1alpha1.GetUserRequest{}),
+	)
 	assert.Error(t, err)
 }
 
@@ -68,7 +74,10 @@ func Test_Interceptor_WrapUnary_With_Connect_Error(t *testing.T) {
 	srv := startHTTPServer(t, mux)
 
 	client := mgmtv1alpha1connect.NewUserAccountServiceClient(srv.Client(), srv.URL)
-	_, err := client.GetUser(context.Background(), connect.NewRequest(&mgmtv1alpha1.GetUserRequest{}))
+	_, err := client.GetUser(
+		context.Background(),
+		connect.NewRequest(&mgmtv1alpha1.GetUserRequest{}),
+	)
 	assert.Error(t, err)
 }
 

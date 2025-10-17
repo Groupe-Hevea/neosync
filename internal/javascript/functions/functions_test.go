@@ -46,7 +46,9 @@ func TestParseFunctionArguments(t *testing.T) {
 	t.Run("map arguments", func(t *testing.T) {
 		t.Run("simple map", func(t *testing.T) {
 			var m map[string]any
-			call := goja.FunctionCall{Arguments: []goja.Value{rt.ToValue(map[string]any{"key": "value"})}}
+			call := goja.FunctionCall{
+				Arguments: []goja.Value{rt.ToValue(map[string]any{"key": "value"})},
+			}
 			err := ParseFunctionArguments(call, &m)
 			require.NoError(t, err)
 			require.Equal(t, "value", m["key"])
@@ -134,7 +136,9 @@ func TestParseFunctionArguments(t *testing.T) {
 	t.Run("map slice argument", func(t *testing.T) {
 		t.Run("valid map slice", func(t *testing.T) {
 			var ms []map[string]any
-			call := goja.FunctionCall{Arguments: []goja.Value{rt.ToValue([]map[string]any{{"key": "value"}})}}
+			call := goja.FunctionCall{
+				Arguments: []goja.Value{rt.ToValue([]map[string]any{{"key": "value"}})},
+			}
 			err := ParseFunctionArguments(call, &ms)
 			require.NoError(t, err)
 			require.Equal(t, []map[string]any{{"key": "value"}}, ms)

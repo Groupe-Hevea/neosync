@@ -12,7 +12,7 @@ import (
 	"strings"
 	"text/template"
 
-	transformers_utils "github.com/nucleuscloud/neosync/worker/pkg/benthos/transformers"
+	transformers_utils "github.com/Groupe-Hevea/neosync/worker/pkg/benthos/transformers"
 )
 
 type TransformerInfo struct {
@@ -46,7 +46,13 @@ func main() {
 							continue
 						}
 						if parts[1] == "transform" {
-							transformers = append(transformers, fmt.Sprintf("New%s()", transformers_utils.CapitalizeFirst(parts[2])))
+							transformers = append(
+								transformers,
+								fmt.Sprintf(
+									"New%s()",
+									transformers_utils.CapitalizeFirst(parts[2]),
+								),
+							)
 						} else if parts[1] == "generate" {
 							generators = append(generators, fmt.Sprintf("New%s()", transformers_utils.CapitalizeFirst(parts[2])))
 						}

@@ -5,7 +5,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/nucleuscloud/neosync/worker/pkg/rng"
+	"github.com/Groupe-Hevea/neosync/worker/pkg/rng"
 	"github.com/redpanda-data/benthos/v4/public/bloblang"
 	"github.com/stretchr/testify/assert"
 )
@@ -16,7 +16,15 @@ func Test_GenerateStreetAddress(t *testing.T) {
 
 	assert.IsType(t, "", res, "The returned street address should be a string")
 
-	assert.LessOrEqual(t, int64(len(res)), maxLength, fmt.Sprintf("The city should be less than or equal to the max length. This is the error street address:%s", res))
+	assert.LessOrEqual(
+		t,
+		int64(len(res)),
+		maxLength,
+		fmt.Sprintf(
+			"The city should be less than or equal to the max length. This is the error street address:%s",
+			res,
+		),
+	)
 }
 
 func Test_GenerateStreetAddressShortMax(t *testing.T) {
@@ -25,7 +33,15 @@ func Test_GenerateStreetAddressShortMax(t *testing.T) {
 
 	assert.IsType(t, "", res, "The returned street address should be a string")
 
-	assert.LessOrEqual(t, int64(len(res)), maxLength, fmt.Sprintf("The city should be less than or equal to the max length. This is the error street address:%s", res))
+	assert.LessOrEqual(
+		t,
+		int64(len(res)),
+		maxLength,
+		fmt.Sprintf(
+			"The city should be less than or equal to the max length. This is the error street address:%s",
+			res,
+		),
+	)
 }
 
 func Test_GenerateStreetAddressSVeryhortMax(t *testing.T) {
@@ -34,7 +50,15 @@ func Test_GenerateStreetAddressSVeryhortMax(t *testing.T) {
 
 	assert.IsType(t, "", res, "The returned street address should be a string")
 
-	assert.LessOrEqual(t, int64(len(res)), maxLength, fmt.Sprintf("The city should be less than or equal to the max length. This is the error street address:%s", res))
+	assert.LessOrEqual(
+		t,
+		int64(len(res)),
+		maxLength,
+		fmt.Sprintf(
+			"The city should be less than or equal to the max length. This is the error street address:%s",
+			res,
+		),
+	)
 }
 
 func Test_StreetAddressTransformer(t *testing.T) {
@@ -46,7 +70,15 @@ func Test_StreetAddressTransformer(t *testing.T) {
 	assert.NoError(t, err)
 
 	assert.IsType(t, Address{}.Address1, res, "The returned street address should be a string")
-	assert.LessOrEqual(t, int64(len(res.(string))), maxLength, fmt.Sprintf("The city should be less than or equal to the max length. This is the error street address:%s", res))
+	assert.LessOrEqual(
+		t,
+		int64(len(res.(string))),
+		maxLength,
+		fmt.Sprintf(
+			"The city should be less than or equal to the max length. This is the error street address:%s",
+			res,
+		),
+	)
 }
 
 func Test_StreetAddressTransformer_NoOptions(t *testing.T) {

@@ -3,11 +3,11 @@ package piidetect_job_workflow
 import (
 	"testing"
 
-	mgmtv1alpha1 "github.com/nucleuscloud/neosync/backend/gen/go/protos/mgmt/v1alpha1"
-	"github.com/nucleuscloud/neosync/internal/testutil"
-	accounthook_workflow "github.com/nucleuscloud/neosync/worker/pkg/workflows/ee/account_hooks/workflow"
-	piidetect_job_activities "github.com/nucleuscloud/neosync/worker/pkg/workflows/ee/piidetect/workflows/job/activities"
-	piidetect_table_workflow "github.com/nucleuscloud/neosync/worker/pkg/workflows/ee/piidetect/workflows/table"
+	mgmtv1alpha1 "github.com/Groupe-Hevea/neosync/backend/gen/go/protos/mgmt/v1alpha1"
+	"github.com/Groupe-Hevea/neosync/internal/testutil"
+	accounthook_workflow "github.com/Groupe-Hevea/neosync/worker/pkg/workflows/ee/account_hooks/workflow"
+	piidetect_job_activities "github.com/Groupe-Hevea/neosync/worker/pkg/workflows/ee/piidetect/workflows/job/activities"
+	piidetect_table_workflow "github.com/Groupe-Hevea/neosync/worker/pkg/workflows/ee/piidetect/workflows/table"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
 	"github.com/stretchr/testify/require"
@@ -41,24 +41,38 @@ func Test_JobPiiDetect(t *testing.T) {
 		// Setup GetPiiDetectJobDetails activity expectations
 		env.OnActivity(activities.GetPiiDetectJobDetails, mock.Anything, &piidetect_job_activities.GetPiiDetectJobDetailsRequest{
 			JobId: "job-123",
-		}).Return(&piidetect_job_activities.GetPiiDetectJobDetailsResponse{
-			AccountId:          "acc-123",
-			SourceConnectionId: "conn-123",
-			PiiDetectConfig: &mgmtv1alpha1.JobTypeConfig_JobTypePiiDetect{
-				DataSampling: &mgmtv1alpha1.JobTypeConfig_JobTypePiiDetect_DataSampling{
-					IsEnabled: true,
+		}).
+			Return(&piidetect_job_activities.GetPiiDetectJobDetailsResponse{
+				AccountId:          "acc-123",
+				SourceConnectionId: "conn-123",
+				PiiDetectConfig: &mgmtv1alpha1.JobTypeConfig_JobTypePiiDetect{
+					DataSampling: &mgmtv1alpha1.JobTypeConfig_JobTypePiiDetect_DataSampling{
+						IsEnabled: true,
+					},
+					UserPrompt: pointerToString("Please detect PII"),
 				},
-				UserPrompt: pointerToString("Please detect PII"),
-			},
-		}, nil)
+			}, nil)
 
 		// Setup GetTablesToPiiScan activity expectations
-		env.OnActivity(activities.GetTablesToPiiScan, mock.Anything, mock.Anything).Return(&piidetect_job_activities.GetTablesToPiiScanResponse{
-			Tables: []piidetect_job_activities.TableIdentifierWithFingerprint{
-				{TableIdentifier: piidetect_job_activities.TableIdentifier{Schema: "public", Table: "users"}, Fingerprint: "fingerprint1"},
-				{TableIdentifier: piidetect_job_activities.TableIdentifier{Schema: "public", Table: "orders"}, Fingerprint: "fingerprint2"},
-			},
-		}, nil)
+		env.OnActivity(activities.GetTablesToPiiScan, mock.Anything, mock.Anything).
+			Return(&piidetect_job_activities.GetTablesToPiiScanResponse{
+				Tables: []piidetect_job_activities.TableIdentifierWithFingerprint{
+					{
+						TableIdentifier: piidetect_job_activities.TableIdentifier{
+							Schema: "public",
+							Table:  "users",
+						},
+						Fingerprint: "fingerprint1",
+					},
+					{
+						TableIdentifier: piidetect_job_activities.TableIdentifier{
+							Schema: "public",
+							Table:  "orders",
+						},
+						Fingerprint: "fingerprint2",
+					},
+				},
+			}, nil)
 
 		// Setup child workflow expectations for both tables
 		usersKey := &mgmtv1alpha1.RunContextKey{
@@ -75,7 +89,9 @@ func Test_JobPiiDetect(t *testing.T) {
 		env.OnWorkflow(tableWf.TablePiiDetect, mock.Anything, mock.Anything).Return(
 			func(ctx any, req *piidetect_table_workflow.TablePiiDetectRequest) (*piidetect_table_workflow.TablePiiDetectResponse, error) {
 				if req.TableName == "users" {
-					return &piidetect_table_workflow.TablePiiDetectResponse{ResultKey: usersKey}, nil
+					return &piidetect_table_workflow.TablePiiDetectResponse{
+						ResultKey: usersKey,
+					}, nil
 				}
 				return &piidetect_table_workflow.TablePiiDetectResponse{ResultKey: ordersKey}, nil
 			})
@@ -86,9 +102,10 @@ func Test_JobPiiDetect(t *testing.T) {
 			JobRunId:   "job-123",
 			ExternalId: "job-pii-report",
 		}
-		env.OnActivity(activities.SaveJobPiiDetectReport, mock.Anything, mock.Anything, mock.Anything).Return(&piidetect_job_activities.SaveJobPiiDetectReportResponse{
-			Key: expectedJobKey,
-		}, nil)
+		env.OnActivity(activities.SaveJobPiiDetectReport, mock.Anything, mock.Anything, mock.Anything).
+			Return(&piidetect_job_activities.SaveJobPiiDetectReportResponse{
+				Key: expectedJobKey,
+			}, nil)
 
 		// Execute workflow
 		req := &PiiDetectRequest{
@@ -121,29 +138,37 @@ func Test_JobPiiDetect(t *testing.T) {
 		var activities *piidetect_job_activities.Activities
 
 		// Setup GetPiiDetectJobDetails with table filter
-		env.OnActivity(activities.GetPiiDetectJobDetails, mock.Anything, mock.Anything).Return(&piidetect_job_activities.GetPiiDetectJobDetailsResponse{
-			AccountId:          "acc-123",
-			SourceConnectionId: "conn-123",
-			PiiDetectConfig: &mgmtv1alpha1.JobTypeConfig_JobTypePiiDetect{
-				TableScanFilter: &mgmtv1alpha1.JobTypeConfig_JobTypePiiDetect_TableScanFilter{
-					Mode: &mgmtv1alpha1.JobTypeConfig_JobTypePiiDetect_TableScanFilter_Include{
-						Include: &mgmtv1alpha1.JobTypeConfig_JobTypePiiDetect_TablePatterns{
-							Schemas: []string{"public"},
-							Tables: []*mgmtv1alpha1.JobTypeConfig_JobTypePiiDetect_TableIdentifier{
-								{Schema: "public", Table: "users"},
+		env.OnActivity(activities.GetPiiDetectJobDetails, mock.Anything, mock.Anything).
+			Return(&piidetect_job_activities.GetPiiDetectJobDetailsResponse{
+				AccountId:          "acc-123",
+				SourceConnectionId: "conn-123",
+				PiiDetectConfig: &mgmtv1alpha1.JobTypeConfig_JobTypePiiDetect{
+					TableScanFilter: &mgmtv1alpha1.JobTypeConfig_JobTypePiiDetect_TableScanFilter{
+						Mode: &mgmtv1alpha1.JobTypeConfig_JobTypePiiDetect_TableScanFilter_Include{
+							Include: &mgmtv1alpha1.JobTypeConfig_JobTypePiiDetect_TablePatterns{
+								Schemas: []string{"public"},
+								Tables: []*mgmtv1alpha1.JobTypeConfig_JobTypePiiDetect_TableIdentifier{
+									{Schema: "public", Table: "users"},
+								},
 							},
 						},
 					},
 				},
-			},
-		}, nil)
+			}, nil)
 
 		// Setup GetTablesToPiiScan to return filtered tables
-		env.OnActivity(activities.GetTablesToPiiScan, mock.Anything, mock.Anything).Return(&piidetect_job_activities.GetTablesToPiiScanResponse{
-			Tables: []piidetect_job_activities.TableIdentifierWithFingerprint{
-				{TableIdentifier: piidetect_job_activities.TableIdentifier{Schema: "public", Table: "users"}, Fingerprint: "fingerprint1"},
-			},
-		}, nil)
+		env.OnActivity(activities.GetTablesToPiiScan, mock.Anything, mock.Anything).
+			Return(&piidetect_job_activities.GetTablesToPiiScanResponse{
+				Tables: []piidetect_job_activities.TableIdentifierWithFingerprint{
+					{
+						TableIdentifier: piidetect_job_activities.TableIdentifier{
+							Schema: "public",
+							Table:  "users",
+						},
+						Fingerprint: "fingerprint1",
+					},
+				},
+			}, nil)
 
 		// Setup child workflow expectations
 		usersKey := &mgmtv1alpha1.RunContextKey{
@@ -151,18 +176,20 @@ func Test_JobPiiDetect(t *testing.T) {
 			JobRunId:   "job-123",
 			ExternalId: "public.users--table-pii-report",
 		}
-		env.OnWorkflow(tableWf.TablePiiDetect, mock.Anything, mock.Anything).Return(&piidetect_table_workflow.TablePiiDetectResponse{
-			ResultKey: usersKey,
-		}, nil)
+		env.OnWorkflow(tableWf.TablePiiDetect, mock.Anything, mock.Anything).
+			Return(&piidetect_table_workflow.TablePiiDetectResponse{
+				ResultKey: usersKey,
+			}, nil)
 
 		expectedJobKey := &mgmtv1alpha1.RunContextKey{
 			AccountId:  "acc-123",
 			JobRunId:   "job-123",
 			ExternalId: "job-pii-report",
 		}
-		env.OnActivity(activities.SaveJobPiiDetectReport, mock.Anything, mock.Anything, mock.Anything).Return(&piidetect_job_activities.SaveJobPiiDetectReportResponse{
-			Key: expectedJobKey,
-		}, nil)
+		env.OnActivity(activities.SaveJobPiiDetectReport, mock.Anything, mock.Anything, mock.Anything).
+			Return(&piidetect_job_activities.SaveJobPiiDetectReportResponse{
+				Key: expectedJobKey,
+			}, nil)
 
 		req := &PiiDetectRequest{
 			JobId: "job-123",
@@ -192,7 +219,8 @@ func Test_JobPiiDetect(t *testing.T) {
 		var activities *piidetect_job_activities.Activities
 
 		// Setup GetPiiDetectJobDetails to fail
-		env.OnActivity(activities.GetPiiDetectJobDetails, mock.Anything, mock.Anything).Return(nil, assert.AnError)
+		env.OnActivity(activities.GetPiiDetectJobDetails, mock.Anything, mock.Anything).
+			Return(nil, assert.AnError)
 
 		req := &PiiDetectRequest{
 			JobId: "job-123",
@@ -221,18 +249,32 @@ func Test_JobPiiDetect(t *testing.T) {
 		var activities *piidetect_job_activities.Activities
 
 		// Setup GetPiiDetectJobDetails
-		env.OnActivity(activities.GetPiiDetectJobDetails, mock.Anything, mock.Anything).Return(&piidetect_job_activities.GetPiiDetectJobDetailsResponse{
-			AccountId:          "acc-123",
-			SourceConnectionId: "conn-123",
-		}, nil)
+		env.OnActivity(activities.GetPiiDetectJobDetails, mock.Anything, mock.Anything).
+			Return(&piidetect_job_activities.GetPiiDetectJobDetailsResponse{
+				AccountId:          "acc-123",
+				SourceConnectionId: "conn-123",
+			}, nil)
 
 		// Setup GetTablesToPiiScan
-		env.OnActivity(activities.GetTablesToPiiScan, mock.Anything, mock.Anything).Return(&piidetect_job_activities.GetTablesToPiiScanResponse{
-			Tables: []piidetect_job_activities.TableIdentifierWithFingerprint{
-				{TableIdentifier: piidetect_job_activities.TableIdentifier{Schema: "public", Table: "users"}, Fingerprint: "fingerprint1"},
-				{TableIdentifier: piidetect_job_activities.TableIdentifier{Schema: "public", Table: "orders"}, Fingerprint: "fingerprint2"},
-			},
-		}, nil)
+		env.OnActivity(activities.GetTablesToPiiScan, mock.Anything, mock.Anything).
+			Return(&piidetect_job_activities.GetTablesToPiiScanResponse{
+				Tables: []piidetect_job_activities.TableIdentifierWithFingerprint{
+					{
+						TableIdentifier: piidetect_job_activities.TableIdentifier{
+							Schema: "public",
+							Table:  "users",
+						},
+						Fingerprint: "fingerprint1",
+					},
+					{
+						TableIdentifier: piidetect_job_activities.TableIdentifier{
+							Schema: "public",
+							Table:  "orders",
+						},
+						Fingerprint: "fingerprint2",
+					},
+				},
+			}, nil)
 
 		// Setup child workflow to fail for one table but succeed for another
 		usersKey := &mgmtv1alpha1.RunContextKey{
@@ -243,7 +285,9 @@ func Test_JobPiiDetect(t *testing.T) {
 		env.OnWorkflow(tableWf.TablePiiDetect, mock.Anything, mock.Anything).Return(
 			func(ctx any, req *piidetect_table_workflow.TablePiiDetectRequest) (*piidetect_table_workflow.TablePiiDetectResponse, error) {
 				if req.TableName == "users" {
-					return &piidetect_table_workflow.TablePiiDetectResponse{ResultKey: usersKey}, nil
+					return &piidetect_table_workflow.TablePiiDetectResponse{
+						ResultKey: usersKey,
+					}, nil
 				}
 				return nil, temporal.NewApplicationError("table scan failed", "ScanError")
 			})
@@ -254,9 +298,10 @@ func Test_JobPiiDetect(t *testing.T) {
 			JobRunId:   "job-123",
 			ExternalId: "job-pii-report",
 		}
-		env.OnActivity(activities.SaveJobPiiDetectReport, mock.Anything, mock.Anything, mock.Anything).Return(&piidetect_job_activities.SaveJobPiiDetectReportResponse{
-			Key: expectedJobKey,
-		}, nil)
+		env.OnActivity(activities.SaveJobPiiDetectReport, mock.Anything, mock.Anything, mock.Anything).
+			Return(&piidetect_job_activities.SaveJobPiiDetectReportResponse{
+				Key: expectedJobKey,
+			}, nil)
 
 		req := &PiiDetectRequest{
 			JobId: "job-123",
@@ -288,24 +333,26 @@ func Test_JobPiiDetect(t *testing.T) {
 		var activities *piidetect_job_activities.Activities
 
 		// Setup GetPiiDetectJobDetails with incremental config enabled
-		env.OnActivity(activities.GetPiiDetectJobDetails, mock.Anything, mock.Anything).Return(&piidetect_job_activities.GetPiiDetectJobDetailsResponse{
-			AccountId:          "acc-123",
-			SourceConnectionId: "conn-123",
-			PiiDetectConfig: &mgmtv1alpha1.JobTypeConfig_JobTypePiiDetect{
-				Incremental: &mgmtv1alpha1.JobTypeConfig_JobTypePiiDetect_Incremental{
-					IsEnabled: true,
+		env.OnActivity(activities.GetPiiDetectJobDetails, mock.Anything, mock.Anything).
+			Return(&piidetect_job_activities.GetPiiDetectJobDetailsResponse{
+				AccountId:          "acc-123",
+				SourceConnectionId: "conn-123",
+				PiiDetectConfig: &mgmtv1alpha1.JobTypeConfig_JobTypePiiDetect{
+					Incremental: &mgmtv1alpha1.JobTypeConfig_JobTypePiiDetect_Incremental{
+						IsEnabled: true,
+					},
 				},
-			},
-		}, nil)
+			}, nil)
 
 		// Setup GetLastSuccessfulWorkflowId
 		lastWorkflowId := "previous-workflow-123"
 		env.OnActivity(activities.GetLastSuccessfulWorkflowId, mock.Anything, &piidetect_job_activities.GetLastSuccessfulWorkflowIdRequest{
 			AccountId: "acc-123",
 			JobId:     "job-123",
-		}).Return(&piidetect_job_activities.GetLastSuccessfulWorkflowIdResponse{
-			WorkflowId: &lastWorkflowId,
-		}, nil)
+		}).
+			Return(&piidetect_job_activities.GetLastSuccessfulWorkflowIdResponse{
+				WorkflowId: &lastWorkflowId,
+			}, nil)
 
 		// Setup GetTablesToPiiScan with previous reports and changed tables
 		previousReport := &piidetect_job_activities.TableReport{
@@ -326,12 +373,19 @@ func Test_JobPiiDetect(t *testing.T) {
 			IncrementalConfig: &piidetect_job_activities.GetIncrementalTablesConfig{
 				LastWorkflowId: lastWorkflowId,
 			},
-		}).Return(&piidetect_job_activities.GetTablesToPiiScanResponse{
-			Tables: []piidetect_job_activities.TableIdentifierWithFingerprint{
-				{TableIdentifier: piidetect_job_activities.TableIdentifier{Schema: "public", Table: "changed_table"}, Fingerprint: "new-fingerprint"},
-			},
-			PreviousReports: []*piidetect_job_activities.TableReport{previousReport},
-		}, nil)
+		}).
+			Return(&piidetect_job_activities.GetTablesToPiiScanResponse{
+				Tables: []piidetect_job_activities.TableIdentifierWithFingerprint{
+					{
+						TableIdentifier: piidetect_job_activities.TableIdentifier{
+							Schema: "public",
+							Table:  "changed_table",
+						},
+						Fingerprint: "new-fingerprint",
+					},
+				},
+				PreviousReports: []*piidetect_job_activities.TableReport{previousReport},
+			}, nil)
 
 		// Setup child workflow expectations for changed table
 		changedTableKey := &mgmtv1alpha1.RunContextKey{
@@ -339,9 +393,10 @@ func Test_JobPiiDetect(t *testing.T) {
 			JobRunId:   "job-123",
 			ExternalId: "public.changed_table--table-pii-report",
 		}
-		env.OnWorkflow(tableWf.TablePiiDetect, mock.Anything, mock.Anything).Return(&piidetect_table_workflow.TablePiiDetectResponse{
-			ResultKey: changedTableKey,
-		}, nil)
+		env.OnWorkflow(tableWf.TablePiiDetect, mock.Anything, mock.Anything).
+			Return(&piidetect_table_workflow.TablePiiDetectResponse{
+				ResultKey: changedTableKey,
+			}, nil)
 
 		// Setup SaveJobPiiDetectReport - should include both previous and new reports
 		expectedJobKey := &mgmtv1alpha1.RunContextKey{
@@ -365,9 +420,10 @@ func Test_JobPiiDetect(t *testing.T) {
 				}
 			}
 			return hasUnchanged && hasChanged
-		})).Return(&piidetect_job_activities.SaveJobPiiDetectReportResponse{
-			Key: expectedJobKey,
-		}, nil)
+		})).
+			Return(&piidetect_job_activities.SaveJobPiiDetectReportResponse{
+				Key: expectedJobKey,
+			}, nil)
 
 		req := &PiiDetectRequest{
 			JobId: "job-123",
@@ -399,24 +455,26 @@ func Test_JobPiiDetect(t *testing.T) {
 		var activities *piidetect_job_activities.Activities
 
 		// Setup GetPiiDetectJobDetails with incremental config enabled
-		env.OnActivity(activities.GetPiiDetectJobDetails, mock.Anything, mock.Anything).Return(&piidetect_job_activities.GetPiiDetectJobDetailsResponse{
-			AccountId:          "acc-123",
-			SourceConnectionId: "conn-123",
-			PiiDetectConfig: &mgmtv1alpha1.JobTypeConfig_JobTypePiiDetect{
-				Incremental: &mgmtv1alpha1.JobTypeConfig_JobTypePiiDetect_Incremental{
-					IsEnabled: true,
+		env.OnActivity(activities.GetPiiDetectJobDetails, mock.Anything, mock.Anything).
+			Return(&piidetect_job_activities.GetPiiDetectJobDetailsResponse{
+				AccountId:          "acc-123",
+				SourceConnectionId: "conn-123",
+				PiiDetectConfig: &mgmtv1alpha1.JobTypeConfig_JobTypePiiDetect{
+					Incremental: &mgmtv1alpha1.JobTypeConfig_JobTypePiiDetect_Incremental{
+						IsEnabled: true,
+					},
 				},
-			},
-		}, nil)
+			}, nil)
 
 		// Setup GetLastSuccessfulWorkflowId
 		lastWorkflowId := "previous-workflow-123"
 		env.OnActivity(activities.GetLastSuccessfulWorkflowId, mock.Anything, &piidetect_job_activities.GetLastSuccessfulWorkflowIdRequest{
 			AccountId: "acc-123",
 			JobId:     "job-123",
-		}).Return(&piidetect_job_activities.GetLastSuccessfulWorkflowIdResponse{
-			WorkflowId: &lastWorkflowId,
-		}, nil)
+		}).
+			Return(&piidetect_job_activities.GetLastSuccessfulWorkflowIdResponse{
+				WorkflowId: &lastWorkflowId,
+			}, nil)
 
 		// Setup previous report for a table that will be detected as changed
 		previousReport := &piidetect_job_activities.TableReport{
@@ -438,12 +496,19 @@ func Test_JobPiiDetect(t *testing.T) {
 			IncrementalConfig: &piidetect_job_activities.GetIncrementalTablesConfig{
 				LastWorkflowId: lastWorkflowId,
 			},
-		}).Return(&piidetect_job_activities.GetTablesToPiiScanResponse{
-			Tables: []piidetect_job_activities.TableIdentifierWithFingerprint{
-				{TableIdentifier: piidetect_job_activities.TableIdentifier{Schema: "public", Table: "users"}, Fingerprint: "new-fingerprint"},
-			},
-			PreviousReports: []*piidetect_job_activities.TableReport{previousReport},
-		}, nil)
+		}).
+			Return(&piidetect_job_activities.GetTablesToPiiScanResponse{
+				Tables: []piidetect_job_activities.TableIdentifierWithFingerprint{
+					{
+						TableIdentifier: piidetect_job_activities.TableIdentifier{
+							Schema: "public",
+							Table:  "users",
+						},
+						Fingerprint: "new-fingerprint",
+					},
+				},
+				PreviousReports: []*piidetect_job_activities.TableReport{previousReport},
+			}, nil)
 
 		// Setup child workflow expectations for the changed table
 		newTableKey := &mgmtv1alpha1.RunContextKey{
@@ -456,9 +521,10 @@ func Test_JobPiiDetect(t *testing.T) {
 			return req.TableName == "users" &&
 				req.PreviousResultsKey != nil &&
 				req.PreviousResultsKey.ExternalId == "public.users--table-pii-report-old"
-		})).Return(&piidetect_table_workflow.TablePiiDetectResponse{
-			ResultKey: newTableKey,
-		}, nil)
+		})).
+			Return(&piidetect_table_workflow.TablePiiDetectResponse{
+				ResultKey: newTableKey,
+			}, nil)
 
 		// Setup SaveJobPiiDetectReport - should contain only the new report
 		expectedJobKey := &mgmtv1alpha1.RunContextKey{
@@ -475,9 +541,10 @@ func Test_JobPiiDetect(t *testing.T) {
 			return report.TableName == "users" &&
 				report.ScanFingerprint == "new-fingerprint" &&
 				report.ReportKey.ExternalId == "public.users--table-pii-report-new"
-		})).Return(&piidetect_job_activities.SaveJobPiiDetectReportResponse{
-			Key: expectedJobKey,
-		}, nil)
+		})).
+			Return(&piidetect_job_activities.SaveJobPiiDetectReportResponse{
+				Key: expectedJobKey,
+			}, nil)
 
 		req := &PiiDetectRequest{
 			JobId: "job-123",

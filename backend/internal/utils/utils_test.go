@@ -9,7 +9,10 @@ import (
 )
 
 func Test_FilterSlice(t *testing.T) {
-	assert.Empty(t, FilterSlice[string]([]string{"foo", "bar"}, func(s string) bool { return false }))
+	assert.Empty(
+		t,
+		FilterSlice[string]([]string{"foo", "bar"}, func(s string) bool { return false }),
+	)
 	assert.Equal(
 		t,
 		FilterSlice[string]([]string{"foo", "bar"}, func(s string) bool { return true }),
@@ -25,7 +28,10 @@ func Test_FilterSlice(t *testing.T) {
 func Test_MapSlice(t *testing.T) {
 	assert.Equal(
 		t,
-		MapSlice[string, string]([]string{"foo", "bar"}, func(s string) string { return fmt.Sprintf("%s_test", s) }),
+		MapSlice[string, string](
+			[]string{"foo", "bar"},
+			func(s string) string { return fmt.Sprintf("%s_test", s) },
+		),
 		[]string{"foo_test", "bar_test"},
 	)
 	assert.Equal(
@@ -40,18 +46,36 @@ func Test_GetBearerTokenFromHeader(t *testing.T) {
 	assert.Error(t, err)
 	_, err = GetBearerTokenFromHeader(http.Header{"Authorization": []string{}}, "Authorization")
 	assert.Error(t, err)
-	_, err = GetBearerTokenFromHeader(http.Header{"Authorization": []string{"Foo"}}, "Authorization")
+	_, err = GetBearerTokenFromHeader(
+		http.Header{"Authorization": []string{"Foo"}},
+		"Authorization",
+	)
 	assert.Error(t, err)
-	_, err = GetBearerTokenFromHeader(http.Header{"Authorization": []string{"Foo Foo Foo"}}, "Authorization")
+	_, err = GetBearerTokenFromHeader(
+		http.Header{"Authorization": []string{"Foo Foo Foo"}},
+		"Authorization",
+	)
 	assert.Error(t, err)
-	_, err = GetBearerTokenFromHeader(http.Header{"Authorization": []string{"Foo Foo"}}, "Authorization")
+	_, err = GetBearerTokenFromHeader(
+		http.Header{"Authorization": []string{"Foo Foo"}},
+		"Authorization",
+	)
 	assert.Error(t, err)
-	_, err = GetBearerTokenFromHeader(http.Header{"Authorization": []string{"Bearer"}}, "Authorization")
+	_, err = GetBearerTokenFromHeader(
+		http.Header{"Authorization": []string{"Bearer"}},
+		"Authorization",
+	)
 	assert.Error(t, err)
-	_, err = GetBearerTokenFromHeader(http.Header{"Authorization": []string{"Bearer 123"}}, "Authorizationn")
+	_, err = GetBearerTokenFromHeader(
+		http.Header{"Authorization": []string{"Bearer 123"}},
+		"Authorizationn",
+	)
 	assert.Error(t, err)
 
-	token, err := GetBearerTokenFromHeader(http.Header{"Authorization": []string{"Bearer 123"}}, "Authorization")
+	token, err := GetBearerTokenFromHeader(
+		http.Header{"Authorization": []string{"Bearer 123"}},
+		"Authorization",
+	)
 	assert.Nil(t, err)
 	assert.Equal(t, token, "123")
 }

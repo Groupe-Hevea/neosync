@@ -8,26 +8,26 @@ import (
 	"testing"
 
 	"connectrpc.com/connect"
-	pg_queries "github.com/nucleuscloud/neosync/backend/gen/go/db/dbschemas/postgresql"
-	mgmtv1alpha1 "github.com/nucleuscloud/neosync/backend/gen/go/protos/mgmt/v1alpha1"
-	"github.com/nucleuscloud/neosync/backend/gen/go/protos/mgmt/v1alpha1/mgmtv1alpha1connect"
-	tcneosyncapi "github.com/nucleuscloud/neosync/backend/pkg/integration-test"
-	sqlmanager_postgres "github.com/nucleuscloud/neosync/backend/pkg/sqlmanager/postgres"
-	sqlmanager_shared "github.com/nucleuscloud/neosync/backend/pkg/sqlmanager/shared"
-	"github.com/nucleuscloud/neosync/internal/gotypeutil"
-	schemamanager_shared "github.com/nucleuscloud/neosync/internal/schema-manager/shared"
-	tcpostgres "github.com/nucleuscloud/neosync/internal/testutil/testcontainers/postgres"
-	tcredis "github.com/nucleuscloud/neosync/internal/testutil/testcontainers/redis"
-	testutil_testdata "github.com/nucleuscloud/neosync/internal/testutil/testdata"
-	pg_alltypes "github.com/nucleuscloud/neosync/internal/testutil/testdata/postgres/alltypes"
-	pg_complex "github.com/nucleuscloud/neosync/internal/testutil/testdata/postgres/complex"
-	pg_edgecases "github.com/nucleuscloud/neosync/internal/testutil/testdata/postgres/edgecases"
-	pg_foreignkey_violations "github.com/nucleuscloud/neosync/internal/testutil/testdata/postgres/foreignkey-violations"
-	pg_humanresources "github.com/nucleuscloud/neosync/internal/testutil/testdata/postgres/humanresources"
-	pg_schema_init "github.com/nucleuscloud/neosync/internal/testutil/testdata/postgres/schema-init"
-	pg_subsetting "github.com/nucleuscloud/neosync/internal/testutil/testdata/postgres/subsetting"
-	pg_transformers "github.com/nucleuscloud/neosync/internal/testutil/testdata/postgres/transformers"
-	pg_uuids "github.com/nucleuscloud/neosync/internal/testutil/testdata/postgres/uuids"
+	pg_queries "github.com/Groupe-Hevea/neosync/backend/gen/go/db/dbschemas/postgresql"
+	mgmtv1alpha1 "github.com/Groupe-Hevea/neosync/backend/gen/go/protos/mgmt/v1alpha1"
+	"github.com/Groupe-Hevea/neosync/backend/gen/go/protos/mgmt/v1alpha1/mgmtv1alpha1connect"
+	tcneosyncapi "github.com/Groupe-Hevea/neosync/backend/pkg/integration-test"
+	sqlmanager_postgres "github.com/Groupe-Hevea/neosync/backend/pkg/sqlmanager/postgres"
+	sqlmanager_shared "github.com/Groupe-Hevea/neosync/backend/pkg/sqlmanager/shared"
+	"github.com/Groupe-Hevea/neosync/internal/gotypeutil"
+	schemamanager_shared "github.com/Groupe-Hevea/neosync/internal/schema-manager/shared"
+	tcpostgres "github.com/Groupe-Hevea/neosync/internal/testutil/testcontainers/postgres"
+	tcredis "github.com/Groupe-Hevea/neosync/internal/testutil/testcontainers/redis"
+	testutil_testdata "github.com/Groupe-Hevea/neosync/internal/testutil/testdata"
+	pg_alltypes "github.com/Groupe-Hevea/neosync/internal/testutil/testdata/postgres/alltypes"
+	pg_complex "github.com/Groupe-Hevea/neosync/internal/testutil/testdata/postgres/complex"
+	pg_edgecases "github.com/Groupe-Hevea/neosync/internal/testutil/testdata/postgres/edgecases"
+	pg_foreignkey_violations "github.com/Groupe-Hevea/neosync/internal/testutil/testdata/postgres/foreignkey-violations"
+	pg_humanresources "github.com/Groupe-Hevea/neosync/internal/testutil/testdata/postgres/humanresources"
+	pg_schema_init "github.com/Groupe-Hevea/neosync/internal/testutil/testdata/postgres/schema-init"
+	pg_subsetting "github.com/Groupe-Hevea/neosync/internal/testutil/testdata/postgres/subsetting"
+	pg_transformers "github.com/Groupe-Hevea/neosync/internal/testutil/testdata/postgres/transformers"
+	pg_uuids "github.com/Groupe-Hevea/neosync/internal/testutil/testdata/postgres/uuids"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 	"golang.org/x/sync/errgroup"
@@ -65,10 +65,13 @@ func createPostgresSyncJob(
 			}
 		}
 		w := where
-		subsetMap[schema].Tables = append(subsetMap[schema].Tables, &mgmtv1alpha1.PostgresSourceTableOption{
-			Table:       table,
-			WhereClause: &w,
-		})
+		subsetMap[schema].Tables = append(
+			subsetMap[schema].Tables,
+			&mgmtv1alpha1.PostgresSourceTableOption{
+				Table:       table,
+				WhereClause: &w,
+			},
+		)
 	}
 
 	for _, s := range subsetMap {
@@ -162,9 +165,16 @@ func test_postgres_types(
 	alltypesSchema := "alltypes"
 	errgrp, errctx := errgroup.WithContext(ctx)
 	errgrp.Go(func() error {
-		return postgres.Source.RunCreateStmtsInSchema(errctx, testdataFolder, []string{"alltypes/create-tables.sql"}, alltypesSchema)
+		return postgres.Source.RunCreateStmtsInSchema(
+			errctx,
+			testdataFolder,
+			[]string{"alltypes/create-tables.sql"},
+			alltypesSchema,
+		)
 	})
-	errgrp.Go(func() error { return postgres.Target.CreateSchemas(errctx, []string{alltypesSchema}) })
+	errgrp.Go(
+		func() error { return postgres.Target.CreateSchemas(errctx, []string{alltypesSchema}) },
+	)
 	err := errgrp.Wait()
 	require.NoError(t, err)
 	neosyncApi.MockTemporalForCreateJob("test-postgres-sync")
@@ -187,7 +197,11 @@ func test_postgres_types(
 	testworkflow := NewTestDataSyncWorkflowEnv(t, neosyncApi, dbManagers)
 	testworkflow.RequireActivitiesCompletedSuccessfully(t)
 	testworkflow.ExecuteTestDataSyncWorkflow(job.GetId())
-	require.Truef(t, testworkflow.TestEnv.IsWorkflowCompleted(), "Workflow did not complete. Test: all_types")
+	require.Truef(
+		t,
+		testworkflow.TestEnv.IsWorkflowCompleted(),
+		"Workflow did not complete. Test: all_types",
+	)
 	err = testworkflow.TestEnv.GetWorkflowError()
 	require.NoError(t, err, "Received Temporal Workflow Error: all_types")
 
@@ -206,7 +220,12 @@ func test_postgres_types(
 	for _, expected := range expectedResults {
 		rowCount, err := postgres.Target.GetTableRowCount(ctx, expected.schema, expected.table)
 		require.NoError(t, err)
-		require.Equalf(t, expected.rowCount, rowCount, fmt.Sprintf("Test: all_types Table: %s", expected.table))
+		require.Equalf(
+			t,
+			expected.rowCount,
+			rowCount,
+			fmt.Sprintf("Test: all_types Table: %s", expected.table),
+		)
 	}
 
 	source, err := sql.Open("postgres", postgres.Source.URL)
@@ -217,11 +236,56 @@ func test_postgres_types(
 	require.NoError(t, err)
 	defer target.Close()
 
-	testutil_testdata.VerifySQLTableColumnValues(t, ctx, source, target, alltypesSchema, "all_data_types", "postgres", []string{"id"})
-	testutil_testdata.VerifySQLTableColumnValues(t, ctx, source, target, alltypesSchema, "json_data", "postgres", []string{"id"})
-	testutil_testdata.VerifySQLTableColumnValues(t, ctx, source, target, alltypesSchema, "array_types", "postgres", []string{"id"})
-	testutil_testdata.VerifySQLTableColumnValues(t, ctx, source, target, alltypesSchema, "generated_table", "postgres", []string{"id"})
-	testutil_testdata.VerifySQLTableColumnValues(t, ctx, source, target, alltypesSchema, "time_time", "postgres", []string{"id"})
+	testutil_testdata.VerifySQLTableColumnValues(
+		t,
+		ctx,
+		source,
+		target,
+		alltypesSchema,
+		"all_data_types",
+		"postgres",
+		[]string{"id"},
+	)
+	testutil_testdata.VerifySQLTableColumnValues(
+		t,
+		ctx,
+		source,
+		target,
+		alltypesSchema,
+		"json_data",
+		"postgres",
+		[]string{"id"},
+	)
+	testutil_testdata.VerifySQLTableColumnValues(
+		t,
+		ctx,
+		source,
+		target,
+		alltypesSchema,
+		"array_types",
+		"postgres",
+		[]string{"id"},
+	)
+	testutil_testdata.VerifySQLTableColumnValues(
+		t,
+		ctx,
+		source,
+		target,
+		alltypesSchema,
+		"generated_table",
+		"postgres",
+		[]string{"id"},
+	)
+	testutil_testdata.VerifySQLTableColumnValues(
+		t,
+		ctx,
+		source,
+		target,
+		alltypesSchema,
+		"time_time",
+		"postgres",
+		[]string{"id"},
+	)
 
 	// tear down
 	err = cleanupPostgresSchemas(ctx, postgres, []string{alltypesSchema})
@@ -241,9 +305,16 @@ func test_postgres_passthrough_on_new_column_addition(
 	alltypesSchema := "alltypes_passthrough"
 	errgrp, errctx := errgroup.WithContext(ctx)
 	errgrp.Go(func() error {
-		return postgres.Source.RunCreateStmtsInSchema(errctx, testdataFolder, []string{"alltypes/create-tables.sql"}, alltypesSchema)
+		return postgres.Source.RunCreateStmtsInSchema(
+			errctx,
+			testdataFolder,
+			[]string{"alltypes/create-tables.sql"},
+			alltypesSchema,
+		)
 	})
-	errgrp.Go(func() error { return postgres.Target.CreateSchemas(errctx, []string{alltypesSchema}) })
+	errgrp.Go(
+		func() error { return postgres.Target.CreateSchemas(errctx, []string{alltypesSchema}) },
+	)
 	err := errgrp.Wait()
 	require.NoError(t, err)
 	neosyncApi.MockTemporalForCreateJob("test-postgres-sync")
@@ -292,14 +363,23 @@ func test_postgres_passthrough_on_new_column_addition(
 	testworkflow := NewTestDataSyncWorkflowEnv(t, neosyncApi, dbManagers)
 	testworkflow.RequireActivitiesCompletedSuccessfully(t)
 	testworkflow.ExecuteTestDataSyncWorkflow(job.GetId())
-	require.Truef(t, testworkflow.TestEnv.IsWorkflowCompleted(), "Workflow did not complete. Test: all_types")
+	require.Truef(
+		t,
+		testworkflow.TestEnv.IsWorkflowCompleted(),
+		"Workflow did not complete. Test: all_types",
+	)
 	err = testworkflow.TestEnv.GetWorkflowError()
 	require.NoError(t, err, "Received Temporal Workflow Error: all_types")
 
 	for _, expected := range expectedResults {
 		rowCount, err := postgres.Target.GetTableRowCount(ctx, expected.schema, expected.table)
 		require.NoError(t, err)
-		require.Equalf(t, expected.rowCount, rowCount, fmt.Sprintf("Test: all_types Table: %s", expected.table))
+		require.Equalf(
+			t,
+			expected.rowCount,
+			rowCount,
+			fmt.Sprintf("Test: all_types Table: %s", expected.table),
+		)
 	}
 
 	source, err := sql.Open("postgres", postgres.Source.URL)
@@ -310,11 +390,56 @@ func test_postgres_passthrough_on_new_column_addition(
 	require.NoError(t, err)
 	defer target.Close()
 
-	testutil_testdata.VerifySQLTableColumnValues(t, ctx, source, target, alltypesSchema, "all_data_types", "postgres", []string{"id"})
-	testutil_testdata.VerifySQLTableColumnValues(t, ctx, source, target, alltypesSchema, "json_data", "postgres", []string{"id"})
-	testutil_testdata.VerifySQLTableColumnValues(t, ctx, source, target, alltypesSchema, "array_types", "postgres", []string{"id"})
-	testutil_testdata.VerifySQLTableColumnValues(t, ctx, source, target, alltypesSchema, "generated_table", "postgres", []string{"id"})
-	testutil_testdata.VerifySQLTableColumnValues(t, ctx, source, target, alltypesSchema, "time_time", "postgres", []string{"id"})
+	testutil_testdata.VerifySQLTableColumnValues(
+		t,
+		ctx,
+		source,
+		target,
+		alltypesSchema,
+		"all_data_types",
+		"postgres",
+		[]string{"id"},
+	)
+	testutil_testdata.VerifySQLTableColumnValues(
+		t,
+		ctx,
+		source,
+		target,
+		alltypesSchema,
+		"json_data",
+		"postgres",
+		[]string{"id"},
+	)
+	testutil_testdata.VerifySQLTableColumnValues(
+		t,
+		ctx,
+		source,
+		target,
+		alltypesSchema,
+		"array_types",
+		"postgres",
+		[]string{"id"},
+	)
+	testutil_testdata.VerifySQLTableColumnValues(
+		t,
+		ctx,
+		source,
+		target,
+		alltypesSchema,
+		"generated_table",
+		"postgres",
+		[]string{"id"},
+	)
+	testutil_testdata.VerifySQLTableColumnValues(
+		t,
+		ctx,
+		source,
+		target,
+		alltypesSchema,
+		"time_time",
+		"postgres",
+		[]string{"id"},
+	)
 
 	// tear down
 	err = cleanupPostgresSchemas(ctx, postgres, []string{alltypesSchema})
@@ -335,10 +460,20 @@ func test_postgres_primary_key_transformations(
 	schema := "primary_$key_sdef"
 	errgrp, errctx := errgroup.WithContext(ctx)
 	errgrp.Go(func() error {
-		return postgres.Source.RunCreateStmtsInSchema(errctx, testdataFolder, []string{"uuids/create-tables.sql", "humanresources/create-tables.sql"}, schema)
+		return postgres.Source.RunCreateStmtsInSchema(
+			errctx,
+			testdataFolder,
+			[]string{"uuids/create-tables.sql", "humanresources/create-tables.sql"},
+			schema,
+		)
 	})
 	errgrp.Go(func() error {
-		return postgres.Target.RunCreateStmtsInSchema(errctx, testdataFolder, []string{"humanresources/create-tables.sql", "humanresources/create-constraints.sql"}, schema)
+		return postgres.Target.RunCreateStmtsInSchema(
+			errctx,
+			testdataFolder,
+			[]string{"humanresources/create-tables.sql", "humanresources/create-constraints.sql"},
+			schema,
+		)
 	})
 	err := errgrp.Wait()
 	require.NoError(t, err)
@@ -373,7 +508,9 @@ func test_postgres_primary_key_transformations(
 			m.Transformer = &mgmtv1alpha1.JobMappingTransformer{
 				Config: &mgmtv1alpha1.TransformerConfig{
 					Config: &mgmtv1alpha1.TransformerConfig_TransformJavascriptConfig{
-						TransformJavascriptConfig: &mgmtv1alpha1.TransformJavascript{Code: `if (value == 'US') { return 'SU'; } return value;`},
+						TransformJavascriptConfig: &mgmtv1alpha1.TransformJavascript{
+							Code: `if (value == 'US') { return 'SU'; } return value;`,
+						},
 					},
 				},
 			}
@@ -397,7 +534,11 @@ func test_postgres_primary_key_transformations(
 	testworkflow := NewTestDataSyncWorkflowEnv(t, neosyncApi, dbManagers, WithRedis(redis.URL))
 	testworkflow.RequireActivitiesCompletedSuccessfully(t)
 	testworkflow.ExecuteTestDataSyncWorkflow(job.GetId())
-	require.Truef(t, testworkflow.TestEnv.IsWorkflowCompleted(), "Workflow did not complete. Test: primary_key_transformations")
+	require.Truef(
+		t,
+		testworkflow.TestEnv.IsWorkflowCompleted(),
+		"Workflow did not complete. Test: primary_key_transformations",
+	)
 	err = testworkflow.TestEnv.GetWorkflowError()
 	require.NoError(t, err, "Received Temporal Workflow Error: all_types")
 
@@ -422,7 +563,12 @@ func test_postgres_primary_key_transformations(
 	for _, expected := range expectedResults {
 		rowCount, err := postgres.Target.GetTableRowCount(ctx, expected.schema, expected.table)
 		require.NoError(t, err)
-		require.Equalf(t, expected.rowCount, rowCount, fmt.Sprintf("Test: primary_key_transformations Table: %s", expected.table))
+		require.Equalf(
+			t,
+			expected.rowCount,
+			rowCount,
+			fmt.Sprintf("Test: primary_key_transformations Table: %s", expected.table),
+		)
 	}
 
 	keys, err := testworkflow.Redisclient.Keys(ctx, "*").Result()
@@ -449,7 +595,12 @@ func test_postgres_edgecases(
 	schema := "CaPiTaL"
 	errgrp, errctx := errgroup.WithContext(ctx)
 	errgrp.Go(func() error {
-		return postgres.Source.RunCreateStmtsInSchema(errctx, testdataFolder, []string{"edgecases/create-tables.sql"}, schema)
+		return postgres.Source.RunCreateStmtsInSchema(
+			errctx,
+			testdataFolder,
+			[]string{"edgecases/create-tables.sql"},
+			schema,
+		)
 	})
 	errgrp.Go(func() error {
 		return postgres.Target.CreateSchemas(errctx, []string{schema})
@@ -476,7 +627,11 @@ func test_postgres_edgecases(
 	testworkflow := NewTestDataSyncWorkflowEnv(t, neosyncApi, dbManagers)
 	testworkflow.RequireActivitiesCompletedSuccessfully(t)
 	testworkflow.ExecuteTestDataSyncWorkflow(job.GetId())
-	require.Truef(t, testworkflow.TestEnv.IsWorkflowCompleted(), "Workflow did not complete. Test: edgecases")
+	require.Truef(
+		t,
+		testworkflow.TestEnv.IsWorkflowCompleted(),
+		"Workflow did not complete. Test: edgecases",
+	)
 	err = testworkflow.TestEnv.GetWorkflowError()
 	require.NoError(t, err, "Received Temporal Workflow Error: edgecases")
 
@@ -499,7 +654,12 @@ func test_postgres_edgecases(
 	for _, expected := range expectedResults {
 		rowCount, err := postgres.Target.GetTableRowCount(ctx, expected.schema, expected.table)
 		require.NoError(t, err)
-		require.Equalf(t, expected.rowCount, rowCount, fmt.Sprintf("Test: edgecases Table: %s", expected.table))
+		require.Equalf(
+			t,
+			expected.rowCount,
+			rowCount,
+			fmt.Sprintf("Test: edgecases Table: %s", expected.table),
+		)
 	}
 
 	// tear down
@@ -521,17 +681,37 @@ func test_postgres_virtual_foreign_keys(
 	subsetSchema := "vfk_hr_subset"
 	errgrp, errctx := errgroup.WithContext(ctx)
 	errgrp.Go(func() error {
-		return postgres.Source.RunCreateStmtsInSchema(errctx, testdataFolder, []string{"humanresources/create-tables.sql"}, schema)
+		return postgres.Source.RunCreateStmtsInSchema(
+			errctx,
+			testdataFolder,
+			[]string{"humanresources/create-tables.sql"},
+			schema,
+		)
 	})
 	errgrp.Go(func() error {
-		return postgres.Source.RunCreateStmtsInSchema(errctx, testdataFolder, []string{"humanresources/create-tables.sql"}, subsetSchema)
+		return postgres.Source.RunCreateStmtsInSchema(
+			errctx,
+			testdataFolder,
+			[]string{"humanresources/create-tables.sql"},
+			subsetSchema,
+		)
 	})
 	// only create foreign key constraints in target to test that virtual foreign keys are correct
 	errgrp.Go(func() error {
-		return postgres.Target.RunCreateStmtsInSchema(errctx, testdataFolder, []string{"humanresources/create-tables.sql", "humanresources/create-constraints.sql"}, schema)
+		return postgres.Target.RunCreateStmtsInSchema(
+			errctx,
+			testdataFolder,
+			[]string{"humanresources/create-tables.sql", "humanresources/create-constraints.sql"},
+			schema,
+		)
 	})
 	errgrp.Go(func() error {
-		return postgres.Target.RunCreateStmtsInSchema(errctx, testdataFolder, []string{"humanresources/create-tables.sql", "humanresources/create-constraints.sql"}, subsetSchema)
+		return postgres.Target.RunCreateStmtsInSchema(
+			errctx,
+			testdataFolder,
+			[]string{"humanresources/create-tables.sql", "humanresources/create-constraints.sql"},
+			subsetSchema,
+		)
 	})
 	err := errgrp.Wait()
 	require.NoError(t, err)
@@ -563,7 +743,11 @@ func test_postgres_virtual_foreign_keys(
 	testworkflow := NewTestDataSyncWorkflowEnv(t, neosyncApi, dbManagers)
 	testworkflow.RequireActivitiesCompletedSuccessfully(t)
 	testworkflow.ExecuteTestDataSyncWorkflow(job.GetId())
-	require.Truef(t, testworkflow.TestEnv.IsWorkflowCompleted(), "Workflow did not complete. Test: virtual-foreign-keys")
+	require.Truef(
+		t,
+		testworkflow.TestEnv.IsWorkflowCompleted(),
+		"Workflow did not complete. Test: virtual-foreign-keys",
+	)
 	err = testworkflow.TestEnv.GetWorkflowError()
 	require.NoError(t, err, "Received Temporal Workflow Error: virtual-foreign-keys")
 
@@ -591,7 +775,12 @@ func test_postgres_virtual_foreign_keys(
 	for _, expected := range expectedResults {
 		rowCount, err := postgres.Target.GetTableRowCount(ctx, expected.schema, expected.table)
 		require.NoError(t, err)
-		require.Equalf(t, expected.rowCount, rowCount, fmt.Sprintf("Test: virtual-foreign-keys Table: %s", expected.table))
+		require.Equalf(
+			t,
+			expected.rowCount,
+			rowCount,
+			fmt.Sprintf("Test: virtual-foreign-keys Table: %s", expected.table),
+		)
 	}
 
 	// tear down
@@ -613,10 +802,20 @@ func test_postgres_javascript_transformers(
 	generatorsSchema := "generators"
 	errgrp, errctx := errgroup.WithContext(ctx)
 	errgrp.Go(func() error {
-		return postgres.Source.RunCreateStmtsInSchema(errctx, testdataFolder, []string{"transformers/create-tables.sql"}, transformersSchema)
+		return postgres.Source.RunCreateStmtsInSchema(
+			errctx,
+			testdataFolder,
+			[]string{"transformers/create-tables.sql"},
+			transformersSchema,
+		)
 	})
 	errgrp.Go(func() error {
-		return postgres.Source.RunCreateStmtsInSchema(errctx, testdataFolder, []string{"transformers/create-tables.sql"}, generatorsSchema)
+		return postgres.Source.RunCreateStmtsInSchema(
+			errctx,
+			testdataFolder,
+			[]string{"transformers/create-tables.sql"},
+			generatorsSchema,
+		)
 	})
 	errgrp.Go(func() error {
 		return postgres.Target.CreateSchemas(errctx, []string{transformersSchema, generatorsSchema})
@@ -625,8 +824,12 @@ func test_postgres_javascript_transformers(
 	require.NoError(t, err)
 	neosyncApi.MockTemporalForCreateJob("test-postgres-sync")
 
-	transformersMappings := getJsTransformerJobmappings(pg_transformers.GetDefaultSyncJobMappings(transformersSchema))
-	generatorsMappings := getJsGeneratorJobmappings(pg_transformers.GetDefaultSyncJobMappings(generatorsSchema))
+	transformersMappings := getJsTransformerJobmappings(
+		pg_transformers.GetDefaultSyncJobMappings(transformersSchema),
+	)
+	generatorsMappings := getJsGeneratorJobmappings(
+		pg_transformers.GetDefaultSyncJobMappings(generatorsSchema),
+	)
 
 	job := createPostgresSyncJob(t, ctx, jobclient, &createJobConfig{
 		AccountId:   accountId,
@@ -644,7 +847,11 @@ func test_postgres_javascript_transformers(
 	testworkflow := NewTestDataSyncWorkflowEnv(t, neosyncApi, dbManagers)
 	testworkflow.RequireActivitiesCompletedSuccessfully(t)
 	testworkflow.ExecuteTestDataSyncWorkflow(job.GetId())
-	require.Truef(t, testworkflow.TestEnv.IsWorkflowCompleted(), "Workflow did not complete. Test: javascript-transformers")
+	require.Truef(
+		t,
+		testworkflow.TestEnv.IsWorkflowCompleted(),
+		"Workflow did not complete. Test: javascript-transformers",
+	)
 	err = testworkflow.TestEnv.GetWorkflowError()
 	require.NoError(t, err, "Received Temporal Workflow Error: javascript-transformers")
 
@@ -660,7 +867,12 @@ func test_postgres_javascript_transformers(
 	for _, expected := range expectedResults {
 		rowCount, err := postgres.Target.GetTableRowCount(ctx, expected.schema, expected.table)
 		require.NoError(t, err)
-		require.Equalf(t, expected.rowCount, rowCount, fmt.Sprintf("Test: javascript-transformers Table: %s", expected.table))
+		require.Equalf(
+			t,
+			expected.rowCount,
+			rowCount,
+			fmt.Sprintf("Test: javascript-transformers Table: %s", expected.table),
+		)
 	}
 
 	// tear down
@@ -670,33 +882,77 @@ func test_postgres_javascript_transformers(
 
 func getJsGeneratorJobmappings(jobmappings []*mgmtv1alpha1.JobMapping) []*mgmtv1alpha1.JobMapping {
 	colTransformerMap := map[string]*mgmtv1alpha1.JobMappingTransformer{
-		"e164_phone_number":   getJavascriptTransformerConfig("return neosync.generateInternationalPhoneNumber({ min: 9, max: 15});"),
-		"email":               getJavascriptTransformerConfig("return neosync.generateEmail({ maxLength: 255});"),
-		"str":                 getJavascriptTransformerConfig("return neosync.generateRandomString({ min: 1, max: 50});"),
-		"measurement":         getJavascriptTransformerConfig("return neosync.generateFloat64({ min: 3.14, max: 300.10});"),
-		"int64":               getJavascriptTransformerConfig("return neosync.generateInt64({ min: 1, max: 50});"),
-		"int64_phone_number":  getJavascriptTransformerConfig("return neosync.generateInt64PhoneNumber({});"),
-		"string_phone_number": getJavascriptTransformerConfig("return neosync.generateStringPhoneNumber({ min: 1, max: 15});"),
-		"first_name":          getJavascriptTransformerConfig("return neosync.generateFirstName({ maxLength: 25});"),
-		"last_name":           getJavascriptTransformerConfig("return neosync.generateLastName({ maxLength: 25});"),
-		"full_name":           getJavascriptTransformerConfig("return neosync.generateFullName({ maxLength: 25});"),
-		"character_scramble":  getJavascriptTransformerConfig("return neosync.generateCity({ maxLength: 100});"),
-		"bool":                getJavascriptTransformerConfig("return neosync.generateBool({});"),
-		"card_number":         getJavascriptTransformerConfig("return neosync.generateCardNumber({ validLuhn: true });"),
-		"categorical":         getJavascriptTransformerConfig("return neosync.generateCategorical({ categories: 'dog,cat,horse'});"),
-		"city":                getJavascriptTransformerConfig("return neosync.generateCity({ maxLength: 100 });"),
-		"full_address":        getJavascriptTransformerConfig("return neosync.generateFullAddress({ maxLength: 100 });"),
-		"gender":              getJavascriptTransformerConfig("return neosync.generateGender({});"),
-		"international_phone": getJavascriptTransformerConfig("return neosync.generateInternationalPhoneNumber({ min: 9, max: 14});"),
-		"sha256":              getJavascriptTransformerConfig("return neosync.generateSHA256Hash({});"),
-		"ssn":                 getJavascriptTransformerConfig("return neosync.generateSSN({});"),
-		"state":               getJavascriptTransformerConfig("return neosync.generateState({});"),
-		"street_address":      getJavascriptTransformerConfig("return neosync.generateStreetAddress({ maxLength: 100 });"),
-		"unix_time":           getJavascriptTransformerConfig("return neosync.generateUnixTimestamp({});"),
-		"username":            getJavascriptTransformerConfig("return neosync.generateUsername({ maxLength: 100 });"),
-		"utc_timestamp":       getJavascriptTransformerConfig("return neosync.generateUTCTimestamp({});"),
-		"uuid":                getJavascriptTransformerConfig("return neosync.generateUUID({});"),
-		"zipcode":             getJavascriptTransformerConfig("return neosync.generateZipcode({});"),
+		"e164_phone_number": getJavascriptTransformerConfig(
+			"return neosync.generateInternationalPhoneNumber({ min: 9, max: 15});",
+		),
+		"email": getJavascriptTransformerConfig(
+			"return neosync.generateEmail({ maxLength: 255});",
+		),
+		"str": getJavascriptTransformerConfig(
+			"return neosync.generateRandomString({ min: 1, max: 50});",
+		),
+		"measurement": getJavascriptTransformerConfig(
+			"return neosync.generateFloat64({ min: 3.14, max: 300.10});",
+		),
+		"int64": getJavascriptTransformerConfig(
+			"return neosync.generateInt64({ min: 1, max: 50});",
+		),
+		"int64_phone_number": getJavascriptTransformerConfig(
+			"return neosync.generateInt64PhoneNumber({});",
+		),
+		"string_phone_number": getJavascriptTransformerConfig(
+			"return neosync.generateStringPhoneNumber({ min: 1, max: 15});",
+		),
+		"first_name": getJavascriptTransformerConfig(
+			"return neosync.generateFirstName({ maxLength: 25});",
+		),
+		"last_name": getJavascriptTransformerConfig(
+			"return neosync.generateLastName({ maxLength: 25});",
+		),
+		"full_name": getJavascriptTransformerConfig(
+			"return neosync.generateFullName({ maxLength: 25});",
+		),
+		"character_scramble": getJavascriptTransformerConfig(
+			"return neosync.generateCity({ maxLength: 100});",
+		),
+		"bool": getJavascriptTransformerConfig("return neosync.generateBool({});"),
+		"card_number": getJavascriptTransformerConfig(
+			"return neosync.generateCardNumber({ validLuhn: true });",
+		),
+		"categorical": getJavascriptTransformerConfig(
+			"return neosync.generateCategorical({ categories: 'dog,cat,horse'});",
+		),
+		"city": getJavascriptTransformerConfig(
+			"return neosync.generateCity({ maxLength: 100 });",
+		),
+		"full_address": getJavascriptTransformerConfig(
+			"return neosync.generateFullAddress({ maxLength: 100 });",
+		),
+		"gender": getJavascriptTransformerConfig("return neosync.generateGender({});"),
+		"international_phone": getJavascriptTransformerConfig(
+			"return neosync.generateInternationalPhoneNumber({ min: 9, max: 14});",
+		),
+		"sha256": getJavascriptTransformerConfig(
+			"return neosync.generateSHA256Hash({});",
+		),
+		"ssn":   getJavascriptTransformerConfig("return neosync.generateSSN({});"),
+		"state": getJavascriptTransformerConfig("return neosync.generateState({});"),
+		"street_address": getJavascriptTransformerConfig(
+			"return neosync.generateStreetAddress({ maxLength: 100 });",
+		),
+		"unix_time": getJavascriptTransformerConfig(
+			"return neosync.generateUnixTimestamp({});",
+		),
+		"username": getJavascriptTransformerConfig(
+			"return neosync.generateUsername({ maxLength: 100 });",
+		),
+		"utc_timestamp": getJavascriptTransformerConfig(
+			"return neosync.generateUTCTimestamp({});",
+		),
+		"uuid": getJavascriptTransformerConfig("return neosync.generateUUID({});"),
+		"zipcode": getJavascriptTransformerConfig(
+			"return neosync.generateZipcode({});",
+		),
 	}
 	updatedJobmappings := []*mgmtv1alpha1.JobMapping{}
 	for _, jm := range jobmappings {
@@ -714,19 +970,43 @@ func getJsGeneratorJobmappings(jobmappings []*mgmtv1alpha1.JobMapping) []*mgmtv1
 	return updatedJobmappings
 }
 
-func getJsTransformerJobmappings(jobmappings []*mgmtv1alpha1.JobMapping) []*mgmtv1alpha1.JobMapping {
+func getJsTransformerJobmappings(
+	jobmappings []*mgmtv1alpha1.JobMapping,
+) []*mgmtv1alpha1.JobMapping {
 	colTransformerMap := map[string]*mgmtv1alpha1.JobMappingTransformer{
-		"e164_phone_number":   getJavascriptTransformerConfig("return neosync.transformE164PhoneNumber(value, { preserveLength: true, maxLength: 20});"),
-		"email":               getJavascriptTransformerConfig("return neosync.transformEmail(value, { preserveLength: true, maxLength: 255});"),
-		"str":                 getJavascriptTransformerConfig("return neosync.transformString(value, { preserveLength: true, maxLength: 30});"),
-		"measurement":         getJavascriptTransformerConfig("return neosync.transformFloat64(value, { randomizationRangeMin: 3.14, randomizationRangeMax: 300.10});"),
-		"int64":               getJavascriptTransformerConfig("return neosync.transformInt64(value, { randomizationRangeMin: 1, randomizationRangeMax: 300});"),
-		"int64_phone_number":  getJavascriptTransformerConfig("return neosync.transformInt64PhoneNumber(value, { preserveLength: true});"),
-		"string_phone_number": getJavascriptTransformerConfig("return neosync.transformStringPhoneNumber(value, { preserveLength: true, maxLength: 200});"),
-		"first_name":          getJavascriptTransformerConfig("return neosync.transformFirstName(value, { preserveLength: true, maxLength: 25});"),
-		"last_name":           getJavascriptTransformerConfig("return neosync.transformLastName(value, { preserveLength: true, maxLength: 25});"),
-		"full_name":           getJavascriptTransformerConfig("return neosync.transformFullName(value, { preserveLength: true, maxLength: 25});"),
-		"character_scramble":  getJavascriptTransformerConfig("return neosync.transformCharacterScramble(value, { preserveLength: false, maxLength: 100});"),
+		"e164_phone_number": getJavascriptTransformerConfig(
+			"return neosync.transformE164PhoneNumber(value, { preserveLength: true, maxLength: 20});",
+		),
+		"email": getJavascriptTransformerConfig(
+			"return neosync.transformEmail(value, { preserveLength: true, maxLength: 255});",
+		),
+		"str": getJavascriptTransformerConfig(
+			"return neosync.transformString(value, { preserveLength: true, maxLength: 30});",
+		),
+		"measurement": getJavascriptTransformerConfig(
+			"return neosync.transformFloat64(value, { randomizationRangeMin: 3.14, randomizationRangeMax: 300.10});",
+		),
+		"int64": getJavascriptTransformerConfig(
+			"return neosync.transformInt64(value, { randomizationRangeMin: 1, randomizationRangeMax: 300});",
+		),
+		"int64_phone_number": getJavascriptTransformerConfig(
+			"return neosync.transformInt64PhoneNumber(value, { preserveLength: true});",
+		),
+		"string_phone_number": getJavascriptTransformerConfig(
+			"return neosync.transformStringPhoneNumber(value, { preserveLength: true, maxLength: 200});",
+		),
+		"first_name": getJavascriptTransformerConfig(
+			"return neosync.transformFirstName(value, { preserveLength: true, maxLength: 25});",
+		),
+		"last_name": getJavascriptTransformerConfig(
+			"return neosync.transformLastName(value, { preserveLength: true, maxLength: 25});",
+		),
+		"full_name": getJavascriptTransformerConfig(
+			"return neosync.transformFullName(value, { preserveLength: true, maxLength: 25});",
+		),
+		"character_scramble": getJavascriptTransformerConfig(
+			"return neosync.transformCharacterScramble(value, { preserveLength: false, maxLength: 100});",
+		),
 	}
 	updatedJobmappings := []*mgmtv1alpha1.JobMapping{}
 	for _, jm := range jobmappings {
@@ -763,7 +1043,12 @@ func test_postgres_skip_foreign_keys_violations(
 	schema := "fk_violations"
 	errgrp, errctx := errgroup.WithContext(ctx)
 	errgrp.Go(func() error {
-		return postgres.Source.RunCreateStmtsInSchema(errctx, testdataFolder, []string{"foreignkey-violations/create-tables.sql"}, schema)
+		return postgres.Source.RunCreateStmtsInSchema(
+			errctx,
+			testdataFolder,
+			[]string{"foreignkey-violations/create-tables.sql"},
+			schema,
+		)
 	})
 	errgrp.Go(func() error {
 		return postgres.Target.CreateSchemas(errctx, []string{schema})
@@ -791,7 +1076,11 @@ func test_postgres_skip_foreign_keys_violations(
 	testworkflow := NewTestDataSyncWorkflowEnv(t, neosyncApi, dbManagers)
 	testworkflow.RequireActivitiesCompletedSuccessfully(t)
 	testworkflow.ExecuteTestDataSyncWorkflow(job.GetId())
-	require.Truef(t, testworkflow.TestEnv.IsWorkflowCompleted(), "Workflow did not complete. Test: skip-foreign-keys-violations")
+	require.Truef(
+		t,
+		testworkflow.TestEnv.IsWorkflowCompleted(),
+		"Workflow did not complete. Test: skip-foreign-keys-violations",
+	)
 	err = testworkflow.TestEnv.GetWorkflowError()
 	require.NoError(t, err, "Received Temporal Workflow Error: skip-foreign-keys-violations")
 
@@ -812,7 +1101,12 @@ func test_postgres_skip_foreign_keys_violations(
 	for _, expected := range expectedResults {
 		rowCount, err := postgres.Target.GetTableRowCount(ctx, expected.schema, expected.table)
 		require.NoError(t, err)
-		assert.Equalf(t, expected.rowCount, rowCount, fmt.Sprintf("Test: skip-foreign-keys-violations Table: %s", expected.table))
+		assert.Equalf(
+			t,
+			expected.rowCount,
+			rowCount,
+			fmt.Sprintf("Test: skip-foreign-keys-violations Table: %s", expected.table),
+		)
 	}
 
 	// tear down
@@ -833,7 +1127,12 @@ func test_postgres_foreign_keys_violations_error(
 	schema := "fk_violations_error"
 	errgrp, errctx := errgroup.WithContext(ctx)
 	errgrp.Go(func() error {
-		return postgres.Source.RunCreateStmtsInSchema(errctx, testdataFolder, []string{"foreignkey-violations/create-tables.sql"}, schema)
+		return postgres.Source.RunCreateStmtsInSchema(
+			errctx,
+			testdataFolder,
+			[]string{"foreignkey-violations/create-tables.sql"},
+			schema,
+		)
 	})
 	errgrp.Go(func() error {
 		return postgres.Target.CreateSchemas(errctx, []string{schema})
@@ -860,7 +1159,11 @@ func test_postgres_foreign_keys_violations_error(
 
 	testworkflow := NewTestDataSyncWorkflowEnv(t, neosyncApi, dbManagers)
 	testworkflow.ExecuteTestDataSyncWorkflow(job.GetId())
-	require.Truef(t, testworkflow.TestEnv.IsWorkflowCompleted(), "Workflow did not complete. Test: foreign-keys-violations-error")
+	require.Truef(
+		t,
+		testworkflow.TestEnv.IsWorkflowCompleted(),
+		"Workflow did not complete. Test: foreign-keys-violations-error",
+	)
 	err = testworkflow.TestEnv.GetWorkflowError()
 	require.Error(t, err, "Received Temporal Workflow Error: foreign-keys-violations-error")
 
@@ -882,7 +1185,12 @@ func test_postgres_subsetting(
 	schema := "subsetting"
 	errgrp, errctx := errgroup.WithContext(ctx)
 	errgrp.Go(func() error {
-		return postgres.Source.RunCreateStmtsInSchema(errctx, testdataFolder, []string{"subsetting/create-tables.sql"}, schema)
+		return postgres.Source.RunCreateStmtsInSchema(
+			errctx,
+			testdataFolder,
+			[]string{"subsetting/create-tables.sql"},
+			schema,
+		)
 	})
 	errgrp.Go(func() error {
 		return postgres.Target.CreateSchemas(errctx, []string{schema})
@@ -917,10 +1225,20 @@ func test_postgres_subsetting(
 		},
 	})
 
-	testworkflow := NewTestDataSyncWorkflowEnv(t, neosyncApi, dbManagers, WithMaxIterations(2), WithPageLimit(3))
+	testworkflow := NewTestDataSyncWorkflowEnv(
+		t,
+		neosyncApi,
+		dbManagers,
+		WithMaxIterations(2),
+		WithPageLimit(3),
+	)
 	testworkflow.RequireActivitiesCompletedSuccessfully(t)
 	testworkflow.ExecuteTestDataSyncWorkflow(job.GetId())
-	require.Truef(t, testworkflow.TestEnv.IsWorkflowCompleted(), "Workflow did not complete. Test: skip-foreign-keys-violations")
+	require.Truef(
+		t,
+		testworkflow.TestEnv.IsWorkflowCompleted(),
+		"Workflow did not complete. Test: skip-foreign-keys-violations",
+	)
 	err = testworkflow.TestEnv.GetWorkflowError()
 	require.NoError(t, err, "Received Temporal Workflow Error: skip-foreign-keys-violations")
 
@@ -956,7 +1274,12 @@ func test_postgres_subsetting(
 	for _, expected := range expectedResults {
 		rowCount, err := postgres.Target.GetTableRowCount(ctx, expected.schema, expected.table)
 		require.NoError(t, err)
-		assert.Equalf(t, expected.rowCount, rowCount, fmt.Sprintf("Test: skip-foreign-keys-violations Table: %s", expected.table))
+		assert.Equalf(
+			t,
+			expected.rowCount,
+			rowCount,
+			fmt.Sprintf("Test: skip-foreign-keys-violations Table: %s", expected.table),
+		)
 	}
 
 	// tear down
@@ -975,25 +1298,47 @@ func test_postgres_generate_workflow(
 ) {
 	jobclient := neosyncApi.OSSUnauthenticatedLicensedClients.Jobs()
 	schema := "generate"
-	err := postgres.Target.RunCreateStmtsInSchema(ctx, testdataFolder, []string{"alltypes/create-tables.sql"}, schema)
+	err := postgres.Target.RunCreateStmtsInSchema(
+		ctx,
+		testdataFolder,
+		[]string{"alltypes/create-tables.sql"},
+		schema,
+	)
 	require.NoError(t, err)
 	neosyncApi.MockTemporalForCreateJob("test-postgres-sync")
 
 	table := "all_data_types"
 	mappings := []*mgmtv1alpha1.JobMapping{
-		{Schema: schema, Table: table, Column: "integer_col", Transformer: &mgmtv1alpha1.JobMappingTransformer{
-			Config: &mgmtv1alpha1.TransformerConfig{Config: &mgmtv1alpha1.TransformerConfig_GenerateInt64Config{}},
-		}},
-		{Schema: schema, Table: table, Column: "text_col", Transformer: &mgmtv1alpha1.JobMappingTransformer{
-			Config: &mgmtv1alpha1.TransformerConfig{
-				Config: &mgmtv1alpha1.TransformerConfig_GenerateStringConfig{},
+		{
+			Schema: schema,
+			Table:  table,
+			Column: "integer_col",
+			Transformer: &mgmtv1alpha1.JobMappingTransformer{
+				Config: &mgmtv1alpha1.TransformerConfig{
+					Config: &mgmtv1alpha1.TransformerConfig_GenerateInt64Config{},
+				},
 			},
-		}},
-		{Schema: schema, Table: table, Column: "uuid_col", Transformer: &mgmtv1alpha1.JobMappingTransformer{
-			Config: &mgmtv1alpha1.TransformerConfig{
-				Config: &mgmtv1alpha1.TransformerConfig_GenerateUuidConfig{},
+		},
+		{
+			Schema: schema,
+			Table:  table,
+			Column: "text_col",
+			Transformer: &mgmtv1alpha1.JobMappingTransformer{
+				Config: &mgmtv1alpha1.TransformerConfig{
+					Config: &mgmtv1alpha1.TransformerConfig_GenerateStringConfig{},
+				},
 			},
-		}},
+		},
+		{
+			Schema: schema,
+			Table:  table,
+			Column: "uuid_col",
+			Transformer: &mgmtv1alpha1.JobMappingTransformer{
+				Config: &mgmtv1alpha1.TransformerConfig{
+					Config: &mgmtv1alpha1.TransformerConfig_GenerateUuidConfig{},
+				},
+			},
+		},
 	}
 
 	job, err := jobclient.CreateJob(ctx, connect.NewRequest(&mgmtv1alpha1.CreateJobRequest{
@@ -1037,7 +1382,11 @@ func test_postgres_generate_workflow(
 	testworkflow := NewTestDataSyncWorkflowEnv(t, neosyncApi, dbManagers)
 	testworkflow.RequireActivitiesCompletedSuccessfully(t)
 	testworkflow.ExecuteTestDataSyncWorkflow(job.Msg.GetJob().GetId())
-	require.Truef(t, testworkflow.TestEnv.IsWorkflowCompleted(), "Workflow did not complete. Test: generate")
+	require.Truef(
+		t,
+		testworkflow.TestEnv.IsWorkflowCompleted(),
+		"Workflow did not complete. Test: generate",
+	)
 	err = testworkflow.TestEnv.GetWorkflowError()
 	require.NoError(t, err, "Received Temporal Workflow Error: generate")
 
@@ -1052,7 +1401,12 @@ func test_postgres_generate_workflow(
 	for _, expected := range expectedResults {
 		rowCount, err := postgres.Target.GetTableRowCount(ctx, expected.schema, expected.table)
 		require.NoError(t, err)
-		require.Equalf(t, expected.rowCount, rowCount, fmt.Sprintf("Test: generate Table: %s", expected.table))
+		require.Equalf(
+			t,
+			expected.rowCount,
+			rowCount,
+			fmt.Sprintf("Test: generate Table: %s", expected.table),
+		)
 	}
 
 	// tear down
@@ -1060,7 +1414,11 @@ func test_postgres_generate_workflow(
 	require.NoError(t, err)
 }
 
-func cleanupPostgresSchemas(ctx context.Context, postgres *tcpostgres.PostgresTestSyncContainer, schemas []string) error {
+func cleanupPostgresSchemas(
+	ctx context.Context,
+	postgres *tcpostgres.PostgresTestSyncContainer,
+	schemas []string,
+) error {
 	errgrp, errctx := errgroup.WithContext(ctx)
 	errgrp.Go(func() error { return postgres.Source.DropSchemas(errctx, schemas) })
 	errgrp.Go(func() error { return postgres.Target.DropSchemas(errctx, schemas) })
@@ -1078,7 +1436,16 @@ func test_postgres_small_batch_size(
 ) {
 	jobclient := neosyncApi.OSSUnauthenticatedLicensedClients.Jobs()
 	schema := "small_batch"
-	err := postgres.Source.RunCreateStmtsInSchema(ctx, testdataFolder, []string{"uuids/create-tables.sql", "humanresources/create-tables.sql", "humanresources/create-constraints.sql"}, schema)
+	err := postgres.Source.RunCreateStmtsInSchema(
+		ctx,
+		testdataFolder,
+		[]string{
+			"uuids/create-tables.sql",
+			"humanresources/create-tables.sql",
+			"humanresources/create-constraints.sql",
+		},
+		schema,
+	)
 	require.NoError(t, err)
 	neosyncApi.MockTemporalForCreateJob("test-postgres-sync")
 
@@ -1101,10 +1468,20 @@ func test_postgres_small_batch_size(
 		},
 	})
 
-	testworkflow := NewTestDataSyncWorkflowEnv(t, neosyncApi, dbManagers, WithPageLimit(5), WithMaxIterations(2))
+	testworkflow := NewTestDataSyncWorkflowEnv(
+		t,
+		neosyncApi,
+		dbManagers,
+		WithPageLimit(5),
+		WithMaxIterations(2),
+	)
 	testworkflow.RequireActivitiesCompletedSuccessfully(t)
 	testworkflow.ExecuteTestDataSyncWorkflow(job.GetId())
-	require.Truef(t, testworkflow.TestEnv.IsWorkflowCompleted(), "Workflow did not complete. Test: tablesync_pages")
+	require.Truef(
+		t,
+		testworkflow.TestEnv.IsWorkflowCompleted(),
+		"Workflow did not complete. Test: tablesync_pages",
+	)
 	err = testworkflow.TestEnv.GetWorkflowError()
 	require.NoError(t, err, "Received Temporal Workflow Error: tablesync_pages")
 
@@ -1129,7 +1506,12 @@ func test_postgres_small_batch_size(
 	for _, expected := range expectedResults {
 		rowCount, err := postgres.Target.GetTableRowCount(ctx, expected.schema, expected.table)
 		require.NoError(t, err)
-		require.Equalf(t, expected.rowCount, rowCount, fmt.Sprintf("Test: tablesync_pages Table: %s", expected.table))
+		require.Equalf(
+			t,
+			expected.rowCount,
+			rowCount,
+			fmt.Sprintf("Test: tablesync_pages Table: %s", expected.table),
+		)
 	}
 
 	source, err := sql.Open("postgres", postgres.Source.URL)
@@ -1140,17 +1522,116 @@ func test_postgres_small_batch_size(
 	require.NoError(t, err)
 	defer target.Close()
 
-	testutil_testdata.VerifySQLTableColumnValues(t, ctx, source, target, schema, "employees", sqlmanager_shared.PostgresDriver, []string{"employee_id"})
-	testutil_testdata.VerifySQLTableColumnValues(t, ctx, source, target, schema, "jobs", sqlmanager_shared.PostgresDriver, []string{"job_id"})
-	testutil_testdata.VerifySQLTableColumnValues(t, ctx, source, target, schema, "departments", sqlmanager_shared.PostgresDriver, []string{"department_id"})
-	testutil_testdata.VerifySQLTableColumnValues(t, ctx, source, target, schema, "dependents", sqlmanager_shared.PostgresDriver, []string{"dependent_id"})
-	testutil_testdata.VerifySQLTableColumnValues(t, ctx, source, target, schema, "countries", sqlmanager_shared.PostgresDriver, []string{"country_id"})
-	testutil_testdata.VerifySQLTableColumnValues(t, ctx, source, target, schema, "locations", sqlmanager_shared.PostgresDriver, []string{"location_id"})
-	testutil_testdata.VerifySQLTableColumnValues(t, ctx, source, target, schema, "regions", sqlmanager_shared.PostgresDriver, []string{"region_id"})
-	testutil_testdata.VerifySQLTableColumnValues(t, ctx, source, target, schema, "referral_codes", sqlmanager_shared.PostgresDriver, []string{"id"})
-	testutil_testdata.VerifySQLTableColumnValues(t, ctx, source, target, schema, "store_customers", sqlmanager_shared.PostgresDriver, []string{"id"})
-	testutil_testdata.VerifySQLTableColumnValues(t, ctx, source, target, schema, "store_notifications", sqlmanager_shared.PostgresDriver, []string{"id"})
-	testutil_testdata.VerifySQLTableColumnValues(t, ctx, source, target, schema, "stores", sqlmanager_shared.PostgresDriver, []string{"id"})
+	testutil_testdata.VerifySQLTableColumnValues(
+		t,
+		ctx,
+		source,
+		target,
+		schema,
+		"employees",
+		sqlmanager_shared.PostgresDriver,
+		[]string{"employee_id"},
+	)
+	testutil_testdata.VerifySQLTableColumnValues(
+		t,
+		ctx,
+		source,
+		target,
+		schema,
+		"jobs",
+		sqlmanager_shared.PostgresDriver,
+		[]string{"job_id"},
+	)
+	testutil_testdata.VerifySQLTableColumnValues(
+		t,
+		ctx,
+		source,
+		target,
+		schema,
+		"departments",
+		sqlmanager_shared.PostgresDriver,
+		[]string{"department_id"},
+	)
+	testutil_testdata.VerifySQLTableColumnValues(
+		t,
+		ctx,
+		source,
+		target,
+		schema,
+		"dependents",
+		sqlmanager_shared.PostgresDriver,
+		[]string{"dependent_id"},
+	)
+	testutil_testdata.VerifySQLTableColumnValues(
+		t,
+		ctx,
+		source,
+		target,
+		schema,
+		"countries",
+		sqlmanager_shared.PostgresDriver,
+		[]string{"country_id"},
+	)
+	testutil_testdata.VerifySQLTableColumnValues(
+		t,
+		ctx,
+		source,
+		target,
+		schema,
+		"locations",
+		sqlmanager_shared.PostgresDriver,
+		[]string{"location_id"},
+	)
+	testutil_testdata.VerifySQLTableColumnValues(
+		t,
+		ctx,
+		source,
+		target,
+		schema,
+		"regions",
+		sqlmanager_shared.PostgresDriver,
+		[]string{"region_id"},
+	)
+	testutil_testdata.VerifySQLTableColumnValues(
+		t,
+		ctx,
+		source,
+		target,
+		schema,
+		"referral_codes",
+		sqlmanager_shared.PostgresDriver,
+		[]string{"id"},
+	)
+	testutil_testdata.VerifySQLTableColumnValues(
+		t,
+		ctx,
+		source,
+		target,
+		schema,
+		"store_customers",
+		sqlmanager_shared.PostgresDriver,
+		[]string{"id"},
+	)
+	testutil_testdata.VerifySQLTableColumnValues(
+		t,
+		ctx,
+		source,
+		target,
+		schema,
+		"store_notifications",
+		sqlmanager_shared.PostgresDriver,
+		[]string{"id"},
+	)
+	testutil_testdata.VerifySQLTableColumnValues(
+		t,
+		ctx,
+		source,
+		target,
+		schema,
+		"stores",
+		sqlmanager_shared.PostgresDriver,
+		[]string{"id"},
+	)
 
 	// tear down
 	err = cleanupPostgresSchemas(ctx, postgres, []string{schema})
@@ -1190,10 +1671,20 @@ func test_postgres_complex(
 			},
 		})
 
-		testworkflow := NewTestDataSyncWorkflowEnv(t, neosyncApi, dbManagers, WithMaxIterations(10), WithPageLimit(100))
+		testworkflow := NewTestDataSyncWorkflowEnv(
+			t,
+			neosyncApi,
+			dbManagers,
+			WithMaxIterations(10),
+			WithPageLimit(100),
+		)
 		testworkflow.RequireActivitiesCompletedSuccessfully(t)
 		testworkflow.ExecuteTestDataSyncWorkflow(job.GetId())
-		require.Truef(t, testworkflow.TestEnv.IsWorkflowCompleted(), "Workflow did not complete. Test: space-mission")
+		require.Truef(
+			t,
+			testworkflow.TestEnv.IsWorkflowCompleted(),
+			"Workflow did not complete. Test: space-mission",
+		)
 		err = testworkflow.TestEnv.GetWorkflowError()
 		require.NoError(t, err, "Received Temporal Workflow Error: space-mission")
 
@@ -1203,73 +1694,358 @@ func test_postgres_complex(
 			rowCount  int
 			idColumns []string
 		}{
-			{schema: "space_mission", table: "astronauts", rowCount: 10, idColumns: []string{"astronaut_id"}},
-			{schema: "space_mission", table: "missions", rowCount: 10, idColumns: []string{"mission_id"}},
-			{schema: "space_mission", table: "objectives", rowCount: 10, idColumns: []string{"objective_id"}},
-			{schema: "space_mission", table: "capabilities", rowCount: 10, idColumns: []string{"capability_id"}},
-			{schema: "space_mission", table: "astronaut_capabilities", rowCount: 10, idColumns: []string{"astronaut_capability_id"}},
-			{schema: "space_mission", table: "transmissions", rowCount: 20, idColumns: []string{"transmission_id"}},
-			{schema: "space_mission", table: "payloads", rowCount: 10, idColumns: []string{"payload_id"}},
-			{schema: "space_mission", table: "crew_assignments", rowCount: 10, idColumns: []string{"crew_assignment_id"}},
-			{schema: "space_mission", table: "mission_logs", rowCount: 6, idColumns: []string{"log_id"}},
+			{
+				schema:    "space_mission",
+				table:     "astronauts",
+				rowCount:  10,
+				idColumns: []string{"astronaut_id"},
+			},
+			{
+				schema:    "space_mission",
+				table:     "missions",
+				rowCount:  10,
+				idColumns: []string{"mission_id"},
+			},
+			{
+				schema:    "space_mission",
+				table:     "objectives",
+				rowCount:  10,
+				idColumns: []string{"objective_id"},
+			},
+			{
+				schema:    "space_mission",
+				table:     "capabilities",
+				rowCount:  10,
+				idColumns: []string{"capability_id"},
+			},
+			{
+				schema:    "space_mission",
+				table:     "astronaut_capabilities",
+				rowCount:  10,
+				idColumns: []string{"astronaut_capability_id"},
+			},
+			{
+				schema:    "space_mission",
+				table:     "transmissions",
+				rowCount:  20,
+				idColumns: []string{"transmission_id"},
+			},
+			{
+				schema:    "space_mission",
+				table:     "payloads",
+				rowCount:  10,
+				idColumns: []string{"payload_id"},
+			},
+			{
+				schema:    "space_mission",
+				table:     "crew_assignments",
+				rowCount:  10,
+				idColumns: []string{"crew_assignment_id"},
+			},
+			{
+				schema:    "space_mission",
+				table:     "mission_logs",
+				rowCount:  6,
+				idColumns: []string{"log_id"},
+			},
 			{schema: "space_mission", table: "crews", rowCount: 5, idColumns: []string{"crew_id"}},
-			{schema: "space_mission", table: "crew_missions", rowCount: 4, idColumns: []string{"crew_mission_id"}},
-			{schema: "space_mission", table: "supplies", rowCount: 10, idColumns: []string{"supply_id"}},
-			{schema: "space_mission", table: "supply_items", rowCount: 5, idColumns: []string{"supply_item_id"}},
-			{schema: "space_mission", table: "spacecraft_class", rowCount: 3, idColumns: []string{"class_id"}},
-			{schema: "space_mission", table: "spacecraft", rowCount: 3, idColumns: []string{"spacecraft_id"}},
-			{schema: "space_mission", table: "spacecraft_module", rowCount: 3, idColumns: []string{"module_id"}},
-			{schema: "space_mission", table: "module_component", rowCount: 3, idColumns: []string{"component_id"}},
-			{schema: "space_mission", table: "equipment", rowCount: 3, idColumns: []string{"equipment_id"}},
-			{schema: "space_mission", table: "mission_equipment", rowCount: 3, idColumns: []string{"mission_id", "equipment_id"}},
-			{schema: "space_mission", table: "equipment_maintenance", rowCount: 3, idColumns: []string{"maintenance_id"}},
-			{schema: "space_mission", table: "training_courses", rowCount: 3, idColumns: []string{"course_id"}},
-			{schema: "space_mission", table: "course_prerequisites", rowCount: 3, idColumns: []string{"prerequisite_id"}},
-			{schema: "space_mission", table: "certifications", rowCount: 3, idColumns: []string{"certification_id"}},
-			{schema: "space_mission", table: "astronaut_certifications", rowCount: 4, idColumns: []string{"astronaut_id", "certification_id"}},
-			{schema: "space_mission", table: "certification_requirements", rowCount: 3, idColumns: []string{"requirement_id"}},
-			{schema: "space_mission", table: "mission_logs_extended", rowCount: 3, idColumns: []string{"log_id"}},
-			{schema: "space_mission", table: "communication_channels", rowCount: 3, idColumns: []string{"channel_id"}},
-			{schema: "space_mission", table: "mission_communications", rowCount: 3, idColumns: []string{"mission_id", "channel_id"}},
-			{schema: "space_mission", table: "message_logs", rowCount: 3, idColumns: []string{"log_id"}},
-			{schema: "space_mission", table: "events", rowCount: 9, idColumns: []string{"event_id"}},
+			{
+				schema:    "space_mission",
+				table:     "crew_missions",
+				rowCount:  4,
+				idColumns: []string{"crew_mission_id"},
+			},
+			{
+				schema:    "space_mission",
+				table:     "supplies",
+				rowCount:  10,
+				idColumns: []string{"supply_id"},
+			},
+			{
+				schema:    "space_mission",
+				table:     "supply_items",
+				rowCount:  5,
+				idColumns: []string{"supply_item_id"},
+			},
+			{
+				schema:    "space_mission",
+				table:     "spacecraft_class",
+				rowCount:  3,
+				idColumns: []string{"class_id"},
+			},
+			{
+				schema:    "space_mission",
+				table:     "spacecraft",
+				rowCount:  3,
+				idColumns: []string{"spacecraft_id"},
+			},
+			{
+				schema:    "space_mission",
+				table:     "spacecraft_module",
+				rowCount:  3,
+				idColumns: []string{"module_id"},
+			},
+			{
+				schema:    "space_mission",
+				table:     "module_component",
+				rowCount:  3,
+				idColumns: []string{"component_id"},
+			},
+			{
+				schema:    "space_mission",
+				table:     "equipment",
+				rowCount:  3,
+				idColumns: []string{"equipment_id"},
+			},
+			{
+				schema:    "space_mission",
+				table:     "mission_equipment",
+				rowCount:  3,
+				idColumns: []string{"mission_id", "equipment_id"},
+			},
+			{
+				schema:    "space_mission",
+				table:     "equipment_maintenance",
+				rowCount:  3,
+				idColumns: []string{"maintenance_id"},
+			},
+			{
+				schema:    "space_mission",
+				table:     "training_courses",
+				rowCount:  3,
+				idColumns: []string{"course_id"},
+			},
+			{
+				schema:    "space_mission",
+				table:     "course_prerequisites",
+				rowCount:  3,
+				idColumns: []string{"prerequisite_id"},
+			},
+			{
+				schema:    "space_mission",
+				table:     "certifications",
+				rowCount:  3,
+				idColumns: []string{"certification_id"},
+			},
+			{
+				schema:    "space_mission",
+				table:     "astronaut_certifications",
+				rowCount:  4,
+				idColumns: []string{"astronaut_id", "certification_id"},
+			},
+			{
+				schema:    "space_mission",
+				table:     "certification_requirements",
+				rowCount:  3,
+				idColumns: []string{"requirement_id"},
+			},
+			{
+				schema:    "space_mission",
+				table:     "mission_logs_extended",
+				rowCount:  3,
+				idColumns: []string{"log_id"},
+			},
+			{
+				schema:    "space_mission",
+				table:     "communication_channels",
+				rowCount:  3,
+				idColumns: []string{"channel_id"},
+			},
+			{
+				schema:    "space_mission",
+				table:     "mission_communications",
+				rowCount:  3,
+				idColumns: []string{"mission_id", "channel_id"},
+			},
+			{
+				schema:    "space_mission",
+				table:     "message_logs",
+				rowCount:  3,
+				idColumns: []string{"log_id"},
+			},
+			{
+				schema:    "space_mission",
+				table:     "events",
+				rowCount:  9,
+				idColumns: []string{"event_id"},
+			},
 			// {schema: "space_mission", table: "system_events", rowCount: 3},
 			// {schema: "space_mission", table: "astronaut_events", rowCount: 3},
 			// {schema: "space_mission", table: "mission_events", rowCount: 3},
-			{schema: "space_mission", table: "telemetry", rowCount: 6, idColumns: []string{"telemetry_id"}},
-			{schema: "space_mission", table: "telemetry_2023", rowCount: 2, idColumns: []string{"telemetry_id"}},
-			{schema: "space_mission", table: "telemetry_2024", rowCount: 2, idColumns: []string{"telemetry_id"}},
-			{schema: "space_mission", table: "telemetry_2025", rowCount: 2, idColumns: []string{"telemetry_id"}},
-			{schema: "space_mission", table: "comments", rowCount: 4, idColumns: []string{"comment_id"}},
+			{
+				schema:    "space_mission",
+				table:     "telemetry",
+				rowCount:  6,
+				idColumns: []string{"telemetry_id"},
+			},
+			{
+				schema:    "space_mission",
+				table:     "telemetry_2023",
+				rowCount:  2,
+				idColumns: []string{"telemetry_id"},
+			},
+			{
+				schema:    "space_mission",
+				table:     "telemetry_2024",
+				rowCount:  2,
+				idColumns: []string{"telemetry_id"},
+			},
+			{
+				schema:    "space_mission",
+				table:     "telemetry_2025",
+				rowCount:  2,
+				idColumns: []string{"telemetry_id"},
+			},
+			{
+				schema:    "space_mission",
+				table:     "comments",
+				rowCount:  4,
+				idColumns: []string{"comment_id"},
+			},
 			{schema: "space_mission", table: "tags", rowCount: 4, idColumns: []string{"tag_id"}},
-			{schema: "space_mission", table: "taggables", rowCount: 4, idColumns: []string{"tag_id"}},
-			{schema: "space_mission", table: "mission_experiments", rowCount: 9, idColumns: []string{"mission_id", "experiment_id"}},
-			{schema: "space_mission", table: "mission_parameters", rowCount: 3, idColumns: []string{"parameter_id"}},
-			{schema: "space_mission", table: "skill_groups", rowCount: 6, idColumns: []string{"group_id"}},
-			{schema: "space_mission", table: "capability_skill_groups", rowCount: 8, idColumns: []string{"capability_id", "group_id"}},
-			{schema: "space_mission", table: "mission_required_skill_groups", rowCount: 7, idColumns: []string{"mission_id", "group_id", "role"}},
-			{schema: "space_mission", table: "equipment_compatibility", rowCount: 5, idColumns: []string{"primary_equipment_id", "compatible_equipment_id"}},
-			{schema: "space_mission", table: "mission_status_history", rowCount: 8, idColumns: []string{"history_id"}},
-			{schema: "space_mission", table: "equipment_status_history", rowCount: 8, idColumns: []string{"history_id"}},
-			{schema: "space_mission", table: "astronaut_role_history", rowCount: 5, idColumns: []string{"history_id"}},
-			{schema: "space_mission", table: "astronaut_vitals", rowCount: 4, idColumns: []string{"vital_id"}},
-			{schema: "scientific_data", table: "experiments", rowCount: 9, idColumns: []string{"experiment_id"}},
-			{schema: "scientific_data", table: "samples", rowCount: 9, idColumns: []string{"sample_id"}},
-			{schema: "scientific_data", table: "measurements", rowCount: 9, idColumns: []string{"measurement_id"}},
-			{schema: "scientific_data", table: "measurement_2022", rowCount: 4, idColumns: []string{"measurement_id"}},
-			{schema: "scientific_data", table: "measurement_2022_digital_microscope", rowCount: 2, idColumns: []string{"measurement_id"}},
-			{schema: "scientific_data", table: "measurement_2022_mass_spectrometer", rowCount: 1, idColumns: []string{"measurement_id"}},
-			{schema: "scientific_data", table: "measurement_2022_other", rowCount: 1, idColumns: []string{"measurement_id"}},
-			{schema: "scientific_data", table: "measurement_2023", rowCount: 5, idColumns: []string{"measurement_id"}},
-			{schema: "scientific_data", table: "measurement_2023_digital_microscope", rowCount: 2, idColumns: []string{"measurement_id"}},
-			{schema: "scientific_data", table: "measurement_2023_mass_spectrometer", rowCount: 2, idColumns: []string{"measurement_id"}},
-			{schema: "scientific_data", table: "measurement_2023_other", rowCount: 1, idColumns: []string{"measurement_id"}},
+			{
+				schema:    "space_mission",
+				table:     "taggables",
+				rowCount:  4,
+				idColumns: []string{"tag_id"},
+			},
+			{
+				schema:    "space_mission",
+				table:     "mission_experiments",
+				rowCount:  9,
+				idColumns: []string{"mission_id", "experiment_id"},
+			},
+			{
+				schema:    "space_mission",
+				table:     "mission_parameters",
+				rowCount:  3,
+				idColumns: []string{"parameter_id"},
+			},
+			{
+				schema:    "space_mission",
+				table:     "skill_groups",
+				rowCount:  6,
+				idColumns: []string{"group_id"},
+			},
+			{
+				schema:    "space_mission",
+				table:     "capability_skill_groups",
+				rowCount:  8,
+				idColumns: []string{"capability_id", "group_id"},
+			},
+			{
+				schema:    "space_mission",
+				table:     "mission_required_skill_groups",
+				rowCount:  7,
+				idColumns: []string{"mission_id", "group_id", "role"},
+			},
+			{
+				schema:    "space_mission",
+				table:     "equipment_compatibility",
+				rowCount:  5,
+				idColumns: []string{"primary_equipment_id", "compatible_equipment_id"},
+			},
+			{
+				schema:    "space_mission",
+				table:     "mission_status_history",
+				rowCount:  8,
+				idColumns: []string{"history_id"},
+			},
+			{
+				schema:    "space_mission",
+				table:     "equipment_status_history",
+				rowCount:  8,
+				idColumns: []string{"history_id"},
+			},
+			{
+				schema:    "space_mission",
+				table:     "astronaut_role_history",
+				rowCount:  5,
+				idColumns: []string{"history_id"},
+			},
+			{
+				schema:    "space_mission",
+				table:     "astronaut_vitals",
+				rowCount:  4,
+				idColumns: []string{"vital_id"},
+			},
+			{
+				schema:    "scientific_data",
+				table:     "experiments",
+				rowCount:  9,
+				idColumns: []string{"experiment_id"},
+			},
+			{
+				schema:    "scientific_data",
+				table:     "samples",
+				rowCount:  9,
+				idColumns: []string{"sample_id"},
+			},
+			{
+				schema:    "scientific_data",
+				table:     "measurements",
+				rowCount:  9,
+				idColumns: []string{"measurement_id"},
+			},
+			{
+				schema:    "scientific_data",
+				table:     "measurement_2022",
+				rowCount:  4,
+				idColumns: []string{"measurement_id"},
+			},
+			{
+				schema:    "scientific_data",
+				table:     "measurement_2022_digital_microscope",
+				rowCount:  2,
+				idColumns: []string{"measurement_id"},
+			},
+			{
+				schema:    "scientific_data",
+				table:     "measurement_2022_mass_spectrometer",
+				rowCount:  1,
+				idColumns: []string{"measurement_id"},
+			},
+			{
+				schema:    "scientific_data",
+				table:     "measurement_2022_other",
+				rowCount:  1,
+				idColumns: []string{"measurement_id"},
+			},
+			{
+				schema:    "scientific_data",
+				table:     "measurement_2023",
+				rowCount:  5,
+				idColumns: []string{"measurement_id"},
+			},
+			{
+				schema:    "scientific_data",
+				table:     "measurement_2023_digital_microscope",
+				rowCount:  2,
+				idColumns: []string{"measurement_id"},
+			},
+			{
+				schema:    "scientific_data",
+				table:     "measurement_2023_mass_spectrometer",
+				rowCount:  2,
+				idColumns: []string{"measurement_id"},
+			},
+			{
+				schema:    "scientific_data",
+				table:     "measurement_2023_other",
+				rowCount:  1,
+				idColumns: []string{"measurement_id"},
+			},
 		}
 
 		for _, expected := range expectedResults {
 			rowCount, err := postgres.Target.GetTableRowCount(ctx, expected.schema, expected.table)
 			require.NoError(t, err)
-			assert.Equalf(t, expected.rowCount, rowCount, fmt.Sprintf("Test: %s Table: %s", "space-mission", expected.table))
+			assert.Equalf(
+				t,
+				expected.rowCount,
+				rowCount,
+				fmt.Sprintf("Test: %s Table: %s", "space-mission", expected.table),
+			)
 		}
 
 		source, err := sql.Open("postgres", postgres.Source.URL)
@@ -1281,7 +2057,16 @@ func test_postgres_complex(
 		defer target.Close()
 
 		for _, e := range expectedResults {
-			testutil_testdata.VerifySQLTableColumnValues(t, ctx, source, target, e.schema, e.table, "postgres", e.idColumns)
+			testutil_testdata.VerifySQLTableColumnValues(
+				t,
+				ctx,
+				source,
+				target,
+				e.schema,
+				e.table,
+				"postgres",
+				e.idColumns,
+			)
 		}
 	})
 
@@ -1308,10 +2093,20 @@ func test_postgres_complex(
 			},
 		})
 
-		testworkflow := NewTestDataSyncWorkflowEnv(t, neosyncApi, dbManagers, WithMaxIterations(10), WithPageLimit(100))
+		testworkflow := NewTestDataSyncWorkflowEnv(
+			t,
+			neosyncApi,
+			dbManagers,
+			WithMaxIterations(10),
+			WithPageLimit(100),
+		)
 		testworkflow.RequireActivitiesCompletedSuccessfully(t)
 		testworkflow.ExecuteTestDataSyncWorkflow(job.GetId())
-		require.Truef(t, testworkflow.TestEnv.IsWorkflowCompleted(), "Workflow did not complete. Test: space-mission-subset")
+		require.Truef(
+			t,
+			testworkflow.TestEnv.IsWorkflowCompleted(),
+			"Workflow did not complete. Test: space-mission-subset",
+		)
 		err = testworkflow.TestEnv.GetWorkflowError()
 		require.NoError(t, err, "Received Temporal Workflow Error: space-mission-subset")
 		expectedResults := []struct {
@@ -1384,7 +2179,12 @@ func test_postgres_complex(
 		for _, expected := range expectedResults {
 			rowCount, err := postgres.Target.GetTableRowCount(ctx, expected.schema, expected.table)
 			require.NoError(t, err)
-			assert.Equalf(t, expected.rowCount, rowCount, fmt.Sprintf("Test: space-mission-subset Table: %s", expected.table))
+			assert.Equalf(
+				t,
+				expected.rowCount,
+				rowCount,
+				fmt.Sprintf("Test: space-mission-subset Table: %s", expected.table),
+			)
 		}
 	})
 
@@ -1405,7 +2205,12 @@ func test_postgres_schema_reconciliation(
 ) {
 	jobclient := neosyncApi.OSSUnauthenticatedLicensedClients.Jobs()
 	schema := fmt.Sprintf("schema_drift_%t", shouldTruncate)
-	err := postgres.Source.RunCreateStmtsInSchema(ctx, testdataFolder, []string{"schema-init/create-tables.sql"}, schema)
+	err := postgres.Source.RunCreateStmtsInSchema(
+		ctx,
+		testdataFolder,
+		[]string{"schema-init/create-tables.sql"},
+		schema,
+	)
 	require.NoError(t, err)
 	neosyncApi.MockTemporalForCreateJob("test-postgres-sync")
 
@@ -1424,10 +2229,21 @@ func test_postgres_schema_reconciliation(
 	})
 	destinationId := job.GetDestinations()[0].GetId()
 
-	testworkflow := NewTestDataSyncWorkflowEnv(t, neosyncApi, dbManagers, WithPostgresSchemaDrift(), WithMaxIterations(100), WithPageLimit(10000))
+	testworkflow := NewTestDataSyncWorkflowEnv(
+		t,
+		neosyncApi,
+		dbManagers,
+		WithPostgresSchemaDrift(),
+		WithMaxIterations(100),
+		WithPageLimit(10000),
+	)
 	testworkflow.RequireActivitiesCompletedSuccessfully(t)
 	testworkflow.ExecuteTestDataSyncWorkflow(job.GetId())
-	require.Truef(t, testworkflow.TestEnv.IsWorkflowCompleted(), "Workflow did not complete. Test: schema_drift")
+	require.Truef(
+		t,
+		testworkflow.TestEnv.IsWorkflowCompleted(),
+		"Workflow did not complete. Test: schema_drift",
+	)
 	err = testworkflow.TestEnv.GetWorkflowError()
 	require.NoError(t, err, "Received Temporal Workflow Error: schema_drift")
 
@@ -1459,12 +2275,26 @@ func test_postgres_schema_reconciliation(
 	for _, expected := range expectedResults {
 		rowCount, err := postgres.Target.GetTableRowCount(ctx, expected.schema, expected.table)
 		require.NoError(t, err)
-		require.Equalf(t, expected.rowCount, rowCount, fmt.Sprintf("Test: schema_drift Table: %s Truncated: %t", expected.table, shouldTruncate))
+		require.Equalf(
+			t,
+			expected.rowCount,
+			rowCount,
+			fmt.Sprintf(
+				"Test: schema_drift Table: %s Truncated: %t",
+				expected.table,
+				shouldTruncate,
+			),
+		)
 	}
 	test_schema_reconciliation_run_context(t, ctx, jobclient, job.GetId(), destinationId, accountId)
 
 	t.Logf("running alter statements")
-	err = postgres.Source.RunCreateStmtsInSchema(ctx, testdataFolder, []string{"schema-init/alter-statements.sql"}, schema)
+	err = postgres.Source.RunCreateStmtsInSchema(
+		ctx,
+		testdataFolder,
+		[]string{"schema-init/alter-statements.sql"},
+		schema,
+	)
 	require.NoError(t, err)
 	t.Logf("finished running alter statements")
 
@@ -1472,12 +2302,27 @@ func test_postgres_schema_reconciliation(
 	updatedMappings = append(updatedMappings, pg_schema_init.GetAlteredSyncJobMappings(schema)...)
 	job = updateJobMappings(t, ctx, jobclient, job.GetId(), updatedMappings, job.GetSource())
 
-	testworkflow = NewTestDataSyncWorkflowEnv(t, neosyncApi, dbManagers, WithPostgresSchemaDrift(), WithMaxIterations(100), WithPageLimit(1000))
+	testworkflow = NewTestDataSyncWorkflowEnv(
+		t,
+		neosyncApi,
+		dbManagers,
+		WithPostgresSchemaDrift(),
+		WithMaxIterations(100),
+		WithPageLimit(1000),
+	)
 	testworkflow.RequireActivitiesCompletedSuccessfully(t)
 	testworkflow.ExecuteTestDataSyncWorkflow(job.GetId())
-	require.Truef(t, testworkflow.TestEnv.IsWorkflowCompleted(), "Workflow did not complete. Test: postgres-schema-reconciliation-run-2")
+	require.Truef(
+		t,
+		testworkflow.TestEnv.IsWorkflowCompleted(),
+		"Workflow did not complete. Test: postgres-schema-reconciliation-run-2",
+	)
 	err = testworkflow.TestEnv.GetWorkflowError()
-	require.NoError(t, err, "Received Temporal Workflow Error: postgres-schema-reconciliation-run-2")
+	require.NoError(
+		t,
+		err,
+		"Received Temporal Workflow Error: postgres-schema-reconciliation-run-2",
+	)
 
 	source, err := sql.Open("postgres", postgres.Source.URL)
 	require.NoError(t, err)
@@ -1489,16 +2334,106 @@ func test_postgres_schema_reconciliation(
 
 	verify_postgres_schemas(t, ctx, source, target, schema, tables)
 
-	testutil_testdata.VerifySQLTableColumnValues(t, ctx, source, target, schema, "regions", sqlmanager_shared.PostgresDriver, []string{"region_id"})
-	testutil_testdata.VerifySQLTableColumnValues(t, ctx, source, target, schema, "employees", sqlmanager_shared.PostgresDriver, []string{"employee_id"})
-	testutil_testdata.VerifySQLTableColumnValues(t, ctx, source, target, schema, "dependents", sqlmanager_shared.PostgresDriver, []string{"dependent_id"})
-	testutil_testdata.VerifySQLTableColumnValues(t, ctx, source, target, schema, "jobs", sqlmanager_shared.PostgresDriver, []string{"job_id"})
-	testutil_testdata.VerifySQLTableColumnValues(t, ctx, source, target, schema, "departments", sqlmanager_shared.PostgresDriver, []string{"department_id"})
-	testutil_testdata.VerifySQLTableColumnValues(t, ctx, source, target, schema, "countries", sqlmanager_shared.PostgresDriver, []string{"country_id"})
-	testutil_testdata.VerifySQLTableColumnValues(t, ctx, source, target, schema, "locations", sqlmanager_shared.PostgresDriver, []string{"location_id"})
-	testutil_testdata.VerifySQLTableColumnValues(t, ctx, source, target, schema, "dummy_table", sqlmanager_shared.PostgresDriver, []string{"id"})
-	testutil_testdata.VerifySQLTableColumnValues(t, ctx, source, target, schema, "test_table_single_col", sqlmanager_shared.PostgresDriver, []string{"name"})
-	testutil_testdata.VerifySQLTableColumnValues(t, ctx, source, target, schema, "budget", sqlmanager_shared.PostgresDriver, []string{"id"})
+	testutil_testdata.VerifySQLTableColumnValues(
+		t,
+		ctx,
+		source,
+		target,
+		schema,
+		"regions",
+		sqlmanager_shared.PostgresDriver,
+		[]string{"region_id"},
+	)
+	testutil_testdata.VerifySQLTableColumnValues(
+		t,
+		ctx,
+		source,
+		target,
+		schema,
+		"employees",
+		sqlmanager_shared.PostgresDriver,
+		[]string{"employee_id"},
+	)
+	testutil_testdata.VerifySQLTableColumnValues(
+		t,
+		ctx,
+		source,
+		target,
+		schema,
+		"dependents",
+		sqlmanager_shared.PostgresDriver,
+		[]string{"dependent_id"},
+	)
+	testutil_testdata.VerifySQLTableColumnValues(
+		t,
+		ctx,
+		source,
+		target,
+		schema,
+		"jobs",
+		sqlmanager_shared.PostgresDriver,
+		[]string{"job_id"},
+	)
+	testutil_testdata.VerifySQLTableColumnValues(
+		t,
+		ctx,
+		source,
+		target,
+		schema,
+		"departments",
+		sqlmanager_shared.PostgresDriver,
+		[]string{"department_id"},
+	)
+	testutil_testdata.VerifySQLTableColumnValues(
+		t,
+		ctx,
+		source,
+		target,
+		schema,
+		"countries",
+		sqlmanager_shared.PostgresDriver,
+		[]string{"country_id"},
+	)
+	testutil_testdata.VerifySQLTableColumnValues(
+		t,
+		ctx,
+		source,
+		target,
+		schema,
+		"locations",
+		sqlmanager_shared.PostgresDriver,
+		[]string{"location_id"},
+	)
+	testutil_testdata.VerifySQLTableColumnValues(
+		t,
+		ctx,
+		source,
+		target,
+		schema,
+		"dummy_table",
+		sqlmanager_shared.PostgresDriver,
+		[]string{"id"},
+	)
+	testutil_testdata.VerifySQLTableColumnValues(
+		t,
+		ctx,
+		source,
+		target,
+		schema,
+		"test_table_single_col",
+		sqlmanager_shared.PostgresDriver,
+		[]string{"name"},
+	)
+	testutil_testdata.VerifySQLTableColumnValues(
+		t,
+		ctx,
+		source,
+		target,
+		schema,
+		"budget",
+		sqlmanager_shared.PostgresDriver,
+		[]string{"id"},
+	)
 	test_schema_reconciliation_run_context(t, ctx, jobclient, job.GetId(), destinationId, accountId)
 
 	// tear down
@@ -1518,7 +2453,10 @@ func verify_postgres_schemas(
 
 	schematables := []*sqlmanager_shared.SchemaTable{}
 	for _, table := range tables {
-		schematables = append(schematables, &sqlmanager_shared.SchemaTable{Schema: schema, Table: table})
+		schematables = append(
+			schematables,
+			&sqlmanager_shared.SchemaTable{Schema: schema, Table: table},
+		)
 	}
 
 	t.Logf("checking columns are the same in source and destination")
@@ -1534,17 +2472,33 @@ func verify_postgres_schemas(
 	destConstraints, err := destManager.GetTableConstraintsByTables(ctx, schema, tables)
 	require.NoError(t, err, "failed to get destination table constraints")
 
-	require.Len(t, srcConstraints, len(destConstraints), "source and destination have different number of tables with constraints")
+	require.Len(
+		t,
+		srcConstraints,
+		len(destConstraints),
+		"source and destination have different number of tables with constraints",
+	)
 	for table, constraint := range srcConstraints {
 		srcfk := constraint.ForeignKeyConstraints
 		srcNonFk := constraint.NonForeignKeyConstraints
 		destfk := destConstraints[table].ForeignKeyConstraints
 		destNonFk := destConstraints[table].NonForeignKeyConstraints
 		require.Equal(t, srcfk, destfk, "foreign key constraints do not match for table %s", table)
-		require.Equal(t, srcNonFk, destNonFk, "non-foreign key constraints do not match for table %s", table)
+		require.Equal(
+			t,
+			srcNonFk,
+			destNonFk,
+			"non-foreign key constraints do not match for table %s",
+			table,
+		)
 
 		assert_fingerprints_match_in_source_and_target(t, srcfk, destfk, "foreign key constraints")
-		assert_fingerprints_match_in_source_and_target(t, srcNonFk, destNonFk, "non-foreign key constraints")
+		assert_fingerprints_match_in_source_and_target(
+			t,
+			srcNonFk,
+			destNonFk,
+			"non-foreign key constraints",
+		)
 	}
 
 	t.Logf("checking triggers are the same in source and destination")
@@ -1560,19 +2514,43 @@ func verify_postgres_schemas(
 	require.NoError(t, err, "failed to get destination datatypes")
 
 	t.Logf("checking functions are the same in source and destination")
-	assert_fingerprints_match_in_source_and_target(t, srcDatatypes.Functions, destDatatypes.Functions, "functions")
+	assert_fingerprints_match_in_source_and_target(
+		t,
+		srcDatatypes.Functions,
+		destDatatypes.Functions,
+		"functions",
+	)
 
 	t.Logf("checking enum are the same in source and destination")
-	assert_fingerprints_match_in_source_and_target(t, srcDatatypes.Enums, destDatatypes.Enums, "enums")
+	assert_fingerprints_match_in_source_and_target(
+		t,
+		srcDatatypes.Enums,
+		destDatatypes.Enums,
+		"enums",
+	)
 
 	t.Logf("checking composite types are the same in source and destination")
-	assert_fingerprints_match_in_source_and_target(t, srcDatatypes.Composites, destDatatypes.Composites, "composites")
+	assert_fingerprints_match_in_source_and_target(
+		t,
+		srcDatatypes.Composites,
+		destDatatypes.Composites,
+		"composites",
+	)
 
 	t.Logf("checking domains are the same in source and destination")
-	assert_fingerprints_match_in_source_and_target(t, srcDatatypes.Domains, destDatatypes.Domains, "domains")
+	assert_fingerprints_match_in_source_and_target(
+		t,
+		srcDatatypes.Domains,
+		destDatatypes.Domains,
+		"domains",
+	)
 }
 
-func assert_fingerprints_match_in_source_and_target[T schemamanager_shared.FingerprintedType](t *testing.T, source, target []T, label string) {
+func assert_fingerprints_match_in_source_and_target[T schemamanager_shared.FingerprintedType](
+	t *testing.T,
+	source, target []T,
+	label string,
+) {
 	sourceMap := map[string]T{}
 	for _, item := range source {
 		sourceMap[item.GetFingerprint()] = item
@@ -1583,9 +2561,25 @@ func assert_fingerprints_match_in_source_and_target[T schemamanager_shared.Finge
 	}
 
 	for fingerprint, item := range sourceMap {
-		assert.Contains(t, targetMap, fingerprint, "%s fingerprint %s not found in target: %v", label, fingerprint, item)
+		assert.Contains(
+			t,
+			targetMap,
+			fingerprint,
+			"%s fingerprint %s not found in target: %v",
+			label,
+			fingerprint,
+			item,
+		)
 	}
 	for fingerprint, item := range targetMap {
-		assert.Contains(t, sourceMap, fingerprint, "%s fingerprint %s not found in source: %v", label, fingerprint, item)
+		assert.Contains(
+			t,
+			sourceMap,
+			fingerprint,
+			"%s fingerprint %s not found in source: %v",
+			label,
+			fingerprint,
+			item,
+		)
 	}
 }

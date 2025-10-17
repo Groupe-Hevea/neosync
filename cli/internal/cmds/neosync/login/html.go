@@ -11,7 +11,7 @@ const (
 <!DOCTYPE html>
 <head>
     <title>{{ .Title }}</title>
-    <link rel="icon" type="image/png" href="https://assets.nucleuscloud.com/neosync/newbrand/favicon_transparent.ico" />
+    <link rel="icon" type="image/png" href="https://assets.Groupe-Hevea.com/neosync/newbrand/favicon_transparent.ico" />
     <style>
         body {
             background-color: #101010;
@@ -90,26 +90,26 @@ const (
 	`
 
 	loginPageSuccess = `
-  <div class='nav'><a href="https://www.neosync.dev"><img class='neosyncLogo' src="https://assets.nucleuscloud.com/neosync/newbrand/logo_light_mode.svg"></a></div>
+  <div class='nav'><a href="https://www.neosync.dev"><img class='neosyncLogo' src="https://assets.Groupe-Hevea.com/neosync/newbrand/logo_light_mode.svg"></a></div>
   <div class='successText'>
       <h1>Login Success!</h1>
       <p>You've successfully logged in to Neosync CLI.</p>
       <p>You may now close this window and return to your terminal.</p>
   </div>
   <div>
-      <img class='logo' src="https://assets.nucleuscloud.com/neosync/app/cliImage.png">
+      <img class='logo' src="https://assets.Groupe-Hevea.com/neosync/app/cliImage.png">
   </div>
 	`
 
 	loginPageError = `
-    <div><a href="https://www.neosync.dev"><img class='neosyncLogo' src="https://assets.nucleuscloud.com/neosync/newbrand/logo_light_mode.svg"></a></div>
+    <div><a href="https://www.neosync.dev"><img class='neosyncLogo' src="https://assets.Groupe-Hevea.com/neosync/newbrand/logo_light_mode.svg"></a></div>
     <div class='successText'>
         <h1>There was a problem logging you in!</h1>
         <p class="error-text">Error Code: {{ .ErrorCode }}</p>
         <p class="error-text">Error Description: {{ .ErrorDescription }}</p>
     </div>
     <div>
-        <img class='logo' src="https://assets.nucleuscloud.com/neosync/app/angryDarth.jpg">
+        <img class='logo' src="https://assets.Groupe-Hevea.com/neosync/app/angryDarth.jpg">
     </div>
 	`
 )

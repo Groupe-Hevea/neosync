@@ -7,7 +7,7 @@ import (
 	"hash/fnv"
 	"sync"
 
-	"github.com/nucleuscloud/neosync/worker/pkg/rng"
+	"github.com/Groupe-Hevea/neosync/worker/pkg/rng"
 	temporalclient "go.temporal.io/sdk/client"
 )
 
@@ -42,11 +42,11 @@ type TemporalBlockAllocator struct {
 }
 
 func NewTemporalBlockAllocator(
-	temporalclient temporalclient.Client,
+	tclient temporalclient.Client,
 	workflowId, runId string,
 ) *TemporalBlockAllocator {
 	return &TemporalBlockAllocator{
-		temporalclient: temporalclient,
+		temporalclient: tclient,
 		workflowId:     workflowId,
 		runId:          runId,
 	}

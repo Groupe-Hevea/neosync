@@ -3,8 +3,8 @@ package neosynctypes
 import (
 	"fmt"
 
+	"github.com/Groupe-Hevea/neosync/internal/gotypeutil"
 	"github.com/lib/pq"
-	"github.com/nucleuscloud/neosync/internal/gotypeutil"
 )
 
 type NeosyncArray struct {

@@ -10,21 +10,21 @@ import (
 	"time"
 
 	"connectrpc.com/connect"
-	mgmtv1alpha1 "github.com/nucleuscloud/neosync/backend/gen/go/protos/mgmt/v1alpha1"
-	"github.com/nucleuscloud/neosync/backend/gen/go/protos/mgmt/v1alpha1/mgmtv1alpha1connect"
-	"github.com/nucleuscloud/neosync/backend/pkg/metrics"
-	benthosstream "github.com/nucleuscloud/neosync/internal/benthos-stream"
-	connectionmanager "github.com/nucleuscloud/neosync/internal/connection-manager"
-	pool_mongo_provider "github.com/nucleuscloud/neosync/internal/connection-manager/pool/providers/mongo"
-	pool_sql_provider "github.com/nucleuscloud/neosync/internal/connection-manager/pool/providers/sql"
-	continuation_token "github.com/nucleuscloud/neosync/internal/continuation-token"
-	temporallogger "github.com/nucleuscloud/neosync/worker/internal/temporal-logger"
-	benthos_environment "github.com/nucleuscloud/neosync/worker/pkg/benthos/environment"
-	neosync_benthos_mongodb "github.com/nucleuscloud/neosync/worker/pkg/benthos/mongodb"
-	neosync_benthos_sql "github.com/nucleuscloud/neosync/worker/pkg/benthos/sql"
-	"github.com/nucleuscloud/neosync/worker/pkg/benthos/transformers"
-	"github.com/nucleuscloud/neosync/worker/pkg/workflows/datasync/activities/shared"
-	tablesync_shared "github.com/nucleuscloud/neosync/worker/pkg/workflows/tablesync/shared"
+	mgmtv1alpha1 "github.com/Groupe-Hevea/neosync/backend/gen/go/protos/mgmt/v1alpha1"
+	"github.com/Groupe-Hevea/neosync/backend/gen/go/protos/mgmt/v1alpha1/mgmtv1alpha1connect"
+	"github.com/Groupe-Hevea/neosync/backend/pkg/metrics"
+	benthosstream "github.com/Groupe-Hevea/neosync/internal/benthos-stream"
+	connectionmanager "github.com/Groupe-Hevea/neosync/internal/connection-manager"
+	pool_mongo_provider "github.com/Groupe-Hevea/neosync/internal/connection-manager/pool/providers/mongo"
+	pool_sql_provider "github.com/Groupe-Hevea/neosync/internal/connection-manager/pool/providers/sql"
+	continuation_token "github.com/Groupe-Hevea/neosync/internal/continuation-token"
+	temporallogger "github.com/Groupe-Hevea/neosync/worker/internal/temporal-logger"
+	benthos_environment "github.com/Groupe-Hevea/neosync/worker/pkg/benthos/environment"
+	neosync_benthos_mongodb "github.com/Groupe-Hevea/neosync/worker/pkg/benthos/mongodb"
+	neosync_benthos_sql "github.com/Groupe-Hevea/neosync/worker/pkg/benthos/sql"
+	"github.com/Groupe-Hevea/neosync/worker/pkg/benthos/transformers"
+	"github.com/Groupe-Hevea/neosync/worker/pkg/workflows/datasync/activities/shared"
+	tablesync_shared "github.com/Groupe-Hevea/neosync/worker/pkg/workflows/tablesync/shared"
 	"github.com/redis/go-redis/v9"
 	"github.com/redpanda-data/benthos/v4/public/bloblang"
 	"github.com/redpanda-data/benthos/v4/public/service"
@@ -34,8 +34,8 @@ import (
 	"go.temporal.io/sdk/log"
 	"golang.org/x/sync/errgroup"
 
-	benthosbuilder_shared "github.com/nucleuscloud/neosync/internal/benthos/benthos-builder/shared"
-	_ "github.com/nucleuscloud/neosync/internal/benthos/imports"
+	benthosbuilder_shared "github.com/Groupe-Hevea/neosync/internal/benthos/benthos-builder/shared"
+	_ "github.com/Groupe-Hevea/neosync/internal/benthos/imports"
 )
 
 type Activity struct {
@@ -57,7 +57,7 @@ func New(
 	mongoconnmanager connectionmanager.Interface[neosync_benthos_mongodb.MongoClient],
 	meter metric.Meter,
 	benthosStreamManager benthosstream.BenthosStreamManagerClient,
-	temporalclient temporalclient.Client,
+	tclient temporalclient.Client,
 	anonymizationClient mgmtv1alpha1connect.AnonymizationServiceClient,
 	redisclient redis.UniversalClient,
 ) *Activity {
@@ -68,7 +68,7 @@ func New(
 		mongoconnmanager:     mongoconnmanager,
 		meter:                meter,
 		benthosStreamManager: benthosStreamManager,
-		temporalclient:       temporalclient,
+		temporalclient:       tclient,
 		anonymizationClient:  anonymizationClient,
 		redisclient:          redisclient,
 	}

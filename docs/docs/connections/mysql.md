@@ -44,7 +44,7 @@ For full support, the environment variable must live on both the `neosync-api` a
 
 ### Discrete Host Parameters
 
-![mysql](https://assets.nucleuscloud.com/neosync/docs/mysql.png)
+![mysql](https://assets.Groupe-Hevea.com/neosync/docs/mysql.png)
 
 This guide will help you to configure your MySQL database connection properly.
 

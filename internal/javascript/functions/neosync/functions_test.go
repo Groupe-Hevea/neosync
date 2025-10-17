@@ -40,12 +40,20 @@ func Test_setNestedProperty(t *testing.T) {
 	t.Run("Set property in existing nested structure", func(t *testing.T) {
 		obj := map[string]any{"user": map[string]any{"profile": map[string]any{}}}
 		setNestedProperty(obj, "user.profile.email", "test@example.com")
-		require.Equal(t, "test@example.com", obj["user"].(map[string]any)["profile"].(map[string]any)["email"])
+		require.Equal(
+			t,
+			"test@example.com",
+			obj["user"].(map[string]any)["profile"].(map[string]any)["email"],
+		)
 	})
 
 	t.Run("Set nestnd property in empty structure", func(t *testing.T) {
 		obj := map[string]any{}
 		setNestedProperty(obj, "user.profile.email", "test@example.com")
-		require.Equal(t, "test@example.com", obj["user"].(map[string]any)["profile"].(map[string]any)["email"])
+		require.Equal(
+			t,
+			"test@example.com",
+			obj["user"].(map[string]any)["profile"].(map[string]any)["email"],
+		)
 	})
 }

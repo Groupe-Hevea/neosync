@@ -6,11 +6,11 @@ import (
 	"fmt"
 	"strings"
 
+	pg_queries "github.com/Groupe-Hevea/neosync/backend/gen/go/db/dbschemas/postgresql"
+	sqlmanager_shared "github.com/Groupe-Hevea/neosync/backend/pkg/sqlmanager/shared"
+	"github.com/Groupe-Hevea/neosync/internal/gotypeutil"
+	schemamanager_shared "github.com/Groupe-Hevea/neosync/internal/schema-manager/shared"
 	"github.com/doug-martin/goqu/v9"
-	pg_queries "github.com/nucleuscloud/neosync/backend/gen/go/db/dbschemas/postgresql"
-	sqlmanager_shared "github.com/nucleuscloud/neosync/backend/pkg/sqlmanager/shared"
-	"github.com/nucleuscloud/neosync/internal/gotypeutil"
-	schemamanager_shared "github.com/nucleuscloud/neosync/internal/schema-manager/shared"
 )
 
 // Finds any schemas referenced in datatypes that don't exist in tables and returns the statements to create them
@@ -290,7 +290,13 @@ func BuildAlterColumnStatement(column *schemamanager_shared.ColumnDiff) []string
 		case schemamanager_shared.SetDatatype:
 			pieces = append(
 				pieces,
-				fmt.Sprintf("%s TYPE %s USING %q::%s", base, column.Column.DataType, column.Column.Name, column.Column.DataType),
+				fmt.Sprintf(
+					"%s TYPE %s USING %q::%s",
+					base,
+					column.Column.DataType,
+					column.Column.Name,
+					column.Column.DataType,
+				),
 			)
 		case schemamanager_shared.DropNotNull:
 			pieces = append(pieces, fmt.Sprintf("%s DROP NOT NULL", base))
@@ -301,7 +307,11 @@ func BuildAlterColumnStatement(column *schemamanager_shared.ColumnDiff) []string
 		case schemamanager_shared.SetDefault:
 			if column.Column.GeneratedType != nil && *column.Column.GeneratedType == "s" {
 				// generated columns can't be updated. need to drop then recreate
-				dropStmt := BuildDropColumnStatement(column.Column.Schema, column.Column.Table, column.Column.Name)
+				dropStmt := BuildDropColumnStatement(
+					column.Column.Schema,
+					column.Column.Table,
+					column.Column.Name,
+				)
 				createStmt := BuildAddColumnStatement(column.Column)
 				statements = append(statements, dropStmt, createStmt)
 			} else {
@@ -312,13 +322,23 @@ func BuildAlterColumnStatement(column *schemamanager_shared.ColumnDiff) []string
 		case schemamanager_shared.SetComment:
 			statements = append(
 				statements,
-				BuildUpdateCommentStatement(column.Column.Schema, column.Column.Table, column.Column.Name, column.Column.Comment),
+				BuildUpdateCommentStatement(
+					column.Column.Schema,
+					column.Column.Table,
+					column.Column.Name,
+					column.Column.Comment,
+				),
 			)
 		}
 	}
 
 	if len(pieces) > 0 {
-		alterStatement := fmt.Sprintf("ALTER TABLE %q.%q %s;", column.Column.Schema, column.Column.Table, strings.Join(pieces, ", "))
+		alterStatement := fmt.Sprintf(
+			"ALTER TABLE %q.%q %s;",
+			column.Column.Schema,
+			column.Column.Table,
+			strings.Join(pieces, ", "),
+		)
 		statements = append(statements, alterStatement)
 	}
 
@@ -351,7 +371,12 @@ func BuildDropFunctionStatement(schema, functionName string) string {
 func BuildUpdateFunctionStatement(schema, functionName, createStatement string) string {
 	if strings.Contains(strings.ToUpper(createStatement), "CREATE FUNCTION") &&
 		!strings.Contains(strings.ToUpper(createStatement), "CREATE OR REPLACE FUNCTION") {
-		createStatement = strings.Replace(strings.ToUpper(createStatement), "CREATE FUNCTION", "CREATE OR REPLACE FUNCTION", 1)
+		createStatement = strings.Replace(
+			strings.ToUpper(createStatement),
+			"CREATE FUNCTION",
+			"CREATE OR REPLACE FUNCTION",
+			1,
+		)
 	}
 	return createStatement
 }
@@ -360,13 +385,29 @@ func BuildDropDatatypesStatement(schema, enumName string) string {
 	return fmt.Sprintf("DROP TYPE IF EXISTS %q.%q;", schema, enumName)
 }
 
-func BuildUpdateEnumStatements(schema, enumName string, newValues []string, changedValues map[string]string) []string {
+func BuildUpdateEnumStatements(
+	schema, enumName string,
+	newValues []string,
+	changedValues map[string]string,
+) []string {
 	statements := []string{}
 	for _, value := range newValues {
-		statements = append(statements, fmt.Sprintf("ALTER TYPE %q.%q ADD VALUE IF NOT EXISTS '%s';", schema, enumName, value))
+		statements = append(
+			statements,
+			fmt.Sprintf("ALTER TYPE %q.%q ADD VALUE IF NOT EXISTS '%s';", schema, enumName, value),
+		)
 	}
 	for value, newVal := range changedValues {
-		statements = append(statements, fmt.Sprintf("ALTER TYPE %q.%q RENAME VALUE '%s' TO '%s';", schema, enumName, value, newVal))
+		statements = append(
+			statements,
+			fmt.Sprintf(
+				"ALTER TYPE %q.%q RENAME VALUE '%s' TO '%s';",
+				schema,
+				enumName,
+				value,
+				newVal,
+			),
+		)
 	}
 	return statements
 }
@@ -380,20 +421,49 @@ func BuildUpdateCompositeStatements(
 	for attribute, newDatatype := range changedAttributesDatatype {
 		statements = append(
 			statements,
-			fmt.Sprintf("ALTER TYPE %q.%q ALTER ATTRIBUTE %q SET DATA TYPE '%s';", schema, compositeName, attribute, newDatatype),
+			fmt.Sprintf(
+				"ALTER TYPE %q.%q ALTER ATTRIBUTE %q SET DATA TYPE '%s';",
+				schema,
+				compositeName,
+				attribute,
+				newDatatype,
+			),
 		)
 	}
 	for oldName, newName := range changedAttributesName {
 		statements = append(
 			statements,
-			fmt.Sprintf("ALTER TYPE %q.%q RENAME ATTRIBUTE %q TO  %q;", schema, compositeName, oldName, newName),
+			fmt.Sprintf(
+				"ALTER TYPE %q.%q RENAME ATTRIBUTE %q TO  %q;",
+				schema,
+				compositeName,
+				oldName,
+				newName,
+			),
 		)
 	}
 	for attribute, datatype := range newAttributes {
-		statements = append(statements, fmt.Sprintf("ALTER TYPE %q.%q ADD ATTRIBUTE %q %s;", schema, compositeName, attribute, datatype))
+		statements = append(
+			statements,
+			fmt.Sprintf(
+				"ALTER TYPE %q.%q ADD ATTRIBUTE %q %s;",
+				schema,
+				compositeName,
+				attribute,
+				datatype,
+			),
+		)
 	}
 	for _, attribute := range removedAttributes {
-		statements = append(statements, fmt.Sprintf("ALTER TYPE %q.%q DROP ATTRIBUTE IF EXISTS %q;", schema, compositeName, attribute))
+		statements = append(
+			statements,
+			fmt.Sprintf(
+				"ALTER TYPE %q.%q DROP ATTRIBUTE IF EXISTS %q;",
+				schema,
+				compositeName,
+				attribute,
+			),
+		)
 	}
 	return statements
 }
@@ -402,13 +472,34 @@ func BuildDropDomainStatement(schema, domainName string) string {
 	return fmt.Sprintf("DROP DOMAIN IF EXISTS %q.%q;", schema, domainName)
 }
 
-func BuildDomainConstraintStatements(schema, domainName string, newConstraints map[string]string, removedConstraints []string) []string {
+func BuildDomainConstraintStatements(
+	schema, domainName string,
+	newConstraints map[string]string,
+	removedConstraints []string,
+) []string {
 	statements := []string{}
 	for constraint, definition := range newConstraints {
-		statements = append(statements, fmt.Sprintf("ALTER DOMAIN %q.%q ADD CONSTRAINT %q %s;", schema, domainName, constraint, definition))
+		statements = append(
+			statements,
+			fmt.Sprintf(
+				"ALTER DOMAIN %q.%q ADD CONSTRAINT %q %s;",
+				schema,
+				domainName,
+				constraint,
+				definition,
+			),
+		)
 	}
 	for _, constraint := range removedConstraints {
-		statements = append(statements, fmt.Sprintf("ALTER DOMAIN %q.%q DROP CONSTRAINT IF EXISTS %q;", schema, domainName, constraint))
+		statements = append(
+			statements,
+			fmt.Sprintf(
+				"ALTER DOMAIN %q.%q DROP CONSTRAINT IF EXISTS %q;",
+				schema,
+				domainName,
+				constraint,
+			),
+		)
 	}
 	return statements
 }

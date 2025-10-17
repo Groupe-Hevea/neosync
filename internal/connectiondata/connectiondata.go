@@ -6,15 +6,15 @@ import (
 	"log/slog"
 
 	"connectrpc.com/connect"
-	mysql_queries "github.com/nucleuscloud/neosync/backend/gen/go/db/dbschemas/mysql"
-	pg_queries "github.com/nucleuscloud/neosync/backend/gen/go/db/dbschemas/postgresql"
-	mgmtv1alpha1 "github.com/nucleuscloud/neosync/backend/gen/go/protos/mgmt/v1alpha1"
-	"github.com/nucleuscloud/neosync/backend/pkg/mongoconnect"
-	"github.com/nucleuscloud/neosync/backend/pkg/sqlconnect"
-	sql_manager "github.com/nucleuscloud/neosync/backend/pkg/sqlmanager"
-	aws_manager "github.com/nucleuscloud/neosync/internal/aws"
-	neosync_gcp "github.com/nucleuscloud/neosync/internal/gcp"
-	neosynctypes "github.com/nucleuscloud/neosync/internal/neosync-types"
+	mysql_queries "github.com/Groupe-Hevea/neosync/backend/gen/go/db/dbschemas/mysql"
+	pg_queries "github.com/Groupe-Hevea/neosync/backend/gen/go/db/dbschemas/postgresql"
+	mgmtv1alpha1 "github.com/Groupe-Hevea/neosync/backend/gen/go/protos/mgmt/v1alpha1"
+	"github.com/Groupe-Hevea/neosync/backend/pkg/mongoconnect"
+	"github.com/Groupe-Hevea/neosync/backend/pkg/sqlconnect"
+	sql_manager "github.com/Groupe-Hevea/neosync/backend/pkg/sqlmanager"
+	aws_manager "github.com/Groupe-Hevea/neosync/internal/aws"
+	neosync_gcp "github.com/Groupe-Hevea/neosync/internal/gcp"
+	neosynctypes "github.com/Groupe-Hevea/neosync/internal/neosync-types"
 )
 
 type SampleDataStream interface {

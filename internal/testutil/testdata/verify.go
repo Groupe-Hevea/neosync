@@ -44,7 +44,12 @@ func FormatTimeForComparison(t time.Time) string {
 		t.Second())
 }
 
-func fetchSQLRows(ctx context.Context, db *sql.DB, schema, table, driver string, idCols []string) (map[string]map[string]any, error) {
+func fetchSQLRows(
+	ctx context.Context,
+	db *sql.DB,
+	schema, table, driver string,
+	idCols []string,
+) (map[string]map[string]any, error) {
 	orderCols := make([]exp.OrderedExpression, len(idCols))
 	for i, col := range idCols {
 		orderCols[i] = goqu.C(col).Asc()
@@ -138,7 +143,13 @@ func VerifySQLTableColumnValues(
 	// Compare rows
 	for key, sourceRow := range sourceRows {
 		targetRow, exists := targetRows[key]
-		assert.Truef(t, exists, "Row %s exists in source but not in target for table %s", key, table)
+		assert.Truef(
+			t,
+			exists,
+			"Row %s exists in source but not in target for table %s",
+			key,
+			table,
+		)
 
 		if !exists {
 			continue
@@ -154,7 +165,15 @@ func VerifySQLTableColumnValues(
 				assert.NoErrorf(t, err, "Error unmarshaling source JSON in table %s", table)
 				err = json.Unmarshal(targetValue.([]byte), &destJson)
 				assert.NoErrorf(t, err, "Error unmarshaling target JSON in table %s", table)
-				assert.Equalf(t, sourceJson, destJson, "JSON difference in row %s, column %s for table %s", key, col, table)
+				assert.Equalf(
+					t,
+					sourceJson,
+					destJson,
+					"JSON difference in row %s, column %s for table %s",
+					key,
+					col,
+					table,
+				)
 			} else if isJsonArrayType(colType) && sourceValue != nil && targetValue != nil {
 				// Handle Postgres array format "{{}}" and remove escaping and spaces
 				var sourceStr, targetStr string
@@ -181,7 +200,13 @@ func VerifySQLTableColumnValues(
 
 	for key := range targetRows {
 		_, exists := sourceRows[key]
-		assert.Truef(t, exists, "Row %s exists in target but not in source for table %s", key, table)
+		assert.Truef(
+			t,
+			exists,
+			"Row %s exists in target but not in source for table %s",
+			key,
+			table,
+		)
 	}
 }
 
@@ -190,5 +215,7 @@ func isJsonType(colType string) bool {
 }
 
 func isJsonArrayType(colType string) bool {
-	return strings.EqualFold(colType, "json[]") || strings.EqualFold(colType, "jsonb[]") || strings.EqualFold(colType, "_json") || strings.EqualFold(colType, "_jsonb")
+	return strings.EqualFold(colType, "json[]") || strings.EqualFold(colType, "jsonb[]") ||
+		strings.EqualFold(colType, "_json") ||
+		strings.EqualFold(colType, "_jsonb")
 }

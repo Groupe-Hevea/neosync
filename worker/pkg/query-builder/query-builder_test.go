@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"testing"
 
-	sqlmanager_shared "github.com/nucleuscloud/neosync/backend/pkg/sqlmanager/shared"
+	sqlmanager_shared "github.com/Groupe-Hevea/neosync/backend/pkg/sqlmanager/shared"
 	"github.com/stretchr/testify/require"
 )
 
@@ -147,16 +147,68 @@ func Test_BuildUpdateQuery(t *testing.T) {
 		columnValueMap map[string]any
 		expected       string
 	}{
-		{"Single Column postgres", "postgres", "public", "users", []string{"name"}, []string{"id"}, map[string]any{"name": "Alice", "id": 1}, `UPDATE "public"."users" SET "name"='Alice' WHERE ("id" = 1)`},
-		{"Special characters postgres", "postgres", "public", "users.stage$dev", []string{"name"}, []string{"id"}, map[string]any{"name": "Alice", "id": 1}, `UPDATE "public"."users.stage$dev" SET "name"='Alice' WHERE ("id" = 1)`},
-		{"Multiple Primary Keys postgres", "postgres", "public", "users", []string{"name", "email"}, []string{"id", "other"}, map[string]any{"name": "Alice", "id": 1, "email": "alice@fake.com", "other": "blah"}, `UPDATE "public"."users" SET "email"='alice@fake.com',"name"='Alice' WHERE (("id" = 1) AND ("other" = 'blah'))`},
-		{"Single Column mysql", "mysql", "public", "users", []string{"name"}, []string{"id"}, map[string]any{"name": "Alice", "id": 1}, "UPDATE `public`.`users` SET `name`='Alice' WHERE (`id` = 1)"},
-		{"Multiple Primary Keys mysql", "mysql", "public", "users", []string{"name", "email"}, []string{"id", "other"}, map[string]any{"name": "Alice", "id": 1, "email": "alice@fake.com", "other": "blah"}, "UPDATE `public`.`users` SET `email`='alice@fake.com',`name`='Alice' WHERE ((`id` = 1) AND (`other` = 'blah'))"},
+		{
+			"Single Column postgres",
+			"postgres",
+			"public",
+			"users",
+			[]string{"name"},
+			[]string{"id"},
+			map[string]any{"name": "Alice", "id": 1},
+			`UPDATE "public"."users" SET "name"='Alice' WHERE ("id" = 1)`,
+		},
+		{
+			"Special characters postgres",
+			"postgres",
+			"public",
+			"users.stage$dev",
+			[]string{"name"},
+			[]string{"id"},
+			map[string]any{"name": "Alice", "id": 1},
+			`UPDATE "public"."users.stage$dev" SET "name"='Alice' WHERE ("id" = 1)`,
+		},
+		{
+			"Multiple Primary Keys postgres",
+			"postgres",
+			"public",
+			"users",
+			[]string{"name", "email"},
+			[]string{"id", "other"},
+			map[string]any{"name": "Alice", "id": 1, "email": "alice@fake.com", "other": "blah"},
+			`UPDATE "public"."users" SET "email"='alice@fake.com',"name"='Alice' WHERE (("id" = 1) AND ("other" = 'blah'))`,
+		},
+		{
+			"Single Column mysql",
+			"mysql",
+			"public",
+			"users",
+			[]string{"name"},
+			[]string{"id"},
+			map[string]any{"name": "Alice", "id": 1},
+			"UPDATE `public`.`users` SET `name`='Alice' WHERE (`id` = 1)",
+		},
+		{
+			"Multiple Primary Keys mysql",
+			"mysql",
+			"public",
+			"users",
+			[]string{"name", "email"},
+			[]string{"id", "other"},
+			map[string]any{"name": "Alice", "id": 1, "email": "alice@fake.com", "other": "blah"},
+			"UPDATE `public`.`users` SET `email`='alice@fake.com',`name`='Alice' WHERE ((`id` = 1) AND (`other` = 'blah'))",
+		},
 	}
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			actual, err := BuildUpdateQuery(tt.driver, tt.schema, tt.table, tt.insertColumns, tt.whereColumns, tt.columnValueMap)
+			actual, err := BuildUpdateQuery(
+				tt.driver,
+				tt.schema,
+				tt.table,
+				tt.insertColumns,
+				tt.whereColumns,
+				tt.columnValueMap,
+			)
 			require.NoError(t, err)
 			require.Equal(t, tt.expected, actual)
 		})
@@ -195,11 +247,14 @@ func Test_BuildInsertQuery(t *testing.T) {
 			expectedArgs:        []any{"Alice", "Bob"},
 		},
 		{
-			name:                "Multiple Columns mysql",
-			driver:              "mysql",
-			schema:              "public",
-			table:               "users",
-			records:             []map[string]any{{"name": "Alice", "email": "alice@fake.com"}, {"name": "Bob", "email": "bob@fake.com"}},
+			name:   "Multiple Columns mysql",
+			driver: "mysql",
+			schema: "public",
+			table:  "users",
+			records: []map[string]any{
+				{"name": "Alice", "email": "alice@fake.com"},
+				{"name": "Bob", "email": "bob@fake.com"},
+			},
 			onConflictDoNothing: true,
 			expected:            "INSERT IGNORE INTO `public`.`users` (`email`, `name`) VALUES (?, ?), (?, ?)",
 			expectedArgs:        []any{"alice@fake.com", "Alice", "bob@fake.com", "Bob"},
@@ -215,11 +270,14 @@ func Test_BuildInsertQuery(t *testing.T) {
 			expectedArgs:        []any{"Alice", "Bob"},
 		},
 		{
-			name:                "Multiple Columns postgres",
-			driver:              "postgres",
-			schema:              "public",
-			table:               "users",
-			records:             []map[string]any{{"name": "Alice", "email": "alice@fake.com"}, {"name": "Bob", "email": "bob@fake.com"}},
+			name:   "Multiple Columns postgres",
+			driver: "postgres",
+			schema: "public",
+			table:  "users",
+			records: []map[string]any{
+				{"name": "Alice", "email": "alice@fake.com"},
+				{"name": "Bob", "email": "bob@fake.com"},
+			},
 			onConflictDoNothing: true,
 			expected:            `INSERT INTO "public"."users" ("email", "name") VALUES ($1, $2), ($3, $4) ON CONFLICT DO NOTHING`,
 			expectedArgs:        []any{"alice@fake.com", "Alice", "bob@fake.com", "Bob"},
@@ -229,7 +287,13 @@ func Test_BuildInsertQuery(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			goquRows := toGoquRecords(tt.records)
-			actual, args, err := BuildInsertQuery(tt.driver, tt.schema, tt.table, goquRows, &tt.onConflictDoNothing)
+			actual, args, err := BuildInsertQuery(
+				tt.driver,
+				tt.schema,
+				tt.table,
+				goquRows,
+				&tt.onConflictDoNothing,
+			)
 			require.NoError(t, err)
 			require.Equal(t, tt.expected, actual)
 			require.Equal(t, tt.expectedArgs, args)

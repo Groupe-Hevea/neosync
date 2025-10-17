@@ -12,7 +12,7 @@ import (
 	"strings"
 	"text/template"
 
-	transformers "github.com/nucleuscloud/neosync/worker/pkg/benthos/transformers"
+	transformers "github.com/Groupe-Hevea/neosync/worker/pkg/benthos/transformers"
 )
 
 func main() {
@@ -92,7 +92,9 @@ func main() {
 }
 
 // makes defaults docs friendly
-func sanitizeParamDefaults(params []*transformers.BenthosSpecParam) []*transformers.BenthosSpecParam {
+func sanitizeParamDefaults(
+	params []*transformers.BenthosSpecParam,
+) []*transformers.BenthosSpecParam {
 	newParams := []*transformers.BenthosSpecParam{}
 	for _, p := range params {
 		var newDefault string

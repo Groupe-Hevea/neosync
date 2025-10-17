@@ -7,7 +7,7 @@ import (
 	"testing"
 	"time"
 
-	auth_client "github.com/nucleuscloud/neosync/backend/internal/auth/client"
+	auth_client "github.com/Groupe-Hevea/neosync/backend/internal/auth/client"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
 	"golang.org/x/sync/errgroup"
@@ -131,15 +131,39 @@ func Test_isTokenValid(t *testing.T) {
 		{token: ptr("foo"), expiresAt: nil, expected: false},
 		{token: ptr("foo"), expiresAt: ptr(time.Now().Add(-1)), expected: false},
 		{token: ptr("foo"), expiresAt: ptr(time.Now().Add(1 * time.Minute)), expected: true},
-		{token: ptr("foo"), expiresAt: ptr(time.Now().Add(10 * time.Second)), expBuffer: 9 * time.Second, expected: true},
-		{token: ptr("foo"), expiresAt: ptr(time.Now().Add(10 * time.Second)), expBuffer: 10 * time.Second, expected: false},
-		{token: ptr("foo"), expiresAt: ptr(time.Now().Add(10 * time.Second)), expBuffer: 11 * time.Second, expected: false},
-		{token: ptr("foo"), expiresAt: ptr(time.Now()), expBuffer: 10 * time.Second, expected: false},
+		{
+			token:     ptr("foo"),
+			expiresAt: ptr(time.Now().Add(10 * time.Second)),
+			expBuffer: 9 * time.Second,
+			expected:  true,
+		},
+		{
+			token:     ptr("foo"),
+			expiresAt: ptr(time.Now().Add(10 * time.Second)),
+			expBuffer: 10 * time.Second,
+			expected:  false,
+		},
+		{
+			token:     ptr("foo"),
+			expiresAt: ptr(time.Now().Add(10 * time.Second)),
+			expBuffer: 11 * time.Second,
+			expected:  false,
+		},
+		{
+			token:     ptr("foo"),
+			expiresAt: ptr(time.Now()),
+			expBuffer: 10 * time.Second,
+			expected:  false,
+		},
 	}
 
 	for _, testcase := range testcases {
 		t.Run(t.Name(), func(t *testing.T) {
-			assert.Equal(t, testcase.expected, isTokenValid(testcase.token, testcase.expiresAt, testcase.expBuffer))
+			assert.Equal(
+				t,
+				testcase.expected,
+				isTokenValid(testcase.token, testcase.expiresAt, testcase.expBuffer),
+			)
 		})
 	}
 }

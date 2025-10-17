@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"testing"
 
-	"github.com/nucleuscloud/neosync/worker/pkg/rng"
+	"github.com/Groupe-Hevea/neosync/worker/pkg/rng"
 	"github.com/stretchr/testify/mock"
 	"github.com/stretchr/testify/require"
 )
@@ -117,36 +117,43 @@ func Test_SingleIdentityAllocator_GetIdentity(t *testing.T) {
 		require.Contains(t, err.Error(), "unable to get next block for identity test-token")
 	})
 
-	t.Run("gets new block when all values in current block conflict with input", func(t *testing.T) {
-		blockAllocator := NewMockBlockAllocator(t)
-		randGen := rng.NewMockRand(t)
-		inputVal := uint(1)
+	t.Run(
+		"gets new block when all values in current block conflict with input",
+		func(t *testing.T) {
+			blockAllocator := NewMockBlockAllocator(t)
+			randGen := rng.NewMockRand(t)
+			inputVal := uint(1)
 
-		// First block (small block where all values would conflict)
-		blockAllocator.EXPECT().
-			GetNextBlock(mock.Anything, "test-token", uint(2)).
-			Return(&IdentityRange{StartValue: 1, EndValue: 3}, nil).
-			Once()
+			// First block (small block where all values would conflict)
+			blockAllocator.EXPECT().
+				GetNextBlock(mock.Anything, "test-token", uint(2)).
+				Return(&IdentityRange{StartValue: 1, EndValue: 3}, nil).
+				Once()
 
-		// Second block when first block has no valid values
-		blockAllocator.EXPECT().
-			GetNextBlock(mock.Anything, "test-token", uint(2)).
-			Return(&IdentityRange{StartValue: 10, EndValue: 12}, nil).
-			Once()
+			// Second block when first block has no valid values
+			blockAllocator.EXPECT().
+				GetNextBlock(mock.Anything, "test-token", uint(2)).
+				Return(&IdentityRange{StartValue: 10, EndValue: 12}, nil).
+				Once()
 
-		// First block attempts (will try blockSize*2=4 times)
-		randGen.EXPECT().Uint().Return(uint(0)).Times(4) // Will generate 1 (matches input) four times
+			// First block attempts (will try blockSize*2=4 times)
+			randGen.EXPECT().
+				Uint().
+				Return(uint(0)).
+				Times(4)
+				// Will generate 1 (matches input) four times
 
-		// Second block attempts
-		randGen.EXPECT().Uint().Return(uint(0)).Once() // Will generate 10
+			// Second block attempts
+			randGen.EXPECT().Uint().Return(uint(0)).Once() // Will generate 10
 
-		allocator := NewSingleIdentityAllocator(blockAllocator, 2, randGen)
+			allocator := NewSingleIdentityAllocator(blockAllocator, 2, randGen)
 
-		// Try to get a value - should fail in first block and succeed in second
-		result, err := allocator.GetIdentity(context.Background(), "test-token", &inputVal)
-		require.NoError(t, err)
-		require.Equal(t, uint(10), result)
-	})
+			// Try to get a value - should fail in first block and succeed in second
+			result, err := allocator.GetIdentity(context.Background(), "test-token", &inputVal)
+			require.NoError(t, err)
+			require.Equal(t, uint(10), result)
+		},
+	)
 
 	t.Run("returns error when unable to find value in new block", func(t *testing.T) {
 		blockAllocator := NewMockBlockAllocator(t)
@@ -166,10 +173,18 @@ func Test_SingleIdentityAllocator_GetIdentity(t *testing.T) {
 			Once()
 
 		// First block attempts (will try blockSize*2=4 times)
-		randGen.EXPECT().Uint().Return(uint(0)).Times(4) // Will generate 1 (matches input) four times
+		randGen.EXPECT().
+			Uint().
+			Return(uint(0)).
+			Times(4)
+			// Will generate 1 (matches input) four times
 
 		// Second block attempts (will try blockSize*2=4 times)
-		randGen.EXPECT().Uint().Return(uint(0)).Times(4) // Will generate 1 (matches input) four times
+		randGen.EXPECT().
+			Uint().
+			Return(uint(0)).
+			Times(4)
+			// Will generate 1 (matches input) four times
 
 		allocator := NewSingleIdentityAllocator(blockAllocator, 2, randGen)
 

@@ -4,9 +4,9 @@ import (
 	"context"
 	"testing"
 
-	mgmtv1alpha1 "github.com/nucleuscloud/neosync/backend/gen/go/protos/mgmt/v1alpha1"
-	presidioapi "github.com/nucleuscloud/neosync/internal/ee/presidio"
-	"github.com/nucleuscloud/neosync/internal/testutil"
+	mgmtv1alpha1 "github.com/Groupe-Hevea/neosync/backend/gen/go/protos/mgmt/v1alpha1"
+	presidioapi "github.com/Groupe-Hevea/neosync/internal/ee/presidio"
+	"github.com/Groupe-Hevea/neosync/internal/testutil"
 	"github.com/stretchr/testify/mock"
 	"github.com/stretchr/testify/require"
 )
@@ -34,12 +34,23 @@ func Test_TransformPiiText(t *testing.T) {
 		mockText := "bar"
 		mockanon.On("PostAnonymizeWithResponse", mock.Anything, mock.Anything).
 			Return(&presidioapi.PostAnonymizeResponse{
-				JSON200: &presidioapi.AnonymizeResponse{Text: &mockText, Items: &[]presidioapi.OperatorResult{}},
+				JSON200: &presidioapi.AnonymizeResponse{
+					Text:  &mockText,
+					Items: &[]presidioapi.OperatorResult{},
+				},
 			}, nil)
 
 		config := &mgmtv1alpha1.TransformPiiText{}
 
-		actual, err := TransformPiiText(ctx, mockanalyze, mockanon, mockneosync, config, "foo", testutil.GetTestLogger(t))
+		actual, err := TransformPiiText(
+			ctx,
+			mockanalyze,
+			mockanon,
+			mockneosync,
+			config,
+			"foo",
+			testutil.GetTestLogger(t),
+		)
 		require.NoError(t, err)
 		require.Equal(t, mockText, actual)
 	})

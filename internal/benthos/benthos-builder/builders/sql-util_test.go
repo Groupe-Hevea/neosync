@@ -3,9 +3,9 @@ package benthosbuilder_builders
 import (
 	"testing"
 
-	mgmtv1alpha1 "github.com/nucleuscloud/neosync/backend/gen/go/protos/mgmt/v1alpha1"
-	sqlmanager_shared "github.com/nucleuscloud/neosync/backend/pkg/sqlmanager/shared"
-	"github.com/nucleuscloud/neosync/internal/testutil"
+	mgmtv1alpha1 "github.com/Groupe-Hevea/neosync/backend/gen/go/protos/mgmt/v1alpha1"
+	sqlmanager_shared "github.com/Groupe-Hevea/neosync/backend/pkg/sqlmanager/shared"
+	"github.com/Groupe-Hevea/neosync/internal/testutil"
 	"github.com/stretchr/testify/require"
 )
 
@@ -156,7 +156,11 @@ func Test_getAdditionalMappings(t *testing.T) {
 					Table:  "users",
 					Column: "id",
 					Transformer: &mgmtv1alpha1.JobMappingTransformer{
-						Config: &mgmtv1alpha1.TransformerConfig{Config: &mgmtv1alpha1.TransformerConfig_PassthroughConfig{PassthroughConfig: &mgmtv1alpha1.Passthrough{}}},
+						Config: &mgmtv1alpha1.TransformerConfig{
+							Config: &mgmtv1alpha1.TransformerConfig_PassthroughConfig{
+								PassthroughConfig: &mgmtv1alpha1.Passthrough{},
+							},
+						},
 					},
 				}},
 				splitKeyToTablePieces,
@@ -190,7 +194,11 @@ func Test_getAdditionalMappings(t *testing.T) {
 					Table:  "users",
 					Column: "id",
 					Transformer: &mgmtv1alpha1.JobMappingTransformer{
-						Config: &mgmtv1alpha1.TransformerConfig{Config: &mgmtv1alpha1.TransformerConfig_PassthroughConfig{PassthroughConfig: &mgmtv1alpha1.Passthrough{}}},
+						Config: &mgmtv1alpha1.TransformerConfig{
+							Config: &mgmtv1alpha1.TransformerConfig_PassthroughConfig{
+								PassthroughConfig: &mgmtv1alpha1.Passthrough{},
+							},
+						},
 					},
 				}},
 				splitKeyToTablePieces,

@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"testing"
 
-	"github.com/nucleuscloud/neosync/worker/pkg/rng"
+	"github.com/Groupe-Hevea/neosync/worker/pkg/rng"
 	"github.com/redpanda-data/benthos/v4/public/bloblang"
 	"github.com/stretchr/testify/assert"
 )
@@ -29,7 +29,10 @@ func Test_GenerateGenderAbbreviateFalse(t *testing.T) {
 }
 
 func Test_GenderTransformer(t *testing.T) {
-	mapping := fmt.Sprintf(`root = generate_gender(abbreviate:true,max_length:%d)`, maxGenderCharLimit)
+	mapping := fmt.Sprintf(
+		`root = generate_gender(abbreviate:true,max_length:%d)`,
+		maxGenderCharLimit,
+	)
 	ex, err := bloblang.Parse(mapping)
 	assert.NoError(t, err, "failed to parse the gender transformer")
 

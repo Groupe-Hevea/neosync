@@ -8,16 +8,16 @@ import (
 	"os"
 	"testing"
 
+	mysql_queries "github.com/Groupe-Hevea/neosync/backend/gen/go/db/dbschemas/mysql"
+	pg_queries "github.com/Groupe-Hevea/neosync/backend/gen/go/db/dbschemas/postgresql"
+	mgmtv1alpha1 "github.com/Groupe-Hevea/neosync/backend/gen/go/protos/mgmt/v1alpha1"
+	mssql_queries "github.com/Groupe-Hevea/neosync/backend/pkg/mssql-querier"
+	sql_manager "github.com/Groupe-Hevea/neosync/backend/pkg/sqlmanager"
+	sqlmanager_shared "github.com/Groupe-Hevea/neosync/backend/pkg/sqlmanager/shared"
+	connectionmanager "github.com/Groupe-Hevea/neosync/internal/connection-manager"
+	"github.com/Groupe-Hevea/neosync/internal/testutil"
+	tcpostgres "github.com/Groupe-Hevea/neosync/internal/testutil/testcontainers/postgres"
 	_ "github.com/microsoft/go-mssqldb"
-	mysql_queries "github.com/nucleuscloud/neosync/backend/gen/go/db/dbschemas/mysql"
-	pg_queries "github.com/nucleuscloud/neosync/backend/gen/go/db/dbschemas/postgresql"
-	mgmtv1alpha1 "github.com/nucleuscloud/neosync/backend/gen/go/protos/mgmt/v1alpha1"
-	mssql_queries "github.com/nucleuscloud/neosync/backend/pkg/mssql-querier"
-	sql_manager "github.com/nucleuscloud/neosync/backend/pkg/sqlmanager"
-	sqlmanager_shared "github.com/nucleuscloud/neosync/backend/pkg/sqlmanager/shared"
-	connectionmanager "github.com/nucleuscloud/neosync/internal/connection-manager"
-	"github.com/nucleuscloud/neosync/internal/testutil"
-	tcpostgres "github.com/nucleuscloud/neosync/internal/testutil/testcontainers/postgres"
 	"github.com/stretchr/testify/suite"
 	testmssql "github.com/testcontainers/testcontainers-go/modules/mssql"
 )
@@ -94,7 +94,12 @@ func (s *IntegrationTestSuite) SetupMssql(
 		},
 	}
 
-	db, err := sqlmanager.NewSqlConnection(s.ctx, connectionmanager.NewUniqueSession(connectionmanager.WithSessionGroup("mssqltest")), sourceConn, logger)
+	db, err := sqlmanager.NewSqlConnection(
+		s.ctx,
+		connectionmanager.NewUniqueSession(connectionmanager.WithSessionGroup("mssqltest")),
+		sourceConn,
+		logger,
+	)
 	if err != nil {
 		s.T().Fatalf("unable to create sql connection: %s", err)
 	}
@@ -143,7 +148,12 @@ func (s *IntegrationTestSuite) SetupPostgres(
 		},
 	}
 
-	db, err := sqlmanager.NewSqlConnection(s.ctx, connectionmanager.NewUniqueSession(connectionmanager.WithSessionGroup("test")), sourceConn, logger)
+	db, err := sqlmanager.NewSqlConnection(
+		s.ctx,
+		connectionmanager.NewUniqueSession(connectionmanager.WithSessionGroup("test")),
+		sourceConn,
+		logger,
+	)
 	if err != nil {
 		s.T().Fatalf("unable to create sql connection: %s", err)
 	}

@@ -3,9 +3,9 @@ package tokenctx
 import (
 	"context"
 
-	auth_apikey "github.com/nucleuscloud/neosync/backend/internal/auth/apikey"
-	auth_jwt "github.com/nucleuscloud/neosync/backend/internal/auth/jwt"
-	nucleuserrors "github.com/nucleuscloud/neosync/internal/errors"
+	auth_apikey "github.com/Groupe-Hevea/neosync/backend/internal/auth/apikey"
+	auth_jwt "github.com/Groupe-Hevea/neosync/backend/internal/auth/jwt"
+	nucleuserrors "github.com/Groupe-Hevea/neosync/internal/errors"
 )
 
 type TokenCtxResponse struct {

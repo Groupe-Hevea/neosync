@@ -7,12 +7,12 @@ import (
 	"time"
 
 	"connectrpc.com/connect"
+	db_queries "github.com/Groupe-Hevea/neosync/backend/gen/go/db"
+	mgmtv1alpha1 "github.com/Groupe-Hevea/neosync/backend/gen/go/protos/mgmt/v1alpha1"
+	"github.com/Groupe-Hevea/neosync/backend/gen/go/protos/mgmt/v1alpha1/mgmtv1alpha1connect"
+	tcneosyncapi "github.com/Groupe-Hevea/neosync/backend/pkg/integration-test"
+	"github.com/Groupe-Hevea/neosync/internal/neosyncdb"
 	"github.com/jackc/pgx/v5/pgtype"
-	db_queries "github.com/nucleuscloud/neosync/backend/gen/go/db"
-	mgmtv1alpha1 "github.com/nucleuscloud/neosync/backend/gen/go/protos/mgmt/v1alpha1"
-	"github.com/nucleuscloud/neosync/backend/gen/go/protos/mgmt/v1alpha1/mgmtv1alpha1connect"
-	tcneosyncapi "github.com/nucleuscloud/neosync/backend/pkg/integration-test"
-	"github.com/nucleuscloud/neosync/internal/neosyncdb"
 	"github.com/stretchr/testify/require"
 )
 
@@ -40,7 +40,12 @@ func requireConnectError(t testing.TB, err error, expectedCode connect.Code) {
 	t.Helper()
 	connectErr, ok := err.(*connect.Error)
 	require.True(t, ok, fmt.Sprintf("error was not connect error %T", err))
-	require.Equal(t, expectedCode, connectErr.Code(), fmt.Sprintf("%d: %s", connectErr.Code(), connectErr.Message()))
+	require.Equal(
+		t,
+		expectedCode,
+		connectErr.Code(),
+		fmt.Sprintf("%d: %s", connectErr.Code(), connectErr.Message()),
+	)
 }
 
 func (s *IntegrationTestSuite) setAccountCreatedAt(
@@ -52,10 +57,14 @@ func (s *IntegrationTestSuite) setAccountCreatedAt(
 	if err != nil {
 		return err
 	}
-	_, err = s.NeosyncQuerier.SetAccountCreatedAt(ctx, s.Pgcontainer.DB, db_queries.SetAccountCreatedAtParams{
-		CreatedAt: pgtype.Timestamp{Time: createdAt, Valid: true},
-		AccountId: accountUuid,
-	})
+	_, err = s.NeosyncQuerier.SetAccountCreatedAt(
+		ctx,
+		s.Pgcontainer.DB,
+		db_queries.SetAccountCreatedAtParams{
+			CreatedAt: pgtype.Timestamp{Time: createdAt, Valid: true},
+			AccountId: accountUuid,
+		},
+	)
 	return err
 }
 
