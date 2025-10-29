@@ -4,13 +4,13 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"slices"
 	"sync"
 	"time"
 
 	mgmtv1alpha1 "github.com/Groupe-Hevea/neosync/backend/gen/go/protos/mgmt/v1alpha1"
 	benthosbuilder "github.com/Groupe-Hevea/neosync/internal/benthos/benthos-builder"
 	"github.com/Groupe-Hevea/neosync/internal/ee/license"
-	"github.com/Groupe-Hevea/neosync/internal/runconfigs"
 	neosync_benthos "github.com/Groupe-Hevea/neosync/worker/pkg/benthos"
 	accountstatus_activity "github.com/Groupe-Hevea/neosync/worker/pkg/workflows/datasync/activities/account-status"
 	genbenthosconfigs_activity "github.com/Groupe-Hevea/neosync/worker/pkg/workflows/datasync/activities/gen-benthos-configs"
@@ -287,14 +287,14 @@ func executeWorkflow(wfctx workflow.Context, req *WorkflowRequest) (*WorkflowRes
 	inFlight := 0
 	completedCount := 0
 	started := sync.Map{}
-	completed := sync.Map{}
+	completionTracker := NewCompletionTracker(bcResp.BenthosConfigs)
 
 	executeSyncActivity := func(bc *benthosbuilder.BenthosConfigResponse, logger log.Logger) {
 		future := invokeSync(
 			bc,
 			ctx,
 			&started,
-			&completed,
+			completionTracker,
 			logger,
 			&bcResp.AccountId,
 			actOptResp.SyncActivityOptions,
@@ -403,14 +403,30 @@ func executeWorkflow(wfctx workflow.Context, req *WorkflowRequest) (*WorkflowRes
 			if _, configStarted := started.Load(bc.Name); configStarted {
 				continue
 			}
-			isReady, err := isConfigReady(bc, &completed)
+			isReady, err := isConfigReady(bc, completionTracker)
 			if err != nil {
 				return nil, err
 			}
 
 			if !isReady {
+				// Determine if it's a self-reference
+				currentTable := neosync_benthos.BuildBenthosTable(bc.TableSchema, bc.TableName)
+				depType := "external"
+				for _, dep := range bc.DependsOn {
+					if dep.Table == currentTable {
+						depType = "self-reference"
+						break
+					}
+				}
+				logger.Debug(
+					"config not ready, waiting for dependencies",
+					"config", bc.Name,
+					"depends_on", bc.DependsOn,
+					"dependency_type", depType,
+				)
 				continue
 			}
+			logger.Info("config is ready, starting execution", "config", bc.Name)
 
 			// Ensures concurrency limits are respected.
 			if inFlight >= maxConcurrency {
@@ -653,7 +669,8 @@ func getSyncMetadata(config *benthosbuilder.BenthosConfigResponse) *sync_activit
 func invokeSync(
 	config *benthosbuilder.BenthosConfigResponse,
 	ctx workflow.Context,
-	started, completed *sync.Map,
+	started *sync.Map,
+	completionTracker *CompletionTracker,
 	logger log.Logger,
 	accountId *string,
 	syncActivityOptions *workflow.ActivityOptions,
@@ -693,67 +710,85 @@ func invokeSync(
 			Get(ctx, &wfResult)
 		if err == nil {
 			tn := neosync_benthos.BuildBenthosTable(config.TableSchema, config.TableName)
-			err = updateCompletedMap(tn, completed, config.Columns)
-			if err != nil {
-				settable.Set(wfResult, err)
+			markErr := completionTracker.MarkRunConfigComplete(tn, config.Name, config.Columns)
+			if markErr != nil {
+				logger.Error("failed to mark run config complete", "tableName", tn, "runConfigId", config.Name, "error", markErr)
+				settable.Set(wfResult, markErr)
+				return
 			}
+			logger.Info("config sync completed", "tableName", tn, "runConfigId", config.Name)
 		}
 		settable.Set(wfResult, err)
 	})
 	return future
 }
 
-func updateCompletedMap(tableName string, completed *sync.Map, columns []string) error {
-	val, loaded := completed.Load(tableName)
-	if loaded {
-		currCols, ok := val.([]string)
-		if !ok {
-			return fmt.Errorf(
-				"unable to retrieve completed columns from completed map. Expected []string, received: %T",
-				val,
-			)
-		}
-		currCols = append(currCols, columns...)
-		completed.Store(tableName, currCols)
-	} else {
-		completed.Store(tableName, columns)
-	}
-	return nil
-}
-
-func toStringSliceMap(m *sync.Map) (map[string][]string, error) {
-	result := make(map[string][]string)
-	var typeErr error
-
-	m.Range(func(k, v any) bool {
-		key, okKey := k.(string)
-		val, okVal := v.([]string)
-		if !okKey || !okVal {
-			typeErr = fmt.Errorf("failed type assertion for key=%T and value=%T", k, v)
+// areColumnsAvailable checks if all required columns are present in the available columns list
+func areColumnsAvailable(requiredColumns, availableColumns []string) bool {
+	for _, reqCol := range requiredColumns {
+		if !slices.Contains(availableColumns, reqCol) {
 			return false
 		}
-		result[key] = val
-		return true
-	})
-
-	return result, typeErr
+	}
+	return true
 }
 
 func isConfigReady(
 	config *benthosbuilder.BenthosConfigResponse,
-	completed *sync.Map,
+	completionTracker *CompletionTracker,
 ) (bool, error) {
-	if completed == nil {
-		return false, fmt.Errorf("completed map is nil: cannot determine if config is ready")
+	if completionTracker == nil {
+		return false, fmt.Errorf("completion tracker is nil: cannot determine if config is ready")
 	}
 	if config == nil {
 		return false, nil
 	}
-	completedMap, err := toStringSliceMap(completed)
-	if err != nil {
-		return false, err
+
+	// Build current table name to detect self-references
+	currentTable := neosync_benthos.BuildBenthosTable(config.TableSchema, config.TableName)
+
+	// Check each dependency
+	for _, dep := range config.DependsOn {
+		isSelfReference := (dep.Table == currentTable)
+
+		if isSelfReference {
+			// Self-reference (e.g., user__user.UPDATE depends on user__user.INSERT)
+			// Only need the INSERT to be completed to avoid deadlock
+			if !completionTracker.IsInsertCompleted(dep.Table) {
+				return false, nil
+			}
+
+			// Verify the required columns are available from INSERT
+			insertCols, hasInsert := completionTracker.GetInsertColumns(dep.Table)
+			if !hasInsert {
+				return false, nil
+			}
+
+			// Check if all required columns are present
+			if !areColumnsAvailable(dep.Columns, insertCols) {
+				return false, nil
+			}
+		} else {
+			// External dependency (e.g., loaded_product_attribute_value depends on loaded_product_attribute)
+			// Must wait for ALL RunConfigs (INSERT + all UPDATEs) to avoid race conditions
+			if !completionTracker.IsTableComplete(dep.Table) {
+				return false, nil
+			}
+
+			// Verify the required columns are available
+			completedCols, isComplete := completionTracker.GetCompletedColumns(dep.Table)
+			if !isComplete {
+				return false, nil
+			}
+
+			// Check if all required columns are present
+			if !areColumnsAvailable(dep.Columns, completedCols) {
+				return false, nil
+			}
+		}
 	}
-	return runconfigs.AreConfigDependenciesSatisfied(config.DependsOn, completedMap), nil
+
+	return true, nil
 }
 
 type SplitConfigs struct {

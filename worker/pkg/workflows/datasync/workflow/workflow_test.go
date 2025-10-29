@@ -4,7 +4,6 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"sync"
 	"testing"
 	"time"
 
@@ -969,91 +968,73 @@ func Test_isConfigReady(t *testing.T) {
 	isReady, err := isConfigReady(nil, nil)
 	assert.Error(t, err)
 
-	completed := sync.Map{}
-	isReady, err = isConfigReady(nil, &completed)
+	// Test with nil config
+	tracker := NewCompletionTracker([]*benthosbuilder.BenthosConfigResponse{})
+	isReady, err = isConfigReady(nil, tracker)
 	assert.NoError(t, err)
 	assert.False(t, isReady, "config is nil")
 
-	completed = sync.Map{}
+	// Test with no dependencies
+	tracker = NewCompletionTracker([]*benthosbuilder.BenthosConfigResponse{
+		{Name: "foo.insert", TableSchema: "public", TableName: "foo"},
+	})
 	isReady, err = isConfigReady(&benthosbuilder.BenthosConfigResponse{
-		Name:      "foo",
+		Name:      "foo.insert",
 		DependsOn: []*runconfigs.DependsOn{},
-	},
-		&completed)
+	}, tracker)
 	assert.NoError(t, err)
-	assert.True(
-		t,
-		isReady,
-		"has no dependencies",
-	)
+	assert.True(t, isReady, "has no dependencies")
 
-	completed = sync.Map{}
-	completed.Store("bar", []string{"id"})
+	// Test with partial dependencies satisfied
+	tracker = NewCompletionTracker([]*benthosbuilder.BenthosConfigResponse{
+		{Name: "bar.insert", TableSchema: "", TableName: "bar"},
+		{Name: "baz.insert", TableSchema: "", TableName: "baz"},
+		{Name: "foo.insert", TableSchema: "", TableName: "foo"},
+	})
+	_ = tracker.MarkRunConfigComplete("bar", "bar.insert", []string{"id"})
+
 	isReady, err = isConfigReady(&benthosbuilder.BenthosConfigResponse{
-		Name: "foo",
+		Name: "foo.insert",
 		DependsOn: []*runconfigs.DependsOn{
 			{Table: "bar", Columns: []string{"id"}},
 			{Table: "baz", Columns: []string{"id"}},
 		},
-	},
-		&completed)
+	}, tracker)
 	assert.NoError(t, err)
-	assert.False(
-		t,
-		isReady,
-		"not all dependencies are finished",
-	)
+	assert.False(t, isReady, "not all dependencies are finished")
 
-	completed = sync.Map{}
-	completed.Store("bar", []string{"id"})
-	completed.Store("baz", []string{"id"})
+	// Test with all dependencies satisfied
+	tracker = NewCompletionTracker([]*benthosbuilder.BenthosConfigResponse{
+		{Name: "bar.insert", TableSchema: "", TableName: "bar"},
+		{Name: "baz.insert", TableSchema: "", TableName: "baz"},
+		{Name: "foo.insert", TableSchema: "", TableName: "foo"},
+	})
+	_ = tracker.MarkRunConfigComplete("bar", "bar.insert", []string{"id"})
+	_ = tracker.MarkRunConfigComplete("baz", "baz.insert", []string{"id"})
+
 	isReady, err = isConfigReady(&benthosbuilder.BenthosConfigResponse{
-		Name: "foo",
+		Name: "foo.insert",
 		DependsOn: []*runconfigs.DependsOn{
 			{Table: "bar", Columns: []string{"id"}},
 			{Table: "baz", Columns: []string{"id"}},
 		},
-	}, &completed)
+	}, tracker)
 	assert.NoError(t, err)
-	assert.True(
-		t,
-		isReady,
-		"all dependencies are finished",
-	)
+	assert.True(t, isReady, "all dependencies are finished")
 
-	completed = sync.Map{}
-	completed.Store("bar", []string{"id"})
+	// Test with missing columns
+	tracker = NewCompletionTracker([]*benthosbuilder.BenthosConfigResponse{
+		{Name: "bar.insert", TableSchema: "", TableName: "bar"},
+		{Name: "foo.insert", TableSchema: "", TableName: "foo"},
+	})
+	_ = tracker.MarkRunConfigComplete("bar", "bar.insert", []string{"id"})
+
 	isReady, err = isConfigReady(&benthosbuilder.BenthosConfigResponse{
-		Name:      "foo",
+		Name:      "foo.insert",
 		DependsOn: []*runconfigs.DependsOn{{Table: "bar", Columns: []string{"id", "f_id"}}},
-	},
-		&completed)
+	}, tracker)
 	assert.NoError(t, err)
-	assert.False(
-		t,
-		isReady,
-		"not all dependencies columns are finished",
-	)
-}
-
-func Test_updateCompletedMap(t *testing.T) {
-	completedMap := sync.Map{}
-	table := "public.users"
-	cols := []string{"id"}
-	err := updateCompletedMap(table, &completedMap, cols)
-	assert.NoError(t, err)
-	val, loaded := completedMap.Load(table)
-	assert.True(t, loaded)
-	assert.Equal(t, cols, val)
-
-	completedMap = sync.Map{}
-	table = "public.users"
-	completedMap.Store(table, []string{"name"})
-	err = updateCompletedMap(table, &completedMap, []string{"id"})
-	assert.NoError(t, err)
-	val, loaded = completedMap.Load(table)
-	assert.True(t, loaded)
-	assert.Equal(t, []string{"name", "id"}, val)
+	assert.False(t, isReady, "not all dependencies columns are finished")
 }
 
 func Test_Workflow_Initial_AccountStatus(t *testing.T) {

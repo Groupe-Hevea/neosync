@@ -5,14 +5,14 @@ tmp_dir = "tmp"
 [build]
   args_bin = ["serve", "connect"]
   bin = "./tmp/mgmt"
-  cmd = "go build -ldflags=\"-s -w\" -o ./tmp/mgmt backend/cmd/mgmt/*.go"
+  cmd = "go build -gcflags=\"all=-N -l\" -o ./tmp/mgmt backend/cmd/mgmt/*.go"
   delay = 1000
   exclude_dir = ["assets", "tmp", "vendor", "testdata"]
   exclude_file = []
   exclude_regex = ["_test.go"]
   exclude_unchanged = true
   follow_symlink = false
-  full_bin = ""
+  full_bin = "dlv exec --accept-multiclient --log --headless --continue --listen :2345 ./tmp/mgmt"
   include_dir = []
   include_ext = ["go", "tpl", "tmpl", "html"]
   include_file = []
