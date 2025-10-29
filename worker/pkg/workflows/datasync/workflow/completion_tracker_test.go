@@ -302,3 +302,79 @@ func TestBuildTableName(t *testing.T) {
 		})
 	}
 }
+
+func TestIsInsertCompleted(t *testing.T) {
+	configs := []*benthosbuilder.BenthosConfigResponse{
+		{Name: "schema.user__user.insert", TableSchema: "schema", TableName: "user__user"},
+		{Name: "schema.user__user.update.1", TableSchema: "schema", TableName: "user__user"},
+		{Name: "schema.user__user.update.2", TableSchema: "schema", TableName: "user__user"},
+		{Name: "schema.products.insert", TableSchema: "schema", TableName: "products"},
+	}
+
+	tracker := NewCompletionTracker(configs)
+
+	// Initially, no INSERT is completed
+	assert.False(t, tracker.IsInsertCompleted("schema.user__user"), "INSERT should not be completed initially")
+	assert.False(t, tracker.IsInsertCompleted("schema.products"), "INSERT should not be completed initially")
+
+	// Complete the INSERT for user__user
+	err := tracker.MarkRunConfigComplete("schema.user__user", "schema.user__user.insert", []string{"id", "name"})
+	require.NoError(t, err)
+
+	// Now INSERT should be completed for user__user
+	assert.True(t, tracker.IsInsertCompleted("schema.user__user"), "INSERT should be completed after marking")
+	assert.False(t, tracker.IsInsertCompleted("schema.products"), "products INSERT should still not be completed")
+
+	// Complete an UPDATE (not INSERT) for user__user
+	err = tracker.MarkRunConfigComplete("schema.user__user", "schema.user__user.update.1", []string{"manager_id"})
+	require.NoError(t, err)
+
+	// INSERT should still be completed
+	assert.True(t, tracker.IsInsertCompleted("schema.user__user"), "INSERT should still be completed")
+
+	// Test with unknown table
+	assert.False(t, tracker.IsInsertCompleted("unknown.table"), "Unknown table should return false")
+}
+
+func TestGetInsertColumns(t *testing.T) {
+	configs := []*benthosbuilder.BenthosConfigResponse{
+		{Name: "schema.user__user.insert", TableSchema: "schema", TableName: "user__user"},
+		{Name: "schema.user__user.update.1", TableSchema: "schema", TableName: "user__user"},
+		{Name: "schema.products.insert", TableSchema: "schema", TableName: "products"},
+	}
+
+	tracker := NewCompletionTracker(configs)
+
+	// Initially, no columns available
+	cols, hasInsert := tracker.GetInsertColumns("schema.user__user")
+	assert.False(t, hasInsert, "Should not have INSERT columns initially")
+	assert.Nil(t, cols, "Columns should be nil initially")
+
+	// Complete the INSERT for user__user
+	err := tracker.MarkRunConfigComplete("schema.user__user", "schema.user__user.insert", []string{"id", "name", "email"})
+	require.NoError(t, err)
+
+	// Now columns should be available
+	cols, hasInsert = tracker.GetInsertColumns("schema.user__user")
+	assert.True(t, hasInsert, "Should have INSERT columns after marking")
+	assert.ElementsMatch(t, []string{"id", "name", "email"}, cols, "Should return INSERT columns")
+
+	// Complete an UPDATE - columns should accumulate
+	err = tracker.MarkRunConfigComplete("schema.user__user", "schema.user__user.update.1", []string{"manager_id"})
+	require.NoError(t, err)
+
+	// Columns should now include both INSERT and UPDATE columns
+	cols, hasInsert = tracker.GetInsertColumns("schema.user__user")
+	assert.True(t, hasInsert, "Should still have INSERT columns")
+	assert.ElementsMatch(t, []string{"id", "name", "email", "manager_id"}, cols, "Should return all accumulated columns")
+
+	// Test with unknown table
+	cols, hasInsert = tracker.GetInsertColumns("unknown.table")
+	assert.False(t, hasInsert, "Unknown table should return false")
+	assert.Nil(t, cols, "Unknown table should return nil columns")
+
+	// Test with table that has no INSERT completed yet
+	cols, hasInsert = tracker.GetInsertColumns("schema.products")
+	assert.False(t, hasInsert, "Table with no INSERT completed should return false")
+	assert.Nil(t, cols, "Table with no INSERT completed should return nil columns")
+}

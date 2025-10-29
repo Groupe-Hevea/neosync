@@ -1035,6 +1035,54 @@ func Test_isConfigReady(t *testing.T) {
 	}, tracker)
 	assert.NoError(t, err)
 	assert.False(t, isReady, "not all dependencies columns are finished")
+
+	// Test self-reference - INSERT completed (should be ready)
+	tracker = NewCompletionTracker([]*benthosbuilder.BenthosConfigResponse{
+		{Name: "user__user.insert", TableSchema: "", TableName: "user__user"},
+		{Name: "user__user.update.1", TableSchema: "", TableName: "user__user"},
+	})
+	_ = tracker.MarkRunConfigComplete("user__user", "user__user.insert", []string{"id", "name"})
+
+	isReady, err = isConfigReady(&benthosbuilder.BenthosConfigResponse{
+		Name:        "user__user.update.1",
+		TableSchema: "",
+		TableName:   "user__user",
+		DependsOn:   []*runconfigs.DependsOn{{Table: "user__user", Columns: []string{"id"}}},
+	}, tracker)
+	assert.NoError(t, err)
+	assert.True(t, isReady, "self-reference: INSERT completed, should be ready")
+
+	// Test self-reference - INSERT not completed (should NOT be ready)
+	tracker = NewCompletionTracker([]*benthosbuilder.BenthosConfigResponse{
+		{Name: "user__user.insert", TableSchema: "", TableName: "user__user"},
+		{Name: "user__user.update.1", TableSchema: "", TableName: "user__user"},
+	})
+	// Don't mark INSERT as complete
+
+	isReady, err = isConfigReady(&benthosbuilder.BenthosConfigResponse{
+		Name:        "user__user.update.1",
+		TableSchema: "",
+		TableName:   "user__user",
+		DependsOn:   []*runconfigs.DependsOn{{Table: "user__user", Columns: []string{"id"}}},
+	}, tracker)
+	assert.NoError(t, err)
+	assert.False(t, isReady, "self-reference: INSERT not completed, should NOT be ready")
+
+	// Test self-reference - INSERT completed but missing required columns
+	tracker = NewCompletionTracker([]*benthosbuilder.BenthosConfigResponse{
+		{Name: "user__user.insert", TableSchema: "", TableName: "user__user"},
+		{Name: "user__user.update.1", TableSchema: "", TableName: "user__user"},
+	})
+	_ = tracker.MarkRunConfigComplete("user__user", "user__user.insert", []string{"id"}) // only has "id", not "manager_id"
+
+	isReady, err = isConfigReady(&benthosbuilder.BenthosConfigResponse{
+		Name:        "user__user.update.1",
+		TableSchema: "",
+		TableName:   "user__user",
+		DependsOn:   []*runconfigs.DependsOn{{Table: "user__user", Columns: []string{"id", "manager_id"}}},
+	}, tracker)
+	assert.NoError(t, err)
+	assert.False(t, isReady, "self-reference: INSERT completed but missing required columns")
 }
 
 func Test_Workflow_Initial_AccountStatus(t *testing.T) {
