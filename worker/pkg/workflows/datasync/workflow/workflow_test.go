@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"log/slog"
 	"testing"
 	"time"
 
@@ -26,10 +27,16 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
 	"github.com/stretchr/testify/require"
+	"go.temporal.io/sdk/log"
 	"go.temporal.io/sdk/temporal"
 	"go.temporal.io/sdk/testsuite"
 	"go.temporal.io/sdk/workflow"
 )
+
+// getTestLogger returns a logger for unit tests
+func getTestLogger() log.Logger {
+	return log.NewStructuredLogger(slog.Default())
+}
 
 func Test_Workflow_BenthosConfigsFails(t *testing.T) {
 	testSuite := &testsuite.WorkflowTestSuite{}
@@ -962,127 +969,6 @@ func Test_Workflow_Max_InFlight(t *testing.T) {
 	assert.Equal(t, &WorkflowResponse{}, result)
 
 	env.AssertExpectations(t)
-}
-
-func Test_isConfigReady(t *testing.T) {
-	isReady, err := isConfigReady(nil, nil)
-	assert.Error(t, err)
-
-	// Test with nil config
-	tracker := NewCompletionTracker([]*benthosbuilder.BenthosConfigResponse{})
-	isReady, err = isConfigReady(nil, tracker)
-	assert.NoError(t, err)
-	assert.False(t, isReady, "config is nil")
-
-	// Test with no dependencies
-	tracker = NewCompletionTracker([]*benthosbuilder.BenthosConfigResponse{
-		{Name: "foo.insert", TableSchema: "public", TableName: "foo"},
-	})
-	isReady, err = isConfigReady(&benthosbuilder.BenthosConfigResponse{
-		Name:      "foo.insert",
-		DependsOn: []*runconfigs.DependsOn{},
-	}, tracker)
-	assert.NoError(t, err)
-	assert.True(t, isReady, "has no dependencies")
-
-	// Test with partial dependencies satisfied
-	tracker = NewCompletionTracker([]*benthosbuilder.BenthosConfigResponse{
-		{Name: "bar.insert", TableSchema: "", TableName: "bar"},
-		{Name: "baz.insert", TableSchema: "", TableName: "baz"},
-		{Name: "foo.insert", TableSchema: "", TableName: "foo"},
-	})
-	_ = tracker.MarkRunConfigComplete("bar", "bar.insert", []string{"id"})
-
-	isReady, err = isConfigReady(&benthosbuilder.BenthosConfigResponse{
-		Name: "foo.insert",
-		DependsOn: []*runconfigs.DependsOn{
-			{Table: "bar", Columns: []string{"id"}},
-			{Table: "baz", Columns: []string{"id"}},
-		},
-	}, tracker)
-	assert.NoError(t, err)
-	assert.False(t, isReady, "not all dependencies are finished")
-
-	// Test with all dependencies satisfied
-	tracker = NewCompletionTracker([]*benthosbuilder.BenthosConfigResponse{
-		{Name: "bar.insert", TableSchema: "", TableName: "bar"},
-		{Name: "baz.insert", TableSchema: "", TableName: "baz"},
-		{Name: "foo.insert", TableSchema: "", TableName: "foo"},
-	})
-	_ = tracker.MarkRunConfigComplete("bar", "bar.insert", []string{"id"})
-	_ = tracker.MarkRunConfigComplete("baz", "baz.insert", []string{"id"})
-
-	isReady, err = isConfigReady(&benthosbuilder.BenthosConfigResponse{
-		Name: "foo.insert",
-		DependsOn: []*runconfigs.DependsOn{
-			{Table: "bar", Columns: []string{"id"}},
-			{Table: "baz", Columns: []string{"id"}},
-		},
-	}, tracker)
-	assert.NoError(t, err)
-	assert.True(t, isReady, "all dependencies are finished")
-
-	// Test with missing columns
-	tracker = NewCompletionTracker([]*benthosbuilder.BenthosConfigResponse{
-		{Name: "bar.insert", TableSchema: "", TableName: "bar"},
-		{Name: "foo.insert", TableSchema: "", TableName: "foo"},
-	})
-	_ = tracker.MarkRunConfigComplete("bar", "bar.insert", []string{"id"})
-
-	isReady, err = isConfigReady(&benthosbuilder.BenthosConfigResponse{
-		Name:      "foo.insert",
-		DependsOn: []*runconfigs.DependsOn{{Table: "bar", Columns: []string{"id", "f_id"}}},
-	}, tracker)
-	assert.NoError(t, err)
-	assert.False(t, isReady, "not all dependencies columns are finished")
-
-	// Test self-reference - INSERT completed (should be ready)
-	tracker = NewCompletionTracker([]*benthosbuilder.BenthosConfigResponse{
-		{Name: "user__user.insert", TableSchema: "", TableName: "user__user"},
-		{Name: "user__user.update.1", TableSchema: "", TableName: "user__user"},
-	})
-	_ = tracker.MarkRunConfigComplete("user__user", "user__user.insert", []string{"id", "name"})
-
-	isReady, err = isConfigReady(&benthosbuilder.BenthosConfigResponse{
-		Name:        "user__user.update.1",
-		TableSchema: "",
-		TableName:   "user__user",
-		DependsOn:   []*runconfigs.DependsOn{{Table: "user__user", Columns: []string{"id"}}},
-	}, tracker)
-	assert.NoError(t, err)
-	assert.True(t, isReady, "self-reference: INSERT completed, should be ready")
-
-	// Test self-reference - INSERT not completed (should NOT be ready)
-	tracker = NewCompletionTracker([]*benthosbuilder.BenthosConfigResponse{
-		{Name: "user__user.insert", TableSchema: "", TableName: "user__user"},
-		{Name: "user__user.update.1", TableSchema: "", TableName: "user__user"},
-	})
-	// Don't mark INSERT as complete
-
-	isReady, err = isConfigReady(&benthosbuilder.BenthosConfigResponse{
-		Name:        "user__user.update.1",
-		TableSchema: "",
-		TableName:   "user__user",
-		DependsOn:   []*runconfigs.DependsOn{{Table: "user__user", Columns: []string{"id"}}},
-	}, tracker)
-	assert.NoError(t, err)
-	assert.False(t, isReady, "self-reference: INSERT not completed, should NOT be ready")
-
-	// Test self-reference - INSERT completed but missing required columns
-	tracker = NewCompletionTracker([]*benthosbuilder.BenthosConfigResponse{
-		{Name: "user__user.insert", TableSchema: "", TableName: "user__user"},
-		{Name: "user__user.update.1", TableSchema: "", TableName: "user__user"},
-	})
-	_ = tracker.MarkRunConfigComplete("user__user", "user__user.insert", []string{"id"}) // only has "id", not "manager_id"
-
-	isReady, err = isConfigReady(&benthosbuilder.BenthosConfigResponse{
-		Name:        "user__user.update.1",
-		TableSchema: "",
-		TableName:   "user__user",
-		DependsOn:   []*runconfigs.DependsOn{{Table: "user__user", Columns: []string{"id", "manager_id"}}},
-	}, tracker)
-	assert.NoError(t, err)
-	assert.False(t, isReady, "self-reference: INSERT completed but missing required columns")
 }
 
 func Test_Workflow_Initial_AccountStatus(t *testing.T) {

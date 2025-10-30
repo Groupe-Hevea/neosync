@@ -4,7 +4,6 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"slices"
 	"sync"
 	"time"
 
@@ -283,18 +282,47 @@ func executeWorkflow(wfctx workflow.Context, req *WorkflowRequest) (*WorkflowRes
 		return nil, fmt.Errorf("root config not found. unable to process configs")
 	}
 
+	// Log the config split for debugging
+	rootNames := make([]string, len(splitConfigs.Root))
+	for i, bc := range splitConfigs.Root {
+		rootNames[i] = bc.Name
+	}
+	dependentNames := make([]string, len(splitConfigs.Dependents))
+	for i, bc := range splitConfigs.Dependents {
+		dependentNames[i] = bc.Name
+	}
+	logger.Info("config split completed",
+		"totalConfigs", len(bcResp.BenthosConfigs),
+		"rootCount", len(splitConfigs.Root),
+		"dependentCount", len(splitConfigs.Dependents),
+		"rootConfigs", rootNames,
+		"dependentConfigs", dependentNames,
+	)
+
 	maxConcurrency := getTableSyncMaxConcurrency()
 	inFlight := 0
 	completedCount := 0
 	started := sync.Map{}
-	completionTracker := NewCompletionTracker(bcResp.BenthosConfigs)
+
+	// Build execution groups to handle circular dependencies
+	executionGroups, err := buildExecutionGroups(bcResp.BenthosConfigs)
+	if err != nil {
+		return nil, fmt.Errorf("failed to build execution groups: %w", err)
+	}
+	groupTracker := NewGroupCompletionTracker(executionGroups)
+
+	logger.Info(
+		"execution groups created",
+		"totalGroups", len(executionGroups),
+		"totalConfigs", len(bcResp.BenthosConfigs),
+	)
 
 	executeSyncActivity := func(bc *benthosbuilder.BenthosConfigResponse, logger log.Logger) {
 		future := invokeSync(
 			bc,
 			ctx,
 			&started,
-			completionTracker,
+			groupTracker,
 			logger,
 			&bcResp.AccountId,
 			actOptResp.SyncActivityOptions,
@@ -365,18 +393,23 @@ func executeWorkflow(wfctx workflow.Context, req *WorkflowRequest) (*WorkflowRes
 		}
 	}
 
-	logger.Info("all root tables spawned, moving on to children")
-	for i := 0; i < len(bcResp.BenthosConfigs); i++ {
+	logger.Info("all root tables spawned, moving on to children", "totalConfigs", len(bcResp.BenthosConfigs), "completedCount", completedCount, "inFlight", inFlight)
+	for {
 		// Ensures that the select statement below does not block indefinitely
 		if len(bcResp.BenthosConfigs) == completedCount {
+			logger.Info("all configs completed", "total", len(bcResp.BenthosConfigs), "completed", completedCount)
 			break
 		}
-		logger.Debug("*** blocking select ***", "i", i)
+		logger.Info("*** blocking select ***", "completedCount", completedCount, "total", len(bcResp.BenthosConfigs))
 		workselector.Select(ctx)
 		if activityErr != nil {
 			return nil, activityErr
 		}
-		logger.Debug("*** post select ***", "i", i)
+		logger.Info("*** post select ***", "completedCount", completedCount, "total", len(bcResp.BenthosConfigs))
+
+		// Log group tracker status for debugging
+		completionStatus := groupTracker.GetCompletionStatus()
+		logger.Debug("group tracker status", "status", completionStatus)
 
 		if ctx.Err() != nil {
 			if errors.Is(ctx.Err(), context.Canceled) {
@@ -403,7 +436,7 @@ func executeWorkflow(wfctx workflow.Context, req *WorkflowRequest) (*WorkflowRes
 			if _, configStarted := started.Load(bc.Name); configStarted {
 				continue
 			}
-			isReady, err := isConfigReady(bc, completionTracker)
+			isReady, err := isConfigReady(bc, groupTracker, logger)
 			if err != nil {
 				return nil, err
 			}
@@ -670,7 +703,7 @@ func invokeSync(
 	config *benthosbuilder.BenthosConfigResponse,
 	ctx workflow.Context,
 	started *sync.Map,
-	completionTracker *CompletionTracker,
+	groupTracker *GroupCompletionTracker,
 	logger log.Logger,
 	accountId *string,
 	syncActivityOptions *workflow.ActivityOptions,
@@ -709,86 +742,36 @@ func invokeSync(
 		}).
 			Get(ctx, &wfResult)
 		if err == nil {
-			tn := neosync_benthos.BuildBenthosTable(config.TableSchema, config.TableName)
-			markErr := completionTracker.MarkRunConfigComplete(tn, config.Name, config.Columns)
+			markErr := groupTracker.MarkConfigComplete(config.Name)
 			if markErr != nil {
-				logger.Error("failed to mark run config complete", "tableName", tn, "runConfigId", config.Name, "error", markErr)
+				logger.Error("failed to mark config complete", "config", config.Name, "error", markErr)
 				settable.Set(wfResult, markErr)
 				return
 			}
-			logger.Info("config sync completed", "tableName", tn, "runConfigId", config.Name)
+			logger.Info("config sync completed", "config", config.Name)
 		}
 		settable.Set(wfResult, err)
 	})
 	return future
 }
 
-// areColumnsAvailable checks if all required columns are present in the available columns list
-func areColumnsAvailable(requiredColumns, availableColumns []string) bool {
-	for _, reqCol := range requiredColumns {
-		if !slices.Contains(availableColumns, reqCol) {
-			return false
-		}
-	}
-	return true
-}
-
 func isConfigReady(
 	config *benthosbuilder.BenthosConfigResponse,
-	completionTracker *CompletionTracker,
+	groupTracker *GroupCompletionTracker,
+	logger log.Logger,
 ) (bool, error) {
-	if completionTracker == nil {
-		return false, fmt.Errorf("completion tracker is nil: cannot determine if config is ready")
+	if groupTracker == nil {
+		return false, fmt.Errorf("group tracker is nil: cannot determine if config is ready")
 	}
 	if config == nil {
 		return false, nil
 	}
 
-	// Build current table name to detect self-references
-	currentTable := neosync_benthos.BuildBenthosTable(config.TableSchema, config.TableName)
-
-	// Check each dependency
-	for _, dep := range config.DependsOn {
-		isSelfReference := (dep.Table == currentTable)
-
-		if isSelfReference {
-			// Self-reference (e.g., user__user.UPDATE depends on user__user.INSERT)
-			// Only need the INSERT to be completed to avoid deadlock
-			if !completionTracker.IsInsertCompleted(dep.Table) {
-				return false, nil
-			}
-
-			// Verify the required columns are available from INSERT
-			insertCols, hasInsert := completionTracker.GetInsertColumns(dep.Table)
-			if !hasInsert {
-				return false, nil
-			}
-
-			// Check if all required columns are present
-			if !areColumnsAvailable(dep.Columns, insertCols) {
-				return false, nil
-			}
-		} else {
-			// External dependency (e.g., loaded_product_attribute_value depends on loaded_product_attribute)
-			// Must wait for ALL RunConfigs (INSERT + all UPDATEs) to avoid race conditions
-			if !completionTracker.IsTableComplete(dep.Table) {
-				return false, nil
-			}
-
-			// Verify the required columns are available
-			completedCols, isComplete := completionTracker.GetCompletedColumns(dep.Table)
-			if !isComplete {
-				return false, nil
-			}
-
-			// Check if all required columns are present
-			if !areColumnsAvailable(dep.Columns, completedCols) {
-				return false, nil
-			}
-		}
-	}
-
-	return true, nil
+	// Use the group tracker's built-in logic to check if config can start
+	// This handles:
+	// - Group dependencies (waiting for dependent groups to complete)
+	// - Cycle-aware execution (INSERT phase before UPDATE phase in cycles)
+	return groupTracker.CanConfigStart(config), nil
 }
 
 type SplitConfigs struct {
@@ -826,4 +809,12 @@ func getTableSyncMaxConcurrency() int {
 		return 3 // default max concurrency
 	}
 	return maxConcurrency
+}
+
+// buildTableName constructs a fully qualified table name from schema and table.
+func buildTableName(schema, table string) string {
+	if schema == "" {
+		return table
+	}
+	return fmt.Sprintf("%s.%s", schema, table)
 }
