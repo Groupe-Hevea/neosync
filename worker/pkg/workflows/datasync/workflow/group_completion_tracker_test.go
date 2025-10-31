@@ -599,3 +599,188 @@ func TestFindConfigByTable(t *testing.T) {
 	// Not found
 	assert.Equal(t, "", findConfigByTable(group, "public.unknown"))
 }
+
+func TestCanConfigStart_IntraGroupDependencies(t *testing.T) {
+	// Test that configs with intra-group dependencies wait for their dependencies
+	// This mimics the mysql/complex scenario where mission.insert depends on spacecraft.insert
+	// within the same cycle group
+	groups := []*ExecutionGroup{
+		{
+			ID:     "cycle:complex.astronaut_complex.mission_complex.spacecraft",
+			Tables: []string{"complex.astronaut", "complex.mission", "complex.spacecraft"},
+			InsertConfigs: []*benthosbuilder.BenthosConfigResponse{
+				{
+					Name:        "complex.astronaut.insert",
+					TableSchema: "complex",
+					TableName:   "astronaut",
+					RunType:     "insert",
+					DependsOn:   []*runconfigs.DependsOn{},
+				},
+				{
+					Name:        "complex.spacecraft.insert",
+					TableSchema: "complex",
+					TableName:   "spacecraft",
+					RunType:     "insert",
+					DependsOn:   []*runconfigs.DependsOn{},
+				},
+				{
+					Name:        "complex.mission.insert",
+					TableSchema: "complex",
+					TableName:   "mission",
+					RunType:     "insert",
+					DependsOn: []*runconfigs.DependsOn{
+						{Table: "complex.spacecraft", Columns: []string{"id"}}, // NOT NULL dependency
+					},
+				},
+			},
+			UpdateConfigs: []*benthosbuilder.BenthosConfigResponse{
+				{
+					Name:        "complex.astronaut.update.1",
+					TableSchema: "complex",
+					TableName:   "astronaut",
+					RunType:     "update",
+					DependsOn: []*runconfigs.DependsOn{
+						{Table: "complex.mission", Columns: []string{"id"}},
+					},
+				},
+				{
+					Name:        "complex.spacecraft.update.1",
+					TableSchema: "complex",
+					TableName:   "spacecraft",
+					RunType:     "update",
+					DependsOn: []*runconfigs.DependsOn{
+						{Table: "complex.mission", Columns: []string{"id"}},
+					},
+				},
+			},
+			DependsOnGroups: []string{},
+			IsInCycle:       true,
+		},
+	}
+
+	tracker := NewGroupCompletionTracker(groups)
+
+	// Initially, astronaut and spacecraft can start (no dependencies)
+	assert.True(t, tracker.CanConfigStart(groups[0].InsertConfigs[0]), "astronaut.insert should be able to start")
+	assert.True(t, tracker.CanConfigStart(groups[0].InsertConfigs[1]), "spacecraft.insert should be able to start")
+
+	// But mission.insert CANNOT start yet (depends on spacecraft.insert)
+	assert.False(t, tracker.CanConfigStart(groups[0].InsertConfigs[2]), "mission.insert should wait for spacecraft.insert")
+
+	// Complete spacecraft.insert
+	err := tracker.MarkConfigComplete("complex.spacecraft.insert")
+	require.NoError(t, err)
+
+	// Now mission.insert can start
+	assert.True(t, tracker.CanConfigStart(groups[0].InsertConfigs[2]), "mission.insert should be able to start after spacecraft completes")
+
+	// But UPDATE configs still cannot start (INSERT phase not complete)
+	assert.False(t, tracker.CanConfigStart(groups[0].UpdateConfigs[0]), "UPDATE should wait for INSERT phase")
+	assert.False(t, tracker.CanConfigStart(groups[0].UpdateConfigs[1]), "UPDATE should wait for INSERT phase")
+
+	// Complete remaining INSERT configs
+	err = tracker.MarkConfigComplete("complex.astronaut.insert")
+	require.NoError(t, err)
+	err = tracker.MarkConfigComplete("complex.mission.insert")
+	require.NoError(t, err)
+
+	// Now INSERT phase is complete, UPDATE configs can start
+	assert.True(t, tracker.CanConfigStart(groups[0].UpdateConfigs[0]), "UPDATE should start after INSERT phase completes")
+	assert.True(t, tracker.CanConfigStart(groups[0].UpdateConfigs[1]), "UPDATE should start after INSERT phase completes")
+}
+
+func TestCanConfigStart_MultipleSharedTableCycles(t *testing.T) {
+	// Test the scenario where a table (mission) appears in multiple cycles
+	// and gets merged into a single group
+	groups := []*ExecutionGroup{
+		{
+			ID:     "cycle:public.astronaut_public.mission_public.spacecraft",
+			Tables: []string{"public.astronaut", "public.mission", "public.spacecraft"},
+			InsertConfigs: []*benthosbuilder.BenthosConfigResponse{
+				{
+					Name:        "public.astronaut.insert",
+					TableSchema: "public",
+					TableName:   "astronaut",
+					RunType:     "insert",
+					DependsOn:   []*runconfigs.DependsOn{},
+				},
+				{
+					Name:        "public.spacecraft.insert",
+					TableSchema: "public",
+					TableName:   "spacecraft",
+					RunType:     "insert",
+					DependsOn:   []*runconfigs.DependsOn{},
+				},
+				{
+					Name:        "public.mission.insert",
+					TableSchema: "public",
+					TableName:   "mission",
+					RunType:     "insert",
+					DependsOn: []*runconfigs.DependsOn{
+						{Table: "public.spacecraft", Columns: []string{"id"}},
+					},
+				},
+			},
+			UpdateConfigs: []*benthosbuilder.BenthosConfigResponse{
+				{
+					Name:        "public.astronaut.update.1",
+					TableSchema: "public",
+					TableName:   "astronaut",
+					RunType:     "update",
+					DependsOn: []*runconfigs.DependsOn{
+						{Table: "public.mission", Columns: []string{"id"}},
+					},
+				},
+				{
+					Name:        "public.spacecraft.update.1",
+					TableSchema: "public",
+					TableName:   "spacecraft",
+					RunType:     "update",
+					DependsOn: []*runconfigs.DependsOn{
+						{Table: "public.mission", Columns: []string{"id"}},
+					},
+				},
+				{
+					Name:        "public.mission.update.1",
+					TableSchema: "public",
+					TableName:   "mission",
+					RunType:     "update",
+					DependsOn: []*runconfigs.DependsOn{
+						{Table: "public.astronaut", Columns: []string{"id"}},
+					},
+				},
+			},
+			DependsOnGroups: []string{},
+			IsInCycle:       true,
+		},
+	}
+
+	tracker := NewGroupCompletionTracker(groups)
+
+	// Complete INSERT phase
+	err := tracker.MarkConfigComplete("public.astronaut.insert")
+	require.NoError(t, err)
+	err = tracker.MarkConfigComplete("public.spacecraft.insert")
+	require.NoError(t, err)
+	err = tracker.MarkConfigComplete("public.mission.insert")
+	require.NoError(t, err)
+
+	// Verify INSERT phase is complete
+	assert.True(t, tracker.IsInsertPhaseComplete("cycle:public.astronaut_public.mission_public.spacecraft"))
+
+	// All three UPDATE configs should be able to start now
+	assert.True(t, tracker.CanConfigStart(groups[0].UpdateConfigs[0]))
+	assert.True(t, tracker.CanConfigStart(groups[0].UpdateConfigs[1]))
+	assert.True(t, tracker.CanConfigStart(groups[0].UpdateConfigs[2]))
+
+	// Complete UPDATE phase
+	err = tracker.MarkConfigComplete("public.astronaut.update.1")
+	require.NoError(t, err)
+	err = tracker.MarkConfigComplete("public.spacecraft.update.1")
+	require.NoError(t, err)
+	err = tracker.MarkConfigComplete("public.mission.update.1")
+	require.NoError(t, err)
+
+	// Verify group is fully complete
+	assert.True(t, tracker.IsGroupComplete("cycle:public.astronaut_public.mission_public.spacecraft"))
+}

@@ -1,6 +1,8 @@
 package datasync_workflow
 
 import (
+	"sort"
+
 	benthosbuilder "github.com/Groupe-Hevea/neosync/internal/benthos/benthos-builder"
 	runconfigs "github.com/Groupe-Hevea/neosync/internal/runconfigs"
 )
@@ -30,9 +32,12 @@ func buildExecutionGroups(configs []*benthosbuilder.BenthosConfigResponse) []*Ex
 	graph := buildConfigDependencyGraph(configs)
 	cycles := runconfigs.FindCircularDependencies(graph)
 
+	// Merge cycles that share common tables (e.g., mission is in both astronaut↔mission and spacecraft↔mission)
+	mergedCycles := mergeCyclesWithSharedTables(cycles)
+
 	// Map tables to their cycle (if any)
 	tableToCycle := make(map[string]int) // table -> cycle index (-1 if not in cycle)
-	for i, cycle := range cycles {
+	for i, cycle := range mergedCycles {
 		for _, table := range cycle {
 			tableToCycle[table] = i
 		}
@@ -90,6 +95,22 @@ func buildExecutionGroups(configs []*benthosbuilder.BenthosConfigResponse) []*Ex
 	// Calculate inter-group dependencies
 	for _, group := range groups {
 		group.DependsOnGroups = calculateGroupDependencies(group, groups, tableToCycle)
+	}
+
+	// Sort groups by ID for deterministic ordering
+	sort.Slice(groups, func(i, j int) bool {
+		return groups[i].ID < groups[j].ID
+	})
+
+	// Sort configs within each group for deterministic ordering
+	for _, group := range groups {
+		sort.Slice(group.InsertConfigs, func(i, j int) bool {
+			return group.InsertConfigs[i].Name < group.InsertConfigs[j].Name
+		})
+		sort.Slice(group.UpdateConfigs, func(i, j int) bool {
+			return group.UpdateConfigs[i].Name < group.UpdateConfigs[j].Name
+		})
+		sort.Strings(group.DependsOnGroups)
 	}
 
 	return groups
@@ -174,6 +195,82 @@ func calculateGroupDependencies(
 	}
 
 	return deps
+}
+
+// mergeCyclesWithSharedTables merges cycles that share common tables.
+// For example, if mission appears in both [astronaut, mission] and [spacecraft, mission],
+// they will be merged into [astronaut, mission, spacecraft].
+func mergeCyclesWithSharedTables(cycles [][]string) [][]string {
+	if len(cycles) <= 1 {
+		return cycles
+	}
+
+	// Build a map: table -> list of cycle indices containing that table
+	tableToCycles := make(map[string][]int)
+	for cycleIdx, cycle := range cycles {
+		for _, table := range cycle {
+			tableToCycles[table] = append(tableToCycles[table], cycleIdx)
+		}
+	}
+
+	// Find cycles that need to be merged (using Union-Find approach)
+	parent := make([]int, len(cycles))
+	for i := range parent {
+		parent[i] = i // Initially, each cycle is its own parent
+	}
+
+	// Find root with path compression
+	var find func(int) int
+	find = func(x int) int {
+		if parent[x] != x {
+			parent[x] = find(parent[x])
+		}
+		return parent[x]
+	}
+
+	// Union two cycles
+	union := func(x, y int) {
+		rootX := find(x)
+		rootY := find(y)
+		if rootX != rootY {
+			parent[rootY] = rootX
+		}
+	}
+
+	// Merge cycles that share tables
+	for _, cycleIndices := range tableToCycles {
+		if len(cycleIndices) > 1 {
+			// This table appears in multiple cycles, merge them
+			for i := 1; i < len(cycleIndices); i++ {
+				union(cycleIndices[0], cycleIndices[i])
+			}
+		}
+	}
+
+	// Group cycles by their root
+	mergedGroups := make(map[int]map[string]bool)
+	for cycleIdx := range cycles {
+		root := find(cycleIdx)
+		if mergedGroups[root] == nil {
+			mergedGroups[root] = make(map[string]bool)
+		}
+		// Add all tables from this cycle to the merged group
+		for _, table := range cycles[cycleIdx] {
+			mergedGroups[root][table] = true
+		}
+	}
+
+	// Convert back to slice format
+	result := make([][]string, 0, len(mergedGroups))
+	for _, tableSet := range mergedGroups {
+		cycle := make([]string, 0, len(tableSet))
+		for table := range tableSet {
+			cycle = append(cycle, table)
+		}
+		result = append(result, cycle)
+	}
+
+	return result
 }
 
 // buildCycleGroupID creates a unique ID for a cycle group

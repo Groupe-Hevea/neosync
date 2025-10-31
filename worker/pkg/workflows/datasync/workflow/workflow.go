@@ -402,16 +402,10 @@ func executeWorkflow(wfctx workflow.Context, req *WorkflowRequest) (*WorkflowRes
 			logger.Info("all configs completed", "total", len(bcResp.BenthosConfigs), "completed", completedCount)
 			break
 		}
-		logger.Info("*** blocking select ***", "completedCount", completedCount, "total", len(bcResp.BenthosConfigs))
 		workselector.Select(ctx)
 		if activityErr != nil {
 			return nil, activityErr
 		}
-		logger.Info("*** post select ***", "completedCount", completedCount, "total", len(bcResp.BenthosConfigs))
-
-		// Log group tracker status for debugging
-		completionStatus := groupTracker.GetCompletionStatus()
-		logger.Debug("group tracker status", "status", completionStatus)
 
 		if ctx.Err() != nil {
 			if errors.Is(ctx.Err(), context.Canceled) {

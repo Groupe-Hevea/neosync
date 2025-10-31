@@ -29,8 +29,7 @@ func TestBuildExecutionGroups_NoCycles(t *testing.T) {
 		},
 	}
 
-	groups, err := buildExecutionGroups(configs)
-	require.NoError(t, err)
+	groups := buildExecutionGroups(configs)
 
 	// Should create 2 independent table groups
 	assert.Equal(t, 2, len(groups))
@@ -94,8 +93,7 @@ func TestBuildExecutionGroups_SimpleCycle(t *testing.T) {
 		},
 	}
 
-	groups, err := buildExecutionGroups(configs)
-	require.NoError(t, err)
+	groups := buildExecutionGroups(configs)
 
 	// Should create 1 cycle group
 	assert.Equal(t, 1, len(groups))
@@ -170,8 +168,7 @@ func TestBuildExecutionGroups_ThreeTableCycle(t *testing.T) {
 		},
 	}
 
-	groups, err := buildExecutionGroups(configs)
-	require.NoError(t, err)
+	groups := buildExecutionGroups(configs)
 
 	// Should create 1 cycle group
 	assert.Equal(t, 1, len(groups))
@@ -228,8 +225,7 @@ func TestBuildExecutionGroups_CycleWithExternalDependency(t *testing.T) {
 		},
 	}
 
-	groups, err := buildExecutionGroups(configs)
-	require.NoError(t, err)
+	groups := buildExecutionGroups(configs)
 
 	// Should create 2 groups: 1 for regions, 1 for cycle
 	assert.Equal(t, 2, len(groups))
@@ -248,6 +244,165 @@ func TestBuildExecutionGroups_CycleWithExternalDependency(t *testing.T) {
 	assert.Equal(t, 1, len(cycleGroup.DependsOnGroups))
 	assert.Contains(t, cycleGroup.DependsOnGroups, "table:public.regions")
 }
+
+func TestMergeCyclesWithSharedTables_NoSharedTables(t *testing.T) {
+	cycles := [][]string{
+		{"public.users", "public.posts"},
+		{"public.categories", "public.tags"},
+	}
+
+	result := mergeCyclesWithSharedTables(cycles)
+
+	// Should remain separate since no tables are shared
+	assert.Equal(t, 2, len(result))
+}
+
+func TestMergeCyclesWithSharedTables_SharedTable(t *testing.T) {
+	cycles := [][]string{
+		{"public.astronaut", "public.mission"},
+		{"public.spacecraft", "public.mission"},
+	}
+
+	result := mergeCyclesWithSharedTables(cycles)
+
+	// Should be merged into one cycle since they share "public.mission"
+	assert.Equal(t, 1, len(result))
+	assert.Equal(t, 3, len(result[0]))
+	assert.Contains(t, result[0], "public.astronaut")
+	assert.Contains(t, result[0], "public.mission")
+	assert.Contains(t, result[0], "public.spacecraft")
+}
+
+func TestMergeCyclesWithSharedTables_TransitiveMerge(t *testing.T) {
+	// A-B, B-C, C-D should all merge into one since they're transitively connected
+	cycles := [][]string{
+		{"A", "B"},
+		{"B", "C"},
+		{"C", "D"},
+	}
+
+	result := mergeCyclesWithSharedTables(cycles)
+
+	// Should be merged into one cycle
+	assert.Equal(t, 1, len(result))
+	assert.Equal(t, 4, len(result[0]))
+	assert.Contains(t, result[0], "A")
+	assert.Contains(t, result[0], "B")
+	assert.Contains(t, result[0], "C")
+	assert.Contains(t, result[0], "D")
+}
+
+func TestMergeCyclesWithSharedTables_PartialMerge(t *testing.T) {
+	// A-B and B-C should merge, but D-E should stay separate
+	cycles := [][]string{
+		{"A", "B"},
+		{"B", "C"},
+		{"D", "E"},
+	}
+
+	result := mergeCyclesWithSharedTables(cycles)
+
+	// Should result in 2 cycles: one merged (A-B-C) and one separate (D-E)
+	assert.Equal(t, 2, len(result))
+
+	// Find the merged cycle
+	var mergedCycle []string
+	var separateCycle []string
+	for _, cycle := range result {
+		if len(cycle) == 3 {
+			mergedCycle = cycle
+		} else if len(cycle) == 2 {
+			separateCycle = cycle
+		}
+	}
+
+	require.NotNil(t, mergedCycle)
+	require.NotNil(t, separateCycle)
+
+	assert.Contains(t, mergedCycle, "A")
+	assert.Contains(t, mergedCycle, "B")
+	assert.Contains(t, mergedCycle, "C")
+
+	assert.Contains(t, separateCycle, "D")
+	assert.Contains(t, separateCycle, "E")
+}
+
+func TestMergeCyclesWithSharedTables_EmptyInput(t *testing.T) {
+	result := mergeCyclesWithSharedTables([][]string{})
+	assert.Equal(t, 0, len(result))
+}
+
+func TestMergeCyclesWithSharedTables_SingleCycle(t *testing.T) {
+	cycles := [][]string{
+		{"A", "B", "C"},
+	}
+
+	result := mergeCyclesWithSharedTables(cycles)
+
+	assert.Equal(t, 1, len(result))
+	assert.Equal(t, 3, len(result[0]))
+}
+
+func TestMergeCyclesWithSharedTables_FourTableTransitiveMerge(t *testing.T) {
+	// A-B, B-C, C-D should all merge into one since they're transitively connected
+	cycles := [][]string{
+		{"A", "B"},
+		{"B", "C"},
+		{"C", "D"},
+		{"D", "E"},
+	}
+
+	result := mergeCyclesWithSharedTables(cycles)
+
+	// Should be merged into one cycle
+	assert.Equal(t, 1, len(result))
+	assert.Equal(t, 5, len(result[0]))
+	assert.Contains(t, result[0], "A")
+	assert.Contains(t, result[0], "B")
+	assert.Contains(t, result[0], "C")
+	assert.Contains(t, result[0], "D")
+	assert.Contains(t, result[0], "E")
+}
+
+func TestMergeCyclesWithSharedTables_MultipleSeparateMerges(t *testing.T) {
+	// A-B-C should merge, D-E-F should merge, G-H should merge separately
+	cycles := [][]string{
+		{"A", "B"},
+		{"B", "C"},
+		{"D", "E"},
+		{"E", "F"},
+		{"G", "H"},
+	}
+
+	result := mergeCyclesWithSharedTables(cycles)
+
+	// Should result in 3 cycles
+	assert.Equal(t, 3, len(result))
+
+	// Find each merged cycle
+	var foundABC, foundDEF, foundGH bool
+	for _, cycle := range result {
+		if len(cycle) == 3 {
+			if contains(cycle, "A") && contains(cycle, "B") && contains(cycle, "C") {
+				foundABC = true
+			} else if contains(cycle, "D") && contains(cycle, "E") && contains(cycle, "F") {
+				foundDEF = true
+			}
+		} else if len(cycle) == 2 {
+			if contains(cycle, "G") && contains(cycle, "H") {
+				foundGH = true
+			}
+		}
+	}
+
+	assert.True(t, foundABC, "Should find merged A-B-C cycle")
+	assert.True(t, foundDEF, "Should find merged D-E-F cycle")
+	assert.True(t, foundGH, "Should find G-H cycle")
+}
+
+// TODO: Add test for complex multi-cycle scenario
+// Currently, FindCircularDependencies may not detect all SCCs correctly
+// when cycles are formed via INSERT and UPDATE configs across multiple tables
 
 func TestBuildTableName(t *testing.T) {
 	tests := []struct {
@@ -276,4 +431,14 @@ func TestBuildTableName(t *testing.T) {
 			assert.Equal(t, tt.expected, result)
 		})
 	}
+}
+
+// Helper function for testing
+func contains(slice []string, item string) bool {
+	for _, s := range slice {
+		if s == item {
+			return true
+		}
+	}
+	return false
 }
