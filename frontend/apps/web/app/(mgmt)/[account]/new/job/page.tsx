@@ -198,8 +198,8 @@ function useGetJobData(
       experimental: false,
       image:
         resolvedTheme === 'light'
-          ? 'https://assets.Groupe-Hevea.com/neosync/app/jobsynclight.svg'
-          : 'https://assets.Groupe-Hevea.com/neosync/app/prodsync-dark.svg',
+          ? '/images/jobsynclight.svg'
+          : '/images/prodsync-dark.svg',
     },
     {
       name: 'Data Generation',
@@ -211,8 +211,8 @@ function useGetJobData(
       experimental: false,
       image:
         resolvedTheme === 'light'
-          ? 'https://assets.Groupe-Hevea.com/neosync/app/gen-light.svg'
-          : 'https://assets.Groupe-Hevea.com/neosync/app/datagen-dark.svg',
+          ? '/images/gen-light.svg'
+          : '/images/datagen-dark.svg',
     },
     {
       name: 'AI Data Generation',
@@ -223,8 +223,8 @@ function useGetJobData(
       experimental: true,
       image:
         resolvedTheme === 'light'
-          ? 'https://assets.Groupe-Hevea.com/neosync/app/aigen.svg'
-          : 'https://assets.Groupe-Hevea.com/neosync/app/aigen-dark.svg',
+          ? '/images/aigen.svg'
+          : '/images/aigen-dark.svg',
     },
   ];
 
@@ -239,8 +239,8 @@ function useGetJobData(
       experimental: true,
       image:
         resolvedTheme === 'light'
-          ? 'https://assets.Groupe-Hevea.com/neosync/app/pii-detect-light.svg'
-          : 'https://assets.Groupe-Hevea.com/neosync/app/pii-detect-dark.svg',
+          ? '/images/pii-detect-light.svg'
+          : '/images/pii-detect-dark.svg',
     });
   }
 
