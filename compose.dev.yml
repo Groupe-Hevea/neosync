@@ -69,6 +69,7 @@ services:
       dockerfile: ./backend/dev/build/Dockerfile.dev
     ports:
       - 8080:8080
+      - 2345:2345 # DLV API
     environment:
       - HOST=0.0.0.0
       - PORT=8080
@@ -117,6 +118,8 @@ services:
     build:
       context: ./
       dockerfile: ./worker/dev/build/Dockerfile.dev
+    ports:
+      - 2346:2345 # DLV Worker
     environment:
       - NUCLEUS_ENV=dev
       - TEMPORAL_URL=temporal:7233
@@ -159,8 +162,22 @@ services:
     volumes:
       - neosync_redis_cache:/data
 
+  mysql:
+    container_name: neosync-mysql
+    image: mysql:8
+    ports:
+      - 33306:3306
+    environment:
+      MYSQL_ROOT_PASSWORD: example
+      MYSQL_DATABASE: octopus
+      MYSQL_USER: neosync
+      MYSQL_PASSWORD: neosyncpass
+    networks:
+      - neosync-network
+
 volumes:
   neosync_redis_cache:
+  neosync_mysqlZ:
   neosync_pg_data:
   neosync_api_tmp:
   neosync_backend_build_cache:

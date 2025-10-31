@@ -1,4 +1,10 @@
 {
   "name": "neosync",
-  "image": "ghcr.io/Groupe-Hevea/neosync/devcontainer:latest"
+  "image": "ghcr.io/groupe-hevea/neosync/devcontainer:latest",
+  "mounts": [
+    "source=${localEnv:HOME}/.ssh/,target=${localEnv:HOME}/.ssh,type=bind,consistency=cached",
+    "source=${localEnv:HOME}/.ssh/,target=/home/vscode/.ssh,type=bind,consistency=cached",
+    "source=/etc/localtime,target=/etc/localtime,type=bind,readonly",
+    "source=/etc/timezone,target=/etc/timezone,type=bind,readonly"
+  ]
 }

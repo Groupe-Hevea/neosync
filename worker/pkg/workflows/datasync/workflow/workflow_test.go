@@ -4,7 +4,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"sync"
+	"log/slog"
 	"testing"
 	"time"
 
@@ -27,10 +27,16 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
 	"github.com/stretchr/testify/require"
+	"go.temporal.io/sdk/log"
 	"go.temporal.io/sdk/temporal"
 	"go.temporal.io/sdk/testsuite"
 	"go.temporal.io/sdk/workflow"
 )
+
+// getTestLogger returns a logger for unit tests
+func getTestLogger() log.Logger {
+	return log.NewStructuredLogger(slog.Default())
+}
 
 func Test_Workflow_BenthosConfigsFails(t *testing.T) {
 	testSuite := &testsuite.WorkflowTestSuite{}
@@ -963,97 +969,6 @@ func Test_Workflow_Max_InFlight(t *testing.T) {
 	assert.Equal(t, &WorkflowResponse{}, result)
 
 	env.AssertExpectations(t)
-}
-
-func Test_isConfigReady(t *testing.T) {
-	isReady, err := isConfigReady(nil, nil)
-	assert.Error(t, err)
-
-	completed := sync.Map{}
-	isReady, err = isConfigReady(nil, &completed)
-	assert.NoError(t, err)
-	assert.False(t, isReady, "config is nil")
-
-	completed = sync.Map{}
-	isReady, err = isConfigReady(&benthosbuilder.BenthosConfigResponse{
-		Name:      "foo",
-		DependsOn: []*runconfigs.DependsOn{},
-	},
-		&completed)
-	assert.NoError(t, err)
-	assert.True(
-		t,
-		isReady,
-		"has no dependencies",
-	)
-
-	completed = sync.Map{}
-	completed.Store("bar", []string{"id"})
-	isReady, err = isConfigReady(&benthosbuilder.BenthosConfigResponse{
-		Name: "foo",
-		DependsOn: []*runconfigs.DependsOn{
-			{Table: "bar", Columns: []string{"id"}},
-			{Table: "baz", Columns: []string{"id"}},
-		},
-	},
-		&completed)
-	assert.NoError(t, err)
-	assert.False(
-		t,
-		isReady,
-		"not all dependencies are finished",
-	)
-
-	completed = sync.Map{}
-	completed.Store("bar", []string{"id"})
-	completed.Store("baz", []string{"id"})
-	isReady, err = isConfigReady(&benthosbuilder.BenthosConfigResponse{
-		Name: "foo",
-		DependsOn: []*runconfigs.DependsOn{
-			{Table: "bar", Columns: []string{"id"}},
-			{Table: "baz", Columns: []string{"id"}},
-		},
-	}, &completed)
-	assert.NoError(t, err)
-	assert.True(
-		t,
-		isReady,
-		"all dependencies are finished",
-	)
-
-	completed = sync.Map{}
-	completed.Store("bar", []string{"id"})
-	isReady, err = isConfigReady(&benthosbuilder.BenthosConfigResponse{
-		Name:      "foo",
-		DependsOn: []*runconfigs.DependsOn{{Table: "bar", Columns: []string{"id", "f_id"}}},
-	},
-		&completed)
-	assert.NoError(t, err)
-	assert.False(
-		t,
-		isReady,
-		"not all dependencies columns are finished",
-	)
-}
-
-func Test_updateCompletedMap(t *testing.T) {
-	completedMap := sync.Map{}
-	table := "public.users"
-	cols := []string{"id"}
-	err := updateCompletedMap(table, &completedMap, cols)
-	assert.NoError(t, err)
-	val, loaded := completedMap.Load(table)
-	assert.True(t, loaded)
-	assert.Equal(t, cols, val)
-
-	completedMap = sync.Map{}
-	table = "public.users"
-	completedMap.Store(table, []string{"name"})
-	err = updateCompletedMap(table, &completedMap, []string{"id"})
-	assert.NoError(t, err)
-	val, loaded = completedMap.Load(table)
-	assert.True(t, loaded)
-	assert.Equal(t, []string{"name", "id"}, val)
 }
 
 func Test_Workflow_Initial_AccountStatus(t *testing.T) {

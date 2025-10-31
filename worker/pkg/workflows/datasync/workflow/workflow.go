@@ -10,7 +10,6 @@ import (
 	mgmtv1alpha1 "github.com/Groupe-Hevea/neosync/backend/gen/go/protos/mgmt/v1alpha1"
 	benthosbuilder "github.com/Groupe-Hevea/neosync/internal/benthos/benthos-builder"
 	"github.com/Groupe-Hevea/neosync/internal/ee/license"
-	"github.com/Groupe-Hevea/neosync/internal/runconfigs"
 	neosync_benthos "github.com/Groupe-Hevea/neosync/worker/pkg/benthos"
 	accountstatus_activity "github.com/Groupe-Hevea/neosync/worker/pkg/workflows/datasync/activities/account-status"
 	genbenthosconfigs_activity "github.com/Groupe-Hevea/neosync/worker/pkg/workflows/datasync/activities/gen-benthos-configs"
@@ -283,18 +282,44 @@ func executeWorkflow(wfctx workflow.Context, req *WorkflowRequest) (*WorkflowRes
 		return nil, fmt.Errorf("root config not found. unable to process configs")
 	}
 
+	// Log the config split for debugging
+	rootNames := make([]string, len(splitConfigs.Root))
+	for i, bc := range splitConfigs.Root {
+		rootNames[i] = bc.Name
+	}
+	dependentNames := make([]string, len(splitConfigs.Dependents))
+	for i, bc := range splitConfigs.Dependents {
+		dependentNames[i] = bc.Name
+	}
+	logger.Info("config split completed",
+		"totalConfigs", len(bcResp.BenthosConfigs),
+		"rootCount", len(splitConfigs.Root),
+		"dependentCount", len(splitConfigs.Dependents),
+		"rootConfigs", rootNames,
+		"dependentConfigs", dependentNames,
+	)
+
 	maxConcurrency := getTableSyncMaxConcurrency()
 	inFlight := 0
 	completedCount := 0
 	started := sync.Map{}
-	completed := sync.Map{}
+
+	// Build execution groups to handle circular dependencies
+	executionGroups := buildExecutionGroups(bcResp.BenthosConfigs)
+	groupTracker := NewGroupCompletionTracker(executionGroups)
+
+	logger.Info(
+		"execution groups created",
+		"totalGroups", len(executionGroups),
+		"totalConfigs", len(bcResp.BenthosConfigs),
+	)
 
 	executeSyncActivity := func(bc *benthosbuilder.BenthosConfigResponse, logger log.Logger) {
 		future := invokeSync(
 			bc,
 			ctx,
 			&started,
-			&completed,
+			groupTracker,
 			logger,
 			&bcResp.AccountId,
 			actOptResp.SyncActivityOptions,
@@ -365,18 +390,22 @@ func executeWorkflow(wfctx workflow.Context, req *WorkflowRequest) (*WorkflowRes
 		}
 	}
 
-	logger.Info("all root tables spawned, moving on to children")
-	for i := 0; i < len(bcResp.BenthosConfigs); i++ {
+	logger.Info(
+		"all root tables spawned, moving on to children",
+		"totalConfigs", len(bcResp.BenthosConfigs),
+		"completedCount", completedCount,
+		"inFlight", inFlight,
+	)
+	for {
 		// Ensures that the select statement below does not block indefinitely
 		if len(bcResp.BenthosConfigs) == completedCount {
+			logger.Info("all configs completed", "total", len(bcResp.BenthosConfigs), "completed", completedCount)
 			break
 		}
-		logger.Debug("*** blocking select ***", "i", i)
 		workselector.Select(ctx)
 		if activityErr != nil {
 			return nil, activityErr
 		}
-		logger.Debug("*** post select ***", "i", i)
 
 		if ctx.Err() != nil {
 			if errors.Is(ctx.Err(), context.Canceled) {
@@ -403,14 +432,30 @@ func executeWorkflow(wfctx workflow.Context, req *WorkflowRequest) (*WorkflowRes
 			if _, configStarted := started.Load(bc.Name); configStarted {
 				continue
 			}
-			isReady, err := isConfigReady(bc, &completed)
+			isReady, err := isConfigReady(bc, groupTracker)
 			if err != nil {
 				return nil, err
 			}
 
 			if !isReady {
+				// Determine if it's a self-reference
+				currentTable := neosync_benthos.BuildBenthosTable(bc.TableSchema, bc.TableName)
+				depType := "external"
+				for _, dep := range bc.DependsOn {
+					if dep.Table == currentTable {
+						depType = "self-reference"
+						break
+					}
+				}
+				logger.Debug(
+					"config not ready, waiting for dependencies",
+					"config", bc.Name,
+					"depends_on", bc.DependsOn,
+					"dependency_type", depType,
+				)
 				continue
 			}
+			logger.Info("config is ready, starting execution", "config", bc.Name)
 
 			// Ensures concurrency limits are respected.
 			if inFlight >= maxConcurrency {
@@ -653,7 +698,8 @@ func getSyncMetadata(config *benthosbuilder.BenthosConfigResponse) *sync_activit
 func invokeSync(
 	config *benthosbuilder.BenthosConfigResponse,
 	ctx workflow.Context,
-	started, completed *sync.Map,
+	started *sync.Map,
+	groupTracker *GroupCompletionTracker,
 	logger log.Logger,
 	accountId *string,
 	syncActivityOptions *workflow.ActivityOptions,
@@ -692,68 +738,35 @@ func invokeSync(
 		}).
 			Get(ctx, &wfResult)
 		if err == nil {
-			tn := neosync_benthos.BuildBenthosTable(config.TableSchema, config.TableName)
-			err = updateCompletedMap(tn, completed, config.Columns)
-			if err != nil {
-				settable.Set(wfResult, err)
+			markErr := groupTracker.MarkConfigComplete(config.Name)
+			if markErr != nil {
+				logger.Error("failed to mark config complete", "config", config.Name, "error", markErr)
+				settable.Set(wfResult, markErr)
+				return
 			}
+			logger.Info("config sync completed", "config", config.Name)
 		}
 		settable.Set(wfResult, err)
 	})
 	return future
 }
 
-func updateCompletedMap(tableName string, completed *sync.Map, columns []string) error {
-	val, loaded := completed.Load(tableName)
-	if loaded {
-		currCols, ok := val.([]string)
-		if !ok {
-			return fmt.Errorf(
-				"unable to retrieve completed columns from completed map. Expected []string, received: %T",
-				val,
-			)
-		}
-		currCols = append(currCols, columns...)
-		completed.Store(tableName, currCols)
-	} else {
-		completed.Store(tableName, columns)
-	}
-	return nil
-}
-
-func toStringSliceMap(m *sync.Map) (map[string][]string, error) {
-	result := make(map[string][]string)
-	var typeErr error
-
-	m.Range(func(k, v any) bool {
-		key, okKey := k.(string)
-		val, okVal := v.([]string)
-		if !okKey || !okVal {
-			typeErr = fmt.Errorf("failed type assertion for key=%T and value=%T", k, v)
-			return false
-		}
-		result[key] = val
-		return true
-	})
-
-	return result, typeErr
-}
-
 func isConfigReady(
 	config *benthosbuilder.BenthosConfigResponse,
-	completed *sync.Map,
+	groupTracker *GroupCompletionTracker,
 ) (bool, error) {
-	if completed == nil {
-		return false, fmt.Errorf("completed map is nil: cannot determine if config is ready")
+	if groupTracker == nil {
+		return false, fmt.Errorf("group tracker is nil: cannot determine if config is ready")
 	}
 	if config == nil {
 		return false, nil
 	}
-	completedMap, err := toStringSliceMap(completed)
-	if err != nil {
-		return false, err
-	}
-	return runconfigs.AreConfigDependenciesSatisfied(config.DependsOn, completedMap), nil
+
+	// Use the group tracker's built-in logic to check if config can start
+	// This handles:
+	// - Group dependencies (waiting for dependent groups to complete)
+	// - Cycle-aware execution (INSERT phase before UPDATE phase in cycles)
+	return groupTracker.CanConfigStart(config), nil
 }
 
 type SplitConfigs struct {

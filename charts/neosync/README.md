@@ -53,7 +53,7 @@ A Helm chart for Neosync that contains the api, app, and worker
 | api.fullnameOverride | string | `nil` | Fully overrides the chart name |
 | api.host | string | `"0.0.0.0"` | Sets the host that the backend will listen on. 0.0.0.0 is common for Kubernetes workloads. |
 | api.image.pullPolicy | string | `nil` | Overrides the default K8s pull policy |
-| api.image.repository | string | `"ghcr.io/Groupe-Hevea/neosync/api"` | The default image repository |
+| api.image.repository | string | `"ghcr.io/groupe-hevea/neosync/api"` | The default image repository |
 | api.image.tag | string | `nil` | Overrides the image tag whose default is {{ printf "v%s" .Chart.AppVersion }} |
 | api.imagePullSecrets | list | `[]` | Define a list of image pull secrets that will be used by the deployment |
 | api.ingress.enabled | bool | `false` | Enable this if using K8s ingress to expose the backend to the internet |

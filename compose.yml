@@ -53,7 +53,7 @@ services:
 
   api:
     container_name: neosync-api
-    image: ghcr.io/Groupe-Hevea/neosync/api:latest
+    image: ghcr.io/groupe-hevea/neosync/api:latest
     ports:
       - 8080:8080
     command: serve connect
