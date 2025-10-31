@@ -805,11 +805,3 @@ func getTableSyncMaxConcurrency() int {
 	}
 	return maxConcurrency
 }
-
-// buildTableName constructs a fully qualified table name from schema and table.
-func buildTableName(schema, table string) string {
-	if schema == "" {
-		return table
-	}
-	return fmt.Sprintf("%s.%s", schema, table)
-}
