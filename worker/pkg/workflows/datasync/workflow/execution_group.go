@@ -15,17 +15,17 @@ import (
 // For independent tables:
 //   - The group contains only INSERT configs (single phase)
 type ExecutionGroup struct {
-	ID             string                                      // Unique identifier (e.g., "cycle:table1_table2" or "table:table1")
-	Tables         []string                                    // Tables included in this group
-	InsertConfigs  []*benthosbuilder.BenthosConfigResponse     // INSERT configs to execute in phase 1
-	UpdateConfigs  []*benthosbuilder.BenthosConfigResponse     // UPDATE configs to execute in phase 2
-	DependsOnGroups []string                                   // IDs of groups that must complete before this one
-	IsInCycle      bool                                        // Whether this group represents a circular dependency cycle
+	ID              string                                  // Unique identifier (e.g., "cycle:table1_table2" or "table:table1")
+	Tables          []string                                // Tables included in this group
+	InsertConfigs   []*benthosbuilder.BenthosConfigResponse // INSERT configs to execute in phase 1
+	UpdateConfigs   []*benthosbuilder.BenthosConfigResponse // UPDATE configs to execute in phase 2
+	DependsOnGroups []string                                // IDs of groups that must complete before this one
+	IsInCycle       bool                                    // Whether this group represents a circular dependency cycle
 }
 
 // buildExecutionGroups creates execution groups from Benthos configs.
 // It detects circular dependencies and groups configs accordingly.
-func buildExecutionGroups(configs []*benthosbuilder.BenthosConfigResponse) ([]*ExecutionGroup, error) {
+func buildExecutionGroups(configs []*benthosbuilder.BenthosConfigResponse) []*ExecutionGroup {
 	// Build dependency graph to detect cycles
 	graph := buildConfigDependencyGraph(configs)
 	cycles := runconfigs.FindCircularDependencies(graph)
@@ -39,7 +39,7 @@ func buildExecutionGroups(configs []*benthosbuilder.BenthosConfigResponse) ([]*E
 	}
 
 	// Group configs by cycle or individual table
-	cycleGroups := make(map[int]*ExecutionGroup)  // cycle index -> group
+	cycleGroups := make(map[int]*ExecutionGroup)    // cycle index -> group
 	tableGroups := make(map[string]*ExecutionGroup) // table -> group (for non-cycle tables)
 
 	for _, cfg := range configs {
@@ -89,10 +89,10 @@ func buildExecutionGroups(configs []*benthosbuilder.BenthosConfigResponse) ([]*E
 
 	// Calculate inter-group dependencies
 	for _, group := range groups {
-		group.DependsOnGroups = calculateGroupDependencies(group, groups, tableToCycle, cycles)
+		group.DependsOnGroups = calculateGroupDependencies(group, groups, tableToCycle)
 	}
 
-	return groups, nil
+	return groups
 }
 
 // buildConfigDependencyGraph builds a table-level dependency graph from configs
@@ -128,12 +128,13 @@ func calculateGroupDependencies(
 	group *ExecutionGroup,
 	allGroups []*ExecutionGroup,
 	tableToCycle map[string]int,
-	cycles [][]string,
 ) []string {
 	dependentGroupIDs := make(map[string]bool)
 
 	// Check all configs in this group
-	allConfigs := append(group.InsertConfigs, group.UpdateConfigs...)
+	allConfigs := make([]*benthosbuilder.BenthosConfigResponse, 0, len(group.InsertConfigs)+len(group.UpdateConfigs))
+	allConfigs = append(allConfigs, group.InsertConfigs...)
+	allConfigs = append(allConfigs, group.UpdateConfigs...)
 	for _, cfg := range allConfigs {
 		currentTable := buildTableName(cfg.TableSchema, cfg.TableName)
 

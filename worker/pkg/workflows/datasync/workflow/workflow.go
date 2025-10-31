@@ -305,10 +305,7 @@ func executeWorkflow(wfctx workflow.Context, req *WorkflowRequest) (*WorkflowRes
 	started := sync.Map{}
 
 	// Build execution groups to handle circular dependencies
-	executionGroups, err := buildExecutionGroups(bcResp.BenthosConfigs)
-	if err != nil {
-		return nil, fmt.Errorf("failed to build execution groups: %w", err)
-	}
+	executionGroups := buildExecutionGroups(bcResp.BenthosConfigs)
 	groupTracker := NewGroupCompletionTracker(executionGroups)
 
 	logger.Info(
@@ -393,7 +390,12 @@ func executeWorkflow(wfctx workflow.Context, req *WorkflowRequest) (*WorkflowRes
 		}
 	}
 
-	logger.Info("all root tables spawned, moving on to children", "totalConfigs", len(bcResp.BenthosConfigs), "completedCount", completedCount, "inFlight", inFlight)
+	logger.Info(
+		"all root tables spawned, moving on to children",
+		"totalConfigs", len(bcResp.BenthosConfigs),
+		"completedCount", completedCount,
+		"inFlight", inFlight,
+	)
 	for {
 		// Ensures that the select statement below does not block indefinitely
 		if len(bcResp.BenthosConfigs) == completedCount {
@@ -436,7 +438,7 @@ func executeWorkflow(wfctx workflow.Context, req *WorkflowRequest) (*WorkflowRes
 			if _, configStarted := started.Load(bc.Name); configStarted {
 				continue
 			}
-			isReady, err := isConfigReady(bc, groupTracker, logger)
+			isReady, err := isConfigReady(bc, groupTracker)
 			if err != nil {
 				return nil, err
 			}
@@ -758,7 +760,6 @@ func invokeSync(
 func isConfigReady(
 	config *benthosbuilder.BenthosConfigResponse,
 	groupTracker *GroupCompletionTracker,
-	logger log.Logger,
 ) (bool, error) {
 	if groupTracker == nil {
 		return false, fmt.Errorf("group tracker is nil: cannot determine if config is ready")

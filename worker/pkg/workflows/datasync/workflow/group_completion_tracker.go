@@ -11,19 +11,19 @@ import (
 // GroupCompletionTracker tracks the completion of execution groups.
 // Each group must complete all its configs before being marked complete.
 type GroupCompletionTracker struct {
-	mu                  sync.RWMutex
-	groups              map[string]*GroupState           // groupID -> state
-	configToGroup       map[string]string                // configName -> groupID
-	completedConfigs    map[string]bool                  // configName -> completed
+	mu               sync.RWMutex
+	groups           map[string]*GroupState // groupID -> state
+	configToGroup    map[string]string      // configName -> groupID
+	completedConfigs map[string]bool        // configName -> completed
 }
 
 // GroupState tracks the completion state of a single execution group
 type GroupState struct {
-	Group              *ExecutionGroup
-	InsertPhaseComplete bool   // All INSERT configs completed
-	UpdatePhaseComplete bool   // All UPDATE configs completed
-	TotalConfigs        int    // Total configs in this group
-	CompletedCount      int    // Number of completed configs
+	Group               *ExecutionGroup
+	InsertPhaseComplete bool // All INSERT configs completed
+	UpdatePhaseComplete bool // All UPDATE configs completed
+	TotalConfigs        int  // Total configs in this group
+	CompletedCount      int  // Number of completed configs
 }
 
 // NewGroupCompletionTracker creates a new tracker for execution groups
@@ -37,7 +37,7 @@ func NewGroupCompletionTracker(groups []*ExecutionGroup) *GroupCompletionTracker
 	for _, group := range groups {
 		totalConfigs := len(group.InsertConfigs) + len(group.UpdateConfigs)
 		tracker.groups[group.ID] = &GroupState{
-			Group:              group,
+			Group:               group,
 			InsertPhaseComplete: len(group.InsertConfigs) == 0, // Empty means complete
 			UpdatePhaseComplete: len(group.UpdateConfigs) == 0, // Empty means complete
 			TotalConfigs:        totalConfigs,
