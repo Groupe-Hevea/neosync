@@ -297,11 +297,16 @@ func (d *MysqlDriver) buildMysqlInsertOnConflictDoUpdateQuery(
 ) (sql string, args []any, err error) {
 	builder := getGoquDialect(sqlmanager_shared.MysqlDriver)
 	sqltable := goqu.S(d.schema).Table(d.table)
-	insert := builder.Insert(sqltable).As("new").Prepared(true).Rows(records)
+	insert := builder.Insert(sqltable).Prepared(true).Rows(records)
 
 	updateRecord := goqu.Record{}
 	for _, col := range updateColumns {
-		updateRecord[col] = exp.NewIdentifierExpression("", "new", col)
+		// VALUES(col) instead of the MySQL 8.0.19+ row alias syntax (INSERT ... AS new)
+		// because MariaDB only supports the former
+		updateRecord[col] = exp.NewSQLFunctionExpression(
+			"VALUES",
+			exp.NewIdentifierExpression("", "", col),
+		)
 	}
 	targetColumn := "" // mysql does not support target column
 	insert = insert.OnConflict(goqu.DoUpdate(targetColumn, updateRecord))

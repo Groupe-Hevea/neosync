@@ -197,14 +197,21 @@ CREATE TABLE `order` (
 -- Creates an index that uses reserved MySQL words
 CREATE INDEX `order_index_on_reserved_words` ON `order` (`select`, `from`, `where`);
 
--- Create a table with some columns
-CREATE TABLE test_mixed_index (
-    id INT PRIMARY KEY,
-    first_name VARCHAR(50),
-    last_name VARCHAR(50),
-    birth_date DATE
+-- Columns with defaults that exercise flavor-specific COLUMN_DEFAULT semantics
+-- (MariaDB reports quoted string literals and no DEFAULT_GENERATED marker)
+CREATE TABLE defaults_test (
+    id INT PRIMARY KEY AUTO_INCREMENT,
+    s1 VARCHAR(20) NOT NULL DEFAULT 'ABC',
+    s2 VARCHAR(20) DEFAULT NULL,
+    n1 INT NOT NULL DEFAULT 42,
+    ts TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    u CHAR(36) NOT NULL DEFAULT (UUID())
 );
 
--- Create a composite index that uses both regular columns and expressions
-CREATE INDEX idx_mixed ON test_mixed_index
-    (first_name, (UPPER(last_name)), birth_date, (YEAR(birth_date)));
+-- Indexed generated column (the MariaDB equivalent of an expression index)
+CREATE TABLE test_virtual_index (
+    id INT PRIMARY KEY,
+    email VARCHAR(100),
+    email_lower VARCHAR(100) GENERATED ALWAYS AS (LOWER(email)) VIRTUAL
+);
+CREATE INDEX idx_email_lower ON test_virtual_index (email_lower);

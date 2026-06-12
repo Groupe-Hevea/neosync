@@ -16,6 +16,16 @@ import (
 	"golang.org/x/sync/errgroup"
 )
 
+type testFlavor struct {
+	name string
+	// container options (e.g. image override); empty uses the default mysql image
+	containerOpts []tcmysql.Option
+	// flavor-specific setup files executed on the source after setup.sql
+	extraSetupFiles []string
+	// flavor-specific tables included in the GetTableInitStatements round trip
+	extraInitTables []*sqlmanager_shared.SchemaTable
+}
+
 func Test_MysqlManager(t *testing.T) {
 	ok := testutil.ShouldRunIntegrationTest()
 	if !ok {
@@ -24,20 +34,43 @@ func Test_MysqlManager(t *testing.T) {
 	t.Log("Running integration tests for Mysql Manager")
 	t.Parallel()
 
+	flavors := []testFlavor{
+		{
+			name:            "mysql",
+			extraSetupFiles: []string{"setup-mysql.sql"},
+			extraInitTables: []*sqlmanager_shared.SchemaTable{
+				{Schema: "sqlmanagermysql4", Table: "test_mixed_index"},
+			},
+		},
+		{
+			name:          "mariadb",
+			containerOpts: []tcmysql.Option{tcmysql.WithImage("mariadb:11.4")},
+		},
+	}
+
+	for _, flavor := range flavors {
+		t.Run(flavor.name, func(t *testing.T) {
+			t.Parallel()
+			runMysqlManagerTests(t, flavor)
+		})
+	}
+}
+
+func runMysqlManagerTests(t *testing.T, flavor testFlavor) {
 	ctx := context.Background()
 	containers, err := tcmysql.NewMysqlTestSyncContainer(
 		ctx,
-		[]tcmysql.Option{},
-		[]tcmysql.Option{},
+		flavor.containerOpts,
+		flavor.containerOpts,
 	)
 	if err != nil {
 		t.Fatal(err)
 	}
 	source := containers.Source
 	target := containers.Target
-	t.Log("Successfully created source and target mysql test containers")
+	t.Log("Successfully created source and target test containers")
 
-	err = setup(ctx, containers)
+	err = setup(ctx, containers, flavor.extraSetupFiles)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -315,15 +348,16 @@ func Test_MysqlManager(t *testing.T) {
 		t.Parallel()
 		schema := "sqlmanagermysql4"
 
-		actual, err := manager.GetTableInitStatements(
-			context.Background(),
-			[]*sqlmanager_shared.SchemaTable{
-				{Schema: schema, Table: "parent1"},
-				{Schema: schema, Table: "child1"},
-				{Schema: schema, Table: "order"},
-				{Schema: schema, Table: "test_mixed_index"},
-			},
-		)
+		tables := []*sqlmanager_shared.SchemaTable{
+			{Schema: schema, Table: "parent1"},
+			{Schema: schema, Table: "child1"},
+			{Schema: schema, Table: "order"},
+			{Schema: schema, Table: "defaults_test"},
+			{Schema: schema, Table: "test_virtual_index"},
+		}
+		tables = append(tables, flavor.extraInitTables...)
+
+		actual, err := manager.GetTableInitStatements(context.Background(), tables)
 
 		require.NoError(t, err)
 		require.NotEmpty(t, actual)
@@ -345,6 +379,27 @@ func Test_MysqlManager(t *testing.T) {
 				require.NoError(t, err)
 			}
 		}
+
+		// functional check: the recreated defaults must behave like the source ones.
+		// catches silently corrupted defaults (e.g. DEFAULT 'uuid()' instead of DEFAULT (uuid()))
+		_, err = target.DB.ExecContext(
+			context.Background(),
+			fmt.Sprintf("INSERT INTO %s.defaults_test () VALUES ();", schema),
+		)
+		require.NoError(t, err)
+		row := target.DB.QueryRowContext(
+			context.Background(),
+			fmt.Sprintf("SELECT s1, s2, n1, u FROM %s.defaults_test LIMIT 1;", schema),
+		)
+		var s1 string
+		var s2 sql.NullString
+		var n1 int
+		var u string
+		require.NoError(t, row.Scan(&s1, &s2, &n1, &u))
+		require.Equal(t, "ABC", s1, "string default should round trip")
+		require.False(t, s2.Valid, "DEFAULT NULL should round trip as NULL")
+		require.Equal(t, 42, n1, "numeric default should round trip")
+		require.Len(t, u, 36, "uuid() default should produce a uuid, not a literal string")
 	})
 
 	t.Run("Exec", func(t *testing.T) {
@@ -499,12 +554,17 @@ func Test_MysqlManager(t *testing.T) {
 	})
 }
 
-func setup(ctx context.Context, containers *tcmysql.MysqlTestSyncContainer) error {
+func setup(
+	ctx context.Context,
+	containers *tcmysql.MysqlTestSyncContainer,
+	extraSetupFiles []string,
+) error {
 	baseDir := "testdata"
 
 	errgrp, errctx := errgroup.WithContext(ctx)
 	errgrp.Go(func() error {
-		err := containers.Source.RunSqlFiles(errctx, &baseDir, []string{"setup.sql"})
+		files := append([]string{"setup.sql"}, extraSetupFiles...)
+		err := containers.Source.RunSqlFiles(errctx, &baseDir, files)
 		if err != nil {
 			return fmt.Errorf("encountered error when executing source setup statement: %w", err)
 		}
