@@ -46,7 +46,7 @@ func TestSetAndGetStructured(t *testing.T) {
 	api.SetMessage(msg)
 
 	// Test SetStructured
-	structData := map[string]interface{}{
+	structData := map[string]any{
 		"key1": "value1",
 		"key2": 42,
 	}
@@ -153,7 +153,7 @@ func TestNilMessageHandling(t *testing.T) {
 
 	// These should not panic and just be no-ops
 	api.SetBytes([]byte("test"))
-	api.SetStructured(map[string]interface{}{"key": "value"})
+	api.SetStructured(map[string]any{"key": "value"})
 	api.MetaSetMut("key", "value")
 
 	// This should return false for exists

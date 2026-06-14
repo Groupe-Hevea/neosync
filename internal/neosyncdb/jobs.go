@@ -64,7 +64,9 @@ func (d *NeosyncDb) SetSourceSubsets(
 			if dbjob.ConnectionOptions.PostgresOptions == nil {
 				dbjob.ConnectionOptions.PostgresOptions = &pg_models.PostgresSourceOptions{}
 			}
-			dbjob.ConnectionOptions.PostgresOptions.Schemas = pg_models.FromDtoPostgresSourceSchemaOptions(s.PostgresSubset.GetPostgresSchemas())
+			dbjob.ConnectionOptions.PostgresOptions.Schemas = pg_models.FromDtoPostgresSourceSchemaOptions(
+				s.PostgresSubset.GetPostgresSchemas(),
+			)
 			dbjob.ConnectionOptions.PostgresOptions.SubsetByForeignKeyConstraints = subsetByForeignKeyConstraints
 
 		case *mgmtv1alpha1.JobSourceSqlSubetSchemas_MysqlSubset:

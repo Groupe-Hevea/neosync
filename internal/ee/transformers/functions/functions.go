@@ -121,7 +121,9 @@ func handleNeosyncEntityAnonymization(
 			if defaultAnonymizer.GetTransform().GetConfig() != nil {
 				defaultTransformerConfig = defaultAnonymizer.GetTransform().GetConfig()
 			} else {
-				defaultTransformerConfig = getDefaultTransformerConfigByEntity("DEFAULT") // DEFAULT here will fall through to the switch case statement
+				defaultTransformerConfig = getDefaultTransformerConfigByEntity(
+					"DEFAULT",
+				) // DEFAULT here will fall through to the switch case statement
 			}
 		}
 	}
@@ -410,7 +412,9 @@ func toPresidioAnonymizerConfig(
 		return ap, true, nil
 	case *mgmtv1alpha1.PiiAnonymizer_Transform_:
 		ap := &presidioapi.AnonymizeRequest_Anonymizers_AdditionalProperties{}
-		err := ap.FromReplace(presidioapi.Replace{Type: "replace", NewValue: withNeosyncEntityBumpers(fmt.Sprintf("%s%s", neosyncEntityPrefix, entity))})
+		err := ap.FromReplace(
+			presidioapi.Replace{Type: "replace", NewValue: withNeosyncEntityBumpers(fmt.Sprintf("%s%s", neosyncEntityPrefix, entity))},
+		)
 		if err != nil {
 			return nil, false, err
 		}

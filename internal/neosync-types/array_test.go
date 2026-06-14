@@ -50,7 +50,7 @@ func Test_NeosyncArray(t *testing.T) {
 	t.Run("ScanPgx handles length mismatch", func(t *testing.T) {
 		array, err := NewNeosyncArray([]NeosyncAdapter{&Interval{}})
 		require.NoError(t, err)
-		err = array.ScanPgx([]interface{}{1, 2}) // More elements than adapters
+		err = array.ScanPgx([]any{1, 2}) // More elements than adapters
 		require.Error(t, err)
 		require.Contains(t, err.Error(), "length mismatch")
 	})
@@ -118,7 +118,7 @@ func Test_NeosyncArray(t *testing.T) {
 	t.Run("ScanJson handles length mismatch", func(t *testing.T) {
 		array, err := NewNeosyncArray([]NeosyncAdapter{&Interval{}})
 		require.NoError(t, err)
-		err = array.ScanJson([]interface{}{1, 2}) // More elements than adapters
+		err = array.ScanJson([]any{1, 2}) // More elements than adapters
 		require.Error(t, err)
 		require.Contains(t, err.Error(), "length mismatch")
 	})

@@ -521,8 +521,12 @@ func (b *sqlSyncBuilder) BuildDestinationConfig(
 					Fallback: []neosync_benthos.Outputs{
 						{
 							RedisHashOutput: &neosync_benthos.RedisHashOutputConfig{
-								Key:            hashedKey,
-								FieldsMapping:  fmt.Sprintf(`root = {meta(%q): json(%q)}`, hashPrimaryKeyMetaKey(benthosConfig.TableSchema, benthosConfig.TableName, col), col), // map of original value to transformed value
+								Key: hashedKey,
+								FieldsMapping: fmt.Sprintf(
+									`root = {meta(%q): json(%q)}`,
+									hashPrimaryKeyMetaKey(benthosConfig.TableSchema, benthosConfig.TableName, col),
+									col,
+								), // map of original value to transformed value
 								WalkMetadata:   false,
 								WalkJsonObject: false,
 							},

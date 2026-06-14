@@ -36,7 +36,12 @@ func NewFromMssqlConnection(
 			mssqlurl = config.MssqlConfig.GetUrl()
 		} else if config.MssqlConfig.GetUrlFromEnv() != "" {
 			if !strings.HasPrefix(config.MssqlConfig.GetUrlFromEnv(), userDefinedEnvPrefix) {
-				return nil, nucleuserrors.NewBadRequest(fmt.Sprintf("to source a url from an environment variable, the variable must have a prefix of %s", userDefinedEnvPrefix))
+				return nil, nucleuserrors.NewBadRequest(
+					fmt.Sprintf(
+						"to source a url from an environment variable, the variable must have a prefix of %s",
+						userDefinedEnvPrefix,
+					),
+				)
 			}
 			mssqlurl = viper.GetString(config.MssqlConfig.GetUrlFromEnv())
 		}

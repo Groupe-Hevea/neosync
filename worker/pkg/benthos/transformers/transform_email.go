@@ -345,7 +345,10 @@ func transformEmail(
 	} else {
 		name, err := generateNameForEmail(randomizer, minNameLength, maxNameLength)
 		if err != nil {
-			return nil, fmt.Errorf("for the given max length, unable to generate a full name to generate transformed email: %d", maxNameLength)
+			return nil, fmt.Errorf(
+				"for the given max length, unable to generate a full name to generate transformed email: %d",
+				maxNameLength,
+			)
 		}
 		newname = name
 	}

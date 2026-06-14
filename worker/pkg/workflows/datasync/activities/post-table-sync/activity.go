@@ -143,7 +143,9 @@ func (a *Activity) RunPostTableSync(
 			ConnectionId: destConnectionId,
 		}
 		switch destinationConnection.GetConnectionConfig().GetConfig().(type) {
-		case *mgmtv1alpha1.ConnectionConfig_PgConfig, *mgmtv1alpha1.ConnectionConfig_MysqlConfig, *mgmtv1alpha1.ConnectionConfig_MssqlConfig:
+		case *mgmtv1alpha1.ConnectionConfig_PgConfig,
+			*mgmtv1alpha1.ConnectionConfig_MysqlConfig,
+			*mgmtv1alpha1.ConnectionConfig_MssqlConfig:
 			destDb, err := a.sqlmanagerclient.NewSqlConnection(ctx, session, destinationConnection, slogger)
 			if err != nil {
 				slogger.Error("unable to connection to destination", "connectionId", destConnectionId)

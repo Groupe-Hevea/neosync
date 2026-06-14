@@ -56,7 +56,12 @@ func (s *Service) CheckConnectionConfig(
 			return nil, fmt.Errorf("unable to retrieve db role/user from connection config prior to checking connection: %w", err)
 		}
 
-		db, err := s.sqlmanager.NewSqlConnection(ctx, connectionmanager.NewUniqueSession(), &connInput{cc: req.Msg.GetConnectionConfig(), id: uuid.NewString()}, logger)
+		db, err := s.sqlmanager.NewSqlConnection(
+			ctx,
+			connectionmanager.NewUniqueSession(),
+			&connInput{cc: req.Msg.GetConnectionConfig(), id: uuid.NewString()},
+			logger,
+		)
 		if err != nil {
 			return nil, fmt.Errorf("unable to create sql connection: %w", err)
 		}
@@ -180,7 +185,10 @@ func (s *Service) CheckConnectionConfig(
 			Privileges:      privs,
 		}), nil
 	default:
-		return nil, nucleuserrors.NewBadRequest(fmt.Errorf("this method does not support this connection type %T: %w", req.Msg.GetConnectionConfig().GetConfig(), errors.ErrUnsupported).Error())
+		return nil, nucleuserrors.NewBadRequest(
+			fmt.Errorf("this method does not support this connection type %T: %w", req.Msg.GetConnectionConfig().GetConfig(), errors.ErrUnsupported).
+				Error(),
+		)
 	}
 }
 
@@ -258,7 +266,11 @@ func (s *Service) IsConnectionNameAvailable(
 	if err != nil {
 		return nil, err
 	}
-	if err := user.EnforceConnection(ctx, userdata.NewWildcardDomainEntity(req.Msg.GetAccountId()), rbac.ConnectionAction_View); err != nil {
+	if err := user.EnforceConnection(
+		ctx,
+		userdata.NewWildcardDomainEntity(req.Msg.GetAccountId()),
+		rbac.ConnectionAction_View,
+	); err != nil {
 		return nil, err
 	}
 
@@ -287,7 +299,11 @@ func (s *Service) GetConnections(
 	if err != nil {
 		return nil, err
 	}
-	if err := user.EnforceConnection(ctx, userdata.NewWildcardDomainEntity(req.Msg.GetAccountId()), rbac.ConnectionAction_View); err != nil {
+	if err := user.EnforceConnection(
+		ctx,
+		userdata.NewWildcardDomainEntity(req.Msg.GetAccountId()),
+		rbac.ConnectionAction_View,
+	); err != nil {
 		return nil, err
 	}
 	canViewSensitive, err := user.Connection(
@@ -349,7 +365,11 @@ func (s *Service) GetConnection(
 		return nil, err
 	}
 
-	if err := user.EnforceConnection(ctx, userdata.NewDbDomainEntity(connection.AccountID, connection.ID), rbac.ConnectionAction_View); err != nil {
+	if err := user.EnforceConnection(
+		ctx,
+		userdata.NewDbDomainEntity(connection.AccountID, connection.ID),
+		rbac.ConnectionAction_View,
+	); err != nil {
 		return nil, err
 	}
 	canViewSensitive, err := user.Connection(
@@ -412,7 +432,11 @@ func (s *Service) CreateConnection(
 	if err != nil {
 		return nil, err
 	}
-	if err := user.EnforceConnection(ctx, userdata.NewWildcardDomainEntity(req.Msg.GetAccountId()), rbac.ConnectionAction_Create); err != nil {
+	if err := user.EnforceConnection(
+		ctx,
+		userdata.NewWildcardDomainEntity(req.Msg.GetAccountId()),
+		rbac.ConnectionAction_Create,
+	); err != nil {
 		return nil, err
 	}
 
@@ -473,7 +497,11 @@ func (s *Service) UpdateConnection(
 		}
 	}
 
-	if err := user.EnforceConnection(ctx, userdata.NewDbDomainEntity(connection.AccountID, connection.ID), rbac.ConnectionAction_Edit); err != nil {
+	if err := user.EnforceConnection(
+		ctx,
+		userdata.NewDbDomainEntity(connection.AccountID, connection.ID),
+		rbac.ConnectionAction_Edit,
+	); err != nil {
 		return nil, err
 	}
 
@@ -521,7 +549,11 @@ func (s *Service) DeleteConnection(
 		return nil, err
 	}
 
-	if err := user.EnforceConnection(ctx, userdata.NewDbDomainEntity(connection.AccountID, connection.ID), rbac.ConnectionAction_Delete); err != nil {
+	if err := user.EnforceConnection(
+		ctx,
+		userdata.NewDbDomainEntity(connection.AccountID, connection.ID),
+		rbac.ConnectionAction_Delete,
+	); err != nil {
 		return nil, err
 	}
 

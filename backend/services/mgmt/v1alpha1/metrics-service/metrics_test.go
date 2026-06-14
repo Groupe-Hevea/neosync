@@ -363,7 +363,9 @@ func mockIsUserInAccount(t testing.TB, userServiceMock *userdata.MockInterface, 
 			Once().
 			Return(nil)
 	} else {
-		mockEntityEnforcer.On("EnforceAccount", mock.Anything, mock.Anything, mock.Anything).Once().Return(errors.New("test: not in account"))
+		mockEntityEnforcer.On("EnforceAccount", mock.Anything, mock.Anything, mock.Anything).
+			Once().
+			Return(errors.New("test: not in account"))
 	}
 	userServiceMock.On("GetUser", mock.Anything).Once().Return(&userdata.User{
 		EntityEnforcer: mockEntityEnforcer,

@@ -268,7 +268,11 @@ func (t *GroupCompletionTracker) GetCompletionStatus() map[string]string {
 		if state.InsertPhaseComplete {
 			insertStatus = " [INSERT:DONE]"
 		} else {
-			insertStatus = fmt.Sprintf(" [INSERT:%d/%d]", countCompleted(state.Group.InsertConfigs, t.completedConfigs), len(state.Group.InsertConfigs))
+			insertStatus = fmt.Sprintf(
+				" [INSERT:%d/%d]",
+				countCompleted(state.Group.InsertConfigs, t.completedConfigs),
+				len(state.Group.InsertConfigs),
+			)
 		}
 
 		updateStatus := ""
@@ -276,17 +280,30 @@ func (t *GroupCompletionTracker) GetCompletionStatus() map[string]string {
 			if state.UpdatePhaseComplete {
 				updateStatus = " [UPDATE:DONE]"
 			} else {
-				updateStatus = fmt.Sprintf(" [UPDATE:%d/%d]", countCompleted(state.Group.UpdateConfigs, t.completedConfigs), len(state.Group.UpdateConfigs))
+				updateStatus = fmt.Sprintf(
+					" [UPDATE:%d/%d]",
+					countCompleted(state.Group.UpdateConfigs, t.completedConfigs),
+					len(state.Group.UpdateConfigs),
+				)
 			}
 		}
 
-		status[groupID] = fmt.Sprintf("%d/%d%s%s", state.CompletedCount, state.TotalConfigs, insertStatus, updateStatus)
+		status[groupID] = fmt.Sprintf(
+			"%d/%d%s%s",
+			state.CompletedCount,
+			state.TotalConfigs,
+			insertStatus,
+			updateStatus,
+		)
 	}
 
 	return status
 }
 
-func countCompleted(configs []*benthosbuilder.BenthosConfigResponse, completedConfigs map[string]bool) int {
+func countCompleted(
+	configs []*benthosbuilder.BenthosConfigResponse,
+	completedConfigs map[string]bool,
+) int {
 	count := 0
 	for _, cfg := range configs {
 		if completedConfigs[cfg.Name] {

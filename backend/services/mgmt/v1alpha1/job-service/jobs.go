@@ -1589,7 +1589,10 @@ func (s *Service) SetJobWorkflowOptions(
 				DoUpdate: func(schedule temporalclient.ScheduleUpdateInput) (*temporalclient.ScheduleUpdate, error) {
 					action, ok := schedule.Description.Schedule.Action.(*temporalclient.ScheduleWorkflowAction)
 					if !ok {
-						return nil, fmt.Errorf("unable to cast temporal action to *temporalclient.ScheduleWorkflowAction. Type was: %T", schedule.Description.Schedule.Action)
+						return nil, fmt.Errorf(
+							"unable to cast temporal action to *temporalclient.ScheduleWorkflowAction. Type was: %T",
+							schedule.Description.Schedule.Action,
+						)
 					}
 					action.WorkflowRunTimeout = getDurationFromInt(wfOptions.RunTimeout)
 					schedule.Description.Schedule.Action = action
