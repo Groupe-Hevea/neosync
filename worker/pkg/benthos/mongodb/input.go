@@ -158,7 +158,7 @@ func newMongoInput(
 		database:     database,
 		operation:    operation,
 		marshalCanon: marshalMode == string(JSONMarshalModeCanonical),
-		batchSize:    int32(batchSize), //nolint:gosec // Ignoring for now
+		batchSize:    int32(batchSize),
 		sort:         sort,
 		limit:        int64(limit),
 		count:        0,

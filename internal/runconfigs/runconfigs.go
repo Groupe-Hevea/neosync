@@ -152,26 +152,26 @@ func (rc *RunConfig) String() string {
 	if rc == nil {
 		return sb.String()
 	}
-	sb.WriteString(fmt.Sprintf("  Id: %s\n", rc.id))
-	sb.WriteString(fmt.Sprintf("  Table: %s\n", rc.table))
-	sb.WriteString(fmt.Sprintf("  RunType: %s\n", rc.runType))
-	sb.WriteString(fmt.Sprintf("  PrimaryKeys: %v\n", rc.primaryKeys))
+	fmt.Fprintf(&sb, "  Id: %s\n", rc.id)
+	fmt.Fprintf(&sb, "  Table: %s\n", rc.table)
+	fmt.Fprintf(&sb, "  RunType: %s\n", rc.runType)
+	fmt.Fprintf(&sb, "  PrimaryKeys: %v\n", rc.primaryKeys)
 
 	if rc.whereClause != nil {
-		sb.WriteString(fmt.Sprintf("  WhereClause: %s\n", *rc.whereClause))
+		fmt.Fprintf(&sb, "  WhereClause: %s\n", *rc.whereClause)
 	} else {
 		sb.WriteString("  WhereClause: nil\n")
 	}
 
-	sb.WriteString(fmt.Sprintf("  SelectColumns: %v\n", rc.selectColumns))
-	sb.WriteString(fmt.Sprintf("  InsertColumns: %v\n", rc.insertColumns))
-	sb.WriteString(fmt.Sprintf("  OrderByColumns: %v\n", rc.orderByColumns))
-	sb.WriteString(fmt.Sprintf("  SplitColumnPaths: %v\n", rc.splitColumnPaths))
+	fmt.Fprintf(&sb, "  SelectColumns: %v\n", rc.selectColumns)
+	fmt.Fprintf(&sb, "  InsertColumns: %v\n", rc.insertColumns)
+	fmt.Fprintf(&sb, "  OrderByColumns: %v\n", rc.orderByColumns)
+	fmt.Fprintf(&sb, "  SplitColumnPaths: %v\n", rc.splitColumnPaths)
 
 	sb.WriteString("  DependsOn:\n")
 	if rc.dependsOn != nil {
 		for i, d := range rc.dependsOn {
-			sb.WriteString(fmt.Sprintf("    [%d] Table: %s, Columns: %v\n", i, d.Table, d.Columns))
+			fmt.Fprintf(&sb, "    [%d] Table: %s, Columns: %v\n", i, d.Table, d.Columns)
 		}
 	} else {
 		sb.WriteString("    nil\n")
@@ -180,22 +180,18 @@ func (rc *RunConfig) String() string {
 	sb.WriteString("  SubsetPaths:\n")
 	if rc.subsetPaths != nil {
 		for i, sp := range rc.subsetPaths {
-			sb.WriteString(fmt.Sprintf("    [%d] Root: %s, Subset: %s\n", i, sp.Root, sp.Subset))
+			fmt.Fprintf(&sb, "    [%d] Root: %s, Subset: %s\n", i, sp.Root, sp.Subset)
 			sb.WriteString("    JoinSteps:\n")
 			for j, js := range sp.JoinSteps {
-				sb.WriteString(
-					fmt.Sprintf("      [%d] FromKey: %s, ToKey: %s\n", j, js.FromKey, js.ToKey),
-				)
+				fmt.Fprintf(&sb, "      [%d] FromKey: %s, ToKey: %s\n", j, js.FromKey, js.ToKey)
 				if js.ForeignKey != nil {
-					sb.WriteString(
-						fmt.Sprintf(
-							"        FK: Columns: %v, NotNullable: %v, ReferenceSchema: %s, ReferenceTable: %s, ReferenceColumns: %v\n",
-							js.ForeignKey.Columns,
-							js.ForeignKey.NotNullable,
-							js.ForeignKey.ReferenceSchema,
-							js.ForeignKey.ReferenceTable,
-							js.ForeignKey.ReferenceColumns,
-						),
+					fmt.Fprintf(&sb,
+						"        FK: Columns: %v, NotNullable: %v, ReferenceSchema: %s, ReferenceTable: %s, ReferenceColumns: %v\n",
+						js.ForeignKey.Columns,
+						js.ForeignKey.NotNullable,
+						js.ForeignKey.ReferenceSchema,
+						js.ForeignKey.ReferenceTable,
+						js.ForeignKey.ReferenceColumns,
 					)
 				}
 			}

@@ -15,10 +15,10 @@ import (
 //     support expression indexes (MDEV-35853); indexed virtual columns surface
 //     as regular columns, so nothing is lost by selecting NULL instead.
 //  2. COLUMN_DEFAULT is stored as a valid SQL expression: string literals come
-//     back quoted ('abc') and expression defaults (uuid()) carry no
-//     DEFAULT_GENERATED marker in EXTRA. The manager would re-quote both,
-//     producing broken DDL ('('abc')' -> ''abc'') or turning expressions into
-//     string literals.
+//     back quoted (abc wrapped in single quotes) and expression defaults
+//     (uuid()) carry no DEFAULT_GENERATED marker in EXTRA. The manager would
+//     re-quote both, producing broken DDL with doubled quotes or turning
+//     expressions into string literals.
 //  3. A column with DEFAULT NULL reports the literal string "NULL" instead of
 //     a SQL NULL.
 //
@@ -67,7 +67,7 @@ func (q *mariadbQuerier) GetIndicesBySchemasAndTables(
 	arg *mysql_queries.GetIndicesBySchemasAndTablesParams,
 ) ([]*mysql_queries.GetIndicesBySchemasAndTablesRow, error) {
 	query := mariadbGetIndicesBySchemasAndTables
-	var queryParams []interface{}
+	var queryParams []any
 	queryParams = append(queryParams, arg.Schema)
 	if len(arg.Tables) > 0 {
 		for _, v := range arg.Tables {

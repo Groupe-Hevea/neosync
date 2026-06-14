@@ -63,8 +63,10 @@ func GetOrCreateNeosyncFolder() (string, error) {
 
 // ensureDirectoryExists checks for directory existence and tries to create it if it does not exist.
 func ensureDirectoryExists(dirName string) error {
+	//nolint:gosec // dirName is the CLI's own config directory derived from the user home/env
 	_, err := os.Stat(dirName)
 	if os.IsNotExist(err) {
+		//nolint:gosec // dirName is the CLI's own config directory derived from the user home/env
 		err = os.Mkdir(dirName, 0755)
 		if err != nil {
 			if os.IsExist(err) {

@@ -193,7 +193,7 @@ func AnyToInt64(value any) (int64, error) {
 	}
 
 	v := reflect.ValueOf(value)
-	if v.Kind() == reflect.Ptr {
+	if v.Kind() == reflect.Pointer {
 		if v.IsNil() {
 			return 0, fmt.Errorf("nil pointer")
 		}

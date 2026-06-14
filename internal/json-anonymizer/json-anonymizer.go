@@ -202,7 +202,7 @@ func (a *JsonAnonymizer) initializeJq() error {
 
 func derefPointer(v any) any {
 	rv := reflect.ValueOf(v)
-	for rv.Kind() == reflect.Ptr {
+	for rv.Kind() == reflect.Pointer {
 		if rv.IsNil() {
 			return nil
 		}

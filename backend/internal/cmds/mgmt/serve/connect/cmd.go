@@ -84,8 +84,6 @@ import (
 
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
-	"golang.org/x/net/http2"
-	"golang.org/x/net/http2/h2c"
 
 	promapi "github.com/prometheus/client_golang/api"
 	promv1 "github.com/prometheus/client_golang/api/prometheus/v1"
@@ -789,9 +787,16 @@ func serve(ctx context.Context) error {
 	}
 	mux.Handle("/", api)
 
+	// Protocols enables HTTP/1 and cleartext (h2c) HTTP/2, replacing the
+	// deprecated golang.org/x/net/http2/h2c handler wrapper.
+	protocols := new(http.Protocols)
+	protocols.SetHTTP1(true)
+	protocols.SetUnencryptedHTTP2(true)
+
 	httpServer := http.Server{
 		Addr:              fmt.Sprintf("%s:%d", host, port),
-		Handler:           h2c.NewHandler(mux, &http2.Server{}),
+		Handler:           mux,
+		Protocols:         protocols,
 		ErrorLog:          loglogger,
 		ReadHeaderTimeout: 10 * time.Second,
 	}

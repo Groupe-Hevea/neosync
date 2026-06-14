@@ -406,7 +406,7 @@ func marshalToBSONValue(
 
 	// Handle pointers
 	val := reflect.ValueOf(root)
-	for val.Kind() == reflect.Ptr {
+	for val.Kind() == reflect.Pointer {
 		if val.IsNil() {
 			return nil, nil
 		}

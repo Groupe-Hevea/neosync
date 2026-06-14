@@ -508,17 +508,15 @@ func (a *Activities) DetectPiiLLM(
 	logger.Debug("LLM PII detection prompt", "prompt", userMessage)
 
 	chatResp, err := a.openaiclient.New(ctx, openai.ChatCompletionNewParams{
-		Temperature: openai.F(0.0),
-		Model:       openai.F(model),
-		ResponseFormat: openai.F[openai.ChatCompletionNewParamsResponseFormatUnion](
-			openai.ResponseFormatJSONObjectParam{
-				Type: openai.F(openai.ResponseFormatJSONObjectTypeJSONObject),
-			},
-		),
-		Messages: openai.F([]openai.ChatCompletionMessageParamUnion{
+		Temperature: openai.Float(0.0),
+		Model:       model,
+		ResponseFormat: openai.ChatCompletionNewParamsResponseFormatUnion{
+			OfJSONObject: &openai.ResponseFormatJSONObjectParam{},
+		},
+		Messages: []openai.ChatCompletionMessageParamUnion{
 			openai.SystemMessage(systemMessage),
 			openai.UserMessage(userMessage),
-		}),
+		},
 	})
 	if err != nil {
 		return nil, err

@@ -391,7 +391,9 @@ func (s *SQLConnectionDataService) GetInitStatements(
 				truncateStmtsMap[k] = stmt
 			}
 		} else if options.GetTruncateBeforeInsert() {
-			return nil, nucleuserrors.NewNotImplemented("postgres truncate unsupported. table foreig keys required to build truncate statement.")
+			return nil, nucleuserrors.NewNotImplemented(
+				"postgres truncate unsupported. table foreig keys required to build truncate statement.",
+			)
 		}
 
 	default:

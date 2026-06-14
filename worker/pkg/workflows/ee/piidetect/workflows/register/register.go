@@ -34,7 +34,7 @@ func Register(
 
 	tablePiiDetectActivitites := piidetect_table_activities.New(
 		connclient,
-		openaiclient.Chat.Completions,
+		&openaiclient.Chat.Completions,
 		connectiondatabuilder,
 		jobclient,
 	)
