@@ -38,7 +38,7 @@ export default function TransformJavascriptForm(props: Props): ReactElement {
   const { data: fileContent } = useReadNeosyncTransformerDeclarationFile();
   useEffect(() => {
     if (monaco && fileContent) {
-      monaco.languages.typescript.javascriptDefaults.addExtraLib(
+      monaco.typescript.javascriptDefaults.addExtraLib(
         fileContent,
         'neosync-transformer.d.ts'
       );

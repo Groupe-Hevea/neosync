@@ -28,7 +28,7 @@ import {
 } from '@/yup-validations/jobs';
 import { create } from '@bufbuild/protobuf';
 import { useMutation, useQuery } from '@connectrpc/connect-query';
-import { yupResolver } from '@hookform/resolvers/yup';
+import { yupResolver } from '@/util/yup-form-resolver';
 import {
   Connection,
   ConnectionDataService,
@@ -189,7 +189,7 @@ export default function Page(props: PageProps): ReactElement {
   );
 
   const form = useForm<SchemaFormValues>({
-    resolver: yupResolver<SchemaFormValues>(SchemaFormValues),
+    resolver: yupResolver(SchemaFormValues),
     values: getFormValues(connectFormValues.sourceId, schemaFormData),
     context: { accountId: account?.id },
   });

@@ -30,7 +30,7 @@ import {
 } from '@/yup-validations/jobs';
 import { create, MessageInitShape } from '@bufbuild/protobuf';
 import { useMutation } from '@connectrpc/connect-query';
-import { yupResolver } from '@hookform/resolvers/yup';
+import { yupResolver } from '@/util/yup-form-resolver';
 import {
   ConnectError,
   JobMappingTransformerSchema,

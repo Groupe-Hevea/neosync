@@ -15,17 +15,13 @@ import {
 } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 import { Switch } from '@/components/ui/switch';
-import { yupResolver } from '@hookform/resolvers/yup';
+import { yupResolver } from '@/util/yup-form-resolver';
 import { useRouter } from 'next/navigation';
 import { ReactElement, use, useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { useSessionStorage } from 'usehooks-ts';
 import JobsProgressSteps, { getJobProgressSteps } from '../JobsProgressSteps';
-import {
-  DefineFormValues,
-  DefineFormValuesContext,
-  NewJobType,
-} from '../job-form-validations';
+import { DefineFormValues, NewJobType } from '../job-form-validations';
 
 import FormPersist from '@/app/(mgmt)/FormPersist';
 import {
@@ -82,9 +78,9 @@ export default function Page(props: PageProps): ReactElement {
   const { mutateAsync: isJobNameAvailableAsync } = useMutation(
     JobService.method.isJobNameAvailable
   );
-  const form = useForm<DefineFormValues, DefineFormValuesContext>({
+  const form = useForm({
     mode: 'onChange',
-    resolver: yupResolver<DefineFormValues>(DefineFormValues),
+    resolver: yupResolver(DefineFormValues),
     defaultValues,
     context: {
       accountId: account?.id ?? '',

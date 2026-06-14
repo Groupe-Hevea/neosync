@@ -14,7 +14,7 @@ import {
 import { Input } from '@/components/ui/input';
 import { convertNanosecondsToMinutes, getErrorMessage } from '@/util/util';
 import { useMutation } from '@connectrpc/connect-query';
-import { yupResolver } from '@hookform/resolvers/yup';
+import { yupResolver } from '@/util/yup-form-resolver';
 import { Job, JobService } from '@neosync/sdk';
 import { ReactElement } from 'react';
 import { useForm } from 'react-hook-form';
@@ -31,9 +31,9 @@ export default function WorkflowSettingsCard({
   job,
   mutate,
 }: Props): ReactElement {
-  const form = useForm<WorkflowSettingsSchema>({
+  const form = useForm({
     mode: 'onChange',
-    resolver: yupResolver<WorkflowSettingsSchema>(WorkflowSettingsSchema),
+    resolver: yupResolver(WorkflowSettingsSchema),
     values: {
       runTimeout: job?.workflowOptions?.runTimeout
         ? convertNanosecondsToMinutes(job.workflowOptions.runTimeout)

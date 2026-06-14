@@ -1,14 +1,16 @@
 // Offset is important here as without it, things get pretty strange I believe due to the container
 
 import { useMemo } from 'react';
-import { useResizeDetector } from 'react-resize-detector';
-import { OnRefChangeType } from 'react-resize-detector/build/types/types';
+import {
+  useResizeDetector,
+  UseResizeDetectorReturn,
+} from 'react-resize-detector';
 
 // Lower offsets cause the resize to happen at a glacial pace, and without one, not at all.
 const WIDTH_OFFSET = 10;
 
 interface UseMonacoResizerReturn {
-  ref: OnRefChangeType<HTMLDivElement>;
+  ref: UseResizeDetectorReturn<HTMLDivElement>['ref'];
   width: string;
 }
 

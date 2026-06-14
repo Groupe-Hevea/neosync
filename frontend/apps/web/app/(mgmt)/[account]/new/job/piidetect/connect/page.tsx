@@ -23,7 +23,7 @@ import { Separator } from '@/components/ui/separator';
 import { Skeleton } from '@/components/ui/skeleton';
 import { getSingleOrUndefined, splitConnections } from '@/libs/utils';
 import { useQuery } from '@connectrpc/connect-query';
-import { yupResolver } from '@hookform/resolvers/yup';
+import { yupResolver } from '@/util/yup-form-resolver';
 import { ConnectionService } from '@neosync/sdk';
 import { useRouter } from 'next/navigation';
 import { usePostHog } from 'posthog-js/react';
@@ -59,9 +59,7 @@ export default function Page(props: PageProps): ReactElement {
   );
 
   const form = useForm<PiiDetectionConnectFormValues>({
-    resolver: yupResolver<PiiDetectionConnectFormValues>(
-      PiiDetectionConnectFormValues
-    ),
+    resolver: yupResolver(PiiDetectionConnectFormValues),
     defaultValues,
   });
 

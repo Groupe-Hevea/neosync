@@ -43,7 +43,7 @@ import { getSingleOrUndefined } from '@/libs/utils';
 import { getErrorMessage, getTransformerFromField } from '@/util/util';
 import { JobMappingTransformerForm } from '@/yup-validations/jobs';
 import { useMutation, useQuery } from '@connectrpc/connect-query';
-import { yupResolver } from '@hookform/resolvers/yup';
+import { yupResolver } from '@/util/yup-form-resolver';
 import {
   ConnectionDataService,
   ConnectionService,
@@ -135,9 +135,7 @@ export default function Page(props: PageProps): ReactElement {
 
   const form = useForm({
     mode: 'onChange',
-    resolver: yupResolver<SingleTableSchemaFormValues>(
-      SingleTableSchemaFormValues
-    ),
+    resolver: yupResolver(SingleTableSchemaFormValues),
     values: schemaFormData,
     context: { accountId: account?.id },
   });

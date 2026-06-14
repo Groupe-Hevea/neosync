@@ -29,7 +29,7 @@ import {
 } from '@/yup-validations/jobs';
 import { create } from '@bufbuild/protobuf';
 import { useMutation } from '@connectrpc/connect-query';
-import { yupResolver } from '@hookform/resolvers/yup';
+import { yupResolver } from '@/util/yup-form-resolver';
 import {
   TransformerConfig,
   TransformerConfigSchema,

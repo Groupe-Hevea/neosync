@@ -33,7 +33,7 @@ import { getErrorMessage } from '@/util/util';
 import { SchemaFormValues } from '@/yup-validations/jobs';
 import { create } from '@bufbuild/protobuf';
 import { useMutation, useQuery } from '@connectrpc/connect-query';
-import { yupResolver } from '@hookform/resolvers/yup';
+import { yupResolver } from '@/util/yup-form-resolver';
 import {
   ConnectionConfigSchema,
   ConnectionDataService,
@@ -148,7 +148,7 @@ export default function Page(props: PageProps): ReactElement {
   }, [fkConstraints, isTableConstraintsValidating]);
 
   const form = useForm({
-    resolver: yupResolver<SubsetFormValues>(SubsetFormValues),
+    resolver: yupResolver(SubsetFormValues),
     defaultValues: subsetFormValues,
   });
 
