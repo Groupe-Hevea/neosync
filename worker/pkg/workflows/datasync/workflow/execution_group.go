@@ -54,8 +54,13 @@ func buildExecutionGroups(configs []*benthosbuilder.BenthosConfigResponse) []*Ex
 			// Part of a cycle - add to cycle group
 			if cycleGroups[cycleIdx] == nil {
 				cycleGroups[cycleIdx] = &ExecutionGroup{
-					ID:        buildCycleGroupID(cycles[cycleIdx]),
-					Tables:    cycles[cycleIdx],
+					// cycleIdx indexes mergedCycles (via tableToCycle), so the
+					// group must be built from mergedCycles — not the unmerged
+					// cycles slice, whose length and ordering differ. Using the
+					// wrong slice drops merged tables from Tables, which makes
+					// external dependents miss their dependency on the cycle.
+					ID:        buildCycleGroupID(mergedCycles[cycleIdx]),
+					Tables:    mergedCycles[cycleIdx],
 					IsInCycle: true,
 				}
 			}
