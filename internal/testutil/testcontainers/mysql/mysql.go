@@ -161,7 +161,11 @@ func setup(ctx context.Context, cfg *mysqlTestContainerConfig) (*MysqlTestContai
 		testcontainers.WithWaitStrategy(
 			wait.ForLog(readyLog).
 				WithOccurrence(1).
-				WithStartupTimeout(20 * time.Second),
+				// Generous timeout: the workflow integration test starts several
+				// DB containers in parallel (source+target for mysql, mariadb and
+				// mssql), and MariaDB's init phase (temp server -> init SQL ->
+				// real server) can exceed a tight deadline under CI contention.
+				WithStartupTimeout(120 * time.Second),
 		),
 	}
 	if cfg.useTls {
