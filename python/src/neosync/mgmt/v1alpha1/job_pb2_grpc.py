@@ -5,7 +5,7 @@ import grpc
 from mgmt.v1alpha1 import job_pb2 as mgmt_dot_v1alpha1_dot_job__pb2
 
 
-class JobServiceStub(object):
+class JobServiceStub:
     """Service that handles jobs, runs, and hooks
     """
 
@@ -222,7 +222,7 @@ class JobServiceStub(object):
                 _registered_method=True)
 
 
-class JobServiceServicer(object):
+class JobServiceServicer:
     """Service that handles jobs, runs, and hooks
     """
 
@@ -729,7 +729,7 @@ def add_JobServiceServicer_to_server(servicer, server):
 
 
  # This class is part of an EXPERIMENTAL API.
-class JobService(object):
+class JobService:
     """Service that handles jobs, runs, and hooks
     """
 

@@ -1,3 +1,5 @@
+import datetime
+
 from buf.validate import validate_pb2 as _validate_pb2
 from google.protobuf import timestamp_pb2 as _timestamp_pb2
 from mgmt.v1alpha1 import connection_data_pb2 as _connection_data_pb2
@@ -6,7 +8,8 @@ from google.protobuf.internal import containers as _containers
 from google.protobuf.internal import enum_type_wrapper as _enum_type_wrapper
 from google.protobuf import descriptor as _descriptor
 from google.protobuf import message as _message
-from typing import ClassVar as _ClassVar, Iterable as _Iterable, Mapping as _Mapping, Optional as _Optional, Union as _Union
+from collections.abc import Iterable as _Iterable, Mapping as _Mapping
+from typing import ClassVar as _ClassVar, Optional as _Optional, Union as _Union
 
 DESCRIPTOR: _descriptor.FileDescriptor
 
@@ -207,7 +210,7 @@ class DynamoDBSourceConnectionOptions(_message.Message):
     tables: _containers.RepeatedCompositeFieldContainer[DynamoDBSourceTableOption]
     unmapped_transforms: DynamoDBSourceUnmappedTransformConfig
     enable_consistent_read: bool
-    def __init__(self, connection_id: _Optional[str] = ..., tables: _Optional[_Iterable[_Union[DynamoDBSourceTableOption, _Mapping]]] = ..., unmapped_transforms: _Optional[_Union[DynamoDBSourceUnmappedTransformConfig, _Mapping]] = ..., enable_consistent_read: bool = ...) -> None: ...
+    def __init__(self, connection_id: _Optional[str] = ..., tables: _Optional[_Iterable[_Union[DynamoDBSourceTableOption, _Mapping]]] = ..., unmapped_transforms: _Optional[_Union[DynamoDBSourceUnmappedTransformConfig, _Mapping]] = ..., enable_consistent_read: _Optional[bool] = ...) -> None: ...
 
 class DynamoDBSourceUnmappedTransformConfig(_message.Message):
     __slots__ = ("b", "boolean", "n", "s")
@@ -272,7 +275,7 @@ class PostgresSourceConnectionOptions(_message.Message):
     subset_by_foreign_key_constraints: bool
     new_column_addition_strategy: PostgresSourceConnectionOptions.NewColumnAdditionStrategy
     column_removal_strategy: PostgresSourceConnectionOptions.ColumnRemovalStrategy
-    def __init__(self, schemas: _Optional[_Iterable[_Union[PostgresSourceSchemaOption, _Mapping]]] = ..., connection_id: _Optional[str] = ..., subset_by_foreign_key_constraints: bool = ..., new_column_addition_strategy: _Optional[_Union[PostgresSourceConnectionOptions.NewColumnAdditionStrategy, _Mapping]] = ..., column_removal_strategy: _Optional[_Union[PostgresSourceConnectionOptions.ColumnRemovalStrategy, _Mapping]] = ...) -> None: ...
+    def __init__(self, schemas: _Optional[_Iterable[_Union[PostgresSourceSchemaOption, _Mapping]]] = ..., connection_id: _Optional[str] = ..., subset_by_foreign_key_constraints: _Optional[bool] = ..., new_column_addition_strategy: _Optional[_Union[PostgresSourceConnectionOptions.NewColumnAdditionStrategy, _Mapping]] = ..., column_removal_strategy: _Optional[_Union[PostgresSourceConnectionOptions.ColumnRemovalStrategy, _Mapping]] = ...) -> None: ...
 
 class PostgresSourceSchemaOption(_message.Message):
     __slots__ = ("schema", "tables")
@@ -335,7 +338,7 @@ class MysqlSourceConnectionOptions(_message.Message):
     subset_by_foreign_key_constraints: bool
     column_removal_strategy: MysqlSourceConnectionOptions.ColumnRemovalStrategy
     new_column_addition_strategy: MysqlSourceConnectionOptions.NewColumnAdditionStrategy
-    def __init__(self, halt_on_new_column_addition: bool = ..., schemas: _Optional[_Iterable[_Union[MysqlSourceSchemaOption, _Mapping]]] = ..., connection_id: _Optional[str] = ..., subset_by_foreign_key_constraints: bool = ..., column_removal_strategy: _Optional[_Union[MysqlSourceConnectionOptions.ColumnRemovalStrategy, _Mapping]] = ..., new_column_addition_strategy: _Optional[_Union[MysqlSourceConnectionOptions.NewColumnAdditionStrategy, _Mapping]] = ...) -> None: ...
+    def __init__(self, halt_on_new_column_addition: _Optional[bool] = ..., schemas: _Optional[_Iterable[_Union[MysqlSourceSchemaOption, _Mapping]]] = ..., connection_id: _Optional[str] = ..., subset_by_foreign_key_constraints: _Optional[bool] = ..., column_removal_strategy: _Optional[_Union[MysqlSourceConnectionOptions.ColumnRemovalStrategy, _Mapping]] = ..., new_column_addition_strategy: _Optional[_Union[MysqlSourceConnectionOptions.NewColumnAdditionStrategy, _Mapping]] = ...) -> None: ...
 
 class MysqlSourceSchemaOption(_message.Message):
     __slots__ = ("schema", "tables")
@@ -393,7 +396,7 @@ class MssqlSourceConnectionOptions(_message.Message):
     subset_by_foreign_key_constraints: bool
     column_removal_strategy: MssqlSourceConnectionOptions.ColumnRemovalStrategy
     new_column_addition_strategy: MssqlSourceConnectionOptions.NewColumnAdditionStrategy
-    def __init__(self, halt_on_new_column_addition: bool = ..., schemas: _Optional[_Iterable[_Union[MssqlSourceSchemaOption, _Mapping]]] = ..., connection_id: _Optional[str] = ..., subset_by_foreign_key_constraints: bool = ..., column_removal_strategy: _Optional[_Union[MssqlSourceConnectionOptions.ColumnRemovalStrategy, _Mapping]] = ..., new_column_addition_strategy: _Optional[_Union[MssqlSourceConnectionOptions.NewColumnAdditionStrategy, _Mapping]] = ...) -> None: ...
+    def __init__(self, halt_on_new_column_addition: _Optional[bool] = ..., schemas: _Optional[_Iterable[_Union[MssqlSourceSchemaOption, _Mapping]]] = ..., connection_id: _Optional[str] = ..., subset_by_foreign_key_constraints: _Optional[bool] = ..., column_removal_strategy: _Optional[_Union[MssqlSourceConnectionOptions.ColumnRemovalStrategy, _Mapping]] = ..., new_column_addition_strategy: _Optional[_Union[MssqlSourceConnectionOptions.NewColumnAdditionStrategy, _Mapping]] = ...) -> None: ...
 
 class MssqlSourceSchemaOption(_message.Message):
     __slots__ = ("schema", "tables")
@@ -471,7 +474,7 @@ class PostgresDestinationConnectionOptions(_message.Message):
     skip_foreign_key_violations: bool
     batch: BatchConfig
     max_in_flight: int
-    def __init__(self, truncate_table: _Optional[_Union[PostgresTruncateTableConfig, _Mapping]] = ..., init_table_schema: bool = ..., on_conflict: _Optional[_Union[PostgresOnConflictConfig, _Mapping]] = ..., skip_foreign_key_violations: bool = ..., batch: _Optional[_Union[BatchConfig, _Mapping]] = ..., max_in_flight: _Optional[int] = ...) -> None: ...
+    def __init__(self, truncate_table: _Optional[_Union[PostgresTruncateTableConfig, _Mapping]] = ..., init_table_schema: _Optional[bool] = ..., on_conflict: _Optional[_Union[PostgresOnConflictConfig, _Mapping]] = ..., skip_foreign_key_violations: _Optional[bool] = ..., batch: _Optional[_Union[BatchConfig, _Mapping]] = ..., max_in_flight: _Optional[int] = ...) -> None: ...
 
 class PostgresOnConflictConfig(_message.Message):
     __slots__ = ("do_nothing", "nothing", "update")
@@ -487,7 +490,7 @@ class PostgresOnConflictConfig(_message.Message):
     do_nothing: bool
     nothing: PostgresOnConflictConfig.PostgresOnConflictDoNothing
     update: PostgresOnConflictConfig.PostgresOnConflictUpdate
-    def __init__(self, do_nothing: bool = ..., nothing: _Optional[_Union[PostgresOnConflictConfig.PostgresOnConflictDoNothing, _Mapping]] = ..., update: _Optional[_Union[PostgresOnConflictConfig.PostgresOnConflictUpdate, _Mapping]] = ...) -> None: ...
+    def __init__(self, do_nothing: _Optional[bool] = ..., nothing: _Optional[_Union[PostgresOnConflictConfig.PostgresOnConflictDoNothing, _Mapping]] = ..., update: _Optional[_Union[PostgresOnConflictConfig.PostgresOnConflictUpdate, _Mapping]] = ...) -> None: ...
 
 class PostgresTruncateTableConfig(_message.Message):
     __slots__ = ("truncate_before_insert", "cascade")
@@ -495,7 +498,7 @@ class PostgresTruncateTableConfig(_message.Message):
     CASCADE_FIELD_NUMBER: _ClassVar[int]
     truncate_before_insert: bool
     cascade: bool
-    def __init__(self, truncate_before_insert: bool = ..., cascade: bool = ...) -> None: ...
+    def __init__(self, truncate_before_insert: _Optional[bool] = ..., cascade: _Optional[bool] = ...) -> None: ...
 
 class MysqlDestinationConnectionOptions(_message.Message):
     __slots__ = ("truncate_table", "init_table_schema", "on_conflict", "skip_foreign_key_violations", "batch", "max_in_flight")
@@ -511,13 +514,13 @@ class MysqlDestinationConnectionOptions(_message.Message):
     skip_foreign_key_violations: bool
     batch: BatchConfig
     max_in_flight: int
-    def __init__(self, truncate_table: _Optional[_Union[MysqlTruncateTableConfig, _Mapping]] = ..., init_table_schema: bool = ..., on_conflict: _Optional[_Union[MysqlOnConflictConfig, _Mapping]] = ..., skip_foreign_key_violations: bool = ..., batch: _Optional[_Union[BatchConfig, _Mapping]] = ..., max_in_flight: _Optional[int] = ...) -> None: ...
+    def __init__(self, truncate_table: _Optional[_Union[MysqlTruncateTableConfig, _Mapping]] = ..., init_table_schema: _Optional[bool] = ..., on_conflict: _Optional[_Union[MysqlOnConflictConfig, _Mapping]] = ..., skip_foreign_key_violations: _Optional[bool] = ..., batch: _Optional[_Union[BatchConfig, _Mapping]] = ..., max_in_flight: _Optional[int] = ...) -> None: ...
 
 class MysqlTruncateTableConfig(_message.Message):
     __slots__ = ("truncate_before_insert",)
     TRUNCATE_BEFORE_INSERT_FIELD_NUMBER: _ClassVar[int]
     truncate_before_insert: bool
-    def __init__(self, truncate_before_insert: bool = ...) -> None: ...
+    def __init__(self, truncate_before_insert: _Optional[bool] = ...) -> None: ...
 
 class MysqlOnConflictConfig(_message.Message):
     __slots__ = ("do_nothing", "nothing", "update")
@@ -533,7 +536,7 @@ class MysqlOnConflictConfig(_message.Message):
     do_nothing: bool
     nothing: MysqlOnConflictConfig.MysqlOnConflictDoNothing
     update: MysqlOnConflictConfig.MysqlOnConflictUpdate
-    def __init__(self, do_nothing: bool = ..., nothing: _Optional[_Union[MysqlOnConflictConfig.MysqlOnConflictDoNothing, _Mapping]] = ..., update: _Optional[_Union[MysqlOnConflictConfig.MysqlOnConflictUpdate, _Mapping]] = ...) -> None: ...
+    def __init__(self, do_nothing: _Optional[bool] = ..., nothing: _Optional[_Union[MysqlOnConflictConfig.MysqlOnConflictDoNothing, _Mapping]] = ..., update: _Optional[_Union[MysqlOnConflictConfig.MysqlOnConflictUpdate, _Mapping]] = ...) -> None: ...
 
 class MssqlDestinationConnectionOptions(_message.Message):
     __slots__ = ("truncate_table", "init_table_schema", "on_conflict", "skip_foreign_key_violations", "batch", "max_in_flight")
@@ -549,19 +552,19 @@ class MssqlDestinationConnectionOptions(_message.Message):
     skip_foreign_key_violations: bool
     batch: BatchConfig
     max_in_flight: int
-    def __init__(self, truncate_table: _Optional[_Union[MssqlTruncateTableConfig, _Mapping]] = ..., init_table_schema: bool = ..., on_conflict: _Optional[_Union[MssqlOnConflictConfig, _Mapping]] = ..., skip_foreign_key_violations: bool = ..., batch: _Optional[_Union[BatchConfig, _Mapping]] = ..., max_in_flight: _Optional[int] = ...) -> None: ...
+    def __init__(self, truncate_table: _Optional[_Union[MssqlTruncateTableConfig, _Mapping]] = ..., init_table_schema: _Optional[bool] = ..., on_conflict: _Optional[_Union[MssqlOnConflictConfig, _Mapping]] = ..., skip_foreign_key_violations: _Optional[bool] = ..., batch: _Optional[_Union[BatchConfig, _Mapping]] = ..., max_in_flight: _Optional[int] = ...) -> None: ...
 
 class MssqlTruncateTableConfig(_message.Message):
     __slots__ = ("truncate_before_insert",)
     TRUNCATE_BEFORE_INSERT_FIELD_NUMBER: _ClassVar[int]
     truncate_before_insert: bool
-    def __init__(self, truncate_before_insert: bool = ...) -> None: ...
+    def __init__(self, truncate_before_insert: _Optional[bool] = ...) -> None: ...
 
 class MssqlOnConflictConfig(_message.Message):
     __slots__ = ("do_nothing",)
     DO_NOTHING_FIELD_NUMBER: _ClassVar[int]
     do_nothing: bool
-    def __init__(self, do_nothing: bool = ...) -> None: ...
+    def __init__(self, do_nothing: _Optional[bool] = ...) -> None: ...
 
 class AwsS3DestinationConnectionOptions(_message.Message):
     __slots__ = ("storage_class", "max_in_flight", "timeout", "batch")
@@ -625,7 +628,7 @@ class CreateJobRequest(_message.Message):
     sync_options: ActivityOptions
     virtual_foreign_keys: _containers.RepeatedCompositeFieldContainer[VirtualForeignConstraint]
     job_type: JobTypeConfig
-    def __init__(self, account_id: _Optional[str] = ..., job_name: _Optional[str] = ..., cron_schedule: _Optional[str] = ..., mappings: _Optional[_Iterable[_Union[JobMapping, _Mapping]]] = ..., source: _Optional[_Union[JobSource, _Mapping]] = ..., destinations: _Optional[_Iterable[_Union[CreateJobDestination, _Mapping]]] = ..., initiate_job_run: bool = ..., workflow_options: _Optional[_Union[WorkflowOptions, _Mapping]] = ..., sync_options: _Optional[_Union[ActivityOptions, _Mapping]] = ..., virtual_foreign_keys: _Optional[_Iterable[_Union[VirtualForeignConstraint, _Mapping]]] = ..., job_type: _Optional[_Union[JobTypeConfig, _Mapping]] = ...) -> None: ...
+    def __init__(self, account_id: _Optional[str] = ..., job_name: _Optional[str] = ..., cron_schedule: _Optional[str] = ..., mappings: _Optional[_Iterable[_Union[JobMapping, _Mapping]]] = ..., source: _Optional[_Union[JobSource, _Mapping]] = ..., destinations: _Optional[_Iterable[_Union[CreateJobDestination, _Mapping]]] = ..., initiate_job_run: _Optional[bool] = ..., workflow_options: _Optional[_Union[WorkflowOptions, _Mapping]] = ..., sync_options: _Optional[_Union[ActivityOptions, _Mapping]] = ..., virtual_foreign_keys: _Optional[_Iterable[_Union[VirtualForeignConstraint, _Mapping]]] = ..., job_type: _Optional[_Union[JobTypeConfig, _Mapping]] = ...) -> None: ...
 
 class JobTypeConfig(_message.Message):
     __slots__ = ("sync", "pii_detect")
@@ -638,12 +641,12 @@ class JobTypeConfig(_message.Message):
             __slots__ = ("is_enabled",)
             IS_ENABLED_FIELD_NUMBER: _ClassVar[int]
             is_enabled: bool
-            def __init__(self, is_enabled: bool = ...) -> None: ...
+            def __init__(self, is_enabled: _Optional[bool] = ...) -> None: ...
         class DataSampling(_message.Message):
             __slots__ = ("is_enabled",)
             IS_ENABLED_FIELD_NUMBER: _ClassVar[int]
             is_enabled: bool
-            def __init__(self, is_enabled: bool = ...) -> None: ...
+            def __init__(self, is_enabled: _Optional[bool] = ...) -> None: ...
         class TableScanFilter(_message.Message):
             __slots__ = ("include_all", "include", "exclude")
             INCLUDE_ALL_FIELD_NUMBER: _ClassVar[int]
@@ -765,7 +768,7 @@ class PauseJobRequest(_message.Message):
     id: str
     pause: bool
     note: str
-    def __init__(self, id: _Optional[str] = ..., pause: bool = ..., note: _Optional[str] = ...) -> None: ...
+    def __init__(self, id: _Optional[str] = ..., pause: _Optional[bool] = ..., note: _Optional[str] = ...) -> None: ...
 
 class PauseJobResponse(_message.Message):
     __slots__ = ("job",)
@@ -837,7 +840,7 @@ class SetJobSourceSqlConnectionSubsetsRequest(_message.Message):
     id: str
     schemas: JobSourceSqlSubetSchemas
     subset_by_foreign_key_constraints: bool
-    def __init__(self, id: _Optional[str] = ..., schemas: _Optional[_Union[JobSourceSqlSubetSchemas, _Mapping]] = ..., subset_by_foreign_key_constraints: bool = ...) -> None: ...
+    def __init__(self, id: _Optional[str] = ..., schemas: _Optional[_Union[JobSourceSqlSubetSchemas, _Mapping]] = ..., subset_by_foreign_key_constraints: _Optional[bool] = ...) -> None: ...
 
 class SetJobSourceSqlConnectionSubsetsResponse(_message.Message):
     __slots__ = ("job",)
@@ -909,7 +912,7 @@ class IsJobNameAvailableResponse(_message.Message):
     __slots__ = ("is_available",)
     IS_AVAILABLE_FIELD_NUMBER: _ClassVar[int]
     is_available: bool
-    def __init__(self, is_available: bool = ...) -> None: ...
+    def __init__(self, is_available: _Optional[bool] = ...) -> None: ...
 
 class GetJobRunsRequest(_message.Message):
     __slots__ = ("job_id", "account_id")
@@ -993,7 +996,7 @@ class Job(_message.Message):
     workflow_options: WorkflowOptions
     virtual_foreign_keys: _containers.RepeatedCompositeFieldContainer[VirtualForeignConstraint]
     job_type: JobTypeConfig
-    def __init__(self, id: _Optional[str] = ..., created_by_user_id: _Optional[str] = ..., created_at: _Optional[_Union[_timestamp_pb2.Timestamp, _Mapping]] = ..., updated_by_user_id: _Optional[str] = ..., updated_at: _Optional[_Union[_timestamp_pb2.Timestamp, _Mapping]] = ..., name: _Optional[str] = ..., source: _Optional[_Union[JobSource, _Mapping]] = ..., destinations: _Optional[_Iterable[_Union[JobDestination, _Mapping]]] = ..., mappings: _Optional[_Iterable[_Union[JobMapping, _Mapping]]] = ..., cron_schedule: _Optional[str] = ..., account_id: _Optional[str] = ..., sync_options: _Optional[_Union[ActivityOptions, _Mapping]] = ..., workflow_options: _Optional[_Union[WorkflowOptions, _Mapping]] = ..., virtual_foreign_keys: _Optional[_Iterable[_Union[VirtualForeignConstraint, _Mapping]]] = ..., job_type: _Optional[_Union[JobTypeConfig, _Mapping]] = ...) -> None: ...
+    def __init__(self, id: _Optional[str] = ..., created_by_user_id: _Optional[str] = ..., created_at: _Optional[_Union[datetime.datetime, _timestamp_pb2.Timestamp, _Mapping]] = ..., updated_by_user_id: _Optional[str] = ..., updated_at: _Optional[_Union[datetime.datetime, _timestamp_pb2.Timestamp, _Mapping]] = ..., name: _Optional[str] = ..., source: _Optional[_Union[JobSource, _Mapping]] = ..., destinations: _Optional[_Iterable[_Union[JobDestination, _Mapping]]] = ..., mappings: _Optional[_Iterable[_Union[JobMapping, _Mapping]]] = ..., cron_schedule: _Optional[str] = ..., account_id: _Optional[str] = ..., sync_options: _Optional[_Union[ActivityOptions, _Mapping]] = ..., workflow_options: _Optional[_Union[WorkflowOptions, _Mapping]] = ..., virtual_foreign_keys: _Optional[_Iterable[_Union[VirtualForeignConstraint, _Mapping]]] = ..., job_type: _Optional[_Union[JobTypeConfig, _Mapping]] = ...) -> None: ...
 
 class JobRecentRun(_message.Message):
     __slots__ = ("start_time", "job_run_id")
@@ -1001,7 +1004,7 @@ class JobRecentRun(_message.Message):
     JOB_RUN_ID_FIELD_NUMBER: _ClassVar[int]
     start_time: _timestamp_pb2.Timestamp
     job_run_id: str
-    def __init__(self, start_time: _Optional[_Union[_timestamp_pb2.Timestamp, _Mapping]] = ..., job_run_id: _Optional[str] = ...) -> None: ...
+    def __init__(self, start_time: _Optional[_Union[datetime.datetime, _timestamp_pb2.Timestamp, _Mapping]] = ..., job_run_id: _Optional[str] = ...) -> None: ...
 
 class GetJobRecentRunsRequest(_message.Message):
     __slots__ = ("job_id",)
@@ -1019,7 +1022,7 @@ class JobNextRuns(_message.Message):
     __slots__ = ("next_run_times",)
     NEXT_RUN_TIMES_FIELD_NUMBER: _ClassVar[int]
     next_run_times: _containers.RepeatedCompositeFieldContainer[_timestamp_pb2.Timestamp]
-    def __init__(self, next_run_times: _Optional[_Iterable[_Union[_timestamp_pb2.Timestamp, _Mapping]]] = ...) -> None: ...
+    def __init__(self, next_run_times: _Optional[_Iterable[_Union[datetime.datetime, _timestamp_pb2.Timestamp, _Mapping]]] = ...) -> None: ...
 
 class GetJobNextRunsRequest(_message.Message):
     __slots__ = ("job_id",)
@@ -1097,7 +1100,7 @@ class JobRun(_message.Message):
     started_at: _timestamp_pb2.Timestamp
     completed_at: _timestamp_pb2.Timestamp
     pending_activities: _containers.RepeatedCompositeFieldContainer[PendingActivity]
-    def __init__(self, id: _Optional[str] = ..., job_id: _Optional[str] = ..., name: _Optional[str] = ..., status: _Optional[_Union[JobRunStatus, str]] = ..., started_at: _Optional[_Union[_timestamp_pb2.Timestamp, _Mapping]] = ..., completed_at: _Optional[_Union[_timestamp_pb2.Timestamp, _Mapping]] = ..., pending_activities: _Optional[_Iterable[_Union[PendingActivity, _Mapping]]] = ...) -> None: ...
+    def __init__(self, id: _Optional[str] = ..., job_id: _Optional[str] = ..., name: _Optional[str] = ..., status: _Optional[_Union[JobRunStatus, str]] = ..., started_at: _Optional[_Union[datetime.datetime, _timestamp_pb2.Timestamp, _Mapping]] = ..., completed_at: _Optional[_Union[datetime.datetime, _timestamp_pb2.Timestamp, _Mapping]] = ..., pending_activities: _Optional[_Iterable[_Union[PendingActivity, _Mapping]]] = ...) -> None: ...
 
 class JobRunEventTaskError(_message.Message):
     __slots__ = ("message", "retry_state")
@@ -1117,7 +1120,7 @@ class JobRunEventTask(_message.Message):
     type: str
     event_time: _timestamp_pb2.Timestamp
     error: JobRunEventTaskError
-    def __init__(self, id: _Optional[int] = ..., type: _Optional[str] = ..., event_time: _Optional[_Union[_timestamp_pb2.Timestamp, _Mapping]] = ..., error: _Optional[_Union[JobRunEventTaskError, _Mapping]] = ...) -> None: ...
+    def __init__(self, id: _Optional[int] = ..., type: _Optional[str] = ..., event_time: _Optional[_Union[datetime.datetime, _timestamp_pb2.Timestamp, _Mapping]] = ..., error: _Optional[_Union[JobRunEventTaskError, _Mapping]] = ...) -> None: ...
 
 class JobRunSyncMetadata(_message.Message):
     __slots__ = ("schema", "table")
@@ -1147,7 +1150,7 @@ class JobRunEvent(_message.Message):
     close_time: _timestamp_pb2.Timestamp
     metadata: JobRunEventMetadata
     tasks: _containers.RepeatedCompositeFieldContainer[JobRunEventTask]
-    def __init__(self, id: _Optional[int] = ..., type: _Optional[str] = ..., start_time: _Optional[_Union[_timestamp_pb2.Timestamp, _Mapping]] = ..., close_time: _Optional[_Union[_timestamp_pb2.Timestamp, _Mapping]] = ..., metadata: _Optional[_Union[JobRunEventMetadata, _Mapping]] = ..., tasks: _Optional[_Iterable[_Union[JobRunEventTask, _Mapping]]] = ...) -> None: ...
+    def __init__(self, id: _Optional[int] = ..., type: _Optional[str] = ..., start_time: _Optional[_Union[datetime.datetime, _timestamp_pb2.Timestamp, _Mapping]] = ..., close_time: _Optional[_Union[datetime.datetime, _timestamp_pb2.Timestamp, _Mapping]] = ..., metadata: _Optional[_Union[JobRunEventMetadata, _Mapping]] = ..., tasks: _Optional[_Iterable[_Union[JobRunEventTask, _Mapping]]] = ...) -> None: ...
 
 class GetJobRunEventsRequest(_message.Message):
     __slots__ = ("job_run_id", "account_id")
@@ -1163,7 +1166,7 @@ class GetJobRunEventsResponse(_message.Message):
     IS_RUN_COMPLETE_FIELD_NUMBER: _ClassVar[int]
     events: _containers.RepeatedCompositeFieldContainer[JobRunEvent]
     is_run_complete: bool
-    def __init__(self, events: _Optional[_Iterable[_Union[JobRunEvent, _Mapping]]] = ..., is_run_complete: bool = ...) -> None: ...
+    def __init__(self, events: _Optional[_Iterable[_Union[JobRunEvent, _Mapping]]] = ..., is_run_complete: _Optional[bool] = ...) -> None: ...
 
 class DeleteJobRunRequest(_message.Message):
     __slots__ = ("job_run_id", "account_id")
@@ -1203,7 +1206,7 @@ class GetJobRunLogsStreamRequest(_message.Message):
     should_tail: bool
     max_log_lines: int
     log_levels: _containers.RepeatedScalarFieldContainer[LogLevel]
-    def __init__(self, job_run_id: _Optional[str] = ..., account_id: _Optional[str] = ..., window: _Optional[_Union[LogWindow, str]] = ..., should_tail: bool = ..., max_log_lines: _Optional[int] = ..., log_levels: _Optional[_Iterable[_Union[LogLevel, str]]] = ...) -> None: ...
+    def __init__(self, job_run_id: _Optional[str] = ..., account_id: _Optional[str] = ..., window: _Optional[_Union[LogWindow, str]] = ..., should_tail: _Optional[bool] = ..., max_log_lines: _Optional[int] = ..., log_levels: _Optional[_Iterable[_Union[LogLevel, str]]] = ...) -> None: ...
 
 class GetJobRunLogsStreamResponse(_message.Message):
     __slots__ = ("log_line", "timestamp", "labels")
@@ -1220,7 +1223,7 @@ class GetJobRunLogsStreamResponse(_message.Message):
     log_line: str
     timestamp: _timestamp_pb2.Timestamp
     labels: _containers.ScalarMap[str, str]
-    def __init__(self, log_line: _Optional[str] = ..., timestamp: _Optional[_Union[_timestamp_pb2.Timestamp, _Mapping]] = ..., labels: _Optional[_Mapping[str, str]] = ...) -> None: ...
+    def __init__(self, log_line: _Optional[str] = ..., timestamp: _Optional[_Union[datetime.datetime, _timestamp_pb2.Timestamp, _Mapping]] = ..., labels: _Optional[_Mapping[str, str]] = ...) -> None: ...
 
 class GetJobRunLogsRequest(_message.Message):
     __slots__ = ("job_run_id", "account_id", "window", "max_log_lines", "log_levels")
@@ -1253,7 +1256,7 @@ class GetJobRunLogsResponse(_message.Message):
         log_line: str
         timestamp: _timestamp_pb2.Timestamp
         labels: _containers.ScalarMap[str, str]
-        def __init__(self, log_line: _Optional[str] = ..., timestamp: _Optional[_Union[_timestamp_pb2.Timestamp, _Mapping]] = ..., labels: _Optional[_Mapping[str, str]] = ...) -> None: ...
+        def __init__(self, log_line: _Optional[str] = ..., timestamp: _Optional[_Union[datetime.datetime, _timestamp_pb2.Timestamp, _Mapping]] = ..., labels: _Optional[_Mapping[str, str]] = ...) -> None: ...
     LOG_LINES_FIELD_NUMBER: _ClassVar[int]
     log_lines: _containers.RepeatedCompositeFieldContainer[GetJobRunLogsResponse.LogLine]
     def __init__(self, log_lines: _Optional[_Iterable[_Union[GetJobRunLogsResponse.LogLine, _Mapping]]] = ...) -> None: ...
@@ -1561,7 +1564,7 @@ class JobHook(_message.Message):
     updated_at: _timestamp_pb2.Timestamp
     enabled: bool
     priority: int
-    def __init__(self, id: _Optional[str] = ..., name: _Optional[str] = ..., description: _Optional[str] = ..., job_id: _Optional[str] = ..., config: _Optional[_Union[JobHookConfig, _Mapping]] = ..., created_by_user_id: _Optional[str] = ..., created_at: _Optional[_Union[_timestamp_pb2.Timestamp, _Mapping]] = ..., updated_by_user_id: _Optional[str] = ..., updated_at: _Optional[_Union[_timestamp_pb2.Timestamp, _Mapping]] = ..., enabled: bool = ..., priority: _Optional[int] = ...) -> None: ...
+    def __init__(self, id: _Optional[str] = ..., name: _Optional[str] = ..., description: _Optional[str] = ..., job_id: _Optional[str] = ..., config: _Optional[_Union[JobHookConfig, _Mapping]] = ..., created_by_user_id: _Optional[str] = ..., created_at: _Optional[_Union[datetime.datetime, _timestamp_pb2.Timestamp, _Mapping]] = ..., updated_by_user_id: _Optional[str] = ..., updated_at: _Optional[_Union[datetime.datetime, _timestamp_pb2.Timestamp, _Mapping]] = ..., enabled: _Optional[bool] = ..., priority: _Optional[int] = ...) -> None: ...
 
 class NewJobHook(_message.Message):
     __slots__ = ("name", "description", "config", "enabled", "priority")
@@ -1575,7 +1578,7 @@ class NewJobHook(_message.Message):
     config: JobHookConfig
     enabled: bool
     priority: int
-    def __init__(self, name: _Optional[str] = ..., description: _Optional[str] = ..., config: _Optional[_Union[JobHookConfig, _Mapping]] = ..., enabled: bool = ..., priority: _Optional[int] = ...) -> None: ...
+    def __init__(self, name: _Optional[str] = ..., description: _Optional[str] = ..., config: _Optional[_Union[JobHookConfig, _Mapping]] = ..., enabled: _Optional[bool] = ..., priority: _Optional[int] = ...) -> None: ...
 
 class JobHookConfig(_message.Message):
     __slots__ = ("sql",)
@@ -1667,7 +1670,7 @@ class IsJobHookNameAvailableResponse(_message.Message):
     __slots__ = ("is_available",)
     IS_AVAILABLE_FIELD_NUMBER: _ClassVar[int]
     is_available: bool
-    def __init__(self, is_available: bool = ...) -> None: ...
+    def __init__(self, is_available: _Optional[bool] = ...) -> None: ...
 
 class UpdateJobHookRequest(_message.Message):
     __slots__ = ("id", "name", "description", "config", "enabled", "priority")
@@ -1683,7 +1686,7 @@ class UpdateJobHookRequest(_message.Message):
     config: JobHookConfig
     enabled: bool
     priority: int
-    def __init__(self, id: _Optional[str] = ..., name: _Optional[str] = ..., description: _Optional[str] = ..., config: _Optional[_Union[JobHookConfig, _Mapping]] = ..., enabled: bool = ..., priority: _Optional[int] = ...) -> None: ...
+    def __init__(self, id: _Optional[str] = ..., name: _Optional[str] = ..., description: _Optional[str] = ..., config: _Optional[_Union[JobHookConfig, _Mapping]] = ..., enabled: _Optional[bool] = ..., priority: _Optional[int] = ...) -> None: ...
 
 class UpdateJobHookResponse(_message.Message):
     __slots__ = ("hook",)
@@ -1697,7 +1700,7 @@ class SetJobHookEnabledRequest(_message.Message):
     ENABLED_FIELD_NUMBER: _ClassVar[int]
     id: str
     enabled: bool
-    def __init__(self, id: _Optional[str] = ..., enabled: bool = ...) -> None: ...
+    def __init__(self, id: _Optional[str] = ..., enabled: _Optional[bool] = ...) -> None: ...
 
 class SetJobHookEnabledResponse(_message.Message):
     __slots__ = ("hook",)

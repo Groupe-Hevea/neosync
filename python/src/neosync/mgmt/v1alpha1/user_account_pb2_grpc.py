@@ -5,7 +5,7 @@ import grpc
 from mgmt.v1alpha1 import user_account_pb2 as mgmt_dot_v1alpha1_dot_user__account__pb2
 
 
-class UserAccountServiceStub(object):
+class UserAccountServiceStub:
     """Service that manages users, accounts, and billing
     """
 
@@ -152,7 +152,7 @@ class UserAccountServiceStub(object):
                 _registered_method=True)
 
 
-class UserAccountServiceServicer(object):
+class UserAccountServiceServicer:
     """Service that manages users, accounts, and billing
     """
 
@@ -491,7 +491,7 @@ def add_UserAccountServiceServicer_to_server(servicer, server):
 
 
  # This class is part of an EXPERIMENTAL API.
-class UserAccountService(object):
+class UserAccountService:
     """Service that manages users, accounts, and billing
     """
 

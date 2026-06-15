@@ -1,7 +1,8 @@
 from buf.validate import validate_pb2 as _validate_pb2
 from google.protobuf import descriptor as _descriptor
 from google.protobuf import message as _message
-from typing import ClassVar as _ClassVar, Mapping as _Mapping, Optional as _Optional, Union as _Union
+from collections.abc import Mapping as _Mapping
+from typing import ClassVar as _ClassVar, Optional as _Optional, Union as _Union
 
 DESCRIPTOR: _descriptor.FileDescriptor
 
@@ -27,7 +28,7 @@ class GetAuthStatusResponse(_message.Message):
     __slots__ = ("is_enabled",)
     IS_ENABLED_FIELD_NUMBER: _ClassVar[int]
     is_enabled: bool
-    def __init__(self, is_enabled: bool = ...) -> None: ...
+    def __init__(self, is_enabled: _Optional[bool] = ...) -> None: ...
 
 class AccessToken(_message.Message):
     __slots__ = ("access_token", "refresh_token", "expires_in", "scope", "id_token", "token_type")

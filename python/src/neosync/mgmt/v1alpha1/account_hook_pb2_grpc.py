@@ -5,7 +5,7 @@ import grpc
 from mgmt.v1alpha1 import account_hook_pb2 as mgmt_dot_v1alpha1_dot_account__hook__pb2
 
 
-class AccountHookServiceStub(object):
+class AccountHookServiceStub:
     """Missing associated documentation comment in .proto file."""
 
     def __init__(self, channel):
@@ -76,7 +76,7 @@ class AccountHookServiceStub(object):
                 _registered_method=True)
 
 
-class AccountHookServiceServicer(object):
+class AccountHookServiceServicer:
     """Missing associated documentation comment in .proto file."""
 
     def GetAccountHooks(self, request, context):
@@ -234,7 +234,7 @@ def add_AccountHookServiceServicer_to_server(servicer, server):
 
 
  # This class is part of an EXPERIMENTAL API.
-class AccountHookService(object):
+class AccountHookService:
     """Missing associated documentation comment in .proto file."""
 
     @staticmethod

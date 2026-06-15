@@ -5,7 +5,7 @@ import grpc
 from mgmt.v1alpha1 import auth_pb2 as mgmt_dot_v1alpha1_dot_auth__pb2
 
 
-class AuthServiceStub(object):
+class AuthServiceStub:
     """Service that handles generic Authentication for Neosync
     Today this is mostly used by the CLI to receive authentication information
     """
@@ -43,7 +43,7 @@ class AuthServiceStub(object):
                 _registered_method=True)
 
 
-class AuthServiceServicer(object):
+class AuthServiceServicer:
     """Service that handles generic Authentication for Neosync
     Today this is mostly used by the CLI to receive authentication information
     """
@@ -121,7 +121,7 @@ def add_AuthServiceServicer_to_server(servicer, server):
 
 
  # This class is part of an EXPERIMENTAL API.
-class AuthService(object):
+class AuthService:
     """Service that handles generic Authentication for Neosync
     Today this is mostly used by the CLI to receive authentication information
     """

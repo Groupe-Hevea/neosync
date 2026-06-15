@@ -1,10 +1,13 @@
+import datetime
+
 from buf.validate import validate_pb2 as _validate_pb2
 from google.protobuf import timestamp_pb2 as _timestamp_pb2
 from google.protobuf.internal import containers as _containers
 from google.protobuf.internal import enum_type_wrapper as _enum_type_wrapper
 from google.protobuf import descriptor as _descriptor
 from google.protobuf import message as _message
-from typing import ClassVar as _ClassVar, Iterable as _Iterable, Mapping as _Mapping, Optional as _Optional, Union as _Union
+from collections.abc import Iterable as _Iterable, Mapping as _Mapping
+from typing import ClassVar as _ClassVar, Optional as _Optional, Union as _Union
 
 DESCRIPTOR: _descriptor.FileDescriptor
 
@@ -292,7 +295,7 @@ class IsTransformerNameAvailableResponse(_message.Message):
     __slots__ = ("is_available",)
     IS_AVAILABLE_FIELD_NUMBER: _ClassVar[int]
     is_available: bool
-    def __init__(self, is_available: bool = ...) -> None: ...
+    def __init__(self, is_available: _Optional[bool] = ...) -> None: ...
 
 class UserDefinedTransformer(_message.Message):
     __slots__ = ("id", "name", "description", "data_type", "source", "config", "created_at", "updated_at", "account_id", "data_types")
@@ -316,7 +319,7 @@ class UserDefinedTransformer(_message.Message):
     updated_at: _timestamp_pb2.Timestamp
     account_id: str
     data_types: _containers.RepeatedScalarFieldContainer[TransformerDataType]
-    def __init__(self, id: _Optional[str] = ..., name: _Optional[str] = ..., description: _Optional[str] = ..., data_type: _Optional[_Union[TransformerDataType, str]] = ..., source: _Optional[_Union[TransformerSource, str]] = ..., config: _Optional[_Union[TransformerConfig, _Mapping]] = ..., created_at: _Optional[_Union[_timestamp_pb2.Timestamp, _Mapping]] = ..., updated_at: _Optional[_Union[_timestamp_pb2.Timestamp, _Mapping]] = ..., account_id: _Optional[str] = ..., data_types: _Optional[_Iterable[_Union[TransformerDataType, str]]] = ...) -> None: ...
+    def __init__(self, id: _Optional[str] = ..., name: _Optional[str] = ..., description: _Optional[str] = ..., data_type: _Optional[_Union[TransformerDataType, str]] = ..., source: _Optional[_Union[TransformerSource, str]] = ..., config: _Optional[_Union[TransformerConfig, _Mapping]] = ..., created_at: _Optional[_Union[datetime.datetime, _timestamp_pb2.Timestamp, _Mapping]] = ..., updated_at: _Optional[_Union[datetime.datetime, _timestamp_pb2.Timestamp, _Mapping]] = ..., account_id: _Optional[str] = ..., data_types: _Optional[_Iterable[_Union[TransformerDataType, str]]] = ...) -> None: ...
 
 class SystemTransformer(_message.Message):
     __slots__ = ("name", "description", "data_type", "source", "config", "data_types", "supported_job_types")
@@ -491,7 +494,7 @@ class PiiAnonymizer(_message.Message):
         masking_char: str
         chars_to_mask: int
         from_end: bool
-        def __init__(self, masking_char: _Optional[str] = ..., chars_to_mask: _Optional[int] = ..., from_end: bool = ...) -> None: ...
+        def __init__(self, masking_char: _Optional[str] = ..., chars_to_mask: _Optional[int] = ..., from_end: _Optional[bool] = ...) -> None: ...
     class Hash(_message.Message):
         __slots__ = ("algo",)
         class HashType(int, metaclass=_enum_type_wrapper.EnumTypeWrapper):
@@ -542,7 +545,7 @@ class TransformEmail(_message.Message):
     excluded_domains: _containers.RepeatedScalarFieldContainer[str]
     email_type: GenerateEmailType
     invalid_email_action: InvalidEmailAction
-    def __init__(self, preserve_domain: bool = ..., preserve_length: bool = ..., excluded_domains: _Optional[_Iterable[str]] = ..., email_type: _Optional[_Union[GenerateEmailType, str]] = ..., invalid_email_action: _Optional[_Union[InvalidEmailAction, str]] = ...) -> None: ...
+    def __init__(self, preserve_domain: _Optional[bool] = ..., preserve_length: _Optional[bool] = ..., excluded_domains: _Optional[_Iterable[str]] = ..., email_type: _Optional[_Union[GenerateEmailType, str]] = ..., invalid_email_action: _Optional[_Union[InvalidEmailAction, str]] = ...) -> None: ...
 
 class GenerateBool(_message.Message):
     __slots__ = ()
@@ -552,7 +555,7 @@ class GenerateCardNumber(_message.Message):
     __slots__ = ("valid_luhn",)
     VALID_LUHN_FIELD_NUMBER: _ClassVar[int]
     valid_luhn: bool
-    def __init__(self, valid_luhn: bool = ...) -> None: ...
+    def __init__(self, valid_luhn: _Optional[bool] = ...) -> None: ...
 
 class GenerateCity(_message.Message):
     __slots__ = ()
@@ -584,7 +587,7 @@ class GenerateFloat64(_message.Message):
     min: float
     max: float
     precision: int
-    def __init__(self, randomize_sign: bool = ..., min: _Optional[float] = ..., max: _Optional[float] = ..., precision: _Optional[int] = ...) -> None: ...
+    def __init__(self, randomize_sign: _Optional[bool] = ..., min: _Optional[float] = ..., max: _Optional[float] = ..., precision: _Optional[int] = ...) -> None: ...
 
 class GenerateFullAddress(_message.Message):
     __slots__ = ()
@@ -598,7 +601,7 @@ class GenerateGender(_message.Message):
     __slots__ = ("abbreviate",)
     ABBREVIATE_FIELD_NUMBER: _ClassVar[int]
     abbreviate: bool
-    def __init__(self, abbreviate: bool = ...) -> None: ...
+    def __init__(self, abbreviate: _Optional[bool] = ...) -> None: ...
 
 class GenerateInt64PhoneNumber(_message.Message):
     __slots__ = ()
@@ -612,7 +615,7 @@ class GenerateInt64(_message.Message):
     randomize_sign: bool
     min: int
     max: int
-    def __init__(self, randomize_sign: bool = ..., min: _Optional[int] = ..., max: _Optional[int] = ...) -> None: ...
+    def __init__(self, randomize_sign: _Optional[bool] = ..., min: _Optional[int] = ..., max: _Optional[int] = ...) -> None: ...
 
 class GenerateLastName(_message.Message):
     __slots__ = ()
@@ -630,7 +633,7 @@ class GenerateState(_message.Message):
     __slots__ = ("generate_full_name",)
     GENERATE_FULL_NAME_FIELD_NUMBER: _ClassVar[int]
     generate_full_name: bool
-    def __init__(self, generate_full_name: bool = ...) -> None: ...
+    def __init__(self, generate_full_name: _Optional[bool] = ...) -> None: ...
 
 class GenerateStreetAddress(_message.Message):
     __slots__ = ()
@@ -668,7 +671,7 @@ class GenerateUuid(_message.Message):
     __slots__ = ("include_hyphens",)
     INCLUDE_HYPHENS_FIELD_NUMBER: _ClassVar[int]
     include_hyphens: bool
-    def __init__(self, include_hyphens: bool = ...) -> None: ...
+    def __init__(self, include_hyphens: _Optional[bool] = ...) -> None: ...
 
 class GenerateZipcode(_message.Message):
     __slots__ = ()
@@ -678,13 +681,13 @@ class TransformE164PhoneNumber(_message.Message):
     __slots__ = ("preserve_length",)
     PRESERVE_LENGTH_FIELD_NUMBER: _ClassVar[int]
     preserve_length: bool
-    def __init__(self, preserve_length: bool = ...) -> None: ...
+    def __init__(self, preserve_length: _Optional[bool] = ...) -> None: ...
 
 class TransformFirstName(_message.Message):
     __slots__ = ("preserve_length",)
     PRESERVE_LENGTH_FIELD_NUMBER: _ClassVar[int]
     preserve_length: bool
-    def __init__(self, preserve_length: bool = ...) -> None: ...
+    def __init__(self, preserve_length: _Optional[bool] = ...) -> None: ...
 
 class TransformFloat64(_message.Message):
     __slots__ = ("randomization_range_min", "randomization_range_max")
@@ -698,13 +701,13 @@ class TransformFullName(_message.Message):
     __slots__ = ("preserve_length",)
     PRESERVE_LENGTH_FIELD_NUMBER: _ClassVar[int]
     preserve_length: bool
-    def __init__(self, preserve_length: bool = ...) -> None: ...
+    def __init__(self, preserve_length: _Optional[bool] = ...) -> None: ...
 
 class TransformInt64PhoneNumber(_message.Message):
     __slots__ = ("preserve_length",)
     PRESERVE_LENGTH_FIELD_NUMBER: _ClassVar[int]
     preserve_length: bool
-    def __init__(self, preserve_length: bool = ...) -> None: ...
+    def __init__(self, preserve_length: _Optional[bool] = ...) -> None: ...
 
 class TransformInt64(_message.Message):
     __slots__ = ("randomization_range_min", "randomization_range_max")
@@ -718,19 +721,19 @@ class TransformLastName(_message.Message):
     __slots__ = ("preserve_length",)
     PRESERVE_LENGTH_FIELD_NUMBER: _ClassVar[int]
     preserve_length: bool
-    def __init__(self, preserve_length: bool = ...) -> None: ...
+    def __init__(self, preserve_length: _Optional[bool] = ...) -> None: ...
 
 class TransformPhoneNumber(_message.Message):
     __slots__ = ("preserve_length",)
     PRESERVE_LENGTH_FIELD_NUMBER: _ClassVar[int]
     preserve_length: bool
-    def __init__(self, preserve_length: bool = ...) -> None: ...
+    def __init__(self, preserve_length: _Optional[bool] = ...) -> None: ...
 
 class TransformString(_message.Message):
     __slots__ = ("preserve_length",)
     PRESERVE_LENGTH_FIELD_NUMBER: _ClassVar[int]
     preserve_length: bool
-    def __init__(self, preserve_length: bool = ...) -> None: ...
+    def __init__(self, preserve_length: _Optional[bool] = ...) -> None: ...
 
 class Passthrough(_message.Message):
     __slots__ = ()
@@ -762,7 +765,7 @@ class ValidateUserJavascriptCodeResponse(_message.Message):
     __slots__ = ("valid",)
     VALID_FIELD_NUMBER: _ClassVar[int]
     valid: bool
-    def __init__(self, valid: bool = ...) -> None: ...
+    def __init__(self, valid: _Optional[bool] = ...) -> None: ...
 
 class GenerateCategorical(_message.Message):
     __slots__ = ("categories",)
@@ -792,13 +795,13 @@ class ValidateUserRegexCodeResponse(_message.Message):
     __slots__ = ("valid",)
     VALID_FIELD_NUMBER: _ClassVar[int]
     valid: bool
-    def __init__(self, valid: bool = ...) -> None: ...
+    def __init__(self, valid: _Optional[bool] = ...) -> None: ...
 
 class GenerateCountry(_message.Message):
     __slots__ = ("generate_full_name",)
     GENERATE_FULL_NAME_FIELD_NUMBER: _ClassVar[int]
     generate_full_name: bool
-    def __init__(self, generate_full_name: bool = ...) -> None: ...
+    def __init__(self, generate_full_name: _Optional[bool] = ...) -> None: ...
 
 class GetTransformPiiEntitiesRequest(_message.Message):
     __slots__ = ("account_id",)

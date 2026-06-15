@@ -1,10 +1,13 @@
+import datetime
+
 from buf.validate import validate_pb2 as _validate_pb2
 from google.protobuf import timestamp_pb2 as _timestamp_pb2
 from google.protobuf.internal import containers as _containers
 from google.protobuf.internal import enum_type_wrapper as _enum_type_wrapper
 from google.protobuf import descriptor as _descriptor
 from google.protobuf import message as _message
-from typing import ClassVar as _ClassVar, Iterable as _Iterable, Mapping as _Mapping, Optional as _Optional, Union as _Union
+from collections.abc import Iterable as _Iterable, Mapping as _Mapping
+from typing import ClassVar as _ClassVar, Optional as _Optional, Union as _Union
 
 DESCRIPTOR: _descriptor.FileDescriptor
 
@@ -96,7 +99,7 @@ class UserAccount(_message.Message):
     name: str
     type: UserAccountType
     has_stripe_customer_id: bool
-    def __init__(self, id: _Optional[str] = ..., name: _Optional[str] = ..., type: _Optional[_Union[UserAccountType, str]] = ..., has_stripe_customer_id: bool = ...) -> None: ...
+    def __init__(self, id: _Optional[str] = ..., name: _Optional[str] = ..., type: _Optional[_Union[UserAccountType, str]] = ..., has_stripe_customer_id: _Optional[bool] = ...) -> None: ...
 
 class ConvertPersonalToTeamAccountRequest(_message.Message):
     __slots__ = ("name", "account_id")
@@ -136,7 +139,7 @@ class IsUserInAccountResponse(_message.Message):
     __slots__ = ("ok",)
     OK_FIELD_NUMBER: _ClassVar[int]
     ok: bool
-    def __init__(self, ok: bool = ...) -> None: ...
+    def __init__(self, ok: _Optional[bool] = ...) -> None: ...
 
 class GetAccountTemporalConfigRequest(_message.Message):
     __slots__ = ("account_id",)
@@ -258,7 +261,7 @@ class AccountInvite(_message.Message):
     updated_at: _timestamp_pb2.Timestamp
     expires_at: _timestamp_pb2.Timestamp
     role: AccountRole
-    def __init__(self, id: _Optional[str] = ..., account_id: _Optional[str] = ..., sender_user_id: _Optional[str] = ..., email: _Optional[str] = ..., token: _Optional[str] = ..., accepted: bool = ..., created_at: _Optional[_Union[_timestamp_pb2.Timestamp, _Mapping]] = ..., updated_at: _Optional[_Union[_timestamp_pb2.Timestamp, _Mapping]] = ..., expires_at: _Optional[_Union[_timestamp_pb2.Timestamp, _Mapping]] = ..., role: _Optional[_Union[AccountRole, str]] = ...) -> None: ...
+    def __init__(self, id: _Optional[str] = ..., account_id: _Optional[str] = ..., sender_user_id: _Optional[str] = ..., email: _Optional[str] = ..., token: _Optional[str] = ..., accepted: _Optional[bool] = ..., created_at: _Optional[_Union[datetime.datetime, _timestamp_pb2.Timestamp, _Mapping]] = ..., updated_at: _Optional[_Union[datetime.datetime, _timestamp_pb2.Timestamp, _Mapping]] = ..., expires_at: _Optional[_Union[datetime.datetime, _timestamp_pb2.Timestamp, _Mapping]] = ..., role: _Optional[_Union[AccountRole, str]] = ...) -> None: ...
 
 class InviteUserToTeamAccountResponse(_message.Message):
     __slots__ = ("invite",)
@@ -318,7 +321,7 @@ class GetSystemInformationResponse(_message.Message):
     platform: str
     build_date: _timestamp_pb2.Timestamp
     license: SystemLicense
-    def __init__(self, version: _Optional[str] = ..., commit: _Optional[str] = ..., compiler: _Optional[str] = ..., platform: _Optional[str] = ..., build_date: _Optional[_Union[_timestamp_pb2.Timestamp, _Mapping]] = ..., license: _Optional[_Union[SystemLicense, _Mapping]] = ...) -> None: ...
+    def __init__(self, version: _Optional[str] = ..., commit: _Optional[str] = ..., compiler: _Optional[str] = ..., platform: _Optional[str] = ..., build_date: _Optional[_Union[datetime.datetime, _timestamp_pb2.Timestamp, _Mapping]] = ..., license: _Optional[_Union[SystemLicense, _Mapping]] = ...) -> None: ...
 
 class SystemLicense(_message.Message):
     __slots__ = ("is_valid", "expires_at", "is_neosync_cloud")
@@ -328,7 +331,7 @@ class SystemLicense(_message.Message):
     is_valid: bool
     expires_at: _timestamp_pb2.Timestamp
     is_neosync_cloud: bool
-    def __init__(self, is_valid: bool = ..., expires_at: _Optional[_Union[_timestamp_pb2.Timestamp, _Mapping]] = ..., is_neosync_cloud: bool = ...) -> None: ...
+    def __init__(self, is_valid: _Optional[bool] = ..., expires_at: _Optional[_Union[datetime.datetime, _timestamp_pb2.Timestamp, _Mapping]] = ..., is_neosync_cloud: _Optional[bool] = ...) -> None: ...
 
 class GetAccountOnboardingConfigRequest(_message.Message):
     __slots__ = ("account_id",)
@@ -360,7 +363,7 @@ class AccountOnboardingConfig(_message.Message):
     __slots__ = ("has_completed_onboarding",)
     HAS_COMPLETED_ONBOARDING_FIELD_NUMBER: _ClassVar[int]
     has_completed_onboarding: bool
-    def __init__(self, has_completed_onboarding: bool = ...) -> None: ...
+    def __init__(self, has_completed_onboarding: _Optional[bool] = ...) -> None: ...
 
 class GetAccountStatusRequest(_message.Message):
     __slots__ = ("account_id",)
@@ -398,7 +401,7 @@ class IsAccountStatusValidResponse(_message.Message):
     should_poll: bool
     account_status: AccountStatus
     trial_expires_at: _timestamp_pb2.Timestamp
-    def __init__(self, is_valid: bool = ..., reason: _Optional[str] = ..., should_poll: bool = ..., account_status: _Optional[_Union[AccountStatus, str]] = ..., trial_expires_at: _Optional[_Union[_timestamp_pb2.Timestamp, _Mapping]] = ...) -> None: ...
+    def __init__(self, is_valid: _Optional[bool] = ..., reason: _Optional[str] = ..., should_poll: _Optional[bool] = ..., account_status: _Optional[_Union[AccountStatus, str]] = ..., trial_expires_at: _Optional[_Union[datetime.datetime, _timestamp_pb2.Timestamp, _Mapping]] = ...) -> None: ...
 
 class GetAccountBillingCheckoutSessionRequest(_message.Message):
     __slots__ = ("account_id",)
@@ -512,7 +515,7 @@ class HasPermissionResponse(_message.Message):
     __slots__ = ("has_permission",)
     HAS_PERMISSION_FIELD_NUMBER: _ClassVar[int]
     has_permission: bool
-    def __init__(self, has_permission: bool = ...) -> None: ...
+    def __init__(self, has_permission: _Optional[bool] = ...) -> None: ...
 
 class HasPermissionsRequest(_message.Message):
     __slots__ = ("account_id", "resources")

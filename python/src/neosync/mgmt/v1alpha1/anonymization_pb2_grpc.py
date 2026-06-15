@@ -5,7 +5,7 @@ import grpc
 from mgmt.v1alpha1 import anonymization_pb2 as mgmt_dot_v1alpha1_dot_anonymization__pb2
 
 
-class AnonymizationServiceStub(object):
+class AnonymizationServiceStub:
     """Service that transactionally anonymizes data, regardless of the connection type.
     """
 
@@ -27,7 +27,7 @@ class AnonymizationServiceStub(object):
                 _registered_method=True)
 
 
-class AnonymizationServiceServicer(object):
+class AnonymizationServiceServicer:
     """Service that transactionally anonymizes data, regardless of the connection type.
     """
 
@@ -66,7 +66,7 @@ def add_AnonymizationServiceServicer_to_server(servicer, server):
 
 
  # This class is part of an EXPERIMENTAL API.
-class AnonymizationService(object):
+class AnonymizationService:
     """Service that transactionally anonymizes data, regardless of the connection type.
     """
 

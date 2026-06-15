@@ -5,7 +5,7 @@ import grpc
 from mgmt.v1alpha1 import transformer_pb2 as mgmt_dot_v1alpha1_dot_transformer__pb2
 
 
-class TransformersServiceStub(object):
+class TransformersServiceStub:
     """Service that manages system and user defined transformers
     """
 
@@ -72,7 +72,7 @@ class TransformersServiceStub(object):
                 _registered_method=True)
 
 
-class TransformersServiceServicer(object):
+class TransformersServiceServicer:
     """Service that manages system and user defined transformers
     """
 
@@ -219,7 +219,7 @@ def add_TransformersServiceServicer_to_server(servicer, server):
 
 
  # This class is part of an EXPERIMENTAL API.
-class TransformersService(object):
+class TransformersService:
     """Service that manages system and user defined transformers
     """
 

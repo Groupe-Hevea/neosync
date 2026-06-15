@@ -1,9 +1,12 @@
+import datetime
+
 from buf.validate import validate_pb2 as _validate_pb2
 from google.protobuf import timestamp_pb2 as _timestamp_pb2
 from google.protobuf.internal import containers as _containers
 from google.protobuf import descriptor as _descriptor
 from google.protobuf import message as _message
-from typing import ClassVar as _ClassVar, Iterable as _Iterable, Mapping as _Mapping, Optional as _Optional, Union as _Union
+from collections.abc import Iterable as _Iterable, Mapping as _Mapping
+from typing import ClassVar as _ClassVar, Optional as _Optional, Union as _Union
 
 DESCRIPTOR: _descriptor.FileDescriptor
 
@@ -15,7 +18,7 @@ class CreateAccountApiKeyRequest(_message.Message):
     account_id: str
     name: str
     expires_at: _timestamp_pb2.Timestamp
-    def __init__(self, account_id: _Optional[str] = ..., name: _Optional[str] = ..., expires_at: _Optional[_Union[_timestamp_pb2.Timestamp, _Mapping]] = ...) -> None: ...
+    def __init__(self, account_id: _Optional[str] = ..., name: _Optional[str] = ..., expires_at: _Optional[_Union[datetime.datetime, _timestamp_pb2.Timestamp, _Mapping]] = ...) -> None: ...
 
 class CreateAccountApiKeyResponse(_message.Message):
     __slots__ = ("api_key",)
@@ -45,7 +48,7 @@ class AccountApiKey(_message.Message):
     key_value: str
     user_id: str
     expires_at: _timestamp_pb2.Timestamp
-    def __init__(self, id: _Optional[str] = ..., name: _Optional[str] = ..., account_id: _Optional[str] = ..., created_by_id: _Optional[str] = ..., created_at: _Optional[_Union[_timestamp_pb2.Timestamp, _Mapping]] = ..., updated_by_id: _Optional[str] = ..., updated_at: _Optional[_Union[_timestamp_pb2.Timestamp, _Mapping]] = ..., key_value: _Optional[str] = ..., user_id: _Optional[str] = ..., expires_at: _Optional[_Union[_timestamp_pb2.Timestamp, _Mapping]] = ...) -> None: ...
+    def __init__(self, id: _Optional[str] = ..., name: _Optional[str] = ..., account_id: _Optional[str] = ..., created_by_id: _Optional[str] = ..., created_at: _Optional[_Union[datetime.datetime, _timestamp_pb2.Timestamp, _Mapping]] = ..., updated_by_id: _Optional[str] = ..., updated_at: _Optional[_Union[datetime.datetime, _timestamp_pb2.Timestamp, _Mapping]] = ..., key_value: _Optional[str] = ..., user_id: _Optional[str] = ..., expires_at: _Optional[_Union[datetime.datetime, _timestamp_pb2.Timestamp, _Mapping]] = ...) -> None: ...
 
 class GetAccountApiKeysRequest(_message.Message):
     __slots__ = ("account_id",)
@@ -77,7 +80,7 @@ class RegenerateAccountApiKeyRequest(_message.Message):
     EXPIRES_AT_FIELD_NUMBER: _ClassVar[int]
     id: str
     expires_at: _timestamp_pb2.Timestamp
-    def __init__(self, id: _Optional[str] = ..., expires_at: _Optional[_Union[_timestamp_pb2.Timestamp, _Mapping]] = ...) -> None: ...
+    def __init__(self, id: _Optional[str] = ..., expires_at: _Optional[_Union[datetime.datetime, _timestamp_pb2.Timestamp, _Mapping]] = ...) -> None: ...
 
 class RegenerateAccountApiKeyResponse(_message.Message):
     __slots__ = ("api_key",)

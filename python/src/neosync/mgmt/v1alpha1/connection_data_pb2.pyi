@@ -3,7 +3,8 @@ from google.protobuf import struct_pb2 as _struct_pb2
 from google.protobuf.internal import containers as _containers
 from google.protobuf import descriptor as _descriptor
 from google.protobuf import message as _message
-from typing import ClassVar as _ClassVar, Iterable as _Iterable, Mapping as _Mapping, Optional as _Optional, Union as _Union
+from collections.abc import Iterable as _Iterable, Mapping as _Mapping
+from typing import ClassVar as _ClassVar, Optional as _Optional, Union as _Union
 
 DESCRIPTOR: _descriptor.FileDescriptor
 
@@ -222,7 +223,7 @@ class InitStatementOptions(_message.Message):
     init_schema: bool
     truncate_before_insert: bool
     truncate_cascade: bool
-    def __init__(self, init_schema: bool = ..., truncate_before_insert: bool = ..., truncate_cascade: bool = ...) -> None: ...
+    def __init__(self, init_schema: _Optional[bool] = ..., truncate_before_insert: _Optional[bool] = ..., truncate_cascade: _Optional[bool] = ...) -> None: ...
 
 class GetConnectionInitStatementsRequest(_message.Message):
     __slots__ = ("connection_id", "options")

@@ -5,7 +5,7 @@ import grpc
 from mgmt.v1alpha1 import api_key_pb2 as mgmt_dot_v1alpha1_dot_api__key__pb2
 
 
-class ApiKeyServiceStub(object):
+class ApiKeyServiceStub:
     """Service that manages the lifecycle of API Keys that are associated with a specific Account.
     """
 
@@ -42,7 +42,7 @@ class ApiKeyServiceStub(object):
                 _registered_method=True)
 
 
-class ApiKeyServiceServicer(object):
+class ApiKeyServiceServicer:
     """Service that manages the lifecycle of API Keys that are associated with a specific Account.
     """
 
@@ -119,7 +119,7 @@ def add_ApiKeyServiceServicer_to_server(servicer, server):
 
 
  # This class is part of an EXPERIMENTAL API.
-class ApiKeyService(object):
+class ApiKeyService:
     """Service that manages the lifecycle of API Keys that are associated with a specific Account.
     """
 

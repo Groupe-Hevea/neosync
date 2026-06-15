@@ -5,7 +5,7 @@ import grpc
 from mgmt.v1alpha1 import connection_data_pb2 as mgmt_dot_v1alpha1_dot_connection__data__pb2
 
 
-class ConnectionDataServiceStub(object):
+class ConnectionDataServiceStub:
     """Service for managing connection data.
     This is used in handle data from a connection
     """
@@ -63,7 +63,7 @@ class ConnectionDataServiceStub(object):
                 _registered_method=True)
 
 
-class ConnectionDataServiceServicer(object):
+class ConnectionDataServiceServicer:
     """Service for managing connection data.
     This is used in handle data from a connection
     """
@@ -189,7 +189,7 @@ def add_ConnectionDataServiceServicer_to_server(servicer, server):
 
 
  # This class is part of an EXPERIMENTAL API.
-class ConnectionDataService(object):
+class ConnectionDataService:
     """Service for managing connection data.
     This is used in handle data from a connection
     """
