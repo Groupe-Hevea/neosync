@@ -7,6 +7,6 @@ export const siteConfig = {
   links: {
     discord: 'https://discord.com/invite/MFAMgnp4HF',
     github: 'https://github.com/Groupe-Hevea/neosync',
-    docs: 'https://docs.neosync.dev',
+    docs: 'https://docs.neosync.allopneus.com',
   },
 };

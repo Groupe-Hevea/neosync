@@ -61,7 +61,7 @@ tags:
     x-displayName: mgmt.v1alpha1.UserAccountService
 externalDocs:
   description: API and SDK Documentation
-  url: https://docs.neosync.dev/api
+  url: https://docs.neosync.allopneus.com/api
 paths:
   /mgmt.v1alpha1.AccountHookService/GetAccountHooks:
     post:

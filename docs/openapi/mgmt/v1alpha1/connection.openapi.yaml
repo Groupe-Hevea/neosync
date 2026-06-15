@@ -12,7 +12,7 @@ info:
   title: mgmt.v1alpha1
 externalDocs:
   description: API and SDK Documentation
-  url: https://docs.neosync.dev/api
+  url: https://docs.neosync.allopneus.com/api
 servers:
   - url: https://neosync-api.svcs.neosync.dev
     description: Neosync Cloud

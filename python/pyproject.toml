@@ -44,7 +44,7 @@ keywords = [
 [project.urls]
 Homepage = "https://github.com/Groupe-Hevea/neosync"
 Issues = "https://github.com/Groupe-Hevea/neosync/issues"
-Documentation = "https://docs.neosync.dev/api/python"
+Documentation = "https://docs.neosync.allopneus.com/api/python"
 
 
 [tool.hatch.version]

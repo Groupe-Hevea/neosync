@@ -8,4 +8,4 @@ This is the Python SDK for the Neosync API.
 pip install neosync
 ```
 
-For more details and examples, see the [docs](https://docs.neosync.dev/api/python).
+For more details and examples, see the [docs](https://docs.neosync.allopneus.com/api/python).
