@@ -19,10 +19,10 @@ const config: Config = {
     },
   ],
   // Set the production url of your s here
-  url: 'https://groupe-hevea.github.io',
+  url: 'https://docs.neosync.allopneus.com',
   // Set the /<baseUrl>/ pathname under which your site is served
   // For GitHub pages deployment, it is often '/<projectName>/'
-  baseUrl: '/neosync/',
+  baseUrl: '/',
 
   // GitHub pages deployment config.
   // If you aren't using GitHub pages, you don't need these.
