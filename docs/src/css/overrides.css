@@ -262,7 +262,7 @@ this is the class for the sidebar categories that section headers
 
 /* centers the top nav */
 .navbar__inner {
-  @apply flex flex-row items-center justify-between w-full px-4 mx-auto max-w-screen-2xl md:px-8 lg:px-16 shadow-none border-gray-200 dark:border-gray-700;
+  @apply flex flex-row items-center justify-between w-full px-4 mx-auto max-w-[1536px] md:px-8 lg:px-16 shadow-none border-gray-200 dark:border-gray-700;
 }
 
 /* sets the border properly in dark mode */
@@ -272,7 +272,7 @@ this is the class for the sidebar categories that section headers
 
 /* centers the body with the top nav */
 [class^='docsWrapper'] {
-  @apply mx-auto w-full px-4 max-w-screen-2xl md:px-8 lg:px-16;
+  @apply mx-auto w-full px-4 max-w-[1536px] md:px-8 lg:px-16;
 }
 
 /* removes padding on the nav menu so that body matches with the top nav */

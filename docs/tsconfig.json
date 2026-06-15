@@ -2,6 +2,9 @@
   // This file is not used in compilation. It is here just for a nice editor experience.
   "extends": "@tsconfig/docusaurus/tsconfig.json",
   "compilerOptions": {
+    // baseUrl anchors the inherited `@site/*` path mapping to the docs root.
+    // It is deprecated in TS 6 (removed in TS 7); silence until paths can be reworked.
+    "ignoreDeprecations": "6.0",
     "baseUrl": ".",
     "module": "Node16",
     "moduleResolution": "Node16"
