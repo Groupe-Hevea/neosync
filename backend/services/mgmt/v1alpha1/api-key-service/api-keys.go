@@ -69,7 +69,11 @@ func (s *Service) GetAccountApiKey(
 	if err != nil {
 		return nil, err
 	}
-	if err := user.EnforceAccount(ctx, userdata.NewIdentifier(neosyncdb.UUIDString(apiKey.AccountID)), rbac.AccountAction_View); err != nil {
+	if err := user.EnforceAccount(
+		ctx,
+		userdata.NewIdentifier(neosyncdb.UUIDString(apiKey.AccountID)),
+		rbac.AccountAction_View,
+	); err != nil {
 		return nil, err
 	}
 
@@ -150,7 +154,11 @@ func (s *Service) RegenerateAccountApiKey(
 		return nil, nucleuserrors.NewUnauthorized("api key user cannot regenerate api keys")
 	}
 
-	if err := user.EnforceAccount(ctx, userdata.NewIdentifier(neosyncdb.UUIDString(apiKey.AccountID)), rbac.AccountAction_Edit); err != nil {
+	if err := user.EnforceAccount(
+		ctx,
+		userdata.NewIdentifier(neosyncdb.UUIDString(apiKey.AccountID)),
+		rbac.AccountAction_Edit,
+	); err != nil {
 		return nil, err
 	}
 
@@ -203,7 +211,11 @@ func (s *Service) DeleteAccountApiKey(
 	if user.IsApiKey() {
 		return nil, nucleuserrors.NewUnauthorized("api key user cannot delete api keys")
 	}
-	if err := user.EnforceAccount(ctx, userdata.NewIdentifier(neosyncdb.UUIDString(apiKey.AccountID)), rbac.AccountAction_Edit); err != nil {
+	if err := user.EnforceAccount(
+		ctx,
+		userdata.NewIdentifier(neosyncdb.UUIDString(apiKey.AccountID)),
+		rbac.AccountAction_Edit,
+	); err != nil {
 		return nil, err
 	}
 

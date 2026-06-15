@@ -26,7 +26,7 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { cn, getSingleOrUndefined, splitConnections } from '@/libs/utils';
 import { create } from '@bufbuild/protobuf';
 import { useMutation, useQuery } from '@connectrpc/connect-query';
-import { yupResolver } from '@hookform/resolvers/yup';
+import { yupResolver } from '@/util/yup-form-resolver';
 import {
   CheckConnectionConfigByIdResponse,
   CheckConnectionConfigByIdResponseSchema,
@@ -101,7 +101,7 @@ export default function Page(props: PageProps): ReactElement {
 
   const form = useForm<ConnectFormValues>({
     mode: 'onChange',
-    resolver: yupResolver<ConnectFormValues>(ConnectFormValues),
+    resolver: yupResolver(ConnectFormValues),
     values: defaultValues,
     context: { connections },
   });

@@ -110,7 +110,11 @@ func upsertPersonalAccount(
 		if err != nil {
 			return nil, err
 		}
-		account, err = q.CreatePersonalAccount(ctx, dbtx, db_queries.CreatePersonalAccountParams{AccountSlug: "personal", MaxAllowedRecords: pgMaxAllowedRecords})
+		account, err = q.CreatePersonalAccount(
+			ctx,
+			dbtx,
+			db_queries.CreatePersonalAccountParams{AccountSlug: "personal", MaxAllowedRecords: pgMaxAllowedRecords},
+		)
 		if err != nil {
 			return nil, err
 		}

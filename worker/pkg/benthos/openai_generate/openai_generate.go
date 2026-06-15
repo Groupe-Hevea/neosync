@@ -11,8 +11,8 @@ import (
 	"strings"
 	"sync"
 
-	"github.com/Azure/azure-sdk-for-go/sdk/ai/azopenai"
-	"github.com/Azure/azure-sdk-for-go/sdk/azcore"
+	"github.com/openai/openai-go"
+	"github.com/openai/openai-go/option"
 	"github.com/redpanda-data/benthos/v4/public/service"
 )
 
@@ -58,11 +58,11 @@ type generateReader struct {
 	columns   []string
 	dataTypes []string
 
-	client *azopenai.Client
+	client *openai.Client
 
 	promptMut sync.Mutex
 
-	conversation []azopenai.ChatRequestMessageClassification
+	conversation []openai.ChatCompletionMessageParamUnion
 
 	log *service.Logger
 }
@@ -117,19 +117,15 @@ func newGenerateReader(
 		return nil, err
 	}
 	systemPrompt := buildSystemPrompt(columns, dataTypes)
-	conversation := []azopenai.ChatRequestMessageClassification{
-		&azopenai.ChatRequestSystemMessage{
-			Content: azopenai.NewChatRequestSystemMessageContent(systemPrompt),
-		},
+	conversation := []openai.ChatCompletionMessageParamUnion{
+		openai.SystemMessage(systemPrompt),
 	}
 	prompt := ""
 	if userPrompt != nil {
 		prompt = fmt.Sprintf("%s\n", *userPrompt)
 	}
 	prompt += fmt.Sprintf("Generate %d records", batchsize)
-	conversation = append(conversation, &azopenai.ChatRequestUserMessage{
-		Content: azopenai.NewChatRequestUserMessageContent(prompt),
-	})
+	conversation = append(conversation, openai.UserMessage(prompt))
 	return &generateReader{
 		apiUrl:    apiUrl,
 		apikey:    apikey,
@@ -176,15 +172,11 @@ func (b *generateReader) Connect(ctx context.Context) error {
 	if b.client != nil {
 		return nil
 	}
-	client, err := azopenai.NewClientForOpenAI(
-		b.apiUrl,
-		azcore.NewKeyCredential(b.apikey),
-		&azopenai.ClientOptions{},
+	client := openai.NewClient(
+		option.WithAPIKey(b.apikey),
+		option.WithBaseURL(b.apiUrl),
 	)
-	if err != nil {
-		return err
-	}
-	b.client = client
+	b.client = &client
 	return nil
 }
 
@@ -205,15 +197,17 @@ func (b *generateReader) ReadBatch(
 	}
 	b.log.Infof("Starting batch read with batch size %d", batchSize)
 
-	resp, err := b.client.GetChatCompletions(ctx, azopenai.ChatCompletionsOptions{
-		Temperature:      ptr(float32(1.0)),
-		DeploymentName:   &b.model,
-		TopP:             ptr(float32(1.0)),
-		FrequencyPenalty: ptr(float32(0)),
-		N:                ptr(int32(1)),
-		ResponseFormat:   &azopenai.ChatCompletionsTextResponseFormat{},
-		Messages:         b.conversation,
-	}, &azopenai.GetChatCompletionsOptions{})
+	resp, err := b.client.Chat.Completions.New(ctx, openai.ChatCompletionNewParams{
+		Temperature:      openai.Float(1.0),
+		Model:            b.model,
+		TopP:             openai.Float(1.0),
+		FrequencyPenalty: openai.Float(0),
+		N:                openai.Int(1),
+		ResponseFormat: openai.ChatCompletionNewParamsResponseFormatUnion{
+			OfText: &openai.ResponseFormatTextParam{},
+		},
+		Messages: b.conversation,
+	})
 	if err != nil {
 		return nil, nil, err
 	}
@@ -221,11 +215,11 @@ func (b *generateReader) ReadBatch(
 		return nil, nil, fmt.Errorf("received no choices back from openai")
 	}
 	choice := resp.Choices[0]
-	switch *choice.FinishReason {
-	case azopenai.CompletionsFinishReasonTokenLimitReached:
+	switch choice.FinishReason {
+	case "length":
 		b.log.Warn("openai_generate: hit token limit reached, trimmed conversation")
 		b.conversation = trimNonSystemMessages(b.conversation, 1)
-	case azopenai.CompletionsFinishReasonContentFiltered:
+	case "content_filter":
 		return nil, nil, errors.New(
 			"openai: generation stopped due to openai content being filtered due to moderation policies",
 		)
@@ -233,17 +227,11 @@ func (b *generateReader) ReadBatch(
 	}
 	b.conversation = append(
 		b.conversation,
-		&azopenai.ChatRequestAssistantMessage{
-			Content: azopenai.NewChatRequestAssistantMessageContent(*choice.Message.Content),
-		},
-		&azopenai.ChatRequestUserMessage{
-			Content: azopenai.NewChatRequestUserMessageContent(
-				fmt.Sprintf("%d more records", batchSize),
-			),
-		},
+		openai.AssistantMessage(choice.Message.Content),
+		openai.UserMessage(fmt.Sprintf("%d more records", batchSize)),
 	)
 
-	records, err := getCsvRecordsFromInput(*choice.Message.Content, b.log)
+	records, err := getCsvRecordsFromInput(choice.Message.Content, b.log)
 	if err != nil {
 		return nil, nil, fmt.Errorf(
 			"openai_generate: unable to fully process records retrieved from openai: %w",
@@ -298,10 +286,6 @@ func emptyAck(ctx context.Context, err error) error {
 	// Nacks are handled by AutoRetryNacks because we don't have an explicit
 	// ack mechanism right now.
 	return nil
-}
-
-func ptr[T any](val T) *T {
-	return &val
 }
 
 func convertCsvToStructuredRecord(record, headers, types []string) (map[string]any, error) {
@@ -455,9 +439,9 @@ func getCsvRecordsFromInput(input string, logger *service.Logger) ([][]string, e
 }
 
 func trimNonSystemMessages(
-	messages []azopenai.ChatRequestMessageClassification,
+	messages []openai.ChatCompletionMessageParamUnion,
 	count int,
-) []azopenai.ChatRequestMessageClassification {
+) []openai.ChatCompletionMessageParamUnion {
 	if len(messages) <= count {
 		return messages[:0] // Return an empty slice
 	}
@@ -478,18 +462,15 @@ func trimNonSystemMessages(
 	return append(messages[:nonSystemIdx], messages[endIdx:]...)
 }
 
-func findFirstNonSystemIdx(messages []azopenai.ChatRequestMessageClassification) int {
+func findFirstNonSystemIdx(messages []openai.ChatCompletionMessageParamUnion) int {
 	if len(messages) == 0 {
 		return -1
 	}
 	for idx := range messages {
-		msg := messages[idx]
-		switch msg.(type) {
-		case *azopenai.ChatRequestSystemMessage:
+		if messages[idx].OfSystem != nil {
 			continue
-		default:
-			return idx
 		}
+		return idx
 	}
 	return -1
 }

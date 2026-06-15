@@ -27,7 +27,8 @@ const badgeVariants = cva(
 );
 
 export interface BadgeProps
-  extends React.ComponentPropsWithRef<'div'>,
+  extends
+    React.ComponentPropsWithRef<'div'>,
     VariantProps<typeof badgeVariants> {}
 
 export function Badge({ className, variant, ...props }: BadgeProps) {

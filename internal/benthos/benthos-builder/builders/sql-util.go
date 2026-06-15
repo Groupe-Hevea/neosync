@@ -749,8 +749,13 @@ func getAdditionalJobMappings(
 						})
 					default:
 						logger.Warn("this driver is not currently supported for additional job mapping by data type")
-						return nil, fmt.Errorf("this driver %q does not currently support additional job mappings by data type. Please provide discrete job mappings for %q.%q.%q to continue: %w",
-							driver, info.TableSchema, info.TableName, info.ColumnName, errors.ErrUnsupported,
+						return nil, fmt.Errorf(
+							"this driver %q does not currently support additional job mappings by data type. Please provide discrete job mappings for %q.%q.%q to continue: %w",
+							driver,
+							info.TableSchema,
+							info.TableName,
+							info.ColumnName,
+							errors.ErrUnsupported,
 						)
 					}
 				}

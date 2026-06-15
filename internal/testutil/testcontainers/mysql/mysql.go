@@ -7,6 +7,7 @@ import (
 	"errors"
 	"fmt"
 	"os"
+	"strings"
 	"time"
 
 	"github.com/Groupe-Hevea/neosync/internal/sshtunnel/connectors/mysqltunconnector"
@@ -70,7 +71,15 @@ func (m *MysqlTestSyncContainer) TearDown(ctx context.Context) error {
 	return nil
 }
 
+const (
+	defaultMysqlImage = "mysql:8.0.36"
+
+	mysqlReadyLog   = "port: 3306  MySQL Community Server"
+	mariadbReadyLog = "port: 3306  mariadb.org binary distribution"
+)
+
 type mysqlTestContainerConfig struct {
+	image    string
 	database string
 	password string
 	username string
@@ -92,6 +101,7 @@ type Option func(*mysqlTestContainerConfig)
 // NewMysqlTestContainer initializes a new MySQL Test Container with functional options
 func NewMysqlTestContainer(ctx context.Context, opts ...Option) (*MysqlTestContainer, error) {
 	m := &mysqlTestContainerConfig{
+		image:    defaultMysqlImage,
 		database: "testdb",
 		username: "root",
 		password: "pass",
@@ -130,16 +140,32 @@ func WithTls() Option {
 	}
 }
 
+// Sets the container image (e.g. "mariadb:11.4"); defaults to mysql:8.0.36
+func WithImage(image string) Option {
+	return func(mtc *mysqlTestContainerConfig) {
+		mtc.image = image
+	}
+}
+
 // Creates and starts a MySQL test container and sets up the connection.
 func setup(ctx context.Context, cfg *mysqlTestContainerConfig) (*MysqlTestContainer, error) {
+	// the MariaDB entrypoint also accepts the MYSQL_* env vars set by the mysql module
+	readyLog := mysqlReadyLog
+	if strings.Contains(cfg.image, "mariadb") {
+		readyLog = mariadbReadyLog
+	}
 	tcopts := []testcontainers.ContainerCustomizer{
 		testmysql.WithDatabase(cfg.database),
 		testmysql.WithUsername(cfg.username),
 		testmysql.WithPassword(cfg.password),
 		testcontainers.WithWaitStrategy(
-			wait.ForLog("port: 3306  MySQL Community Server").
+			wait.ForLog(readyLog).
 				WithOccurrence(1).
-				WithStartupTimeout(20 * time.Second),
+				// Generous timeout: the workflow integration test starts several
+				// DB containers in parallel (source+target for mysql, mariadb and
+				// mssql), and MariaDB's init phase (temp server -> init SQL ->
+				// real server) can exceed a tight deadline under CI contention.
+				WithStartupTimeout(120 * time.Second),
 		),
 	}
 	if cfg.useTls {
@@ -181,7 +207,7 @@ func setup(ctx context.Context, cfg *mysqlTestContainerConfig) (*MysqlTestContai
 	}
 	mysqlContainer, err := testmysql.Run(
 		ctx,
-		"mysql:8.0.36",
+		cfg.image,
 		tcopts...,
 	)
 	if err != nil {

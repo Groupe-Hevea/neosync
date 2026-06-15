@@ -271,7 +271,12 @@ func (s *Service) ConvertPersonalToTeamAccount(
 		)
 	}
 
-	if err := s.rbacClient.SetAccountRole(ctx, rbac.NewUserIdEntity(user.Msg.GetUserId()), rbac.NewAccountIdEntity(newPersonalAccountId), mgmtv1alpha1.AccountRole_ACCOUNT_ROLE_ADMIN); err != nil {
+	if err := s.rbacClient.SetAccountRole(
+		ctx,
+		rbac.NewUserIdEntity(user.Msg.GetUserId()),
+		rbac.NewAccountIdEntity(newPersonalAccountId),
+		mgmtv1alpha1.AccountRole_ACCOUNT_ROLE_ADMIN,
+	); err != nil {
 		// note: if this fails the account is kind of in a broken state...
 		return nil, fmt.Errorf(
 			"unable to set account role for user in new personal account, please reach out to support for further assistance: %w",
@@ -349,7 +354,12 @@ func (s *Service) SetPersonalAccount(
 		)
 	}
 
-	if err := s.rbacClient.SetAccountRole(ctx, rbac.NewUserIdEntity(user.Msg.GetUserId()), rbac.NewAccountIdEntity(neosyncdb.UUIDString(account.ID)), mgmtv1alpha1.AccountRole_ACCOUNT_ROLE_ADMIN); err != nil {
+	if err := s.rbacClient.SetAccountRole(
+		ctx,
+		rbac.NewUserIdEntity(user.Msg.GetUserId()),
+		rbac.NewAccountIdEntity(neosyncdb.UUIDString(account.ID)),
+		mgmtv1alpha1.AccountRole_ACCOUNT_ROLE_ADMIN,
+	); err != nil {
 		// note: if this fails the account is kind of in a broken state...
 		return nil, fmt.Errorf(
 			"unable to set account role for user, please reach out to support for further assistance: %w",
@@ -474,7 +484,12 @@ func (s *Service) CreateTeamAccount(
 		)
 	}
 
-	if err := s.rbacClient.SetAccountRole(ctx, rbac.NewUserIdEntity(user.Msg.GetUserId()), rbac.NewAccountIdEntity(neosyncdb.UUIDString(account.ID)), mgmtv1alpha1.AccountRole_ACCOUNT_ROLE_ADMIN); err != nil {
+	if err := s.rbacClient.SetAccountRole(
+		ctx,
+		rbac.NewUserIdEntity(user.Msg.GetUserId()),
+		rbac.NewAccountIdEntity(neosyncdb.UUIDString(account.ID)),
+		mgmtv1alpha1.AccountRole_ACCOUNT_ROLE_ADMIN,
+	); err != nil {
 		// note: if this fails the account is kind of in a broken state...
 		return nil, fmt.Errorf(
 			"unable to set account role for user, please reach out to support for further assistance: %w",
@@ -670,7 +685,11 @@ func (s *Service) RemoveTeamAccountMember(
 		return nil, fmt.Errorf("unable to remove account user from db: %w", err)
 	}
 
-	if err := s.rbacClient.RemoveAccountUser(ctx, rbac.NewPgUserIdEntity(memberUserId), rbac.NewAccountIdEntity(neosyncdb.UUIDString(accountUuid))); err != nil {
+	if err := s.rbacClient.RemoveAccountUser(
+		ctx,
+		rbac.NewPgUserIdEntity(memberUserId),
+		rbac.NewAccountIdEntity(neosyncdb.UUIDString(accountUuid)),
+	); err != nil {
 		return nil, fmt.Errorf("unable to remove account user from rbac engine: %w", err)
 	}
 
@@ -788,7 +807,11 @@ func (s *Service) RemoveTeamAccountInvite(
 	if err != nil {
 		return nil, err
 	}
-	if err := user.EnforceAccount(ctx, userdata.NewIdentifier(neosyncdb.UUIDString(invite.AccountID)), rbac.AccountAction_Edit); err != nil {
+	if err := user.EnforceAccount(
+		ctx,
+		userdata.NewIdentifier(neosyncdb.UUIDString(invite.AccountID)),
+		rbac.AccountAction_Edit,
+	); err != nil {
 		return nil, err
 	}
 
@@ -853,7 +876,12 @@ func (s *Service) AcceptTeamAccountInvite(
 		return nil, err
 	}
 
-	if err := s.rbacClient.SetAccountRole(ctx, rbac.NewUserIdEntity(user.Msg.GetUserId()), rbac.NewAccountIdEntity(neosyncdb.UUIDString(validateResp.AccountId)), validateResp.Role); err != nil {
+	if err := s.rbacClient.SetAccountRole(
+		ctx,
+		rbac.NewUserIdEntity(user.Msg.GetUserId()),
+		rbac.NewAccountIdEntity(neosyncdb.UUIDString(validateResp.AccountId)),
+		validateResp.Role,
+	); err != nil {
 		return nil, fmt.Errorf(
 			"unable to set account role for user, please reach out to support for further assistance: %w",
 			err,

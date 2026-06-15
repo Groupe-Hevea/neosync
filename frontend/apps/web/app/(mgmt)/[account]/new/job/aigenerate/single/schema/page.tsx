@@ -35,7 +35,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { getSingleOrUndefined } from '@/libs/utils';
 import { getErrorMessage } from '@/util/util';
 import { useMutation, useQuery } from '@connectrpc/connect-query';
-import { yupResolver } from '@hookform/resolvers/yup';
+import { yupResolver } from '@/util/yup-form-resolver';
 import {
   ConnectionDataService,
   ConnectionService,
@@ -134,9 +134,7 @@ export default function Page(props: PageProps): ReactElement {
   );
 
   const form = useForm<SingleTableAiSchemaFormValues>({
-    resolver: yupResolver<SingleTableAiSchemaFormValues>(
-      SingleTableAiSchemaFormValues
-    ),
+    resolver: yupResolver(SingleTableAiSchemaFormValues),
     values: schemaFormData,
   });
 

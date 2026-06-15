@@ -40,7 +40,7 @@ import {
   useMutation,
   useQuery,
 } from '@connectrpc/connect-query';
-import { yupResolver } from '@hookform/resolvers/yup';
+import { yupResolver } from '@/util/yup-form-resolver';
 import {
   ApiKeyService,
   GetAccountApiKeyResponseSchema,
@@ -72,7 +72,7 @@ export default function RegenerateAccountApiKey(
   );
   const queryclient = useQueryClient();
 
-  const form = useForm<RegenerateApiKeyForm>({
+  const form = useForm({
     resolver: yupResolver(RegenerateApiKeyForm),
     defaultValues: {
       expiresAtSelect: '7',

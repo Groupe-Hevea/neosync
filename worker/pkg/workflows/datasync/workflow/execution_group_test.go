@@ -400,9 +400,101 @@ func TestMergeCyclesWithSharedTables_MultipleSeparateMerges(t *testing.T) {
 	assert.True(t, foundGH, "Should find G-H cycle")
 }
 
-// TODO: Add test for complex multi-cycle scenario
-// Currently, FindCircularDependencies may not detect all SCCs correctly
-// when cycles are formed via INSERT and UPDATE configs across multiple tables
+// TestBuildExecutionGroups_MergedCyclesWithExternalDependent reproduces the
+// complex-schema scenario: two cycles that share a table (astronaut<->mission
+// and mission<->spacecraft, merged into one group) plus an external table
+// (research_project) that depends on a table inside the merged cycle.
+//
+// The merged cycle group must expose ALL merged tables in its Tables field so
+// that the external dependent correctly depends on the cycle group. We loop to
+// flush out any dependence on Go map iteration order.
+func TestBuildExecutionGroups_MergedCyclesWithExternalDependent(t *testing.T) {
+	configs := []*benthosbuilder.BenthosConfigResponse{
+		// Cycle astronaut <-> mission
+		{
+			Name:        "public.astronaut.insert",
+			TableSchema: "public",
+			TableName:   "astronaut",
+			RunType:     runconfigs.RunTypeInsert,
+			DependsOn:   []*runconfigs.DependsOn{},
+		},
+		{
+			Name:        "public.astronaut.update.1",
+			TableSchema: "public",
+			TableName:   "astronaut",
+			RunType:     runconfigs.RunTypeUpdate,
+			DependsOn: []*runconfigs.DependsOn{
+				{Table: "public.mission", Columns: []string{"id"}},
+			},
+		},
+		{
+			Name:        "public.mission.insert",
+			TableSchema: "public",
+			TableName:   "mission",
+			RunType:     runconfigs.RunTypeInsert,
+			DependsOn: []*runconfigs.DependsOn{
+				{Table: "public.astronaut", Columns: []string{"id"}},
+				{Table: "public.spacecraft", Columns: []string{"id"}},
+			},
+		},
+		// Cycle mission <-> spacecraft (shares "mission" with the cycle above)
+		{
+			Name:        "public.spacecraft.insert",
+			TableSchema: "public",
+			TableName:   "spacecraft",
+			RunType:     runconfigs.RunTypeInsert,
+			DependsOn:   []*runconfigs.DependsOn{},
+		},
+		{
+			Name:        "public.spacecraft.update.1",
+			TableSchema: "public",
+			TableName:   "spacecraft",
+			RunType:     runconfigs.RunTypeUpdate,
+			DependsOn: []*runconfigs.DependsOn{
+				{Table: "public.mission", Columns: []string{"id"}},
+			},
+		},
+		// External dependent: research_project -> astronaut (inside the cycle)
+		{
+			Name:        "public.research_project.insert",
+			TableSchema: "public",
+			TableName:   "research_project",
+			RunType:     runconfigs.RunTypeInsert,
+			DependsOn: []*runconfigs.DependsOn{
+				{Table: "public.astronaut", Columns: []string{"id"}},
+			},
+		},
+	}
+
+	// Loop to defeat per-call map-iteration randomness.
+	for i := 0; i < 200; i++ {
+		groups := buildExecutionGroups(configs)
+
+		var cycleGroup, projectGroup *ExecutionGroup
+		for _, g := range groups {
+			if g.IsInCycle {
+				cycleGroup = g
+			}
+			if g.ID == "table:public.research_project" {
+				projectGroup = g
+			}
+		}
+		require.NotNil(t, cycleGroup, "iter %d: expected a cycle group", i)
+		require.NotNil(t, projectGroup, "iter %d: expected research_project group", i)
+
+		// The merged cycle must contain all three tables.
+		assert.ElementsMatch(t,
+			[]string{"public.astronaut", "public.mission", "public.spacecraft"},
+			cycleGroup.Tables,
+			"iter %d: merged cycle group missing tables", i)
+
+		// research_project depends on astronaut, which lives in the cycle group,
+		// so its group must depend on the cycle group — otherwise it would sync
+		// before astronaut exists and hit a foreign-key violation.
+		assert.Contains(t, projectGroup.DependsOnGroups, cycleGroup.ID,
+			"iter %d: research_project group must depend on the cycle group", i)
+	}
+}
 
 func TestBuildTableName(t *testing.T) {
 	tests := []struct {

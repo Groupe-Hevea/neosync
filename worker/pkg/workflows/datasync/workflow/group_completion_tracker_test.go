@@ -49,7 +49,7 @@ func TestNewGroupCompletionTracker(t *testing.T) {
 	assert.Equal(t, 1, usersState.TotalConfigs)
 	assert.Equal(t, 0, usersState.CompletedCount)
 	assert.True(t, usersState.InsertPhaseComplete == false) // Has inserts, not complete yet
-	assert.True(t, usersState.UpdatePhaseComplete)           // No updates, so complete by default
+	assert.True(t, usersState.UpdatePhaseComplete)          // No updates, so complete by default
 
 	// Check cycle group state
 	cycleState := tracker.groups["cycle:public.store_customers_public.referral_codes"]

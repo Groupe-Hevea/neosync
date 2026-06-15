@@ -63,7 +63,12 @@ func NewFromMysqlConnection(
 			mysqlurl = config.MysqlConfig.GetUrl()
 		} else if config.MysqlConfig.GetUrlFromEnv() != "" {
 			if !strings.HasPrefix(config.MysqlConfig.GetUrlFromEnv(), userDefinedEnvPrefix) {
-				return nil, nucleuserrors.NewBadRequest(fmt.Sprintf("to source a url from an environment variable, the variable must have a prefix of %s", userDefinedEnvPrefix))
+				return nil, nucleuserrors.NewBadRequest(
+					fmt.Sprintf(
+						"to source a url from an environment variable, the variable must have a prefix of %s",
+						userDefinedEnvPrefix,
+					),
+				)
 			}
 			mysqlurl = viper.GetString(config.MysqlConfig.GetUrlFromEnv())
 		}

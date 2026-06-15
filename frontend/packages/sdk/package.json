@@ -32,11 +32,11 @@
   "author": "nickzelei",
   "license": "MIT",
   "devDependencies": {
-    "tsup": "^8.3.6"
+    "tsup": "^8.5.1"
   },
   "dependencies": {
-    "@bufbuild/protobuf": "^2.2.5",
-    "@connectrpc/connect": "^2.0.1"
+    "@bufbuild/protobuf": "^2.12.0",
+    "@connectrpc/connect": "^2.1.2"
   },
   "repository": {
     "type": "git",

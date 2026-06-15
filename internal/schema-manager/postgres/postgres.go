@@ -448,7 +448,10 @@ func (d *PostgresSchemaManager) BuildSchemaDiffStatements(
 					),
 				)
 			} else {
-				updateDatatypesStatements = append(updateDatatypesStatements, sqlmanager_postgres.BuildDropDomainDefaultStatement(domain.Domain.Schema, domain.Domain.Name))
+				updateDatatypesStatements = append(
+					updateDatatypesStatements,
+					sqlmanager_postgres.BuildDropDomainDefaultStatement(domain.Domain.Schema, domain.Domain.Name),
+				)
 			}
 		}
 		if domain.IsNullDifferent {

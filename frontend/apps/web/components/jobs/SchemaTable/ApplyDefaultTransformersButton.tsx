@@ -12,7 +12,7 @@ import {
   FormMessage,
 } from '@/components/ui/form';
 import { DefaultTransformerFormValues } from '@/yup-validations/jobs';
-import { yupResolver } from '@hookform/resolvers/yup';
+import { yupResolver } from '@/util/yup-form-resolver';
 import { ReactElement } from 'react';
 import { useForm, UseFormReturn } from 'react-hook-form';
 interface Props {

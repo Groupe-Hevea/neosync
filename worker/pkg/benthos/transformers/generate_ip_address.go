@@ -164,6 +164,7 @@ func generatePublicIPv4(randomizer rng.Rand) (string, error) {
 	for i := 0; i < maxAttempts; i++ {
 		ip := make(net.IP, 4)
 		for i := range ip {
+			//nolint:gosec // Intn(256) is bounded to [0,255], always fits in a byte
 			ip[i] = byte(randomizer.Intn(256))
 		}
 
@@ -229,9 +230,13 @@ func ipToInt64(ip net.IP) int64 {
 
 func int64ToIP(n int64) net.IP {
 	ip := make(net.IP, 4)
+	//nolint:gosec // intentional truncation: each shift extracts a single IPv4 octet
 	ip[0] = byte(n >> 24)
+	//nolint:gosec // intentional truncation: each shift extracts a single IPv4 octet
 	ip[1] = byte(n >> 16)
+	//nolint:gosec // intentional truncation: each shift extracts a single IPv4 octet
 	ip[2] = byte(n >> 8)
+	//nolint:gosec // intentional truncation: extracts the low IPv4 octet
 	ip[3] = byte(n)
 	return ip
 }

@@ -19,12 +19,9 @@ import {
   convertTransformerConfigSchemaToTransformerConfig,
   convertTransformerConfigToForm,
 } from '@/yup-validations/jobs';
-import {
-  EditUserDefinedTransformerFormContext,
-  UpdateUserDefinedTransformerFormValues,
-} from '@/yup-validations/transformer-validations';
+import { UpdateUserDefinedTransformerFormValues } from '@/yup-validations/transformer-validations';
 import { useMutation } from '@connectrpc/connect-query';
-import { yupResolver } from '@hookform/resolvers/yup';
+import { yupResolver } from '@/util/yup-form-resolver';
 import { TransformersService, UserDefinedTransformer } from '@neosync/sdk';
 import NextLink from 'next/link';
 import { ReactElement } from 'react';
@@ -47,10 +44,7 @@ export default function UpdateTransformerForm(props: Props): ReactElement {
     TransformersService.method.validateUserJavascriptCode
   );
 
-  const form = useForm<
-    UpdateUserDefinedTransformerFormValues,
-    EditUserDefinedTransformerFormContext
-  >({
+  const form = useForm({
     mode: 'onChange',
     resolver: yupResolver(UpdateUserDefinedTransformerFormValues),
     values: {

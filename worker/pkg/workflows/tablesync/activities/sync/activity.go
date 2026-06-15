@@ -268,7 +268,7 @@ func (a *Activity) getIdentityAllocator(
 		info.WorkflowExecution.ID,
 		info.WorkflowExecution.RunID,
 	)
-	seed := uint64(info.StartedTime.UnixNano()) //nolint:gosec
+	seed := uint64(info.StartedTime.UnixNano())
 	return tablesync_shared.NewMultiIdentityAllocator(blockAllocator, allocatorBlockSize, seed)
 }
 

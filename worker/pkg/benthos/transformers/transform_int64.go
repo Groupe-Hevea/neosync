@@ -100,7 +100,7 @@ func transformInt(randomizer rng.Rand, value any, rMin, rMax int64) (*int64, err
 	}
 
 	v := reflect.ValueOf(value)
-	if v.Kind() == reflect.Ptr {
+	if v.Kind() == reflect.Pointer {
 		if v.IsNil() {
 			return nil, nil
 		}

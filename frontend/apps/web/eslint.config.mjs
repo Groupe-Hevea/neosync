@@ -1,29 +1,12 @@
-import typescriptEslint from '@typescript-eslint/eslint-plugin';
-import tsParser from '@typescript-eslint/parser';
-import path from 'node:path';
-import { fileURLToPath } from 'node:url';
-import js from '@eslint/js';
-import { FlatCompat } from '@eslint/eslintrc';
+import next from 'eslint-config-next';
 
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
-const compat = new FlatCompat({
-  baseDirectory: __dirname,
-  recommendedConfig: js.configs.recommended,
-  allConfig: js.configs.all,
-});
-
+// eslint-config-next 16 ships a native flat config (core-web-vitals + typescript,
+// with @typescript-eslint already registered), so we spread it directly instead of
+// bridging the legacy config through FlatCompat.
 export default [
-  ...compat.extends('next/core-web-vitals'),
+  ...next,
   {
-    plugins: {
-      '@typescript-eslint': typescriptEslint,
-    },
-
-    languageOptions: {
-      parser: tsParser,
-    },
-
+    files: ['**/*.{ts,tsx}'],
     rules: {
       'no-unused-vars': 'off',
 
@@ -44,6 +27,16 @@ export default [
       ],
 
       '@typescript-eslint/no-explicit-any': 'error',
+
+      // eslint-config-next 16 ships a React-Compiler-era react-hooks plugin that
+      // promotes these opinionated rules to errors. Keep them at warning level
+      // (like react-hooks/exhaustive-deps) so they surface for future cleanup
+      // without blocking on pre-existing patterns.
+      'react-hooks/set-state-in-effect': 'warn',
+      'react-hooks/globals': 'warn',
     },
+  },
+  {
+    ignores: ['.next/**'],
   },
 ];

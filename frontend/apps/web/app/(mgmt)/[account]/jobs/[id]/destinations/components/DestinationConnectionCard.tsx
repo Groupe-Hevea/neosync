@@ -22,7 +22,7 @@ import { splitConnections } from '@/libs/utils';
 import { getErrorMessage } from '@/util/util';
 import { NewDestinationFormValues } from '@/yup-validations/jobs';
 import { useMutation } from '@connectrpc/connect-query';
-import { yupResolver } from '@hookform/resolvers/yup';
+import { yupResolver } from '@/util/yup-form-resolver';
 import {
   Connection,
   JobDestination,
@@ -67,7 +67,7 @@ export default function DestinationConnectionCard({
   );
 
   const form = useForm({
-    resolver: yupResolver<NewDestinationFormValues>(NewDestinationFormValues),
+    resolver: yupResolver(NewDestinationFormValues),
     values: getDestinationFormValuesOrDefaultFromDestination(destination),
   });
 

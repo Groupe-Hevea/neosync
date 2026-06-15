@@ -5,7 +5,7 @@ import { Card, CardContent, CardFooter } from '@/components/ui/card';
 import { Form } from '@/components/ui/form';
 import { convertNanosecondsToMinutes, getErrorMessage } from '@/util/util';
 import { useMutation } from '@connectrpc/connect-query';
-import { yupResolver } from '@hookform/resolvers/yup';
+import { yupResolver } from '@/util/yup-form-resolver';
 import { Job, JobService } from '@neosync/sdk';
 import { ReactElement } from 'react';
 import { useForm } from 'react-hook-form';
@@ -27,9 +27,9 @@ export default function ActivitySyncOptionsCard({
   job,
   mutate,
 }: Props): ReactElement {
-  const form = useForm<ActivityOptionsFormValues>({
+  const form = useForm({
     mode: 'onChange',
-    resolver: yupResolver<ActivityOptionsFormValues>(ActivityOptionsFormValues),
+    resolver: yupResolver(ActivityOptionsFormValues),
     values: {
       scheduleToCloseTimeout: job?.syncOptions?.scheduleToCloseTimeout
         ? convertNanosecondsToMinutes(job.syncOptions.scheduleToCloseTimeout)

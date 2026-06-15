@@ -69,7 +69,12 @@ func NewFromPostgresConnection(
 			pgurl = config.PgConfig.GetUrl()
 		} else if config.PgConfig.GetUrlFromEnv() != "" {
 			if !strings.HasPrefix(config.PgConfig.GetUrlFromEnv(), userDefinedEnvPrefix) {
-				return nil, nucleuserrors.NewBadRequest(fmt.Sprintf("to source a url from an environment variable, the variable must have a prefix of %s", userDefinedEnvPrefix))
+				return nil, nucleuserrors.NewBadRequest(
+					fmt.Sprintf(
+						"to source a url from an environment variable, the variable must have a prefix of %s",
+						userDefinedEnvPrefix,
+					),
+				)
 			}
 			pgurl = viper.GetString(config.PgConfig.GetUrlFromEnv())
 		}

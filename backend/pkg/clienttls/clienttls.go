@@ -53,7 +53,11 @@ func UpsertClientTlsFileSingleClient(
 			if err != nil && !os.IsNotExist(err) {
 				return err
 			} else if err != nil && os.IsNotExist(err) {
-				if err := os.WriteFile(*filenames.ClientKey, []byte(fmt.Sprintf("%s\n%s", config.GetClientKey(), config.GetClientCert())), 0600); err != nil {
+				if err := os.WriteFile(
+					*filenames.ClientKey,
+					[]byte(fmt.Sprintf("%s\n%s", config.GetClientKey(), config.GetClientCert())),
+					0600,
+				); err != nil {
 					return err
 				}
 			}

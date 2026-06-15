@@ -32,7 +32,7 @@ import {
 } from '@/yup-validations/jobs';
 import { create } from '@bufbuild/protobuf';
 import { useMutation, useQuery } from '@connectrpc/connect-query';
-import { yupResolver } from '@hookform/resolvers/yup';
+import { yupResolver } from '@/util/yup-form-resolver';
 import {
   GenerateBoolSchema,
   SystemTransformerSchema,
@@ -46,10 +46,7 @@ import { usePostHog } from 'posthog-js/react';
 import { ReactElement, useEffect, useMemo, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { toast } from 'sonner';
-import {
-  CreateUserDefinedTransformerFormContext,
-  CreateUserDefinedTransformerFormValues,
-} from '../../../../../yup-validations/transformer-validations';
+import { CreateUserDefinedTransformerFormValues } from '../../../../../yup-validations/transformer-validations';
 import { constructDocsLink } from '../../transformers/EditTransformerOptions';
 import TransformerForm from './TransformerForms/TransformerForm';
 
@@ -83,10 +80,7 @@ export default function NewTransformer(): ReactElement {
   const [openBaseSelect, setOpenBaseSelect] = useState(false);
   const posthog = usePostHog();
 
-  const form = useForm<
-    CreateUserDefinedTransformerFormValues,
-    CreateUserDefinedTransformerFormContext
-  >({
+  const form = useForm({
     resolver: yupResolver(CreateUserDefinedTransformerFormValues),
     mode: 'onChange',
     defaultValues: {

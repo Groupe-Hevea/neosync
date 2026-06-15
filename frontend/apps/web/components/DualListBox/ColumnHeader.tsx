@@ -8,8 +8,10 @@ import {
 import { Column } from '@tanstack/react-table';
 import { FaSearch } from 'react-icons/fa';
 import { Button } from '../ui/button';
-interface DataTableColumnHeaderProps<TData, TValue>
-  extends React.HTMLAttributes<HTMLDivElement> {
+interface DataTableColumnHeaderProps<
+  TData,
+  TValue,
+> extends React.HTMLAttributes<HTMLDivElement> {
   column: Column<TData, TValue>;
   title: string;
   placeholder?: string;

@@ -2,6 +2,7 @@ package integrationtest
 
 import (
 	"context"
+	"crypto/sha256"
 	"encoding/json"
 	"fmt"
 	"slices"
@@ -88,9 +89,14 @@ func createMysqlSyncJob(
 		}
 	}
 
+	// job names must be unique per account; suffix with a hash of the test name
+	// so the same job config can run under several flavors (mysql, mariadb)
+	jobNameHash := sha256.Sum256([]byte(t.Name()))
+	jobName := fmt.Sprintf("%s-%x", config.JobName, jobNameHash[:4])
+
 	job, err := jobclient.CreateJob(ctx, connect.NewRequest(&mgmtv1alpha1.CreateJobRequest{
 		AccountId: config.AccountId,
-		JobName:   config.JobName,
+		JobName:   jobName,
 		Source: &mgmtv1alpha1.JobSource{
 			Options: &mgmtv1alpha1.JobSourceOptions{
 				Config: &mgmtv1alpha1.JobSourceOptions_Mysql{

@@ -11,8 +11,7 @@ import { Name } from '../SharedFormInputs';
 import { useHandleSubmit } from '../useHandleSubmit';
 import Bucket from './Bucket';
 
-interface GcpCloudStorageFormStore
-  extends BaseStore<GcpCloudStorageFormValues> {
+interface GcpCloudStorageFormStore extends BaseStore<GcpCloudStorageFormValues> {
   init?(values: GcpCloudStorageFormValues): void;
 }
 

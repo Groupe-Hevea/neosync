@@ -33,7 +33,7 @@ import {
   useMutation,
   useQuery,
 } from '@connectrpc/connect-query';
-import { yupResolver } from '@hookform/resolvers/yup';
+import { yupResolver } from '@/util/yup-form-resolver';
 import {
   ConnectionConfigSchema,
   ConnectionDataService,
@@ -101,7 +101,7 @@ export default function SubsetCard(props: Props): ReactElement {
 
   const formValues = getFormValues(data?.job?.source?.options);
   const form = useForm({
-    resolver: yupResolver<SubsetFormValues>(SubsetFormValues),
+    resolver: yupResolver(SubsetFormValues),
     defaultValues: { subsets: [] },
     values: formValues,
   });

@@ -62,20 +62,6 @@ const (
 	ConnectionDataServiceGetAllSchemasAndTablesProcedure = "/mgmt.v1alpha1.ConnectionDataService/GetAllSchemasAndTables"
 )
 
-// These variables are the protoreflect.Descriptor objects for the RPCs defined in this package.
-var (
-	connectionDataServiceServiceDescriptor                             = v1alpha1.File_mgmt_v1alpha1_connection_data_proto.Services().ByName("ConnectionDataService")
-	connectionDataServiceGetConnectionDataStreamMethodDescriptor       = connectionDataServiceServiceDescriptor.Methods().ByName("GetConnectionDataStream")
-	connectionDataServiceGetConnectionSchemaMethodDescriptor           = connectionDataServiceServiceDescriptor.Methods().ByName("GetConnectionSchema")
-	connectionDataServiceGetConnectionSchemaMapMethodDescriptor        = connectionDataServiceServiceDescriptor.Methods().ByName("GetConnectionSchemaMap")
-	connectionDataServiceGetConnectionSchemaMapsMethodDescriptor       = connectionDataServiceServiceDescriptor.Methods().ByName("GetConnectionSchemaMaps")
-	connectionDataServiceGetConnectionTableConstraintsMethodDescriptor = connectionDataServiceServiceDescriptor.Methods().ByName("GetConnectionTableConstraints")
-	connectionDataServiceGetConnectionInitStatementsMethodDescriptor   = connectionDataServiceServiceDescriptor.Methods().ByName("GetConnectionInitStatements")
-	connectionDataServiceGetAiGeneratedDataMethodDescriptor            = connectionDataServiceServiceDescriptor.Methods().ByName("GetAiGeneratedData")
-	connectionDataServiceGetTableRowCountMethodDescriptor              = connectionDataServiceServiceDescriptor.Methods().ByName("GetTableRowCount")
-	connectionDataServiceGetAllSchemasAndTablesMethodDescriptor        = connectionDataServiceServiceDescriptor.Methods().ByName("GetAllSchemasAndTables")
-)
-
 // ConnectionDataServiceClient is a client for the mgmt.v1alpha1.ConnectionDataService service.
 type ConnectionDataServiceClient interface {
 	// Streaming endpoint that will stream the data available from the Connection to the client.
@@ -109,60 +95,61 @@ type ConnectionDataServiceClient interface {
 // http://api.acme.com or https://acme.com/grpc).
 func NewConnectionDataServiceClient(httpClient connect.HTTPClient, baseURL string, opts ...connect.ClientOption) ConnectionDataServiceClient {
 	baseURL = strings.TrimRight(baseURL, "/")
+	connectionDataServiceMethods := v1alpha1.File_mgmt_v1alpha1_connection_data_proto.Services().ByName("ConnectionDataService").Methods()
 	return &connectionDataServiceClient{
 		getConnectionDataStream: connect.NewClient[v1alpha1.GetConnectionDataStreamRequest, v1alpha1.GetConnectionDataStreamResponse](
 			httpClient,
 			baseURL+ConnectionDataServiceGetConnectionDataStreamProcedure,
-			connect.WithSchema(connectionDataServiceGetConnectionDataStreamMethodDescriptor),
+			connect.WithSchema(connectionDataServiceMethods.ByName("GetConnectionDataStream")),
 			connect.WithClientOptions(opts...),
 		),
 		getConnectionSchema: connect.NewClient[v1alpha1.GetConnectionSchemaRequest, v1alpha1.GetConnectionSchemaResponse](
 			httpClient,
 			baseURL+ConnectionDataServiceGetConnectionSchemaProcedure,
-			connect.WithSchema(connectionDataServiceGetConnectionSchemaMethodDescriptor),
+			connect.WithSchema(connectionDataServiceMethods.ByName("GetConnectionSchema")),
 			connect.WithClientOptions(opts...),
 		),
 		getConnectionSchemaMap: connect.NewClient[v1alpha1.GetConnectionSchemaMapRequest, v1alpha1.GetConnectionSchemaMapResponse](
 			httpClient,
 			baseURL+ConnectionDataServiceGetConnectionSchemaMapProcedure,
-			connect.WithSchema(connectionDataServiceGetConnectionSchemaMapMethodDescriptor),
+			connect.WithSchema(connectionDataServiceMethods.ByName("GetConnectionSchemaMap")),
 			connect.WithClientOptions(opts...),
 		),
 		getConnectionSchemaMaps: connect.NewClient[v1alpha1.GetConnectionSchemaMapsRequest, v1alpha1.GetConnectionSchemaMapsResponse](
 			httpClient,
 			baseURL+ConnectionDataServiceGetConnectionSchemaMapsProcedure,
-			connect.WithSchema(connectionDataServiceGetConnectionSchemaMapsMethodDescriptor),
+			connect.WithSchema(connectionDataServiceMethods.ByName("GetConnectionSchemaMaps")),
 			connect.WithClientOptions(opts...),
 		),
 		getConnectionTableConstraints: connect.NewClient[v1alpha1.GetConnectionTableConstraintsRequest, v1alpha1.GetConnectionTableConstraintsResponse](
 			httpClient,
 			baseURL+ConnectionDataServiceGetConnectionTableConstraintsProcedure,
-			connect.WithSchema(connectionDataServiceGetConnectionTableConstraintsMethodDescriptor),
+			connect.WithSchema(connectionDataServiceMethods.ByName("GetConnectionTableConstraints")),
 			connect.WithClientOptions(opts...),
 		),
 		getConnectionInitStatements: connect.NewClient[v1alpha1.GetConnectionInitStatementsRequest, v1alpha1.GetConnectionInitStatementsResponse](
 			httpClient,
 			baseURL+ConnectionDataServiceGetConnectionInitStatementsProcedure,
-			connect.WithSchema(connectionDataServiceGetConnectionInitStatementsMethodDescriptor),
+			connect.WithSchema(connectionDataServiceMethods.ByName("GetConnectionInitStatements")),
 			connect.WithClientOptions(opts...),
 		),
 		getAiGeneratedData: connect.NewClient[v1alpha1.GetAiGeneratedDataRequest, v1alpha1.GetAiGeneratedDataResponse](
 			httpClient,
 			baseURL+ConnectionDataServiceGetAiGeneratedDataProcedure,
-			connect.WithSchema(connectionDataServiceGetAiGeneratedDataMethodDescriptor),
+			connect.WithSchema(connectionDataServiceMethods.ByName("GetAiGeneratedData")),
 			connect.WithClientOptions(opts...),
 		),
 		getTableRowCount: connect.NewClient[v1alpha1.GetTableRowCountRequest, v1alpha1.GetTableRowCountResponse](
 			httpClient,
 			baseURL+ConnectionDataServiceGetTableRowCountProcedure,
-			connect.WithSchema(connectionDataServiceGetTableRowCountMethodDescriptor),
+			connect.WithSchema(connectionDataServiceMethods.ByName("GetTableRowCount")),
 			connect.WithIdempotency(connect.IdempotencyNoSideEffects),
 			connect.WithClientOptions(opts...),
 		),
 		getAllSchemasAndTables: connect.NewClient[v1alpha1.GetAllSchemasAndTablesRequest, v1alpha1.GetAllSchemasAndTablesResponse](
 			httpClient,
 			baseURL+ConnectionDataServiceGetAllSchemasAndTablesProcedure,
-			connect.WithSchema(connectionDataServiceGetAllSchemasAndTablesMethodDescriptor),
+			connect.WithSchema(connectionDataServiceMethods.ByName("GetAllSchemasAndTables")),
 			connect.WithIdempotency(connect.IdempotencyNoSideEffects),
 			connect.WithClientOptions(opts...),
 		),
@@ -260,59 +247,60 @@ type ConnectionDataServiceHandler interface {
 // By default, handlers support the Connect, gRPC, and gRPC-Web protocols with the binary Protobuf
 // and JSON codecs. They also support gzip compression.
 func NewConnectionDataServiceHandler(svc ConnectionDataServiceHandler, opts ...connect.HandlerOption) (string, http.Handler) {
+	connectionDataServiceMethods := v1alpha1.File_mgmt_v1alpha1_connection_data_proto.Services().ByName("ConnectionDataService").Methods()
 	connectionDataServiceGetConnectionDataStreamHandler := connect.NewServerStreamHandler(
 		ConnectionDataServiceGetConnectionDataStreamProcedure,
 		svc.GetConnectionDataStream,
-		connect.WithSchema(connectionDataServiceGetConnectionDataStreamMethodDescriptor),
+		connect.WithSchema(connectionDataServiceMethods.ByName("GetConnectionDataStream")),
 		connect.WithHandlerOptions(opts...),
 	)
 	connectionDataServiceGetConnectionSchemaHandler := connect.NewUnaryHandler(
 		ConnectionDataServiceGetConnectionSchemaProcedure,
 		svc.GetConnectionSchema,
-		connect.WithSchema(connectionDataServiceGetConnectionSchemaMethodDescriptor),
+		connect.WithSchema(connectionDataServiceMethods.ByName("GetConnectionSchema")),
 		connect.WithHandlerOptions(opts...),
 	)
 	connectionDataServiceGetConnectionSchemaMapHandler := connect.NewUnaryHandler(
 		ConnectionDataServiceGetConnectionSchemaMapProcedure,
 		svc.GetConnectionSchemaMap,
-		connect.WithSchema(connectionDataServiceGetConnectionSchemaMapMethodDescriptor),
+		connect.WithSchema(connectionDataServiceMethods.ByName("GetConnectionSchemaMap")),
 		connect.WithHandlerOptions(opts...),
 	)
 	connectionDataServiceGetConnectionSchemaMapsHandler := connect.NewUnaryHandler(
 		ConnectionDataServiceGetConnectionSchemaMapsProcedure,
 		svc.GetConnectionSchemaMaps,
-		connect.WithSchema(connectionDataServiceGetConnectionSchemaMapsMethodDescriptor),
+		connect.WithSchema(connectionDataServiceMethods.ByName("GetConnectionSchemaMaps")),
 		connect.WithHandlerOptions(opts...),
 	)
 	connectionDataServiceGetConnectionTableConstraintsHandler := connect.NewUnaryHandler(
 		ConnectionDataServiceGetConnectionTableConstraintsProcedure,
 		svc.GetConnectionTableConstraints,
-		connect.WithSchema(connectionDataServiceGetConnectionTableConstraintsMethodDescriptor),
+		connect.WithSchema(connectionDataServiceMethods.ByName("GetConnectionTableConstraints")),
 		connect.WithHandlerOptions(opts...),
 	)
 	connectionDataServiceGetConnectionInitStatementsHandler := connect.NewUnaryHandler(
 		ConnectionDataServiceGetConnectionInitStatementsProcedure,
 		svc.GetConnectionInitStatements,
-		connect.WithSchema(connectionDataServiceGetConnectionInitStatementsMethodDescriptor),
+		connect.WithSchema(connectionDataServiceMethods.ByName("GetConnectionInitStatements")),
 		connect.WithHandlerOptions(opts...),
 	)
 	connectionDataServiceGetAiGeneratedDataHandler := connect.NewUnaryHandler(
 		ConnectionDataServiceGetAiGeneratedDataProcedure,
 		svc.GetAiGeneratedData,
-		connect.WithSchema(connectionDataServiceGetAiGeneratedDataMethodDescriptor),
+		connect.WithSchema(connectionDataServiceMethods.ByName("GetAiGeneratedData")),
 		connect.WithHandlerOptions(opts...),
 	)
 	connectionDataServiceGetTableRowCountHandler := connect.NewUnaryHandler(
 		ConnectionDataServiceGetTableRowCountProcedure,
 		svc.GetTableRowCount,
-		connect.WithSchema(connectionDataServiceGetTableRowCountMethodDescriptor),
+		connect.WithSchema(connectionDataServiceMethods.ByName("GetTableRowCount")),
 		connect.WithIdempotency(connect.IdempotencyNoSideEffects),
 		connect.WithHandlerOptions(opts...),
 	)
 	connectionDataServiceGetAllSchemasAndTablesHandler := connect.NewUnaryHandler(
 		ConnectionDataServiceGetAllSchemasAndTablesProcedure,
 		svc.GetAllSchemasAndTables,
-		connect.WithSchema(connectionDataServiceGetAllSchemasAndTablesMethodDescriptor),
+		connect.WithSchema(connectionDataServiceMethods.ByName("GetAllSchemasAndTables")),
 		connect.WithIdempotency(connect.IdempotencyNoSideEffects),
 		connect.WithHandlerOptions(opts...),
 	)

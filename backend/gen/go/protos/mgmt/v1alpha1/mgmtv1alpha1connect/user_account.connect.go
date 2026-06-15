@@ -116,38 +116,6 @@ const (
 	UserAccountServiceHasPermissionsProcedure = "/mgmt.v1alpha1.UserAccountService/HasPermissions"
 )
 
-// These variables are the protoreflect.Descriptor objects for the RPCs defined in this package.
-var (
-	userAccountServiceServiceDescriptor                                = v1alpha1.File_mgmt_v1alpha1_user_account_proto.Services().ByName("UserAccountService")
-	userAccountServiceGetUserMethodDescriptor                          = userAccountServiceServiceDescriptor.Methods().ByName("GetUser")
-	userAccountServiceSetUserMethodDescriptor                          = userAccountServiceServiceDescriptor.Methods().ByName("SetUser")
-	userAccountServiceGetUserAccountsMethodDescriptor                  = userAccountServiceServiceDescriptor.Methods().ByName("GetUserAccounts")
-	userAccountServiceSetPersonalAccountMethodDescriptor               = userAccountServiceServiceDescriptor.Methods().ByName("SetPersonalAccount")
-	userAccountServiceConvertPersonalToTeamAccountMethodDescriptor     = userAccountServiceServiceDescriptor.Methods().ByName("ConvertPersonalToTeamAccount")
-	userAccountServiceCreateTeamAccountMethodDescriptor                = userAccountServiceServiceDescriptor.Methods().ByName("CreateTeamAccount")
-	userAccountServiceIsUserInAccountMethodDescriptor                  = userAccountServiceServiceDescriptor.Methods().ByName("IsUserInAccount")
-	userAccountServiceGetAccountTemporalConfigMethodDescriptor         = userAccountServiceServiceDescriptor.Methods().ByName("GetAccountTemporalConfig")
-	userAccountServiceSetAccountTemporalConfigMethodDescriptor         = userAccountServiceServiceDescriptor.Methods().ByName("SetAccountTemporalConfig")
-	userAccountServiceGetTeamAccountMembersMethodDescriptor            = userAccountServiceServiceDescriptor.Methods().ByName("GetTeamAccountMembers")
-	userAccountServiceRemoveTeamAccountMemberMethodDescriptor          = userAccountServiceServiceDescriptor.Methods().ByName("RemoveTeamAccountMember")
-	userAccountServiceInviteUserToTeamAccountMethodDescriptor          = userAccountServiceServiceDescriptor.Methods().ByName("InviteUserToTeamAccount")
-	userAccountServiceGetTeamAccountInvitesMethodDescriptor            = userAccountServiceServiceDescriptor.Methods().ByName("GetTeamAccountInvites")
-	userAccountServiceRemoveTeamAccountInviteMethodDescriptor          = userAccountServiceServiceDescriptor.Methods().ByName("RemoveTeamAccountInvite")
-	userAccountServiceAcceptTeamAccountInviteMethodDescriptor          = userAccountServiceServiceDescriptor.Methods().ByName("AcceptTeamAccountInvite")
-	userAccountServiceGetSystemInformationMethodDescriptor             = userAccountServiceServiceDescriptor.Methods().ByName("GetSystemInformation")
-	userAccountServiceGetAccountOnboardingConfigMethodDescriptor       = userAccountServiceServiceDescriptor.Methods().ByName("GetAccountOnboardingConfig")
-	userAccountServiceSetAccountOnboardingConfigMethodDescriptor       = userAccountServiceServiceDescriptor.Methods().ByName("SetAccountOnboardingConfig")
-	userAccountServiceGetAccountStatusMethodDescriptor                 = userAccountServiceServiceDescriptor.Methods().ByName("GetAccountStatus")
-	userAccountServiceIsAccountStatusValidMethodDescriptor             = userAccountServiceServiceDescriptor.Methods().ByName("IsAccountStatusValid")
-	userAccountServiceGetAccountBillingCheckoutSessionMethodDescriptor = userAccountServiceServiceDescriptor.Methods().ByName("GetAccountBillingCheckoutSession")
-	userAccountServiceGetAccountBillingPortalSessionMethodDescriptor   = userAccountServiceServiceDescriptor.Methods().ByName("GetAccountBillingPortalSession")
-	userAccountServiceGetBillingAccountsMethodDescriptor               = userAccountServiceServiceDescriptor.Methods().ByName("GetBillingAccounts")
-	userAccountServiceSetBillingMeterEventMethodDescriptor             = userAccountServiceServiceDescriptor.Methods().ByName("SetBillingMeterEvent")
-	userAccountServiceSetUserRoleMethodDescriptor                      = userAccountServiceServiceDescriptor.Methods().ByName("SetUserRole")
-	userAccountServiceHasPermissionMethodDescriptor                    = userAccountServiceServiceDescriptor.Methods().ByName("HasPermission")
-	userAccountServiceHasPermissionsMethodDescriptor                   = userAccountServiceServiceDescriptor.Methods().ByName("HasPermissions")
-)
-
 // UserAccountServiceClient is a client for the mgmt.v1alpha1.UserAccountService service.
 type UserAccountServiceClient interface {
 	// Retrieves the current user.
@@ -215,179 +183,180 @@ type UserAccountServiceClient interface {
 // http://api.acme.com or https://acme.com/grpc).
 func NewUserAccountServiceClient(httpClient connect.HTTPClient, baseURL string, opts ...connect.ClientOption) UserAccountServiceClient {
 	baseURL = strings.TrimRight(baseURL, "/")
+	userAccountServiceMethods := v1alpha1.File_mgmt_v1alpha1_user_account_proto.Services().ByName("UserAccountService").Methods()
 	return &userAccountServiceClient{
 		getUser: connect.NewClient[v1alpha1.GetUserRequest, v1alpha1.GetUserResponse](
 			httpClient,
 			baseURL+UserAccountServiceGetUserProcedure,
-			connect.WithSchema(userAccountServiceGetUserMethodDescriptor),
+			connect.WithSchema(userAccountServiceMethods.ByName("GetUser")),
 			connect.WithIdempotency(connect.IdempotencyNoSideEffects),
 			connect.WithClientOptions(opts...),
 		),
 		setUser: connect.NewClient[v1alpha1.SetUserRequest, v1alpha1.SetUserResponse](
 			httpClient,
 			baseURL+UserAccountServiceSetUserProcedure,
-			connect.WithSchema(userAccountServiceSetUserMethodDescriptor),
+			connect.WithSchema(userAccountServiceMethods.ByName("SetUser")),
 			connect.WithClientOptions(opts...),
 		),
 		getUserAccounts: connect.NewClient[v1alpha1.GetUserAccountsRequest, v1alpha1.GetUserAccountsResponse](
 			httpClient,
 			baseURL+UserAccountServiceGetUserAccountsProcedure,
-			connect.WithSchema(userAccountServiceGetUserAccountsMethodDescriptor),
+			connect.WithSchema(userAccountServiceMethods.ByName("GetUserAccounts")),
 			connect.WithIdempotency(connect.IdempotencyNoSideEffects),
 			connect.WithClientOptions(opts...),
 		),
 		setPersonalAccount: connect.NewClient[v1alpha1.SetPersonalAccountRequest, v1alpha1.SetPersonalAccountResponse](
 			httpClient,
 			baseURL+UserAccountServiceSetPersonalAccountProcedure,
-			connect.WithSchema(userAccountServiceSetPersonalAccountMethodDescriptor),
+			connect.WithSchema(userAccountServiceMethods.ByName("SetPersonalAccount")),
 			connect.WithClientOptions(opts...),
 		),
 		convertPersonalToTeamAccount: connect.NewClient[v1alpha1.ConvertPersonalToTeamAccountRequest, v1alpha1.ConvertPersonalToTeamAccountResponse](
 			httpClient,
 			baseURL+UserAccountServiceConvertPersonalToTeamAccountProcedure,
-			connect.WithSchema(userAccountServiceConvertPersonalToTeamAccountMethodDescriptor),
+			connect.WithSchema(userAccountServiceMethods.ByName("ConvertPersonalToTeamAccount")),
 			connect.WithClientOptions(opts...),
 		),
 		createTeamAccount: connect.NewClient[v1alpha1.CreateTeamAccountRequest, v1alpha1.CreateTeamAccountResponse](
 			httpClient,
 			baseURL+UserAccountServiceCreateTeamAccountProcedure,
-			connect.WithSchema(userAccountServiceCreateTeamAccountMethodDescriptor),
+			connect.WithSchema(userAccountServiceMethods.ByName("CreateTeamAccount")),
 			connect.WithClientOptions(opts...),
 		),
 		isUserInAccount: connect.NewClient[v1alpha1.IsUserInAccountRequest, v1alpha1.IsUserInAccountResponse](
 			httpClient,
 			baseURL+UserAccountServiceIsUserInAccountProcedure,
-			connect.WithSchema(userAccountServiceIsUserInAccountMethodDescriptor),
+			connect.WithSchema(userAccountServiceMethods.ByName("IsUserInAccount")),
 			connect.WithClientOptions(opts...),
 		),
 		getAccountTemporalConfig: connect.NewClient[v1alpha1.GetAccountTemporalConfigRequest, v1alpha1.GetAccountTemporalConfigResponse](
 			httpClient,
 			baseURL+UserAccountServiceGetAccountTemporalConfigProcedure,
-			connect.WithSchema(userAccountServiceGetAccountTemporalConfigMethodDescriptor),
+			connect.WithSchema(userAccountServiceMethods.ByName("GetAccountTemporalConfig")),
 			connect.WithIdempotency(connect.IdempotencyNoSideEffects),
 			connect.WithClientOptions(opts...),
 		),
 		setAccountTemporalConfig: connect.NewClient[v1alpha1.SetAccountTemporalConfigRequest, v1alpha1.SetAccountTemporalConfigResponse](
 			httpClient,
 			baseURL+UserAccountServiceSetAccountTemporalConfigProcedure,
-			connect.WithSchema(userAccountServiceSetAccountTemporalConfigMethodDescriptor),
+			connect.WithSchema(userAccountServiceMethods.ByName("SetAccountTemporalConfig")),
 			connect.WithClientOptions(opts...),
 		),
 		getTeamAccountMembers: connect.NewClient[v1alpha1.GetTeamAccountMembersRequest, v1alpha1.GetTeamAccountMembersResponse](
 			httpClient,
 			baseURL+UserAccountServiceGetTeamAccountMembersProcedure,
-			connect.WithSchema(userAccountServiceGetTeamAccountMembersMethodDescriptor),
+			connect.WithSchema(userAccountServiceMethods.ByName("GetTeamAccountMembers")),
 			connect.WithIdempotency(connect.IdempotencyNoSideEffects),
 			connect.WithClientOptions(opts...),
 		),
 		removeTeamAccountMember: connect.NewClient[v1alpha1.RemoveTeamAccountMemberRequest, v1alpha1.RemoveTeamAccountMemberResponse](
 			httpClient,
 			baseURL+UserAccountServiceRemoveTeamAccountMemberProcedure,
-			connect.WithSchema(userAccountServiceRemoveTeamAccountMemberMethodDescriptor),
+			connect.WithSchema(userAccountServiceMethods.ByName("RemoveTeamAccountMember")),
 			connect.WithClientOptions(opts...),
 		),
 		inviteUserToTeamAccount: connect.NewClient[v1alpha1.InviteUserToTeamAccountRequest, v1alpha1.InviteUserToTeamAccountResponse](
 			httpClient,
 			baseURL+UserAccountServiceInviteUserToTeamAccountProcedure,
-			connect.WithSchema(userAccountServiceInviteUserToTeamAccountMethodDescriptor),
+			connect.WithSchema(userAccountServiceMethods.ByName("InviteUserToTeamAccount")),
 			connect.WithClientOptions(opts...),
 		),
 		getTeamAccountInvites: connect.NewClient[v1alpha1.GetTeamAccountInvitesRequest, v1alpha1.GetTeamAccountInvitesResponse](
 			httpClient,
 			baseURL+UserAccountServiceGetTeamAccountInvitesProcedure,
-			connect.WithSchema(userAccountServiceGetTeamAccountInvitesMethodDescriptor),
+			connect.WithSchema(userAccountServiceMethods.ByName("GetTeamAccountInvites")),
 			connect.WithIdempotency(connect.IdempotencyNoSideEffects),
 			connect.WithClientOptions(opts...),
 		),
 		removeTeamAccountInvite: connect.NewClient[v1alpha1.RemoveTeamAccountInviteRequest, v1alpha1.RemoveTeamAccountInviteResponse](
 			httpClient,
 			baseURL+UserAccountServiceRemoveTeamAccountInviteProcedure,
-			connect.WithSchema(userAccountServiceRemoveTeamAccountInviteMethodDescriptor),
+			connect.WithSchema(userAccountServiceMethods.ByName("RemoveTeamAccountInvite")),
 			connect.WithClientOptions(opts...),
 		),
 		acceptTeamAccountInvite: connect.NewClient[v1alpha1.AcceptTeamAccountInviteRequest, v1alpha1.AcceptTeamAccountInviteResponse](
 			httpClient,
 			baseURL+UserAccountServiceAcceptTeamAccountInviteProcedure,
-			connect.WithSchema(userAccountServiceAcceptTeamAccountInviteMethodDescriptor),
+			connect.WithSchema(userAccountServiceMethods.ByName("AcceptTeamAccountInvite")),
 			connect.WithClientOptions(opts...),
 		),
 		getSystemInformation: connect.NewClient[v1alpha1.GetSystemInformationRequest, v1alpha1.GetSystemInformationResponse](
 			httpClient,
 			baseURL+UserAccountServiceGetSystemInformationProcedure,
-			connect.WithSchema(userAccountServiceGetSystemInformationMethodDescriptor),
+			connect.WithSchema(userAccountServiceMethods.ByName("GetSystemInformation")),
 			connect.WithIdempotency(connect.IdempotencyNoSideEffects),
 			connect.WithClientOptions(opts...),
 		),
 		getAccountOnboardingConfig: connect.NewClient[v1alpha1.GetAccountOnboardingConfigRequest, v1alpha1.GetAccountOnboardingConfigResponse](
 			httpClient,
 			baseURL+UserAccountServiceGetAccountOnboardingConfigProcedure,
-			connect.WithSchema(userAccountServiceGetAccountOnboardingConfigMethodDescriptor),
+			connect.WithSchema(userAccountServiceMethods.ByName("GetAccountOnboardingConfig")),
 			connect.WithIdempotency(connect.IdempotencyNoSideEffects),
 			connect.WithClientOptions(opts...),
 		),
 		setAccountOnboardingConfig: connect.NewClient[v1alpha1.SetAccountOnboardingConfigRequest, v1alpha1.SetAccountOnboardingConfigResponse](
 			httpClient,
 			baseURL+UserAccountServiceSetAccountOnboardingConfigProcedure,
-			connect.WithSchema(userAccountServiceSetAccountOnboardingConfigMethodDescriptor),
+			connect.WithSchema(userAccountServiceMethods.ByName("SetAccountOnboardingConfig")),
 			connect.WithClientOptions(opts...),
 		),
 		getAccountStatus: connect.NewClient[v1alpha1.GetAccountStatusRequest, v1alpha1.GetAccountStatusResponse](
 			httpClient,
 			baseURL+UserAccountServiceGetAccountStatusProcedure,
-			connect.WithSchema(userAccountServiceGetAccountStatusMethodDescriptor),
+			connect.WithSchema(userAccountServiceMethods.ByName("GetAccountStatus")),
 			connect.WithIdempotency(connect.IdempotencyNoSideEffects),
 			connect.WithClientOptions(opts...),
 		),
 		isAccountStatusValid: connect.NewClient[v1alpha1.IsAccountStatusValidRequest, v1alpha1.IsAccountStatusValidResponse](
 			httpClient,
 			baseURL+UserAccountServiceIsAccountStatusValidProcedure,
-			connect.WithSchema(userAccountServiceIsAccountStatusValidMethodDescriptor),
+			connect.WithSchema(userAccountServiceMethods.ByName("IsAccountStatusValid")),
 			connect.WithIdempotency(connect.IdempotencyNoSideEffects),
 			connect.WithClientOptions(opts...),
 		),
 		getAccountBillingCheckoutSession: connect.NewClient[v1alpha1.GetAccountBillingCheckoutSessionRequest, v1alpha1.GetAccountBillingCheckoutSessionResponse](
 			httpClient,
 			baseURL+UserAccountServiceGetAccountBillingCheckoutSessionProcedure,
-			connect.WithSchema(userAccountServiceGetAccountBillingCheckoutSessionMethodDescriptor),
+			connect.WithSchema(userAccountServiceMethods.ByName("GetAccountBillingCheckoutSession")),
 			connect.WithIdempotency(connect.IdempotencyNoSideEffects),
 			connect.WithClientOptions(opts...),
 		),
 		getAccountBillingPortalSession: connect.NewClient[v1alpha1.GetAccountBillingPortalSessionRequest, v1alpha1.GetAccountBillingPortalSessionResponse](
 			httpClient,
 			baseURL+UserAccountServiceGetAccountBillingPortalSessionProcedure,
-			connect.WithSchema(userAccountServiceGetAccountBillingPortalSessionMethodDescriptor),
+			connect.WithSchema(userAccountServiceMethods.ByName("GetAccountBillingPortalSession")),
 			connect.WithIdempotency(connect.IdempotencyNoSideEffects),
 			connect.WithClientOptions(opts...),
 		),
 		getBillingAccounts: connect.NewClient[v1alpha1.GetBillingAccountsRequest, v1alpha1.GetBillingAccountsResponse](
 			httpClient,
 			baseURL+UserAccountServiceGetBillingAccountsProcedure,
-			connect.WithSchema(userAccountServiceGetBillingAccountsMethodDescriptor),
+			connect.WithSchema(userAccountServiceMethods.ByName("GetBillingAccounts")),
 			connect.WithIdempotency(connect.IdempotencyNoSideEffects),
 			connect.WithClientOptions(opts...),
 		),
 		setBillingMeterEvent: connect.NewClient[v1alpha1.SetBillingMeterEventRequest, v1alpha1.SetBillingMeterEventResponse](
 			httpClient,
 			baseURL+UserAccountServiceSetBillingMeterEventProcedure,
-			connect.WithSchema(userAccountServiceSetBillingMeterEventMethodDescriptor),
+			connect.WithSchema(userAccountServiceMethods.ByName("SetBillingMeterEvent")),
 			connect.WithClientOptions(opts...),
 		),
 		setUserRole: connect.NewClient[v1alpha1.SetUserRoleRequest, v1alpha1.SetUserRoleResponse](
 			httpClient,
 			baseURL+UserAccountServiceSetUserRoleProcedure,
-			connect.WithSchema(userAccountServiceSetUserRoleMethodDescriptor),
+			connect.WithSchema(userAccountServiceMethods.ByName("SetUserRole")),
 			connect.WithClientOptions(opts...),
 		),
 		hasPermission: connect.NewClient[v1alpha1.HasPermissionRequest, v1alpha1.HasPermissionResponse](
 			httpClient,
 			baseURL+UserAccountServiceHasPermissionProcedure,
-			connect.WithSchema(userAccountServiceHasPermissionMethodDescriptor),
+			connect.WithSchema(userAccountServiceMethods.ByName("HasPermission")),
 			connect.WithClientOptions(opts...),
 		),
 		hasPermissions: connect.NewClient[v1alpha1.HasPermissionsRequest, v1alpha1.HasPermissionsResponse](
 			httpClient,
 			baseURL+UserAccountServiceHasPermissionsProcedure,
-			connect.WithSchema(userAccountServiceHasPermissionsMethodDescriptor),
+			connect.WithSchema(userAccountServiceMethods.ByName("HasPermissions")),
 			connect.WithClientOptions(opts...),
 		),
 	}
@@ -625,178 +594,179 @@ type UserAccountServiceHandler interface {
 // By default, handlers support the Connect, gRPC, and gRPC-Web protocols with the binary Protobuf
 // and JSON codecs. They also support gzip compression.
 func NewUserAccountServiceHandler(svc UserAccountServiceHandler, opts ...connect.HandlerOption) (string, http.Handler) {
+	userAccountServiceMethods := v1alpha1.File_mgmt_v1alpha1_user_account_proto.Services().ByName("UserAccountService").Methods()
 	userAccountServiceGetUserHandler := connect.NewUnaryHandler(
 		UserAccountServiceGetUserProcedure,
 		svc.GetUser,
-		connect.WithSchema(userAccountServiceGetUserMethodDescriptor),
+		connect.WithSchema(userAccountServiceMethods.ByName("GetUser")),
 		connect.WithIdempotency(connect.IdempotencyNoSideEffects),
 		connect.WithHandlerOptions(opts...),
 	)
 	userAccountServiceSetUserHandler := connect.NewUnaryHandler(
 		UserAccountServiceSetUserProcedure,
 		svc.SetUser,
-		connect.WithSchema(userAccountServiceSetUserMethodDescriptor),
+		connect.WithSchema(userAccountServiceMethods.ByName("SetUser")),
 		connect.WithHandlerOptions(opts...),
 	)
 	userAccountServiceGetUserAccountsHandler := connect.NewUnaryHandler(
 		UserAccountServiceGetUserAccountsProcedure,
 		svc.GetUserAccounts,
-		connect.WithSchema(userAccountServiceGetUserAccountsMethodDescriptor),
+		connect.WithSchema(userAccountServiceMethods.ByName("GetUserAccounts")),
 		connect.WithIdempotency(connect.IdempotencyNoSideEffects),
 		connect.WithHandlerOptions(opts...),
 	)
 	userAccountServiceSetPersonalAccountHandler := connect.NewUnaryHandler(
 		UserAccountServiceSetPersonalAccountProcedure,
 		svc.SetPersonalAccount,
-		connect.WithSchema(userAccountServiceSetPersonalAccountMethodDescriptor),
+		connect.WithSchema(userAccountServiceMethods.ByName("SetPersonalAccount")),
 		connect.WithHandlerOptions(opts...),
 	)
 	userAccountServiceConvertPersonalToTeamAccountHandler := connect.NewUnaryHandler(
 		UserAccountServiceConvertPersonalToTeamAccountProcedure,
 		svc.ConvertPersonalToTeamAccount,
-		connect.WithSchema(userAccountServiceConvertPersonalToTeamAccountMethodDescriptor),
+		connect.WithSchema(userAccountServiceMethods.ByName("ConvertPersonalToTeamAccount")),
 		connect.WithHandlerOptions(opts...),
 	)
 	userAccountServiceCreateTeamAccountHandler := connect.NewUnaryHandler(
 		UserAccountServiceCreateTeamAccountProcedure,
 		svc.CreateTeamAccount,
-		connect.WithSchema(userAccountServiceCreateTeamAccountMethodDescriptor),
+		connect.WithSchema(userAccountServiceMethods.ByName("CreateTeamAccount")),
 		connect.WithHandlerOptions(opts...),
 	)
 	userAccountServiceIsUserInAccountHandler := connect.NewUnaryHandler(
 		UserAccountServiceIsUserInAccountProcedure,
 		svc.IsUserInAccount,
-		connect.WithSchema(userAccountServiceIsUserInAccountMethodDescriptor),
+		connect.WithSchema(userAccountServiceMethods.ByName("IsUserInAccount")),
 		connect.WithHandlerOptions(opts...),
 	)
 	userAccountServiceGetAccountTemporalConfigHandler := connect.NewUnaryHandler(
 		UserAccountServiceGetAccountTemporalConfigProcedure,
 		svc.GetAccountTemporalConfig,
-		connect.WithSchema(userAccountServiceGetAccountTemporalConfigMethodDescriptor),
+		connect.WithSchema(userAccountServiceMethods.ByName("GetAccountTemporalConfig")),
 		connect.WithIdempotency(connect.IdempotencyNoSideEffects),
 		connect.WithHandlerOptions(opts...),
 	)
 	userAccountServiceSetAccountTemporalConfigHandler := connect.NewUnaryHandler(
 		UserAccountServiceSetAccountTemporalConfigProcedure,
 		svc.SetAccountTemporalConfig,
-		connect.WithSchema(userAccountServiceSetAccountTemporalConfigMethodDescriptor),
+		connect.WithSchema(userAccountServiceMethods.ByName("SetAccountTemporalConfig")),
 		connect.WithHandlerOptions(opts...),
 	)
 	userAccountServiceGetTeamAccountMembersHandler := connect.NewUnaryHandler(
 		UserAccountServiceGetTeamAccountMembersProcedure,
 		svc.GetTeamAccountMembers,
-		connect.WithSchema(userAccountServiceGetTeamAccountMembersMethodDescriptor),
+		connect.WithSchema(userAccountServiceMethods.ByName("GetTeamAccountMembers")),
 		connect.WithIdempotency(connect.IdempotencyNoSideEffects),
 		connect.WithHandlerOptions(opts...),
 	)
 	userAccountServiceRemoveTeamAccountMemberHandler := connect.NewUnaryHandler(
 		UserAccountServiceRemoveTeamAccountMemberProcedure,
 		svc.RemoveTeamAccountMember,
-		connect.WithSchema(userAccountServiceRemoveTeamAccountMemberMethodDescriptor),
+		connect.WithSchema(userAccountServiceMethods.ByName("RemoveTeamAccountMember")),
 		connect.WithHandlerOptions(opts...),
 	)
 	userAccountServiceInviteUserToTeamAccountHandler := connect.NewUnaryHandler(
 		UserAccountServiceInviteUserToTeamAccountProcedure,
 		svc.InviteUserToTeamAccount,
-		connect.WithSchema(userAccountServiceInviteUserToTeamAccountMethodDescriptor),
+		connect.WithSchema(userAccountServiceMethods.ByName("InviteUserToTeamAccount")),
 		connect.WithHandlerOptions(opts...),
 	)
 	userAccountServiceGetTeamAccountInvitesHandler := connect.NewUnaryHandler(
 		UserAccountServiceGetTeamAccountInvitesProcedure,
 		svc.GetTeamAccountInvites,
-		connect.WithSchema(userAccountServiceGetTeamAccountInvitesMethodDescriptor),
+		connect.WithSchema(userAccountServiceMethods.ByName("GetTeamAccountInvites")),
 		connect.WithIdempotency(connect.IdempotencyNoSideEffects),
 		connect.WithHandlerOptions(opts...),
 	)
 	userAccountServiceRemoveTeamAccountInviteHandler := connect.NewUnaryHandler(
 		UserAccountServiceRemoveTeamAccountInviteProcedure,
 		svc.RemoveTeamAccountInvite,
-		connect.WithSchema(userAccountServiceRemoveTeamAccountInviteMethodDescriptor),
+		connect.WithSchema(userAccountServiceMethods.ByName("RemoveTeamAccountInvite")),
 		connect.WithHandlerOptions(opts...),
 	)
 	userAccountServiceAcceptTeamAccountInviteHandler := connect.NewUnaryHandler(
 		UserAccountServiceAcceptTeamAccountInviteProcedure,
 		svc.AcceptTeamAccountInvite,
-		connect.WithSchema(userAccountServiceAcceptTeamAccountInviteMethodDescriptor),
+		connect.WithSchema(userAccountServiceMethods.ByName("AcceptTeamAccountInvite")),
 		connect.WithHandlerOptions(opts...),
 	)
 	userAccountServiceGetSystemInformationHandler := connect.NewUnaryHandler(
 		UserAccountServiceGetSystemInformationProcedure,
 		svc.GetSystemInformation,
-		connect.WithSchema(userAccountServiceGetSystemInformationMethodDescriptor),
+		connect.WithSchema(userAccountServiceMethods.ByName("GetSystemInformation")),
 		connect.WithIdempotency(connect.IdempotencyNoSideEffects),
 		connect.WithHandlerOptions(opts...),
 	)
 	userAccountServiceGetAccountOnboardingConfigHandler := connect.NewUnaryHandler(
 		UserAccountServiceGetAccountOnboardingConfigProcedure,
 		svc.GetAccountOnboardingConfig,
-		connect.WithSchema(userAccountServiceGetAccountOnboardingConfigMethodDescriptor),
+		connect.WithSchema(userAccountServiceMethods.ByName("GetAccountOnboardingConfig")),
 		connect.WithIdempotency(connect.IdempotencyNoSideEffects),
 		connect.WithHandlerOptions(opts...),
 	)
 	userAccountServiceSetAccountOnboardingConfigHandler := connect.NewUnaryHandler(
 		UserAccountServiceSetAccountOnboardingConfigProcedure,
 		svc.SetAccountOnboardingConfig,
-		connect.WithSchema(userAccountServiceSetAccountOnboardingConfigMethodDescriptor),
+		connect.WithSchema(userAccountServiceMethods.ByName("SetAccountOnboardingConfig")),
 		connect.WithHandlerOptions(opts...),
 	)
 	userAccountServiceGetAccountStatusHandler := connect.NewUnaryHandler(
 		UserAccountServiceGetAccountStatusProcedure,
 		svc.GetAccountStatus,
-		connect.WithSchema(userAccountServiceGetAccountStatusMethodDescriptor),
+		connect.WithSchema(userAccountServiceMethods.ByName("GetAccountStatus")),
 		connect.WithIdempotency(connect.IdempotencyNoSideEffects),
 		connect.WithHandlerOptions(opts...),
 	)
 	userAccountServiceIsAccountStatusValidHandler := connect.NewUnaryHandler(
 		UserAccountServiceIsAccountStatusValidProcedure,
 		svc.IsAccountStatusValid,
-		connect.WithSchema(userAccountServiceIsAccountStatusValidMethodDescriptor),
+		connect.WithSchema(userAccountServiceMethods.ByName("IsAccountStatusValid")),
 		connect.WithIdempotency(connect.IdempotencyNoSideEffects),
 		connect.WithHandlerOptions(opts...),
 	)
 	userAccountServiceGetAccountBillingCheckoutSessionHandler := connect.NewUnaryHandler(
 		UserAccountServiceGetAccountBillingCheckoutSessionProcedure,
 		svc.GetAccountBillingCheckoutSession,
-		connect.WithSchema(userAccountServiceGetAccountBillingCheckoutSessionMethodDescriptor),
+		connect.WithSchema(userAccountServiceMethods.ByName("GetAccountBillingCheckoutSession")),
 		connect.WithIdempotency(connect.IdempotencyNoSideEffects),
 		connect.WithHandlerOptions(opts...),
 	)
 	userAccountServiceGetAccountBillingPortalSessionHandler := connect.NewUnaryHandler(
 		UserAccountServiceGetAccountBillingPortalSessionProcedure,
 		svc.GetAccountBillingPortalSession,
-		connect.WithSchema(userAccountServiceGetAccountBillingPortalSessionMethodDescriptor),
+		connect.WithSchema(userAccountServiceMethods.ByName("GetAccountBillingPortalSession")),
 		connect.WithIdempotency(connect.IdempotencyNoSideEffects),
 		connect.WithHandlerOptions(opts...),
 	)
 	userAccountServiceGetBillingAccountsHandler := connect.NewUnaryHandler(
 		UserAccountServiceGetBillingAccountsProcedure,
 		svc.GetBillingAccounts,
-		connect.WithSchema(userAccountServiceGetBillingAccountsMethodDescriptor),
+		connect.WithSchema(userAccountServiceMethods.ByName("GetBillingAccounts")),
 		connect.WithIdempotency(connect.IdempotencyNoSideEffects),
 		connect.WithHandlerOptions(opts...),
 	)
 	userAccountServiceSetBillingMeterEventHandler := connect.NewUnaryHandler(
 		UserAccountServiceSetBillingMeterEventProcedure,
 		svc.SetBillingMeterEvent,
-		connect.WithSchema(userAccountServiceSetBillingMeterEventMethodDescriptor),
+		connect.WithSchema(userAccountServiceMethods.ByName("SetBillingMeterEvent")),
 		connect.WithHandlerOptions(opts...),
 	)
 	userAccountServiceSetUserRoleHandler := connect.NewUnaryHandler(
 		UserAccountServiceSetUserRoleProcedure,
 		svc.SetUserRole,
-		connect.WithSchema(userAccountServiceSetUserRoleMethodDescriptor),
+		connect.WithSchema(userAccountServiceMethods.ByName("SetUserRole")),
 		connect.WithHandlerOptions(opts...),
 	)
 	userAccountServiceHasPermissionHandler := connect.NewUnaryHandler(
 		UserAccountServiceHasPermissionProcedure,
 		svc.HasPermission,
-		connect.WithSchema(userAccountServiceHasPermissionMethodDescriptor),
+		connect.WithSchema(userAccountServiceMethods.ByName("HasPermission")),
 		connect.WithHandlerOptions(opts...),
 	)
 	userAccountServiceHasPermissionsHandler := connect.NewUnaryHandler(
 		UserAccountServiceHasPermissionsProcedure,
 		svc.HasPermissions,
-		connect.WithSchema(userAccountServiceHasPermissionsMethodDescriptor),
+		connect.WithSchema(userAccountServiceMethods.ByName("HasPermissions")),
 		connect.WithHandlerOptions(opts...),
 	)
 	return "/mgmt.v1alpha1.UserAccountService/", http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {

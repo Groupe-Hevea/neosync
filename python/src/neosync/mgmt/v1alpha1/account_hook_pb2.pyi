@@ -1,10 +1,13 @@
+import datetime
+
 from buf.validate import validate_pb2 as _validate_pb2
 from google.protobuf import timestamp_pb2 as _timestamp_pb2
 from google.protobuf.internal import containers as _containers
 from google.protobuf.internal import enum_type_wrapper as _enum_type_wrapper
 from google.protobuf import descriptor as _descriptor
 from google.protobuf import message as _message
-from typing import ClassVar as _ClassVar, Iterable as _Iterable, Mapping as _Mapping, Optional as _Optional, Union as _Union
+from collections.abc import Iterable as _Iterable, Mapping as _Mapping
+from typing import ClassVar as _ClassVar, Optional as _Optional, Union as _Union
 
 DESCRIPTOR: _descriptor.FileDescriptor
 
@@ -43,7 +46,7 @@ class AccountHook(_message.Message):
     updated_by_user_id: str
     updated_at: _timestamp_pb2.Timestamp
     enabled: bool
-    def __init__(self, id: _Optional[str] = ..., name: _Optional[str] = ..., description: _Optional[str] = ..., account_id: _Optional[str] = ..., events: _Optional[_Iterable[_Union[AccountHookEvent, str]]] = ..., config: _Optional[_Union[AccountHookConfig, _Mapping]] = ..., created_by_user_id: _Optional[str] = ..., created_at: _Optional[_Union[_timestamp_pb2.Timestamp, _Mapping]] = ..., updated_by_user_id: _Optional[str] = ..., updated_at: _Optional[_Union[_timestamp_pb2.Timestamp, _Mapping]] = ..., enabled: bool = ...) -> None: ...
+    def __init__(self, id: _Optional[str] = ..., name: _Optional[str] = ..., description: _Optional[str] = ..., account_id: _Optional[str] = ..., events: _Optional[_Iterable[_Union[AccountHookEvent, str]]] = ..., config: _Optional[_Union[AccountHookConfig, _Mapping]] = ..., created_by_user_id: _Optional[str] = ..., created_at: _Optional[_Union[datetime.datetime, _timestamp_pb2.Timestamp, _Mapping]] = ..., updated_by_user_id: _Optional[str] = ..., updated_at: _Optional[_Union[datetime.datetime, _timestamp_pb2.Timestamp, _Mapping]] = ..., enabled: _Optional[bool] = ...) -> None: ...
 
 class NewAccountHook(_message.Message):
     __slots__ = ("name", "description", "events", "config", "enabled")
@@ -57,7 +60,7 @@ class NewAccountHook(_message.Message):
     events: _containers.RepeatedScalarFieldContainer[AccountHookEvent]
     config: AccountHookConfig
     enabled: bool
-    def __init__(self, name: _Optional[str] = ..., description: _Optional[str] = ..., events: _Optional[_Iterable[_Union[AccountHookEvent, str]]] = ..., config: _Optional[_Union[AccountHookConfig, _Mapping]] = ..., enabled: bool = ...) -> None: ...
+    def __init__(self, name: _Optional[str] = ..., description: _Optional[str] = ..., events: _Optional[_Iterable[_Union[AccountHookEvent, str]]] = ..., config: _Optional[_Union[AccountHookConfig, _Mapping]] = ..., enabled: _Optional[bool] = ...) -> None: ...
 
 class AccountHookConfig(_message.Message):
     __slots__ = ("webhook", "slack")
@@ -69,7 +72,7 @@ class AccountHookConfig(_message.Message):
         url: str
         secret: str
         disable_ssl_verification: bool
-        def __init__(self, url: _Optional[str] = ..., secret: _Optional[str] = ..., disable_ssl_verification: bool = ...) -> None: ...
+        def __init__(self, url: _Optional[str] = ..., secret: _Optional[str] = ..., disable_ssl_verification: _Optional[bool] = ...) -> None: ...
     class SlackHook(_message.Message):
         __slots__ = ("channel_id",)
         CHANNEL_ID_FIELD_NUMBER: _ClassVar[int]
@@ -133,7 +136,7 @@ class UpdateAccountHookRequest(_message.Message):
     events: _containers.RepeatedScalarFieldContainer[AccountHookEvent]
     config: AccountHookConfig
     enabled: bool
-    def __init__(self, id: _Optional[str] = ..., name: _Optional[str] = ..., description: _Optional[str] = ..., events: _Optional[_Iterable[_Union[AccountHookEvent, str]]] = ..., config: _Optional[_Union[AccountHookConfig, _Mapping]] = ..., enabled: bool = ...) -> None: ...
+    def __init__(self, id: _Optional[str] = ..., name: _Optional[str] = ..., description: _Optional[str] = ..., events: _Optional[_Iterable[_Union[AccountHookEvent, str]]] = ..., config: _Optional[_Union[AccountHookConfig, _Mapping]] = ..., enabled: _Optional[bool] = ...) -> None: ...
 
 class UpdateAccountHookResponse(_message.Message):
     __slots__ = ("hook",)
@@ -165,7 +168,7 @@ class IsAccountHookNameAvailableResponse(_message.Message):
     __slots__ = ("is_available",)
     IS_AVAILABLE_FIELD_NUMBER: _ClassVar[int]
     is_available: bool
-    def __init__(self, is_available: bool = ...) -> None: ...
+    def __init__(self, is_available: _Optional[bool] = ...) -> None: ...
 
 class SetAccountHookEnabledRequest(_message.Message):
     __slots__ = ("id", "enabled")
@@ -173,7 +176,7 @@ class SetAccountHookEnabledRequest(_message.Message):
     ENABLED_FIELD_NUMBER: _ClassVar[int]
     id: str
     enabled: bool
-    def __init__(self, id: _Optional[str] = ..., enabled: bool = ...) -> None: ...
+    def __init__(self, id: _Optional[str] = ..., enabled: _Optional[bool] = ...) -> None: ...
 
 class SetAccountHookEnabledResponse(_message.Message):
     __slots__ = ("hook",)
@@ -240,7 +243,7 @@ class TestSlackConnectionResponse(_message.Message):
     has_configuration: bool
     test_response: TestSlackConnectionResponse.Response
     error: str
-    def __init__(self, has_configuration: bool = ..., test_response: _Optional[_Union[TestSlackConnectionResponse.Response, _Mapping]] = ..., error: _Optional[str] = ...) -> None: ...
+    def __init__(self, has_configuration: _Optional[bool] = ..., test_response: _Optional[_Union[TestSlackConnectionResponse.Response, _Mapping]] = ..., error: _Optional[str] = ...) -> None: ...
 
 class SendSlackMessageRequest(_message.Message):
     __slots__ = ("account_hook_id", "event")

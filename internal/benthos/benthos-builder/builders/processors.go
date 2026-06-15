@@ -277,14 +277,29 @@ func extractJsFunctionsAndOutputs(
 			case *mgmtv1alpha1.TransformerConfig_TransformJavascriptConfig:
 				code := cfg.TransformJavascriptConfig.GetCode()
 				if code != "" {
-					jsFunctions = append(jsFunctions, constructJsFunction(code, col.Column, mgmtv1alpha1.TransformerSource_TRANSFORMER_SOURCE_TRANSFORM_JAVASCRIPT))
-					benthosOutputs = append(benthosOutputs, constructBenthosJavascriptObject(col.Column, mgmtv1alpha1.TransformerSource_TRANSFORMER_SOURCE_TRANSFORM_JAVASCRIPT))
+					jsFunctions = append(
+						jsFunctions,
+						constructJsFunction(code, col.Column, mgmtv1alpha1.TransformerSource_TRANSFORMER_SOURCE_TRANSFORM_JAVASCRIPT),
+					)
+					benthosOutputs = append(
+						benthosOutputs,
+						constructBenthosJavascriptObject(
+							col.Column,
+							mgmtv1alpha1.TransformerSource_TRANSFORMER_SOURCE_TRANSFORM_JAVASCRIPT,
+						),
+					)
 				}
 			case *mgmtv1alpha1.TransformerConfig_GenerateJavascriptConfig:
 				code := cfg.GenerateJavascriptConfig.GetCode()
 				if code != "" {
-					jsFunctions = append(jsFunctions, constructJsFunction(code, col.Column, mgmtv1alpha1.TransformerSource_TRANSFORMER_SOURCE_GENERATE_JAVASCRIPT))
-					benthosOutputs = append(benthosOutputs, constructBenthosJavascriptObject(col.Column, mgmtv1alpha1.TransformerSource_TRANSFORMER_SOURCE_GENERATE_JAVASCRIPT))
+					jsFunctions = append(
+						jsFunctions,
+						constructJsFunction(code, col.Column, mgmtv1alpha1.TransformerSource_TRANSFORMER_SOURCE_GENERATE_JAVASCRIPT),
+					)
+					benthosOutputs = append(
+						benthosOutputs,
+						constructBenthosJavascriptObject(col.Column, mgmtv1alpha1.TransformerSource_TRANSFORMER_SOURCE_GENERATE_JAVASCRIPT),
+					)
 				}
 			}
 		}

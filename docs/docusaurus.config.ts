@@ -19,10 +19,10 @@ const config: Config = {
     },
   ],
   // Set the production url of your s here
-  url: 'https://docs.neosync.dev',
+  url: 'https://groupe-hevea.github.io',
   // Set the /<baseUrl>/ pathname under which your site is served
   // For GitHub pages deployment, it is often '/<projectName>/'
-  baseUrl: '/',
+  baseUrl: '/neosync/',
 
   // GitHub pages deployment config.
   // If you aren't using GitHub pages, you don't need these.
@@ -56,13 +56,28 @@ const config: Config = {
       return {
         name: 'docusaurus-tailwindcss',
         configurePostCss(postcssOptions) {
-          // Appends TailwindCSS and AutoPrefixer.
-          postcssOptions.plugins.push(require('tailwindcss'));
-          postcssOptions.plugins.push(require('autoprefixer'));
+          // Appends TailwindCSS (v4 bundles autoprefixing internally).
+          postcssOptions.plugins.push(require('@tailwindcss/postcss'));
           return postcssOptions;
         },
       };
     },
+  ],
+
+  themes: [
+    [
+      require.resolve('@easyops-cn/docusaurus-search-local'),
+      {
+        hashed: true,
+        indexDocs: true,
+        indexBlog: true,
+        // The classic docs preset is served at the site root, and the
+        // changelog blog at /changelog (see presets below).
+        docsRouteBasePath: '/',
+        blogRouteBasePath: '/changelog',
+        language: ['en'],
+      },
+    ],
   ],
 
   presets: [
@@ -158,14 +173,6 @@ const config: Config = {
     prism: {
       theme: themes.github,
       darkTheme: themes.dracula,
-    },
-    algolia: {
-      appId: 'LUROM0SS2F',
-      apiKey: 'a58584698f0541be72a223f5b33d59a9',
-      indexName: 'neosync',
-      contextualSearch: true,
-      searchParameters: {},
-      searchPagePath: 'search',
     },
   },
 };

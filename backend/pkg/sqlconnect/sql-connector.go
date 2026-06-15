@@ -95,7 +95,12 @@ func (rc *SqlOpenConnector) NewDbFromConnectionConfig(
 			logger,
 		), nil
 	case *mgmtv1alpha1.ConnectionConfig_MysqlConfig:
-		connDetails, err := dbconnectconfig.NewFromMysqlConnection(config, options.connectionTimeoutSeconds, logger, options.mysqlDisableParseTime)
+		connDetails, err := dbconnectconfig.NewFromMysqlConnection(
+			config,
+			options.connectionTimeoutSeconds,
+			logger,
+			options.mysqlDisableParseTime,
+		)
 		if err != nil {
 			return nil, err
 		}

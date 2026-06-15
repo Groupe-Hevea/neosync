@@ -27,6 +27,10 @@ type MysqlManager struct {
 	querier mysql_queries.Querier
 	pool    mysql_queries.DBTX
 	close   func()
+
+	// flavor-resolved querier, lazily initialized by getQuerier
+	resolvedMu      sync.Mutex
+	resolvedQuerier mysql_queries.Querier
 }
 
 func NewManager(
@@ -37,10 +41,37 @@ func NewManager(
 	return &MysqlManager{querier: querier, pool: pool, close: closer}
 }
 
+// getQuerier resolves the effective querier for the connected server flavor.
+// MariaDB reports schema metadata with different semantics than MySQL 8 (see
+// mariadb-querier.go), so its rows are normalized through mariadbQuerier.
+// The result is memoized; detection errors are not, so a transient connection
+// failure can be retried on the next call.
+func (m *MysqlManager) getQuerier(ctx context.Context) (mysql_queries.Querier, error) {
+	m.resolvedMu.Lock()
+	defer m.resolvedMu.Unlock()
+	if m.resolvedQuerier != nil {
+		return m.resolvedQuerier, nil
+	}
+	var version string
+	if err := m.pool.QueryRowContext(ctx, "SELECT VERSION()").Scan(&version); err != nil {
+		return nil, fmt.Errorf("unable to detect mysql server flavor: %w", err)
+	}
+	if strings.Contains(strings.ToLower(version), "mariadb") {
+		m.resolvedQuerier = newMariadbQuerier(m.querier)
+	} else {
+		m.resolvedQuerier = m.querier
+	}
+	return m.resolvedQuerier, nil
+}
+
 func (m *MysqlManager) GetDatabaseSchema(
 	ctx context.Context,
 ) ([]*sqlmanager_shared.DatabaseSchemaRow, error) {
-	dbSchemas, err := m.querier.GetDatabaseSchema(ctx, m.pool)
+	querier, err := m.getQuerier(ctx)
+	if err != nil {
+		return nil, err
+	}
+	dbSchemas, err := querier.GetDatabaseSchema(ctx, m.pool)
 	if err != nil && !neosyncdb.IsNoRows(err) {
 		return nil, err
 	} else if err != nil && neosyncdb.IsNoRows(err) {
@@ -132,6 +163,11 @@ func (m *MysqlManager) GetDatabaseTableSchemasBySchemasAndTables(
 		schemaset[table.Schema] = append(schemaset[table.Schema], table.Table)
 	}
 
+	querier, err := m.getQuerier(ctx)
+	if err != nil {
+		return nil, err
+	}
+
 	errgrp, errctx := errgroup.WithContext(ctx)
 	errgrp.SetLimit(5)
 
@@ -139,7 +175,7 @@ func (m *MysqlManager) GetDatabaseTableSchemasBySchemasAndTables(
 	var colDefMapMu sync.Mutex
 	for schema, tables := range schemaset {
 		errgrp.Go(func() error {
-			columnDefs, err := m.querier.GetDatabaseTableSchemasBySchemasAndTables(
+			columnDefs, err := querier.GetDatabaseTableSchemasBySchemasAndTables(
 				errctx,
 				m.pool,
 				&mysql_queries.GetDatabaseTableSchemasBySchemasAndTablesParams{
@@ -265,7 +301,11 @@ func (m *MysqlManager) GetColumnsByTables(
 func (m *MysqlManager) GetAllSchemas(
 	ctx context.Context,
 ) ([]*sqlmanager_shared.DatabaseSchemaNameRow, error) {
-	rows, err := m.querier.GetAllSchemas(ctx, m.pool)
+	querier, err := m.getQuerier(ctx)
+	if err != nil {
+		return nil, err
+	}
+	rows, err := querier.GetAllSchemas(ctx, m.pool)
 	if err != nil {
 		return nil, err
 	}
@@ -281,7 +321,11 @@ func (m *MysqlManager) GetAllSchemas(
 func (m *MysqlManager) GetAllTables(
 	ctx context.Context,
 ) ([]*sqlmanager_shared.DatabaseTableRow, error) {
-	rows, err := m.querier.GetAllTables(ctx, m.pool)
+	querier, err := m.getQuerier(ctx)
+	if err != nil {
+		return nil, err
+	}
+	rows, err := querier.GetAllTables(ctx, m.pool)
 	if err != nil {
 		return nil, err
 	}
@@ -315,7 +359,11 @@ func (m *MysqlManager) GetTableConstraintsBySchema(
 		return &sqlmanager_shared.TableConstraints{}, nil
 	}
 
-	rows, err := m.querier.GetTableConstraintsBySchemas(ctx, m.pool, schemas)
+	querier, err := m.getQuerier(ctx)
+	if err != nil {
+		return nil, err
+	}
+	rows, err := querier.GetTableConstraintsBySchemas(ctx, m.pool, schemas)
 	if err != nil && !neosyncdb.IsNoRows(err) {
 		return nil, err
 	} else if err != nil && neosyncdb.IsNoRows(err) {
@@ -409,7 +457,11 @@ func jsonRawToSlice[T any](j json.RawMessage) ([]T, error) {
 }
 
 func (m *MysqlManager) GetRolePermissionsMap(ctx context.Context) (map[string][]string, error) {
-	rows, err := m.querier.GetMysqlRolePermissions(ctx, m.pool)
+	querier, err := m.getQuerier(ctx)
+	if err != nil {
+		return nil, err
+	}
+	rows, err := querier.GetMysqlRolePermissions(ctx, m.pool)
 	if err != nil && !neosyncdb.IsNoRows(err) {
 		return nil, err
 	} else if err != nil && neosyncdb.IsNoRows(err) {
@@ -443,6 +495,11 @@ func (m *MysqlManager) GetTableInitStatements(
 		schemaset[table.Schema] = append(schemaset[table.Schema], table.Table)
 	}
 
+	querier, err := m.getQuerier(ctx)
+	if err != nil {
+		return nil, err
+	}
+
 	errgrp, errctx := errgroup.WithContext(ctx)
 	errgrp.SetLimit(5)
 
@@ -450,7 +507,7 @@ func (m *MysqlManager) GetTableInitStatements(
 	var colDefMapMu sync.Mutex
 	for schema, tables := range schemaset {
 		errgrp.Go(func() error {
-			columnDefs, err := m.querier.GetDatabaseTableSchemasBySchemasAndTables(
+			columnDefs, err := querier.GetDatabaseTableSchemasBySchemasAndTables(
 				errctx,
 				m.pool,
 				&mysql_queries.GetDatabaseTableSchemasBySchemasAndTablesParams{
@@ -481,7 +538,7 @@ func (m *MysqlManager) GetTableInitStatements(
 	var constraintMapMu sync.Mutex
 	for schema, tables := range schemaset {
 		errgrp.Go(func() error {
-			constraints, err := m.querier.GetTableConstraints(
+			constraints, err := querier.GetTableConstraints(
 				errctx,
 				m.pool,
 				&mysql_queries.GetTableConstraintsParams{
@@ -509,7 +566,7 @@ func (m *MysqlManager) GetTableInitStatements(
 	var indexMapMu sync.Mutex
 	for schema, tables := range schemaset {
 		errgrp.Go(func() error {
-			idxrecords, err := m.querier.GetIndicesBySchemasAndTables(
+			idxrecords, err := querier.GetIndicesBySchemasAndTables(
 				errctx,
 				m.pool,
 				&mysql_queries.GetIndicesBySchemasAndTablesParams{
@@ -667,7 +724,11 @@ func (m *MysqlManager) GetTableConstraintsByTables(
 	schema string,
 	tables []string,
 ) (map[string]*sqlmanager_shared.AllTableConstraints, error) {
-	constraints, err := m.querier.GetTableConstraints(
+	querier, err := m.getQuerier(ctx)
+	if err != nil {
+		return nil, err
+	}
+	constraints, err := querier.GetTableConstraints(
 		ctx,
 		m.pool,
 		&mysql_queries.GetTableConstraintsParams{
@@ -820,6 +881,10 @@ func BuildDropConstraintStatement(schema, table, constraintType, constraintName 
 	}
 	if strings.EqualFold(constraintType, "UNIQUE") {
 		constraintType = "INDEX"
+	}
+	if strings.EqualFold(constraintType, "CHECK") {
+		// DROP CHECK is MySQL-only; DROP CONSTRAINT works on MySQL 8.0.19+ and MariaDB
+		constraintType = "CONSTRAINT"
 	}
 	return fmt.Sprintf(
 		"ALTER TABLE %s.%s DROP %s %s;",
@@ -1057,6 +1122,11 @@ func (m *MysqlManager) GetSchemaTableTriggers(
 		fullTableNames[t.String()] = struct{}{}
 	}
 
+	querier, err := m.getQuerier(ctx)
+	if err != nil {
+		return nil, err
+	}
+
 	resMap := map[string][]*mysql_queries.GetCustomTriggersBySchemaAndTablesRow{}
 	var resMapMu sync.Mutex
 
@@ -1066,7 +1136,7 @@ func (m *MysqlManager) GetSchemaTableTriggers(
 		schema := schema
 		tables := tables
 		errgrp.Go(func() error {
-			rows, err := m.querier.GetCustomTriggersBySchemaAndTables(
+			rows, err := querier.GetCustomTriggersBySchemaAndTables(
 				errctx,
 				m.pool,
 				&mysql_queries.GetCustomTriggersBySchemaAndTablesParams{
@@ -1205,7 +1275,11 @@ func (m *MysqlManager) getFunctionsBySchemas(
 	ctx context.Context,
 	schemas []string,
 ) ([]*sqlmanager_shared.DataType, error) {
-	rows, err := m.querier.GetCustomFunctionsBySchemas(ctx, m.pool, schemas)
+	querier, err := m.getQuerier(ctx)
+	if err != nil {
+		return nil, err
+	}
+	rows, err := querier.GetCustomFunctionsBySchemas(ctx, m.pool, schemas)
 	if err != nil && !neosyncdb.IsNoRows(err) {
 		return nil, err
 	} else if err != nil && neosyncdb.IsNoRows(err) {

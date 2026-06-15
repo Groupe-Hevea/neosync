@@ -53,4 +53,4 @@ At it's core, Neosync is an orchestration platform with anonymization, synthetic
 
 ![anon](/img/orches.png)
 
-Depending on the type of [Job](../core-concepts#jobs) you create, you can sync data from a source database to one or many destination databases. This is where the orchestration comes into play.
+Depending on the type of [Job](./core-concepts.md#jobs) you create, you can sync data from a source database to one or many destination databases. This is where the orchestration comes into play.

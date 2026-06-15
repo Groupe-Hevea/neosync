@@ -733,7 +733,21 @@ func Test_BuildRunConfigs_Subset_SingleCycle(t *testing.T) {
 					[]*DependsOn{{Table: "public.x", Columns: []string{"id"}}},
 					[]*SubsetPath{
 						{
-							Subset: where, Root: "public.x", JoinSteps: []*JoinStep{{FromKey: "public.a", ToKey: "public.x", ForeignKey: &ForeignKey{Columns: []string{"x_id"}, NotNullable: []bool{true}, ReferenceSchema: "public", ReferenceTable: "x", ReferenceColumns: []string{"id"}}}},
+							Subset: where,
+							Root:   "public.x",
+							JoinSteps: []*JoinStep{
+								{
+									FromKey: "public.a",
+									ToKey:   "public.x",
+									ForeignKey: &ForeignKey{
+										Columns:          []string{"x_id"},
+										NotNullable:      []bool{true},
+										ReferenceSchema:  "public",
+										ReferenceTable:   "x",
+										ReferenceColumns: []string{"id"},
+									},
+								},
+							},
 						},
 					},
 				),
@@ -750,7 +764,21 @@ func Test_BuildRunConfigs_Subset_SingleCycle(t *testing.T) {
 					},
 					[]*SubsetPath{
 						{
-							Subset: where, Root: "public.x", JoinSteps: []*JoinStep{{FromKey: "public.a", ToKey: "public.x", ForeignKey: &ForeignKey{Columns: []string{"x_id"}, NotNullable: []bool{true}, ReferenceSchema: "public", ReferenceTable: "x", ReferenceColumns: []string{"id"}}}},
+							Subset: where,
+							Root:   "public.x",
+							JoinSteps: []*JoinStep{
+								{
+									FromKey: "public.a",
+									ToKey:   "public.x",
+									ForeignKey: &ForeignKey{
+										Columns:          []string{"x_id"},
+										NotNullable:      []bool{true},
+										ReferenceSchema:  "public",
+										ReferenceTable:   "x",
+										ReferenceColumns: []string{"id"},
+									},
+								},
+							},
 						},
 					},
 				),

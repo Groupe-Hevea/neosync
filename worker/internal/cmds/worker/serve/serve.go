@@ -58,8 +58,6 @@ import (
 	temporalotel "go.temporal.io/sdk/contrib/opentelemetry"
 	"go.temporal.io/sdk/interceptor"
 	"go.temporal.io/sdk/worker"
-	"golang.org/x/net/http2"
-	"golang.org/x/net/http2/h2c"
 
 	"net/http/pprof"
 
@@ -442,7 +440,7 @@ func serve(ctx context.Context) error {
 			w,
 			connclient,
 			jobclient,
-			openaiclient,
+			&openaiclient,
 			conndatabuilder,
 			cascadelicense,
 			temporalClient.ScheduleClient(),
@@ -503,9 +501,16 @@ func getHttpServer(logger *log.Logger) *http.Server {
 
 	mux.Handle("/", api)
 
+	// Protocols enables HTTP/1 and cleartext (h2c) HTTP/2, replacing the
+	// deprecated golang.org/x/net/http2/h2c handler wrapper.
+	protocols := new(http.Protocols)
+	protocols.SetHTTP1(true)
+	protocols.SetUnencryptedHTTP2(true)
+
 	httpServer := http.Server{
 		Addr:              fmt.Sprintf("%s:%d", host, port),
-		Handler:           h2c.NewHandler(mux, &http2.Server{}),
+		Handler:           mux,
+		Protocols:         protocols,
 		ErrorLog:          logger,
 		ReadHeaderTimeout: 10 * time.Second,
 	}

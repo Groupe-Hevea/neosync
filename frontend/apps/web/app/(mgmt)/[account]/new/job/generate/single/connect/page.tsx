@@ -31,7 +31,7 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { getSingleOrUndefined, splitConnections } from '@/libs/utils';
 import { create } from '@bufbuild/protobuf';
 import { useMutation, useQuery } from '@connectrpc/connect-query';
-import { yupResolver } from '@hookform/resolvers/yup';
+import { yupResolver } from '@/util/yup-form-resolver';
 import {
   CheckConnectionConfigByIdResponse,
   CheckConnectionConfigByIdResponseSchema,
@@ -89,9 +89,7 @@ export default function Page(props: PageProps): ReactElement {
     useState<CheckConnectionConfigByIdResponse | undefined>();
 
   const form = useForm({
-    resolver: yupResolver<SingleTableConnectFormValues>(
-      SingleTableConnectFormValues
-    ),
+    resolver: yupResolver(SingleTableConnectFormValues),
     defaultValues,
   });
 

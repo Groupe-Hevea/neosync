@@ -325,7 +325,7 @@ func transformPiiText(
 	v := reflect.ValueOf(value)
 	var result string
 	switch v.Kind() {
-	case reflect.Ptr:
+	case reflect.Pointer:
 		if v.IsNil() {
 			return nil, nil
 		}

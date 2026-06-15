@@ -294,125 +294,21 @@ func Test_Workflow(t *testing.T) {
 	t.Run("mysql", func(t *testing.T) {
 		t.Log("Starting mysql tests")
 		t.Parallel()
-		mysql, err := tcmysql.NewMysqlTestSyncContainer(ctx, []tcmysql.Option{}, []tcmysql.Option{})
-		if err != nil {
-			t.Fatal(err)
-		}
-		sourceConn := tcneosyncapi.CreateMysqlConnection(
-			ctx,
+		runMysqlWorkflowTests(t, ctx, neosyncApi, dbManagers, accountId, "mysql", nil)
+	})
+
+	t.Run("mariadb", func(t *testing.T) {
+		t.Log("Starting mariadb tests")
+		t.Parallel()
+		runMysqlWorkflowTests(
 			t,
-			connclient,
-			accountId,
-			"mysql-source",
-			mysql.Source.URL,
-		)
-		destConn := tcneosyncapi.CreateMysqlConnection(
 			ctx,
-			t,
-			connclient,
+			neosyncApi,
+			dbManagers,
 			accountId,
-			"mysql-dest",
-			mysql.Target.URL,
+			"mariadb",
+			[]tcmysql.Option{tcmysql.WithImage("mariadb:11.4")},
 		)
-
-		t.Run("types", func(t *testing.T) {
-			t.Parallel()
-			test_mysql_types(t, ctx, mysql, neosyncApi, dbManagers, accountId, sourceConn, destConn)
-		})
-
-		t.Run("edgecases", func(t *testing.T) {
-			t.Parallel()
-			test_mysql_edgecases(
-				t,
-				ctx,
-				mysql,
-				neosyncApi,
-				dbManagers,
-				accountId,
-				sourceConn,
-				destConn,
-			)
-		})
-
-		t.Run("composite_keys", func(t *testing.T) {
-			t.Parallel()
-			test_mysql_composite_keys(
-				t,
-				ctx,
-				mysql,
-				neosyncApi,
-				dbManagers,
-				accountId,
-				sourceConn,
-				destConn,
-			)
-		})
-		t.Run("on_conflict_do_update", func(t *testing.T) {
-			t.Parallel()
-			test_mysql_on_conflict_do_update(
-				t,
-				ctx,
-				mysql,
-				neosyncApi,
-				dbManagers,
-				accountId,
-				sourceConn,
-				destConn,
-			)
-		})
-
-		t.Run("schema_reconciliation", func(t *testing.T) {
-			t.Parallel()
-			t.Run("truncate", func(t *testing.T) {
-				t.Parallel()
-				test_mysql_schema_reconciliation(
-					t,
-					ctx,
-					mysql,
-					neosyncApi,
-					dbManagers,
-					accountId,
-					sourceConn,
-					destConn,
-					true,
-				)
-			})
-			t.Run("retain_data", func(t *testing.T) {
-				t.Parallel()
-				test_mysql_schema_reconciliation(
-					t,
-					ctx,
-					mysql,
-					neosyncApi,
-					dbManagers,
-					accountId,
-					sourceConn,
-					destConn,
-					false,
-				)
-			})
-		})
-
-		t.Run("complex", func(t *testing.T) {
-			t.Parallel()
-			test_mysql_complex(
-				t,
-				ctx,
-				mysql,
-				neosyncApi,
-				dbManagers,
-				accountId,
-				sourceConn,
-				destConn,
-			)
-		})
-
-		t.Cleanup(func() {
-			err := mysql.TearDown(ctx)
-			if err != nil {
-				t.Fatal(err)
-			}
-		})
 	})
 
 	t.Run("mssql", func(t *testing.T) {
@@ -640,6 +536,139 @@ func Test_Workflow(t *testing.T) {
 		err = neosyncApi.TearDown(ctx)
 		if err != nil {
 			panic(err)
+		}
+	})
+}
+
+// runs the mysql workflow test suite against a mysql-compatible container
+// flavor (mysql, mariadb). connPrefix keeps connection names unique across flavors.
+func runMysqlWorkflowTests(
+	t *testing.T,
+	ctx context.Context,
+	neosyncApi *tcneosyncapi.NeosyncApiTestClient,
+	dbManagers *TestDatabaseManagers,
+	accountId string,
+	connPrefix string,
+	containerOpts []tcmysql.Option,
+) {
+	connclient := neosyncApi.OSSUnauthenticatedLicensedClients.Connections()
+	mysql, err := tcmysql.NewMysqlTestSyncContainer(ctx, containerOpts, containerOpts)
+	if err != nil {
+		t.Fatal(err)
+	}
+	sourceConn := tcneosyncapi.CreateMysqlConnection(
+		ctx,
+		t,
+		connclient,
+		accountId,
+		connPrefix+"-source",
+		mysql.Source.URL,
+	)
+	destConn := tcneosyncapi.CreateMysqlConnection(
+		ctx,
+		t,
+		connclient,
+		accountId,
+		connPrefix+"-dest",
+		mysql.Target.URL,
+	)
+
+	t.Run("types", func(t *testing.T) {
+		t.Parallel()
+		test_mysql_types(t, ctx, mysql, neosyncApi, dbManagers, accountId, sourceConn, destConn)
+	})
+
+	t.Run("edgecases", func(t *testing.T) {
+		t.Parallel()
+		test_mysql_edgecases(
+			t,
+			ctx,
+			mysql,
+			neosyncApi,
+			dbManagers,
+			accountId,
+			sourceConn,
+			destConn,
+		)
+	})
+
+	t.Run("composite_keys", func(t *testing.T) {
+		t.Parallel()
+		test_mysql_composite_keys(
+			t,
+			ctx,
+			mysql,
+			neosyncApi,
+			dbManagers,
+			accountId,
+			sourceConn,
+			destConn,
+		)
+	})
+	t.Run("on_conflict_do_update", func(t *testing.T) {
+		t.Parallel()
+		test_mysql_on_conflict_do_update(
+			t,
+			ctx,
+			mysql,
+			neosyncApi,
+			dbManagers,
+			accountId,
+			sourceConn,
+			destConn,
+		)
+	})
+
+	t.Run("schema_reconciliation", func(t *testing.T) {
+		t.Parallel()
+		t.Run("truncate", func(t *testing.T) {
+			t.Parallel()
+			test_mysql_schema_reconciliation(
+				t,
+				ctx,
+				mysql,
+				neosyncApi,
+				dbManagers,
+				accountId,
+				sourceConn,
+				destConn,
+				true,
+			)
+		})
+		t.Run("retain_data", func(t *testing.T) {
+			t.Parallel()
+			test_mysql_schema_reconciliation(
+				t,
+				ctx,
+				mysql,
+				neosyncApi,
+				dbManagers,
+				accountId,
+				sourceConn,
+				destConn,
+				false,
+			)
+		})
+	})
+
+	t.Run("complex", func(t *testing.T) {
+		t.Parallel()
+		test_mysql_complex(
+			t,
+			ctx,
+			mysql,
+			neosyncApi,
+			dbManagers,
+			accountId,
+			sourceConn,
+			destConn,
+		)
+	})
+
+	t.Cleanup(func() {
+		err := mysql.TearDown(ctx)
+		if err != nil {
+			t.Fatal(err)
 		}
 	})
 }

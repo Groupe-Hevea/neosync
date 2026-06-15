@@ -8,13 +8,13 @@ import (
 	"strings"
 
 	"connectrpc.com/connect"
-	"github.com/Azure/azure-sdk-for-go/sdk/ai/azopenai"
-	"github.com/Azure/azure-sdk-for-go/sdk/azcore"
 	mgmtv1alpha1 "github.com/Groupe-Hevea/neosync/backend/gen/go/protos/mgmt/v1alpha1"
 	logger_interceptor "github.com/Groupe-Hevea/neosync/backend/internal/connect/interceptors/logger"
 	sqlmanager_shared "github.com/Groupe-Hevea/neosync/backend/pkg/sqlmanager/shared"
 	nucleuserrors "github.com/Groupe-Hevea/neosync/internal/errors"
 	neosyncgob "github.com/Groupe-Hevea/neosync/internal/gob"
+	"github.com/openai/openai-go"
+	"github.com/openai/openai-go/option"
 
 	"golang.org/x/sync/errgroup"
 	"google.golang.org/protobuf/types/known/structpb"
@@ -254,44 +254,38 @@ func (s *Service) GetAiGeneratedData(
 		return nil, nucleuserrors.NewBadRequest("connection must be a valid openai connection")
 	}
 
-	client, err := azopenai.NewClientForOpenAI(
-		openaiconfig.GetApiUrl(),
-		azcore.NewKeyCredential(openaiconfig.GetApiKey()),
-		&azopenai.ClientOptions{},
+	client := openai.NewClient(
+		option.WithAPIKey(openaiconfig.GetApiKey()),
+		option.WithBaseURL(openaiconfig.GetApiUrl()),
 	)
-	if err != nil {
-		return nil, fmt.Errorf("unable to init openai client: %w", err)
+
+	conversation := []openai.ChatCompletionMessageParamUnion{
+		openai.SystemMessage(
+			fmt.Sprintf(
+				"You generate data in JSON format. Generate %d records in a json array located on the data key",
+				req.Msg.GetCount(),
+			),
+		),
+		openai.UserMessage(
+			fmt.Sprintf(
+				"%s\n%s",
+				req.Msg.GetUserPrompt(),
+				fmt.Sprintf("Each record looks like this: %s", strings.Join(columns, ",")),
+			),
+		),
 	}
 
-	conversation := []azopenai.ChatRequestMessageClassification{
-		&azopenai.ChatRequestSystemMessage{
-			Content: azopenai.NewChatRequestSystemMessageContent(
-				fmt.Sprintf(
-					"You generate data in JSON format. Generate %d records in a json array located on the data key",
-					req.Msg.GetCount(),
-				),
-			),
+	chatResp, err := client.Chat.Completions.New(ctx, openai.ChatCompletionNewParams{
+		Temperature:      openai.Float(1.0),
+		Model:            req.Msg.GetModelName(),
+		TopP:             openai.Float(1.0),
+		FrequencyPenalty: openai.Float(0),
+		N:                openai.Int(1),
+		ResponseFormat: openai.ChatCompletionNewParamsResponseFormatUnion{
+			OfJSONObject: &openai.ResponseFormatJSONObjectParam{},
 		},
-		&azopenai.ChatRequestUserMessage{
-			Content: azopenai.NewChatRequestUserMessageContent(
-				fmt.Sprintf(
-					"%s\n%s",
-					req.Msg.GetUserPrompt(),
-					fmt.Sprintf("Each record looks like this: %s", strings.Join(columns, ",")),
-				),
-			),
-		},
-	}
-
-	chatResp, err := client.GetChatCompletions(ctx, azopenai.ChatCompletionsOptions{
-		Temperature:      ptr(float32(1.0)),
-		DeploymentName:   ptr(req.Msg.GetModelName()),
-		TopP:             ptr(float32(1.0)),
-		FrequencyPenalty: ptr(float32(0)),
-		N:                ptr(int32(1)),
-		ResponseFormat:   &azopenai.ChatCompletionsJSONResponseFormat{},
-		Messages:         conversation,
-	}, &azopenai.GetChatCompletionsOptions{})
+		Messages: conversation,
+	})
 	if err != nil {
 		return nil, fmt.Errorf("unable to get chat completions: %w", err)
 	}
@@ -300,12 +294,12 @@ func (s *Service) GetAiGeneratedData(
 	}
 	choice := chatResp.Choices[0]
 
-	if *choice.FinishReason == azopenai.CompletionsFinishReasonTokenLimitReached {
+	if choice.FinishReason == "length" {
 		return nil, errors.New("completion limit reached")
 	}
 
 	var dataResponse completionResponse
-	err = json.Unmarshal([]byte(*choice.Message.Content), &dataResponse)
+	err = json.Unmarshal([]byte(choice.Message.Content), &dataResponse)
 	if err != nil {
 		return nil, fmt.Errorf(
 			"unable to unmarshal openai message content into expected response: %w",
@@ -323,10 +317,6 @@ func (s *Service) GetAiGeneratedData(
 	}
 
 	return connect.NewResponse(&mgmtv1alpha1.GetAiGeneratedDataResponse{Records: dtoRecords}), nil
-}
-
-func ptr[T any](val T) *T {
-	return &val
 }
 
 func (s *Service) GetConnectionTableConstraints(

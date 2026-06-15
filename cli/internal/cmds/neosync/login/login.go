@@ -22,8 +22,6 @@ import (
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 	"github.com/toqueteos/webbrowser"
-	"golang.org/x/net/http2"
-	"golang.org/x/net/http2/h2c"
 )
 
 func NewCmd() *cobra.Command {
@@ -137,9 +135,16 @@ func oAuthLogin(
 	reschan := make(chan oauthResult)
 
 	mux.HandleFunc(callbackPath, getHttpCallbackFunc(state, errchan, reschan))
+	// Protocols enables HTTP/1 and cleartext (h2c) HTTP/2, replacing the
+	// deprecated golang.org/x/net/http2/h2c handler wrapper.
+	protocols := new(http.Protocols)
+	protocols.SetHTTP1(true)
+	protocols.SetUnencryptedHTTP2(true)
+
 	httpSrv := http.Server{
 		Addr:              getHttpSrvBaseUrl(),
-		Handler:           h2c.NewHandler(mux, &http2.Server{}),
+		Handler:           mux,
+		Protocols:         protocols,
 		ErrorLog:          nil,
 		ReadHeaderTimeout: 10 * time.Second,
 	}

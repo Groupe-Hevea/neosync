@@ -29,7 +29,7 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { getSingleOrUndefined, splitConnections } from '@/libs/utils';
 import { create } from '@bufbuild/protobuf';
 import { useQuery } from '@connectrpc/connect-query';
-import { yupResolver } from '@hookform/resolvers/yup';
+import { yupResolver } from '@/util/yup-form-resolver';
 import { ConnectionConfigSchema, ConnectionService } from '@neosync/sdk';
 import { useRouter } from 'next/navigation';
 import { usePostHog } from 'posthog-js/react';
@@ -70,9 +70,7 @@ export default function Page(props: PageProps): ReactElement {
   );
 
   const form = useForm<SingleTableAiConnectFormValues>({
-    resolver: yupResolver<SingleTableAiConnectFormValues>(
-      SingleTableAiConnectFormValues
-    ),
+    resolver: yupResolver(SingleTableAiConnectFormValues),
     defaultValues,
   });
 

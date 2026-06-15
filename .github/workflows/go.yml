@@ -27,7 +27,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
-        uses: actions/checkout@v5
+        uses: actions/checkout@v6
 
       - name: Set up Go
         uses: actions/setup-go@v6
@@ -36,9 +36,9 @@ jobs:
           cache-dependency-path: go.sum
 
       - name: golangci-lint
-        uses: golangci/golangci-lint-action@v8
+        uses: golangci/golangci-lint-action@v9
         with:
-          version: latest
+          version: v2.12.2
           args: --timeout=10m
 
   vet:
@@ -46,7 +46,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
-        uses: actions/checkout@v5
+        uses: actions/checkout@v6
 
       - name: Set up Go
         uses: actions/setup-go@v6
@@ -63,7 +63,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
-        uses: actions/checkout@v5
+        uses: actions/checkout@v6
 
       - name: Set up Go
         uses: actions/setup-go@v6
@@ -87,7 +87,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
-        uses: actions/checkout@v5
+        uses: actions/checkout@v6
 
       - name: Set up Go
         uses: actions/setup-go@v6
@@ -101,7 +101,7 @@ jobs:
 
       # TODO RE-ENABLE When we have codedov set up
       # - name: Upload coverage to Codecov
-      #   uses: codecov/codecov-action@v5
+      #   uses: codecov/codecov-action@v7
       #   env:
       #     CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
 
@@ -116,7 +116,7 @@ jobs:
   #     AWS_REGION: "us-west-2"
   #   steps:
   #     - name: Checkout
-  #       uses: actions/checkout@v5
+  #       uses: actions/checkout@v6
 
   #     - name: Set up Go
   #       uses: actions/setup-go@v6
@@ -125,7 +125,7 @@ jobs:
   #         cache-dependency-path: go.sum
 
   #     - name: Configure AWS Credentials
-  #       uses: aws-actions/configure-aws-credentials@v4
+  #       uses: aws-actions/configure-aws-credentials@v6
   #       with:
   #         aws-region: ${{ env.AWS_REGION }}
   #         role-to-assume: ${{ vars.INTEGRATION_TEST_AWS_ROLE_ARN }}
@@ -141,7 +141,7 @@ jobs:
   #         TEST_S3_BUCKET: ${{ vars.INTEGRATION_TEST_BUCKET_NAME }}
 
   #     - name: Upload coverage to Codecov
-  #       uses: codecov/codecov-action@v5
+  #       uses: codecov/codecov-action@v7
   #       env:
   #         CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
 
@@ -150,7 +150,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
-        uses: actions/checkout@v5
+        uses: actions/checkout@v6
 
       - name: Set up Go
         uses: actions/setup-go@v6
@@ -166,7 +166,7 @@ jobs:
 
       # TODO RE-ENABLE When we have codedov set up
       # - name: Upload coverage to Codecov
-      #   uses: codecov/codecov-action@v5
+      #   uses: codecov/codecov-action@v7
       #   env:
       #    CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
 
@@ -175,7 +175,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
-        uses: actions/checkout@v5
+        uses: actions/checkout@v6
 
       - name: Set up Go
         uses: actions/setup-go@v6
@@ -191,7 +191,7 @@ jobs:
 
       # TODO RE-ENABLE When we have codedov set up
       # - name: Upload coverage to Codecov
-      #   uses: codecov/codecov-action@v5
+      #   uses: codecov/codecov-action@v7
       #   env:
       #     CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
 
@@ -200,7 +200,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
-        uses: actions/checkout@v5
+        uses: actions/checkout@v6
 
       - name: Set up Go
         uses: actions/setup-go@v6
@@ -227,7 +227,7 @@ jobs:
         working-directory: tools
     steps:
       - name: Checkout
-        uses: actions/checkout@v5
+        uses: actions/checkout@v6
 
       - name: Set up Go
         uses: actions/setup-go@v6
@@ -251,7 +251,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
-        uses: actions/checkout@v5
+        uses: actions/checkout@v6
 
       - name: Set up Go
         uses: actions/setup-go@v6
@@ -264,7 +264,7 @@ jobs:
 
       - name: Restore benchmark cache
         id: cache-restore
-        uses: actions/cache/restore@v4
+        uses: actions/cache/restore@v5
         with:
           path: main-benchmark.txt
           key: benchmarks-main
@@ -280,7 +280,7 @@ jobs:
 
       - name: Cache main branch benchmark results
         if: steps.cache-restore.outputs.cache-hit != 'true'
-        uses: actions/cache/save@v4
+        uses: actions/cache/save@v5
         with:
           path: main-benchmark.txt
           key: benchmarks-main
@@ -325,7 +325,7 @@ jobs:
       # if this is main branch, cache the results
       - name: Cache main branch benchmark results
         if: github.ref == 'refs/heads/main'
-        uses: actions/cache/save@v4
+        uses: actions/cache/save@v5
         with:
           path: branch-benchmark.txt
           key: benchmarks-main

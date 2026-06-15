@@ -138,7 +138,9 @@ func areSourceAndDestCompatible(
 		if destinationDriver != nil && *destinationDriver != mysqlDriver {
 			return fmt.Errorf("connection and destination types are incompatible [mysql, %s]", *destinationDriver)
 		}
-	case *mgmtv1alpha1.ConnectionConfig_AwsS3Config, *mgmtv1alpha1.ConnectionConfig_GcpCloudstorageConfig, *mgmtv1alpha1.ConnectionConfig_DynamodbConfig:
+	case *mgmtv1alpha1.ConnectionConfig_AwsS3Config,
+		*mgmtv1alpha1.ConnectionConfig_GcpCloudstorageConfig,
+		*mgmtv1alpha1.ConnectionConfig_DynamodbConfig:
 	default:
 		return errors.New("unsupported destination driver. only postgres and mysql are currently supported")
 	}

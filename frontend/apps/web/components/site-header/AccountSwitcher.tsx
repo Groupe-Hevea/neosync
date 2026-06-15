@@ -11,7 +11,7 @@ import { cn } from '@/libs/utils';
 import { getErrorMessage } from '@/util/util';
 import { CreateTeamFormValues } from '@/yup-validations/account-switcher';
 import { useMutation, useQuery } from '@connectrpc/connect-query';
-import { yupResolver } from '@hookform/resolvers/yup';
+import { yupResolver } from '@/util/yup-form-resolver';
 import { UserAccount, UserAccountService, UserAccountType } from '@neosync/sdk';
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';

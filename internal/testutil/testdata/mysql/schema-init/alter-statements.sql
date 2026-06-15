@@ -164,8 +164,9 @@ ALTER TABLE multi_col_child
   DROP FOREIGN KEY fk_mcc_parent;    -- references parent.p_id
 ALTER TABLE multi_col_child
   DROP FOREIGN KEY fk_mcc_mcp;       -- references multi_col_parent(mcp_a, mcp_b)
+-- DROP CONSTRAINT instead of MySQL-only DROP CHECK: works on MySQL 8.0.19+ and MariaDB
 ALTER TABLE multi_col_child
-  DROP CHECK chk_some_value;
+  DROP CONSTRAINT chk_some_value;
 
 
 -- ================================================

@@ -57,7 +57,7 @@ import {
   useMutation,
   useQuery,
 } from '@connectrpc/connect-query';
-import { yupResolver } from '@hookform/resolvers/yup';
+import { yupResolver } from '@/util/yup-form-resolver';
 import {
   ColumnWarning_ColumnWarningCode,
   Connection,
@@ -191,8 +191,8 @@ export default function DataSyncConnectionCard({ jobId }: Props): ReactElement {
 
   const [isValidatingMappings, setIsValidatingMappings] = useState(false);
 
-  const form = useForm<DataSyncSourceFormValues>({
-    resolver: yupResolver<DataSyncSourceFormValues>(DataSyncSourceFormValues),
+  const form = useForm({
+    resolver: yupResolver(DataSyncSourceFormValues),
     values: getJobSource(data?.job, connectionSchemaDataMap?.schemaMap),
     context: { accountId: account?.id },
   });

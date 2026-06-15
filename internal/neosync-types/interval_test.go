@@ -130,7 +130,7 @@ func Test_Interval(t *testing.T) {
 		jsonBytes, ok := value.([]byte)
 		require.True(t, ok)
 
-		var unmarshaled map[string]interface{}
+		var unmarshaled map[string]any
 		err = json.Unmarshal(jsonBytes, &unmarshaled)
 		require.NoError(t, err)
 		require.Equal(t, float64(1000000), unmarshaled["microseconds"])

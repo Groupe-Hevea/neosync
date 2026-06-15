@@ -565,7 +565,11 @@ func (s *Service) CancelJobRun(
 	if err != nil {
 		return nil, err
 	}
-	if err := user.EnforceJob(ctx, userdata.NewDomainEntity(req.Msg.GetAccountId(), jobRun.GetJobId()), rbac.JobAction_Execute); err != nil {
+	if err := user.EnforceJob(
+		ctx,
+		userdata.NewDomainEntity(req.Msg.GetAccountId(), jobRun.GetJobId()),
+		rbac.JobAction_Execute,
+	); err != nil {
 		return nil, err
 	}
 
@@ -597,7 +601,11 @@ func (s *Service) TerminateJobRun(
 	if err != nil {
 		return nil, err
 	}
-	if err := user.EnforceJob(ctx, userdata.NewDomainEntity(req.Msg.GetAccountId(), jobRun.GetJobId()), rbac.JobAction_Execute); err != nil {
+	if err := user.EnforceJob(
+		ctx,
+		userdata.NewDomainEntity(req.Msg.GetAccountId(), jobRun.GetJobId()),
+		rbac.JobAction_Execute,
+	); err != nil {
 		return nil, err
 	}
 
@@ -867,7 +875,9 @@ func (s *Service) streamK8sWorkerPodLogs(
 				if logLine.Time != nil {
 					timestamp = timestamppb.New(*logLine.Time)
 				}
-				if err := stream.Send(&mgmtv1alpha1.GetJobRunLogsResponse_LogLine{LogLine: txt, Labels: map[string]string{}, Timestamp: timestamp}); err != nil {
+				if err := stream.Send(
+					&mgmtv1alpha1.GetJobRunLogsResponse_LogLine{LogLine: txt, Labels: map[string]string{}, Timestamp: timestamp},
+				); err != nil {
 					if err == io.EOF {
 						return nil
 					}

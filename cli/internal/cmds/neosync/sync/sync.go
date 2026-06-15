@@ -470,9 +470,13 @@ func (c *clisync) getConnectionSchemaConfigByConnectionType(
 	case *mgmtv1alpha1.ConnectionConfig_GcpCloudstorageConfig:
 		var cfg *mgmtv1alpha1.GcpCloudStorageSchemaConfig
 		if c.cmd.Source.ConnectionOpts.JobRunId != nil && *c.cmd.Source.ConnectionOpts.JobRunId != "" {
-			cfg = &mgmtv1alpha1.GcpCloudStorageSchemaConfig{Id: &mgmtv1alpha1.GcpCloudStorageSchemaConfig_JobRunId{JobRunId: *c.cmd.Source.ConnectionOpts.JobRunId}}
+			cfg = &mgmtv1alpha1.GcpCloudStorageSchemaConfig{
+				Id: &mgmtv1alpha1.GcpCloudStorageSchemaConfig_JobRunId{JobRunId: *c.cmd.Source.ConnectionOpts.JobRunId},
+			}
 		} else if c.cmd.Source.ConnectionOpts.JobId != nil && *c.cmd.Source.ConnectionOpts.JobId != "" {
-			cfg = &mgmtv1alpha1.GcpCloudStorageSchemaConfig{Id: &mgmtv1alpha1.GcpCloudStorageSchemaConfig_JobId{JobId: *c.cmd.Source.ConnectionOpts.JobId}}
+			cfg = &mgmtv1alpha1.GcpCloudStorageSchemaConfig{
+				Id: &mgmtv1alpha1.GcpCloudStorageSchemaConfig_JobId{JobId: *c.cmd.Source.ConnectionOpts.JobId},
+			}
 		}
 		return &mgmtv1alpha1.ConnectionSchemaConfig{
 			Config: &mgmtv1alpha1.ConnectionSchemaConfig_GcpCloudstorageConfig{
@@ -482,7 +486,9 @@ func (c *clisync) getConnectionSchemaConfigByConnectionType(
 	case *mgmtv1alpha1.ConnectionConfig_AwsS3Config:
 		var cfg *mgmtv1alpha1.AwsS3SchemaConfig
 		if c.cmd.Source.ConnectionOpts.JobRunId != nil && *c.cmd.Source.ConnectionOpts.JobRunId != "" {
-			cfg = &mgmtv1alpha1.AwsS3SchemaConfig{Id: &mgmtv1alpha1.AwsS3SchemaConfig_JobRunId{JobRunId: *c.cmd.Source.ConnectionOpts.JobRunId}}
+			cfg = &mgmtv1alpha1.AwsS3SchemaConfig{
+				Id: &mgmtv1alpha1.AwsS3SchemaConfig_JobRunId{JobRunId: *c.cmd.Source.ConnectionOpts.JobRunId},
+			}
 		} else if c.cmd.Source.ConnectionOpts.JobId != nil && *c.cmd.Source.ConnectionOpts.JobId != "" {
 			cfg = &mgmtv1alpha1.AwsS3SchemaConfig{Id: &mgmtv1alpha1.AwsS3SchemaConfig_JobId{JobId: *c.cmd.Source.ConnectionOpts.JobId}}
 		}

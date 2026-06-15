@@ -41,13 +41,6 @@ const (
 	AnonymizationServiceAnonymizeSingleProcedure = "/mgmt.v1alpha1.AnonymizationService/AnonymizeSingle"
 )
 
-// These variables are the protoreflect.Descriptor objects for the RPCs defined in this package.
-var (
-	anonymizationServiceServiceDescriptor               = v1alpha1.File_mgmt_v1alpha1_anonymization_proto.Services().ByName("AnonymizationService")
-	anonymizationServiceAnonymizeManyMethodDescriptor   = anonymizationServiceServiceDescriptor.Methods().ByName("AnonymizeMany")
-	anonymizationServiceAnonymizeSingleMethodDescriptor = anonymizationServiceServiceDescriptor.Methods().ByName("AnonymizeSingle")
-)
-
 // AnonymizationServiceClient is a client for the mgmt.v1alpha1.AnonymizationService service.
 type AnonymizationServiceClient interface {
 	// Anonymizes many JSON strings by applying specified transformation mappings. This is the bulk version of the `AnonymizeSingle` method.
@@ -65,17 +58,18 @@ type AnonymizationServiceClient interface {
 // http://api.acme.com or https://acme.com/grpc).
 func NewAnonymizationServiceClient(httpClient connect.HTTPClient, baseURL string, opts ...connect.ClientOption) AnonymizationServiceClient {
 	baseURL = strings.TrimRight(baseURL, "/")
+	anonymizationServiceMethods := v1alpha1.File_mgmt_v1alpha1_anonymization_proto.Services().ByName("AnonymizationService").Methods()
 	return &anonymizationServiceClient{
 		anonymizeMany: connect.NewClient[v1alpha1.AnonymizeManyRequest, v1alpha1.AnonymizeManyResponse](
 			httpClient,
 			baseURL+AnonymizationServiceAnonymizeManyProcedure,
-			connect.WithSchema(anonymizationServiceAnonymizeManyMethodDescriptor),
+			connect.WithSchema(anonymizationServiceMethods.ByName("AnonymizeMany")),
 			connect.WithClientOptions(opts...),
 		),
 		anonymizeSingle: connect.NewClient[v1alpha1.AnonymizeSingleRequest, v1alpha1.AnonymizeSingleResponse](
 			httpClient,
 			baseURL+AnonymizationServiceAnonymizeSingleProcedure,
-			connect.WithSchema(anonymizationServiceAnonymizeSingleMethodDescriptor),
+			connect.WithSchema(anonymizationServiceMethods.ByName("AnonymizeSingle")),
 			connect.WithClientOptions(opts...),
 		),
 	}
@@ -112,16 +106,17 @@ type AnonymizationServiceHandler interface {
 // By default, handlers support the Connect, gRPC, and gRPC-Web protocols with the binary Protobuf
 // and JSON codecs. They also support gzip compression.
 func NewAnonymizationServiceHandler(svc AnonymizationServiceHandler, opts ...connect.HandlerOption) (string, http.Handler) {
+	anonymizationServiceMethods := v1alpha1.File_mgmt_v1alpha1_anonymization_proto.Services().ByName("AnonymizationService").Methods()
 	anonymizationServiceAnonymizeManyHandler := connect.NewUnaryHandler(
 		AnonymizationServiceAnonymizeManyProcedure,
 		svc.AnonymizeMany,
-		connect.WithSchema(anonymizationServiceAnonymizeManyMethodDescriptor),
+		connect.WithSchema(anonymizationServiceMethods.ByName("AnonymizeMany")),
 		connect.WithHandlerOptions(opts...),
 	)
 	anonymizationServiceAnonymizeSingleHandler := connect.NewUnaryHandler(
 		AnonymizationServiceAnonymizeSingleProcedure,
 		svc.AnonymizeSingle,
-		connect.WithSchema(anonymizationServiceAnonymizeSingleMethodDescriptor),
+		connect.WithSchema(anonymizationServiceMethods.ByName("AnonymizeSingle")),
 		connect.WithHandlerOptions(opts...),
 	)
 	return "/mgmt.v1alpha1.AnonymizationService/", http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {

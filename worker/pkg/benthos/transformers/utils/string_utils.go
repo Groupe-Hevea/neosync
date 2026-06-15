@@ -234,6 +234,7 @@ func GetRandomCharacterString(randomizer rng.Rand, size int64) string {
 	var stringBuilder = make([]rune, size)
 	for i := int64(0); i < size; i++ {
 		num := randomizer.Intn(26)
+		//nolint:gosec // Intn(26) is bounded to [0,25], 'a'+num stays within the lowercase ASCII range
 		stringBuilder[i] = rune('a' + num)
 	}
 	return string(stringBuilder)

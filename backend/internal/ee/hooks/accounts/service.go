@@ -438,7 +438,7 @@ func (s *Service) CreateAccountHook(
 		return nil, err
 	}
 
-	go s.joinSlackChannel(context.Background(), dto, logger)
+	go s.joinSlackChannel(context.WithoutCancel(ctx), dto, logger)
 
 	return &mgmtv1alpha1.CreateAccountHookResponse{
 		Hook: dto,
@@ -547,7 +547,7 @@ func (s *Service) UpdateAccountHook(
 	}
 
 	if hasSlackChannelIdChanged(getResp.GetHook(), dto) {
-		go s.joinSlackChannel(context.Background(), dto, logger)
+		go s.joinSlackChannel(context.WithoutCancel(ctx), dto, logger)
 	}
 
 	return &mgmtv1alpha1.UpdateAccountHookResponse{
@@ -649,6 +649,7 @@ func (s *Service) HandleSlackOAuthCallback(
 		return nil, fmt.Errorf("unable to exchange slack code for access token: %w", err)
 	}
 
+	//nolint:gosec // the slack oauth response is intentionally marshaled (incl. access token) to persist it
 	oauthRespBytes, err := json.Marshal(oauthResp)
 	if err != nil {
 		return nil, fmt.Errorf("unable to marshal slack oauth response: %w", err)

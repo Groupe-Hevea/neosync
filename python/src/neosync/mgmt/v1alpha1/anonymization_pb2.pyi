@@ -3,7 +3,8 @@ from mgmt.v1alpha1 import transformer_pb2 as _transformer_pb2
 from google.protobuf.internal import containers as _containers
 from google.protobuf import descriptor as _descriptor
 from google.protobuf import message as _message
-from typing import ClassVar as _ClassVar, Iterable as _Iterable, Mapping as _Mapping, Optional as _Optional, Union as _Union
+from collections.abc import Iterable as _Iterable, Mapping as _Mapping
+from typing import ClassVar as _ClassVar, Optional as _Optional, Union as _Union
 
 DESCRIPTOR: _descriptor.FileDescriptor
 
@@ -19,7 +20,7 @@ class AnonymizeManyRequest(_message.Message):
     default_transformers: DefaultTransformersConfig
     halt_on_failure: bool
     account_id: str
-    def __init__(self, input_data: _Optional[_Iterable[str]] = ..., transformer_mappings: _Optional[_Iterable[_Union[TransformerMapping, _Mapping]]] = ..., default_transformers: _Optional[_Union[DefaultTransformersConfig, _Mapping]] = ..., halt_on_failure: bool = ..., account_id: _Optional[str] = ...) -> None: ...
+    def __init__(self, input_data: _Optional[_Iterable[str]] = ..., transformer_mappings: _Optional[_Iterable[_Union[TransformerMapping, _Mapping]]] = ..., default_transformers: _Optional[_Union[DefaultTransformersConfig, _Mapping]] = ..., halt_on_failure: _Optional[bool] = ..., account_id: _Optional[str] = ...) -> None: ...
 
 class AnonymizeManyResponse(_message.Message):
     __slots__ = ("output_data", "errors")

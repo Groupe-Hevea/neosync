@@ -12,14 +12,14 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
-        uses: actions/checkout@v5
+        uses: actions/checkout@v6
 
       - name: Retrieve SQLC Version
         run: |
           VER=$(cat SQLC_VERSION)
           echo "SQLC_VERSION=$VER" >> $GITHUB_ENV
 
-      - uses: sqlc-dev/setup-sqlc@v4
+      - uses: sqlc-dev/setup-sqlc@v5
         with:
           sqlc-version: ${{ env.SQLC_VERSION }}
 
@@ -42,10 +42,10 @@ jobs:
 
     steps:
       - name: Checkout
-        uses: actions/checkout@v5
+        uses: actions/checkout@v6
 
       - name: Patch sqlc.yaml with db-prepare lint
-        uses: mikefarah/yq@v4.45.2
+        uses: mikefarah/yq@v4.53.3
         with:
           cmd: sh ./backend/scripts/sqlc-prepare-patch.sh postgresql://postgres:postgres@localhost:5432/nucleus ./sqlc.yaml
 
@@ -68,7 +68,7 @@ jobs:
           VER=$(cat SQLC_VERSION)
           echo "SQLC_VERSION=$VER" >> $GITHUB_ENV
 
-      - uses: sqlc-dev/setup-sqlc@v4
+      - uses: sqlc-dev/setup-sqlc@v5
         with:
           sqlc-version: ${{ env.SQLC_VERSION }}
 

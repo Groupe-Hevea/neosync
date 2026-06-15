@@ -244,7 +244,7 @@ func shouldProcess(t *mgmtv1alpha1.JobMappingTransformer) bool {
 
 func dereferenceValue(value any) any {
 	rv := reflect.ValueOf(value)
-	if rv.Kind() == reflect.Ptr {
+	if rv.Kind() == reflect.Pointer {
 		if rv.IsNil() {
 			return nil
 		}
@@ -262,7 +262,7 @@ func toByteSlice(value any) ([]byte, error) {
 	case int, int8, int16, int32, int64, uint, uint8, uint16, uint32, uint64, float32, float64, bool:
 		return []byte(fmt.Sprintf("%v", v)), nil
 	default:
-		if reflect.TypeOf(v).Kind() == reflect.Ptr {
+		if reflect.TypeOf(v).Kind() == reflect.Pointer {
 			if reflect.ValueOf(v).IsNil() {
 				return []byte("null"), nil
 			}

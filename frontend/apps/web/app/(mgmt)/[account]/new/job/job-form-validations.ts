@@ -531,13 +531,3 @@ export const EditPiiDetectionJobFormValues = Yup.object()
 export type EditPiiDetectionJobFormValues = Yup.InferType<
   typeof EditPiiDetectionJobFormValues
 >;
-
-export interface DefineFormValuesContext {
-  accountId: string;
-  isJobNameAvailable: UseMutateAsyncFunction<
-    IsJobNameAvailableResponse,
-    ConnectError,
-    MessageInitShape<typeof IsJobNameAvailableRequestSchema>,
-    unknown
-  >;
-}

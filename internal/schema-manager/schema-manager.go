@@ -85,14 +85,42 @@ func (d *DefaultSchemaManager) New(
 	switch cfg := destination.GetOptions().GetConfig().(type) {
 	case *mgmtv1alpha1.JobDestinationOptions_PostgresOptions:
 		opts := cfg.PostgresOptions
-		return schema_postgres.NewPostgresSchemaManager(ctx, d.logger, d.session, d.sqlmanagerclient, sourceConnection, destinationConnection, opts)
+		return schema_postgres.NewPostgresSchemaManager(
+			ctx,
+			d.logger,
+			d.session,
+			d.sqlmanagerclient,
+			sourceConnection,
+			destinationConnection,
+			opts,
+		)
 	case *mgmtv1alpha1.JobDestinationOptions_MysqlOptions:
 		opts := cfg.MysqlOptions
-		return schema_mysql.NewMysqlSchemaManager(ctx, d.logger, d.session, d.sqlmanagerclient, sourceConnection, destinationConnection, opts)
+		return schema_mysql.NewMysqlSchemaManager(
+			ctx,
+			d.logger,
+			d.session,
+			d.sqlmanagerclient,
+			sourceConnection,
+			destinationConnection,
+			opts,
+		)
 	case *mgmtv1alpha1.JobDestinationOptions_MssqlOptions:
 		opts := cfg.MssqlOptions
-		return schema_mssql.NewMssqlSchemaManager(ctx, d.logger, d.eelicense, d.session, d.sqlmanagerclient, sourceConnection, destinationConnection, opts)
-	case *mgmtv1alpha1.JobDestinationOptions_DynamodbOptions, *mgmtv1alpha1.JobDestinationOptions_MongodbOptions, *mgmtv1alpha1.JobDestinationOptions_AwsS3Options, *mgmtv1alpha1.JobDestinationOptions_GcpCloudstorageOptions:
+		return schema_mssql.NewMssqlSchemaManager(
+			ctx,
+			d.logger,
+			d.eelicense,
+			d.session,
+			d.sqlmanagerclient,
+			sourceConnection,
+			destinationConnection,
+			opts,
+		)
+	case *mgmtv1alpha1.JobDestinationOptions_DynamodbOptions,
+		*mgmtv1alpha1.JobDestinationOptions_MongodbOptions,
+		*mgmtv1alpha1.JobDestinationOptions_AwsS3Options,
+		*mgmtv1alpha1.JobDestinationOptions_GcpCloudstorageOptions:
 		// For destinations like DynamoDB, MongoDB, S3, and GCP Cloud Storage, we use a no-op implementation
 		// since schema initialization and data truncation don't apply to these data stores
 		return schema_notsupported.NewNotSupportedSchemaManager()

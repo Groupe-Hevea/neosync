@@ -5,7 +5,7 @@ import grpc
 from mgmt.v1alpha1 import metrics_pb2 as mgmt_dot_v1alpha1_dot_metrics__pb2
 
 
-class MetricsServiceStub(object):
+class MetricsServiceStub:
     """Service that handles serving up usage metrics
     """
 
@@ -27,7 +27,7 @@ class MetricsServiceStub(object):
                 _registered_method=True)
 
 
-class MetricsServiceServicer(object):
+class MetricsServiceServicer:
     """Service that handles serving up usage metrics
     """
 
@@ -66,7 +66,7 @@ def add_MetricsServiceServicer_to_server(servicer, server):
 
 
  # This class is part of an EXPERIMENTAL API.
-class MetricsService(object):
+class MetricsService:
     """Service that handles serving up usage metrics
     """
 

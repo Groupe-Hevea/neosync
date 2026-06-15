@@ -28,7 +28,7 @@ import { getErrorMessage } from '@/util/util';
 import { ApiKeyFormValues } from '@/yup-validations/apikey';
 import { timestampFromMs } from '@bufbuild/protobuf/wkt';
 import { useMutation } from '@connectrpc/connect-query';
-import { yupResolver } from '@hookform/resolvers/yup';
+import { yupResolver } from '@/util/yup-form-resolver';
 import { ApiKeyService } from '@neosync/sdk';
 import { CalendarIcon } from '@radix-ui/react-icons';
 import { PopoverTrigger } from '@radix-ui/react-popover';
@@ -46,7 +46,7 @@ export interface ApiKeyValueSessionStore {
 export default function NewApiKeyForm(): ReactElement {
   const { account } = useAccount();
   const router = useRouter();
-  const form = useForm<ApiKeyFormValues>({
+  const form = useForm({
     mode: 'onChange',
     resolver: yupResolver(ApiKeyFormValues),
     defaultValues: {

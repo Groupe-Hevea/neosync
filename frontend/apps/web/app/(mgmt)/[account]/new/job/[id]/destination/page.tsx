@@ -34,7 +34,7 @@ import { getErrorMessage } from '@/util/util';
 import { NewDestinationFormValues } from '@/yup-validations/jobs';
 import { create } from '@bufbuild/protobuf';
 import { useMutation, useQuery } from '@connectrpc/connect-query';
-import { yupResolver } from '@hookform/resolvers/yup';
+import { yupResolver } from '@/util/yup-form-resolver';
 import {
   Connection,
   ConnectionDataService,
@@ -95,7 +95,7 @@ export default function Page(props: PageProps): ReactElement {
     : create(ConnectionSchema, {});
 
   const form = useForm({
-    resolver: yupResolver<FormValues>(FormValues),
+    resolver: yupResolver(FormValues),
     defaultValues: {
       destinations: [{ connectionId: '', destinationOptions: {} }],
     },

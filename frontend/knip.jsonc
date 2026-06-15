@@ -2,6 +2,14 @@
   "$schema": "https://unpkg.com/knip@5/schema-jsonc.json",
   "ignore": ["apps/web/components/ui/**"],
   "ignoreWorkspaces": ["packages/sdk"],
-  "ignoreDependencies": ["tailwindcss-animate", "react", "react-dom"],
+  "ignoreDependencies": [
+    "tailwindcss-animate",
+    "react",
+    "react-dom",
+    // Build-time entry via `@import 'tailwindcss'` in globals.css; production mode only inspects "dependencies"
+    "tailwindcss",
+    // Imported as `@auth/core/types`, but resolved through next-auth's nested copy (see auth.ts)
+    "@auth/core",
+  ],
   "ignoreBinaries": [],
 }

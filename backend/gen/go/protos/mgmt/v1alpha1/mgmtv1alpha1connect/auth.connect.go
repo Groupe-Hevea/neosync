@@ -47,16 +47,6 @@ const (
 	AuthServiceGetAuthStatusProcedure = "/mgmt.v1alpha1.AuthService/GetAuthStatus"
 )
 
-// These variables are the protoreflect.Descriptor objects for the RPCs defined in this package.
-var (
-	authServiceServiceDescriptor               = v1alpha1.File_mgmt_v1alpha1_auth_proto.Services().ByName("AuthService")
-	authServiceLoginCliMethodDescriptor        = authServiceServiceDescriptor.Methods().ByName("LoginCli")
-	authServiceRefreshCliMethodDescriptor      = authServiceServiceDescriptor.Methods().ByName("RefreshCli")
-	authServiceCheckTokenMethodDescriptor      = authServiceServiceDescriptor.Methods().ByName("CheckToken")
-	authServiceGetAuthorizeUrlMethodDescriptor = authServiceServiceDescriptor.Methods().ByName("GetAuthorizeUrl")
-	authServiceGetAuthStatusMethodDescriptor   = authServiceServiceDescriptor.Methods().ByName("GetAuthStatus")
-)
-
 // AuthServiceClient is a client for the mgmt.v1alpha1.AuthService service.
 type AuthServiceClient interface {
 	// Used by the CLI to login to Neosync with OAuth.
@@ -82,36 +72,37 @@ type AuthServiceClient interface {
 // http://api.acme.com or https://acme.com/grpc).
 func NewAuthServiceClient(httpClient connect.HTTPClient, baseURL string, opts ...connect.ClientOption) AuthServiceClient {
 	baseURL = strings.TrimRight(baseURL, "/")
+	authServiceMethods := v1alpha1.File_mgmt_v1alpha1_auth_proto.Services().ByName("AuthService").Methods()
 	return &authServiceClient{
 		loginCli: connect.NewClient[v1alpha1.LoginCliRequest, v1alpha1.LoginCliResponse](
 			httpClient,
 			baseURL+AuthServiceLoginCliProcedure,
-			connect.WithSchema(authServiceLoginCliMethodDescriptor),
+			connect.WithSchema(authServiceMethods.ByName("LoginCli")),
 			connect.WithClientOptions(opts...),
 		),
 		refreshCli: connect.NewClient[v1alpha1.RefreshCliRequest, v1alpha1.RefreshCliResponse](
 			httpClient,
 			baseURL+AuthServiceRefreshCliProcedure,
-			connect.WithSchema(authServiceRefreshCliMethodDescriptor),
+			connect.WithSchema(authServiceMethods.ByName("RefreshCli")),
 			connect.WithClientOptions(opts...),
 		),
 		checkToken: connect.NewClient[v1alpha1.CheckTokenRequest, v1alpha1.CheckTokenResponse](
 			httpClient,
 			baseURL+AuthServiceCheckTokenProcedure,
-			connect.WithSchema(authServiceCheckTokenMethodDescriptor),
+			connect.WithSchema(authServiceMethods.ByName("CheckToken")),
 			connect.WithClientOptions(opts...),
 		),
 		getAuthorizeUrl: connect.NewClient[v1alpha1.GetAuthorizeUrlRequest, v1alpha1.GetAuthorizeUrlResponse](
 			httpClient,
 			baseURL+AuthServiceGetAuthorizeUrlProcedure,
-			connect.WithSchema(authServiceGetAuthorizeUrlMethodDescriptor),
+			connect.WithSchema(authServiceMethods.ByName("GetAuthorizeUrl")),
 			connect.WithIdempotency(connect.IdempotencyNoSideEffects),
 			connect.WithClientOptions(opts...),
 		),
 		getAuthStatus: connect.NewClient[v1alpha1.GetAuthStatusRequest, v1alpha1.GetAuthStatusResponse](
 			httpClient,
 			baseURL+AuthServiceGetAuthStatusProcedure,
-			connect.WithSchema(authServiceGetAuthStatusMethodDescriptor),
+			connect.WithSchema(authServiceMethods.ByName("GetAuthStatus")),
 			connect.WithIdempotency(connect.IdempotencyNoSideEffects),
 			connect.WithClientOptions(opts...),
 		),
@@ -174,35 +165,36 @@ type AuthServiceHandler interface {
 // By default, handlers support the Connect, gRPC, and gRPC-Web protocols with the binary Protobuf
 // and JSON codecs. They also support gzip compression.
 func NewAuthServiceHandler(svc AuthServiceHandler, opts ...connect.HandlerOption) (string, http.Handler) {
+	authServiceMethods := v1alpha1.File_mgmt_v1alpha1_auth_proto.Services().ByName("AuthService").Methods()
 	authServiceLoginCliHandler := connect.NewUnaryHandler(
 		AuthServiceLoginCliProcedure,
 		svc.LoginCli,
-		connect.WithSchema(authServiceLoginCliMethodDescriptor),
+		connect.WithSchema(authServiceMethods.ByName("LoginCli")),
 		connect.WithHandlerOptions(opts...),
 	)
 	authServiceRefreshCliHandler := connect.NewUnaryHandler(
 		AuthServiceRefreshCliProcedure,
 		svc.RefreshCli,
-		connect.WithSchema(authServiceRefreshCliMethodDescriptor),
+		connect.WithSchema(authServiceMethods.ByName("RefreshCli")),
 		connect.WithHandlerOptions(opts...),
 	)
 	authServiceCheckTokenHandler := connect.NewUnaryHandler(
 		AuthServiceCheckTokenProcedure,
 		svc.CheckToken,
-		connect.WithSchema(authServiceCheckTokenMethodDescriptor),
+		connect.WithSchema(authServiceMethods.ByName("CheckToken")),
 		connect.WithHandlerOptions(opts...),
 	)
 	authServiceGetAuthorizeUrlHandler := connect.NewUnaryHandler(
 		AuthServiceGetAuthorizeUrlProcedure,
 		svc.GetAuthorizeUrl,
-		connect.WithSchema(authServiceGetAuthorizeUrlMethodDescriptor),
+		connect.WithSchema(authServiceMethods.ByName("GetAuthorizeUrl")),
 		connect.WithIdempotency(connect.IdempotencyNoSideEffects),
 		connect.WithHandlerOptions(opts...),
 	)
 	authServiceGetAuthStatusHandler := connect.NewUnaryHandler(
 		AuthServiceGetAuthStatusProcedure,
 		svc.GetAuthStatus,
-		connect.WithSchema(authServiceGetAuthStatusMethodDescriptor),
+		connect.WithSchema(authServiceMethods.ByName("GetAuthStatus")),
 		connect.WithIdempotency(connect.IdempotencyNoSideEffects),
 		connect.WithHandlerOptions(opts...),
 	)

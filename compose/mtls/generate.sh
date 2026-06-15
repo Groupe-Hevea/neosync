@@ -33,7 +33,7 @@ openssl req -new -key server/server.key -out server/server.csr \
 
 # Sign server certificate with CA using extensions
 openssl x509 -req -in server/server.csr -CA ca/ca.crt -CAkey ca/ca.key \
-  -CAcreateserial -out server/server.crt -days 365 -sha256 \
+  -CAcreateserial -out server/server.crt -days 3650 -sha256 \
   -extfile server/server.ext
 
 # Generate client key and CSR
@@ -43,7 +43,7 @@ openssl req -new -key client/client.key -out client/client.csr \
 
 # Sign client certificate with CA
 openssl x509 -req -in client/client.csr -CA ca/ca.crt -CAkey ca/ca.key \
-  -CAcreateserial -out client/client.crt -days 365 -sha256
+  -CAcreateserial -out client/client.crt -days 3650 -sha256
 
 # Set permissions
 chmod 600 {ca,server,client}/*.key

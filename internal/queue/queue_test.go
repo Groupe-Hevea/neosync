@@ -94,7 +94,7 @@ func TestQueue(t *testing.T) {
 	t.Run("handles pointer types", func(t *testing.T) {
 		type ComplexStruct struct {
 			ID       int
-			Data     map[string]interface{}
+			Data     map[string]any
 			Children []*ComplexStruct
 		}
 
@@ -102,7 +102,7 @@ func TestQueue(t *testing.T) {
 
 		parent := &ComplexStruct{
 			ID: 1,
-			Data: map[string]interface{}{
+			Data: map[string]any{
 				"key": "value",
 			},
 			Children: make([]*ComplexStruct, 0),
@@ -110,7 +110,7 @@ func TestQueue(t *testing.T) {
 
 		child := &ComplexStruct{
 			ID:       2,
-			Data:     map[string]interface{}{},
+			Data:     map[string]any{},
 			Children: nil,
 		}
 

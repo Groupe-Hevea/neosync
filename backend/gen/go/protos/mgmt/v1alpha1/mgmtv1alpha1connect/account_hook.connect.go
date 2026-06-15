@@ -71,23 +71,6 @@ const (
 	AccountHookServiceSendSlackMessageProcedure = "/mgmt.v1alpha1.AccountHookService/SendSlackMessage"
 )
 
-// These variables are the protoreflect.Descriptor objects for the RPCs defined in this package.
-var (
-	accountHookServiceServiceDescriptor                            = v1alpha1.File_mgmt_v1alpha1_account_hook_proto.Services().ByName("AccountHookService")
-	accountHookServiceGetAccountHooksMethodDescriptor              = accountHookServiceServiceDescriptor.Methods().ByName("GetAccountHooks")
-	accountHookServiceGetAccountHookMethodDescriptor               = accountHookServiceServiceDescriptor.Methods().ByName("GetAccountHook")
-	accountHookServiceCreateAccountHookMethodDescriptor            = accountHookServiceServiceDescriptor.Methods().ByName("CreateAccountHook")
-	accountHookServiceUpdateAccountHookMethodDescriptor            = accountHookServiceServiceDescriptor.Methods().ByName("UpdateAccountHook")
-	accountHookServiceDeleteAccountHookMethodDescriptor            = accountHookServiceServiceDescriptor.Methods().ByName("DeleteAccountHook")
-	accountHookServiceIsAccountHookNameAvailableMethodDescriptor   = accountHookServiceServiceDescriptor.Methods().ByName("IsAccountHookNameAvailable")
-	accountHookServiceSetAccountHookEnabledMethodDescriptor        = accountHookServiceServiceDescriptor.Methods().ByName("SetAccountHookEnabled")
-	accountHookServiceGetActiveAccountHooksByEventMethodDescriptor = accountHookServiceServiceDescriptor.Methods().ByName("GetActiveAccountHooksByEvent")
-	accountHookServiceGetSlackConnectionUrlMethodDescriptor        = accountHookServiceServiceDescriptor.Methods().ByName("GetSlackConnectionUrl")
-	accountHookServiceHandleSlackOAuthCallbackMethodDescriptor     = accountHookServiceServiceDescriptor.Methods().ByName("HandleSlackOAuthCallback")
-	accountHookServiceTestSlackConnectionMethodDescriptor          = accountHookServiceServiceDescriptor.Methods().ByName("TestSlackConnection")
-	accountHookServiceSendSlackMessageMethodDescriptor             = accountHookServiceServiceDescriptor.Methods().ByName("SendSlackMessage")
-)
-
 // AccountHookServiceClient is a client for the mgmt.v1alpha1.AccountHookService service.
 type AccountHookServiceClient interface {
 	// Retrieves all account hooks.
@@ -125,82 +108,83 @@ type AccountHookServiceClient interface {
 // http://api.acme.com or https://acme.com/grpc).
 func NewAccountHookServiceClient(httpClient connect.HTTPClient, baseURL string, opts ...connect.ClientOption) AccountHookServiceClient {
 	baseURL = strings.TrimRight(baseURL, "/")
+	accountHookServiceMethods := v1alpha1.File_mgmt_v1alpha1_account_hook_proto.Services().ByName("AccountHookService").Methods()
 	return &accountHookServiceClient{
 		getAccountHooks: connect.NewClient[v1alpha1.GetAccountHooksRequest, v1alpha1.GetAccountHooksResponse](
 			httpClient,
 			baseURL+AccountHookServiceGetAccountHooksProcedure,
-			connect.WithSchema(accountHookServiceGetAccountHooksMethodDescriptor),
+			connect.WithSchema(accountHookServiceMethods.ByName("GetAccountHooks")),
 			connect.WithIdempotency(connect.IdempotencyNoSideEffects),
 			connect.WithClientOptions(opts...),
 		),
 		getAccountHook: connect.NewClient[v1alpha1.GetAccountHookRequest, v1alpha1.GetAccountHookResponse](
 			httpClient,
 			baseURL+AccountHookServiceGetAccountHookProcedure,
-			connect.WithSchema(accountHookServiceGetAccountHookMethodDescriptor),
+			connect.WithSchema(accountHookServiceMethods.ByName("GetAccountHook")),
 			connect.WithIdempotency(connect.IdempotencyNoSideEffects),
 			connect.WithClientOptions(opts...),
 		),
 		createAccountHook: connect.NewClient[v1alpha1.CreateAccountHookRequest, v1alpha1.CreateAccountHookResponse](
 			httpClient,
 			baseURL+AccountHookServiceCreateAccountHookProcedure,
-			connect.WithSchema(accountHookServiceCreateAccountHookMethodDescriptor),
+			connect.WithSchema(accountHookServiceMethods.ByName("CreateAccountHook")),
 			connect.WithClientOptions(opts...),
 		),
 		updateAccountHook: connect.NewClient[v1alpha1.UpdateAccountHookRequest, v1alpha1.UpdateAccountHookResponse](
 			httpClient,
 			baseURL+AccountHookServiceUpdateAccountHookProcedure,
-			connect.WithSchema(accountHookServiceUpdateAccountHookMethodDescriptor),
+			connect.WithSchema(accountHookServiceMethods.ByName("UpdateAccountHook")),
 			connect.WithClientOptions(opts...),
 		),
 		deleteAccountHook: connect.NewClient[v1alpha1.DeleteAccountHookRequest, v1alpha1.DeleteAccountHookResponse](
 			httpClient,
 			baseURL+AccountHookServiceDeleteAccountHookProcedure,
-			connect.WithSchema(accountHookServiceDeleteAccountHookMethodDescriptor),
+			connect.WithSchema(accountHookServiceMethods.ByName("DeleteAccountHook")),
 			connect.WithClientOptions(opts...),
 		),
 		isAccountHookNameAvailable: connect.NewClient[v1alpha1.IsAccountHookNameAvailableRequest, v1alpha1.IsAccountHookNameAvailableResponse](
 			httpClient,
 			baseURL+AccountHookServiceIsAccountHookNameAvailableProcedure,
-			connect.WithSchema(accountHookServiceIsAccountHookNameAvailableMethodDescriptor),
+			connect.WithSchema(accountHookServiceMethods.ByName("IsAccountHookNameAvailable")),
 			connect.WithClientOptions(opts...),
 		),
 		setAccountHookEnabled: connect.NewClient[v1alpha1.SetAccountHookEnabledRequest, v1alpha1.SetAccountHookEnabledResponse](
 			httpClient,
 			baseURL+AccountHookServiceSetAccountHookEnabledProcedure,
-			connect.WithSchema(accountHookServiceSetAccountHookEnabledMethodDescriptor),
+			connect.WithSchema(accountHookServiceMethods.ByName("SetAccountHookEnabled")),
 			connect.WithClientOptions(opts...),
 		),
 		getActiveAccountHooksByEvent: connect.NewClient[v1alpha1.GetActiveAccountHooksByEventRequest, v1alpha1.GetActiveAccountHooksByEventResponse](
 			httpClient,
 			baseURL+AccountHookServiceGetActiveAccountHooksByEventProcedure,
-			connect.WithSchema(accountHookServiceGetActiveAccountHooksByEventMethodDescriptor),
+			connect.WithSchema(accountHookServiceMethods.ByName("GetActiveAccountHooksByEvent")),
 			connect.WithIdempotency(connect.IdempotencyNoSideEffects),
 			connect.WithClientOptions(opts...),
 		),
 		getSlackConnectionUrl: connect.NewClient[v1alpha1.GetSlackConnectionUrlRequest, v1alpha1.GetSlackConnectionUrlResponse](
 			httpClient,
 			baseURL+AccountHookServiceGetSlackConnectionUrlProcedure,
-			connect.WithSchema(accountHookServiceGetSlackConnectionUrlMethodDescriptor),
+			connect.WithSchema(accountHookServiceMethods.ByName("GetSlackConnectionUrl")),
 			connect.WithIdempotency(connect.IdempotencyNoSideEffects),
 			connect.WithClientOptions(opts...),
 		),
 		handleSlackOAuthCallback: connect.NewClient[v1alpha1.HandleSlackOAuthCallbackRequest, v1alpha1.HandleSlackOAuthCallbackResponse](
 			httpClient,
 			baseURL+AccountHookServiceHandleSlackOAuthCallbackProcedure,
-			connect.WithSchema(accountHookServiceHandleSlackOAuthCallbackMethodDescriptor),
+			connect.WithSchema(accountHookServiceMethods.ByName("HandleSlackOAuthCallback")),
 			connect.WithClientOptions(opts...),
 		),
 		testSlackConnection: connect.NewClient[v1alpha1.TestSlackConnectionRequest, v1alpha1.TestSlackConnectionResponse](
 			httpClient,
 			baseURL+AccountHookServiceTestSlackConnectionProcedure,
-			connect.WithSchema(accountHookServiceTestSlackConnectionMethodDescriptor),
+			connect.WithSchema(accountHookServiceMethods.ByName("TestSlackConnection")),
 			connect.WithIdempotency(connect.IdempotencyNoSideEffects),
 			connect.WithClientOptions(opts...),
 		),
 		sendSlackMessage: connect.NewClient[v1alpha1.SendSlackMessageRequest, v1alpha1.SendSlackMessageResponse](
 			httpClient,
 			baseURL+AccountHookServiceSendSlackMessageProcedure,
-			connect.WithSchema(accountHookServiceSendSlackMessageMethodDescriptor),
+			connect.WithSchema(accountHookServiceMethods.ByName("SendSlackMessage")),
 			connect.WithClientOptions(opts...),
 		),
 	}
@@ -316,81 +300,82 @@ type AccountHookServiceHandler interface {
 // By default, handlers support the Connect, gRPC, and gRPC-Web protocols with the binary Protobuf
 // and JSON codecs. They also support gzip compression.
 func NewAccountHookServiceHandler(svc AccountHookServiceHandler, opts ...connect.HandlerOption) (string, http.Handler) {
+	accountHookServiceMethods := v1alpha1.File_mgmt_v1alpha1_account_hook_proto.Services().ByName("AccountHookService").Methods()
 	accountHookServiceGetAccountHooksHandler := connect.NewUnaryHandler(
 		AccountHookServiceGetAccountHooksProcedure,
 		svc.GetAccountHooks,
-		connect.WithSchema(accountHookServiceGetAccountHooksMethodDescriptor),
+		connect.WithSchema(accountHookServiceMethods.ByName("GetAccountHooks")),
 		connect.WithIdempotency(connect.IdempotencyNoSideEffects),
 		connect.WithHandlerOptions(opts...),
 	)
 	accountHookServiceGetAccountHookHandler := connect.NewUnaryHandler(
 		AccountHookServiceGetAccountHookProcedure,
 		svc.GetAccountHook,
-		connect.WithSchema(accountHookServiceGetAccountHookMethodDescriptor),
+		connect.WithSchema(accountHookServiceMethods.ByName("GetAccountHook")),
 		connect.WithIdempotency(connect.IdempotencyNoSideEffects),
 		connect.WithHandlerOptions(opts...),
 	)
 	accountHookServiceCreateAccountHookHandler := connect.NewUnaryHandler(
 		AccountHookServiceCreateAccountHookProcedure,
 		svc.CreateAccountHook,
-		connect.WithSchema(accountHookServiceCreateAccountHookMethodDescriptor),
+		connect.WithSchema(accountHookServiceMethods.ByName("CreateAccountHook")),
 		connect.WithHandlerOptions(opts...),
 	)
 	accountHookServiceUpdateAccountHookHandler := connect.NewUnaryHandler(
 		AccountHookServiceUpdateAccountHookProcedure,
 		svc.UpdateAccountHook,
-		connect.WithSchema(accountHookServiceUpdateAccountHookMethodDescriptor),
+		connect.WithSchema(accountHookServiceMethods.ByName("UpdateAccountHook")),
 		connect.WithHandlerOptions(opts...),
 	)
 	accountHookServiceDeleteAccountHookHandler := connect.NewUnaryHandler(
 		AccountHookServiceDeleteAccountHookProcedure,
 		svc.DeleteAccountHook,
-		connect.WithSchema(accountHookServiceDeleteAccountHookMethodDescriptor),
+		connect.WithSchema(accountHookServiceMethods.ByName("DeleteAccountHook")),
 		connect.WithHandlerOptions(opts...),
 	)
 	accountHookServiceIsAccountHookNameAvailableHandler := connect.NewUnaryHandler(
 		AccountHookServiceIsAccountHookNameAvailableProcedure,
 		svc.IsAccountHookNameAvailable,
-		connect.WithSchema(accountHookServiceIsAccountHookNameAvailableMethodDescriptor),
+		connect.WithSchema(accountHookServiceMethods.ByName("IsAccountHookNameAvailable")),
 		connect.WithHandlerOptions(opts...),
 	)
 	accountHookServiceSetAccountHookEnabledHandler := connect.NewUnaryHandler(
 		AccountHookServiceSetAccountHookEnabledProcedure,
 		svc.SetAccountHookEnabled,
-		connect.WithSchema(accountHookServiceSetAccountHookEnabledMethodDescriptor),
+		connect.WithSchema(accountHookServiceMethods.ByName("SetAccountHookEnabled")),
 		connect.WithHandlerOptions(opts...),
 	)
 	accountHookServiceGetActiveAccountHooksByEventHandler := connect.NewUnaryHandler(
 		AccountHookServiceGetActiveAccountHooksByEventProcedure,
 		svc.GetActiveAccountHooksByEvent,
-		connect.WithSchema(accountHookServiceGetActiveAccountHooksByEventMethodDescriptor),
+		connect.WithSchema(accountHookServiceMethods.ByName("GetActiveAccountHooksByEvent")),
 		connect.WithIdempotency(connect.IdempotencyNoSideEffects),
 		connect.WithHandlerOptions(opts...),
 	)
 	accountHookServiceGetSlackConnectionUrlHandler := connect.NewUnaryHandler(
 		AccountHookServiceGetSlackConnectionUrlProcedure,
 		svc.GetSlackConnectionUrl,
-		connect.WithSchema(accountHookServiceGetSlackConnectionUrlMethodDescriptor),
+		connect.WithSchema(accountHookServiceMethods.ByName("GetSlackConnectionUrl")),
 		connect.WithIdempotency(connect.IdempotencyNoSideEffects),
 		connect.WithHandlerOptions(opts...),
 	)
 	accountHookServiceHandleSlackOAuthCallbackHandler := connect.NewUnaryHandler(
 		AccountHookServiceHandleSlackOAuthCallbackProcedure,
 		svc.HandleSlackOAuthCallback,
-		connect.WithSchema(accountHookServiceHandleSlackOAuthCallbackMethodDescriptor),
+		connect.WithSchema(accountHookServiceMethods.ByName("HandleSlackOAuthCallback")),
 		connect.WithHandlerOptions(opts...),
 	)
 	accountHookServiceTestSlackConnectionHandler := connect.NewUnaryHandler(
 		AccountHookServiceTestSlackConnectionProcedure,
 		svc.TestSlackConnection,
-		connect.WithSchema(accountHookServiceTestSlackConnectionMethodDescriptor),
+		connect.WithSchema(accountHookServiceMethods.ByName("TestSlackConnection")),
 		connect.WithIdempotency(connect.IdempotencyNoSideEffects),
 		connect.WithHandlerOptions(opts...),
 	)
 	accountHookServiceSendSlackMessageHandler := connect.NewUnaryHandler(
 		AccountHookServiceSendSlackMessageProcedure,
 		svc.SendSlackMessage,
-		connect.WithSchema(accountHookServiceSendSlackMessageMethodDescriptor),
+		connect.WithSchema(accountHookServiceMethods.ByName("SendSlackMessage")),
 		connect.WithHandlerOptions(opts...),
 	)
 	return "/mgmt.v1alpha1.AccountHookService/", http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {

@@ -23,6 +23,8 @@
     "tailwind-merge",
     "docusaurus-protobuffet",
     "posthog-docusaurus",
+    // Registered via require.resolve() in docusaurus.config.ts, which is ignored above
+    "@easyops-cn/docusaurus-search-local",
   ],
   "ignoreBinaries": [],
 }
