@@ -35,8 +35,7 @@ function getInitialEditFormState(): EditPiiDetectionJobFormValues {
   };
 }
 
-interface PiiDetectionSchemaStore
-  extends BaseHookStore<PiiDetectionSchemaFormValues> {
+interface PiiDetectionSchemaStore extends BaseHookStore<PiiDetectionSchemaFormValues> {
   sourcedFromRemote: boolean;
   setFromRemoteJob(job: Job): void;
 }
@@ -94,8 +93,7 @@ export function setPiiDetectionSchemaStorePersistenceKey(sessionKey: string) {
   sessionStorage.removeItem(PLACEHOLDER_STORE_PERSIST_KEY);
 }
 
-interface EditPiiDetectionSchemaStore
-  extends BaseHookStore<EditPiiDetectionJobFormValues> {
+interface EditPiiDetectionSchemaStore extends BaseHookStore<EditPiiDetectionJobFormValues> {
   sourcedFromRemote: boolean;
   setFromRemoteJob(job: Job): void;
 }

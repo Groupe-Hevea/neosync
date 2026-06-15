@@ -549,22 +549,6 @@ export type CreateUserDefinedTransformerFormValues = Yup.InferType<
   typeof CreateUserDefinedTransformerFormValues
 >;
 
-export interface CreateUserDefinedTransformerFormContext {
-  accountId: string;
-  isTransformerNameAvailable: UseMutateAsyncFunction<
-    IsTransformerNameAvailableResponse,
-    ConnectError,
-    MessageInitShape<typeof IsTransformerNameAvailableRequestSchema>,
-    unknown
-  >;
-  isUserJavascriptCodeValid: UseMutateAsyncFunction<
-    ValidateUserJavascriptCodeResponse,
-    ConnectError,
-    MessageInitShape<typeof ValidateUserJavascriptCodeRequestSchema>,
-    unknown
-  >;
-}
-
 export const EditJobMappingTransformerConfigFormValues = Yup.object({
   config: TransformerConfigFormValue,
 }).required('The Transformer config is required.');
@@ -592,8 +576,3 @@ export const UpdateUserDefinedTransformerFormValues = Yup.object({
 export type UpdateUserDefinedTransformerFormValues = Yup.InferType<
   typeof UpdateUserDefinedTransformerFormValues
 >;
-
-export interface EditUserDefinedTransformerFormContext
-  extends CreateUserDefinedTransformerFormContext {
-  name: string;
-}

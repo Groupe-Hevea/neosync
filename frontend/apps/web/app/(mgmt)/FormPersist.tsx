@@ -8,9 +8,10 @@ interface FormPersistProps<T extends FieldValues, TTransformedValues = T> {
 }
 const isBrowser = () => typeof window !== 'undefined';
 
-export default function FormPersist<T extends FieldValues, TTransformedValues = T>(
-  props: FormPersistProps<T, TTransformedValues>
-): ReactElement {
+export default function FormPersist<
+  T extends FieldValues,
+  TTransformedValues = T,
+>(props: FormPersistProps<T, TTransformedValues>): ReactElement {
   const { form, formKey } = props;
   useFormPersist(formKey, {
     // useFormPersist operates on string keys and is intentionally `any`-typed;

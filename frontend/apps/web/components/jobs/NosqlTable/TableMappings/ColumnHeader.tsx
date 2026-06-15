@@ -10,8 +10,10 @@ import { Input } from '@/components/ui/input';
 import { cn } from '@/libs/utils';
 import { FaSearch } from 'react-icons/fa';
 
-interface ColumnHeaderProps<TData, TValue>
-  extends React.HTMLAttributes<HTMLDivElement> {
+interface ColumnHeaderProps<
+  TData,
+  TValue,
+> extends React.HTMLAttributes<HTMLDivElement> {
   column: Column<TData, TValue>;
   title: string;
 }
