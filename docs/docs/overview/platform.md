@@ -33,7 +33,7 @@ The CLI acts as a way to programmatically invoke operations in Neosync. It's lim
 
 This can be easily utilized within a Github Action to fill data from Neosync Connection to a locally hosted database.
 
-See the [CLI section](../cli/introduction) of the docs for a more in-depth guide on the CLI.
+See the [CLI section](../cli/introduction.md) of the docs for a more in-depth guide on the CLI.
 
 ## Server-side API
 
