@@ -50,16 +50,6 @@ const (
 	ApiKeyServiceDeleteAccountApiKeyProcedure = "/mgmt.v1alpha1.ApiKeyService/DeleteAccountApiKey"
 )
 
-// These variables are the protoreflect.Descriptor objects for the RPCs defined in this package.
-var (
-	apiKeyServiceServiceDescriptor                       = v1alpha1.File_mgmt_v1alpha1_api_key_proto.Services().ByName("ApiKeyService")
-	apiKeyServiceGetAccountApiKeysMethodDescriptor       = apiKeyServiceServiceDescriptor.Methods().ByName("GetAccountApiKeys")
-	apiKeyServiceGetAccountApiKeyMethodDescriptor        = apiKeyServiceServiceDescriptor.Methods().ByName("GetAccountApiKey")
-	apiKeyServiceCreateAccountApiKeyMethodDescriptor     = apiKeyServiceServiceDescriptor.Methods().ByName("CreateAccountApiKey")
-	apiKeyServiceRegenerateAccountApiKeyMethodDescriptor = apiKeyServiceServiceDescriptor.Methods().ByName("RegenerateAccountApiKey")
-	apiKeyServiceDeleteAccountApiKeyMethodDescriptor     = apiKeyServiceServiceDescriptor.Methods().ByName("DeleteAccountApiKey")
-)
-
 // ApiKeyServiceClient is a client for the mgmt.v1alpha1.ApiKeyService service.
 type ApiKeyServiceClient interface {
 	// Retrieves a list of Account API Keys
@@ -85,37 +75,38 @@ type ApiKeyServiceClient interface {
 // http://api.acme.com or https://acme.com/grpc).
 func NewApiKeyServiceClient(httpClient connect.HTTPClient, baseURL string, opts ...connect.ClientOption) ApiKeyServiceClient {
 	baseURL = strings.TrimRight(baseURL, "/")
+	apiKeyServiceMethods := v1alpha1.File_mgmt_v1alpha1_api_key_proto.Services().ByName("ApiKeyService").Methods()
 	return &apiKeyServiceClient{
 		getAccountApiKeys: connect.NewClient[v1alpha1.GetAccountApiKeysRequest, v1alpha1.GetAccountApiKeysResponse](
 			httpClient,
 			baseURL+ApiKeyServiceGetAccountApiKeysProcedure,
-			connect.WithSchema(apiKeyServiceGetAccountApiKeysMethodDescriptor),
+			connect.WithSchema(apiKeyServiceMethods.ByName("GetAccountApiKeys")),
 			connect.WithIdempotency(connect.IdempotencyNoSideEffects),
 			connect.WithClientOptions(opts...),
 		),
 		getAccountApiKey: connect.NewClient[v1alpha1.GetAccountApiKeyRequest, v1alpha1.GetAccountApiKeyResponse](
 			httpClient,
 			baseURL+ApiKeyServiceGetAccountApiKeyProcedure,
-			connect.WithSchema(apiKeyServiceGetAccountApiKeyMethodDescriptor),
+			connect.WithSchema(apiKeyServiceMethods.ByName("GetAccountApiKey")),
 			connect.WithIdempotency(connect.IdempotencyNoSideEffects),
 			connect.WithClientOptions(opts...),
 		),
 		createAccountApiKey: connect.NewClient[v1alpha1.CreateAccountApiKeyRequest, v1alpha1.CreateAccountApiKeyResponse](
 			httpClient,
 			baseURL+ApiKeyServiceCreateAccountApiKeyProcedure,
-			connect.WithSchema(apiKeyServiceCreateAccountApiKeyMethodDescriptor),
+			connect.WithSchema(apiKeyServiceMethods.ByName("CreateAccountApiKey")),
 			connect.WithClientOptions(opts...),
 		),
 		regenerateAccountApiKey: connect.NewClient[v1alpha1.RegenerateAccountApiKeyRequest, v1alpha1.RegenerateAccountApiKeyResponse](
 			httpClient,
 			baseURL+ApiKeyServiceRegenerateAccountApiKeyProcedure,
-			connect.WithSchema(apiKeyServiceRegenerateAccountApiKeyMethodDescriptor),
+			connect.WithSchema(apiKeyServiceMethods.ByName("RegenerateAccountApiKey")),
 			connect.WithClientOptions(opts...),
 		),
 		deleteAccountApiKey: connect.NewClient[v1alpha1.DeleteAccountApiKeyRequest, v1alpha1.DeleteAccountApiKeyResponse](
 			httpClient,
 			baseURL+ApiKeyServiceDeleteAccountApiKeyProcedure,
-			connect.WithSchema(apiKeyServiceDeleteAccountApiKeyMethodDescriptor),
+			connect.WithSchema(apiKeyServiceMethods.ByName("DeleteAccountApiKey")),
 			connect.WithClientOptions(opts...),
 		),
 	}
@@ -177,36 +168,37 @@ type ApiKeyServiceHandler interface {
 // By default, handlers support the Connect, gRPC, and gRPC-Web protocols with the binary Protobuf
 // and JSON codecs. They also support gzip compression.
 func NewApiKeyServiceHandler(svc ApiKeyServiceHandler, opts ...connect.HandlerOption) (string, http.Handler) {
+	apiKeyServiceMethods := v1alpha1.File_mgmt_v1alpha1_api_key_proto.Services().ByName("ApiKeyService").Methods()
 	apiKeyServiceGetAccountApiKeysHandler := connect.NewUnaryHandler(
 		ApiKeyServiceGetAccountApiKeysProcedure,
 		svc.GetAccountApiKeys,
-		connect.WithSchema(apiKeyServiceGetAccountApiKeysMethodDescriptor),
+		connect.WithSchema(apiKeyServiceMethods.ByName("GetAccountApiKeys")),
 		connect.WithIdempotency(connect.IdempotencyNoSideEffects),
 		connect.WithHandlerOptions(opts...),
 	)
 	apiKeyServiceGetAccountApiKeyHandler := connect.NewUnaryHandler(
 		ApiKeyServiceGetAccountApiKeyProcedure,
 		svc.GetAccountApiKey,
-		connect.WithSchema(apiKeyServiceGetAccountApiKeyMethodDescriptor),
+		connect.WithSchema(apiKeyServiceMethods.ByName("GetAccountApiKey")),
 		connect.WithIdempotency(connect.IdempotencyNoSideEffects),
 		connect.WithHandlerOptions(opts...),
 	)
 	apiKeyServiceCreateAccountApiKeyHandler := connect.NewUnaryHandler(
 		ApiKeyServiceCreateAccountApiKeyProcedure,
 		svc.CreateAccountApiKey,
-		connect.WithSchema(apiKeyServiceCreateAccountApiKeyMethodDescriptor),
+		connect.WithSchema(apiKeyServiceMethods.ByName("CreateAccountApiKey")),
 		connect.WithHandlerOptions(opts...),
 	)
 	apiKeyServiceRegenerateAccountApiKeyHandler := connect.NewUnaryHandler(
 		ApiKeyServiceRegenerateAccountApiKeyProcedure,
 		svc.RegenerateAccountApiKey,
-		connect.WithSchema(apiKeyServiceRegenerateAccountApiKeyMethodDescriptor),
+		connect.WithSchema(apiKeyServiceMethods.ByName("RegenerateAccountApiKey")),
 		connect.WithHandlerOptions(opts...),
 	)
 	apiKeyServiceDeleteAccountApiKeyHandler := connect.NewUnaryHandler(
 		ApiKeyServiceDeleteAccountApiKeyProcedure,
 		svc.DeleteAccountApiKey,
-		connect.WithSchema(apiKeyServiceDeleteAccountApiKeyMethodDescriptor),
+		connect.WithSchema(apiKeyServiceMethods.ByName("DeleteAccountApiKey")),
 		connect.WithHandlerOptions(opts...),
 	)
 	return "/mgmt.v1alpha1.ApiKeyService/", http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {

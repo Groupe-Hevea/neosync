@@ -41,13 +41,6 @@ const (
 	MetricsServiceGetMetricCountProcedure = "/mgmt.v1alpha1.MetricsService/GetMetricCount"
 )
 
-// These variables are the protoreflect.Descriptor objects for the RPCs defined in this package.
-var (
-	metricsServiceServiceDescriptor                   = v1alpha1.File_mgmt_v1alpha1_metrics_proto.Services().ByName("MetricsService")
-	metricsServiceGetDailyMetricCountMethodDescriptor = metricsServiceServiceDescriptor.Methods().ByName("GetDailyMetricCount")
-	metricsServiceGetMetricCountMethodDescriptor      = metricsServiceServiceDescriptor.Methods().ByName("GetMetricCount")
-)
-
 // MetricsServiceClient is a client for the mgmt.v1alpha1.MetricsService service.
 type MetricsServiceClient interface {
 	// Retrieve a timed range of records
@@ -65,18 +58,19 @@ type MetricsServiceClient interface {
 // http://api.acme.com or https://acme.com/grpc).
 func NewMetricsServiceClient(httpClient connect.HTTPClient, baseURL string, opts ...connect.ClientOption) MetricsServiceClient {
 	baseURL = strings.TrimRight(baseURL, "/")
+	metricsServiceMethods := v1alpha1.File_mgmt_v1alpha1_metrics_proto.Services().ByName("MetricsService").Methods()
 	return &metricsServiceClient{
 		getDailyMetricCount: connect.NewClient[v1alpha1.GetDailyMetricCountRequest, v1alpha1.GetDailyMetricCountResponse](
 			httpClient,
 			baseURL+MetricsServiceGetDailyMetricCountProcedure,
-			connect.WithSchema(metricsServiceGetDailyMetricCountMethodDescriptor),
+			connect.WithSchema(metricsServiceMethods.ByName("GetDailyMetricCount")),
 			connect.WithIdempotency(connect.IdempotencyNoSideEffects),
 			connect.WithClientOptions(opts...),
 		),
 		getMetricCount: connect.NewClient[v1alpha1.GetMetricCountRequest, v1alpha1.GetMetricCountResponse](
 			httpClient,
 			baseURL+MetricsServiceGetMetricCountProcedure,
-			connect.WithSchema(metricsServiceGetMetricCountMethodDescriptor),
+			connect.WithSchema(metricsServiceMethods.ByName("GetMetricCount")),
 			connect.WithIdempotency(connect.IdempotencyNoSideEffects),
 			connect.WithClientOptions(opts...),
 		),
@@ -113,17 +107,18 @@ type MetricsServiceHandler interface {
 // By default, handlers support the Connect, gRPC, and gRPC-Web protocols with the binary Protobuf
 // and JSON codecs. They also support gzip compression.
 func NewMetricsServiceHandler(svc MetricsServiceHandler, opts ...connect.HandlerOption) (string, http.Handler) {
+	metricsServiceMethods := v1alpha1.File_mgmt_v1alpha1_metrics_proto.Services().ByName("MetricsService").Methods()
 	metricsServiceGetDailyMetricCountHandler := connect.NewUnaryHandler(
 		MetricsServiceGetDailyMetricCountProcedure,
 		svc.GetDailyMetricCount,
-		connect.WithSchema(metricsServiceGetDailyMetricCountMethodDescriptor),
+		connect.WithSchema(metricsServiceMethods.ByName("GetDailyMetricCount")),
 		connect.WithIdempotency(connect.IdempotencyNoSideEffects),
 		connect.WithHandlerOptions(opts...),
 	)
 	metricsServiceGetMetricCountHandler := connect.NewUnaryHandler(
 		MetricsServiceGetMetricCountProcedure,
 		svc.GetMetricCount,
-		connect.WithSchema(metricsServiceGetMetricCountMethodDescriptor),
+		connect.WithSchema(metricsServiceMethods.ByName("GetMetricCount")),
 		connect.WithIdempotency(connect.IdempotencyNoSideEffects),
 		connect.WithHandlerOptions(opts...),
 	)

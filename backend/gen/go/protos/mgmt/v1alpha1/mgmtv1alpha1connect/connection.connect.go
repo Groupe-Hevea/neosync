@@ -68,22 +68,6 @@ const (
 	ConnectionServiceCheckSSHConnectionByIdProcedure = "/mgmt.v1alpha1.ConnectionService/CheckSSHConnectionById"
 )
 
-// These variables are the protoreflect.Descriptor objects for the RPCs defined in this package.
-var (
-	connectionServiceServiceDescriptor                         = v1alpha1.File_mgmt_v1alpha1_connection_proto.Services().ByName("ConnectionService")
-	connectionServiceGetConnectionsMethodDescriptor            = connectionServiceServiceDescriptor.Methods().ByName("GetConnections")
-	connectionServiceGetConnectionMethodDescriptor             = connectionServiceServiceDescriptor.Methods().ByName("GetConnection")
-	connectionServiceCreateConnectionMethodDescriptor          = connectionServiceServiceDescriptor.Methods().ByName("CreateConnection")
-	connectionServiceUpdateConnectionMethodDescriptor          = connectionServiceServiceDescriptor.Methods().ByName("UpdateConnection")
-	connectionServiceDeleteConnectionMethodDescriptor          = connectionServiceServiceDescriptor.Methods().ByName("DeleteConnection")
-	connectionServiceIsConnectionNameAvailableMethodDescriptor = connectionServiceServiceDescriptor.Methods().ByName("IsConnectionNameAvailable")
-	connectionServiceCheckConnectionConfigMethodDescriptor     = connectionServiceServiceDescriptor.Methods().ByName("CheckConnectionConfig")
-	connectionServiceCheckConnectionConfigByIdMethodDescriptor = connectionServiceServiceDescriptor.Methods().ByName("CheckConnectionConfigById")
-	connectionServiceCheckSqlQueryMethodDescriptor             = connectionServiceServiceDescriptor.Methods().ByName("CheckSqlQuery")
-	connectionServiceCheckSSHConnectionMethodDescriptor        = connectionServiceServiceDescriptor.Methods().ByName("CheckSSHConnection")
-	connectionServiceCheckSSHConnectionByIdMethodDescriptor    = connectionServiceServiceDescriptor.Methods().ByName("CheckSSHConnectionById")
-)
-
 // ConnectionServiceClient is a client for the mgmt.v1alpha1.ConnectionService service.
 type ConnectionServiceClient interface {
 	// Returns a list of connections associated with the account
@@ -122,73 +106,74 @@ type ConnectionServiceClient interface {
 // http://api.acme.com or https://acme.com/grpc).
 func NewConnectionServiceClient(httpClient connect.HTTPClient, baseURL string, opts ...connect.ClientOption) ConnectionServiceClient {
 	baseURL = strings.TrimRight(baseURL, "/")
+	connectionServiceMethods := v1alpha1.File_mgmt_v1alpha1_connection_proto.Services().ByName("ConnectionService").Methods()
 	return &connectionServiceClient{
 		getConnections: connect.NewClient[v1alpha1.GetConnectionsRequest, v1alpha1.GetConnectionsResponse](
 			httpClient,
 			baseURL+ConnectionServiceGetConnectionsProcedure,
-			connect.WithSchema(connectionServiceGetConnectionsMethodDescriptor),
+			connect.WithSchema(connectionServiceMethods.ByName("GetConnections")),
 			connect.WithIdempotency(connect.IdempotencyNoSideEffects),
 			connect.WithClientOptions(opts...),
 		),
 		getConnection: connect.NewClient[v1alpha1.GetConnectionRequest, v1alpha1.GetConnectionResponse](
 			httpClient,
 			baseURL+ConnectionServiceGetConnectionProcedure,
-			connect.WithSchema(connectionServiceGetConnectionMethodDescriptor),
+			connect.WithSchema(connectionServiceMethods.ByName("GetConnection")),
 			connect.WithIdempotency(connect.IdempotencyNoSideEffects),
 			connect.WithClientOptions(opts...),
 		),
 		createConnection: connect.NewClient[v1alpha1.CreateConnectionRequest, v1alpha1.CreateConnectionResponse](
 			httpClient,
 			baseURL+ConnectionServiceCreateConnectionProcedure,
-			connect.WithSchema(connectionServiceCreateConnectionMethodDescriptor),
+			connect.WithSchema(connectionServiceMethods.ByName("CreateConnection")),
 			connect.WithClientOptions(opts...),
 		),
 		updateConnection: connect.NewClient[v1alpha1.UpdateConnectionRequest, v1alpha1.UpdateConnectionResponse](
 			httpClient,
 			baseURL+ConnectionServiceUpdateConnectionProcedure,
-			connect.WithSchema(connectionServiceUpdateConnectionMethodDescriptor),
+			connect.WithSchema(connectionServiceMethods.ByName("UpdateConnection")),
 			connect.WithClientOptions(opts...),
 		),
 		deleteConnection: connect.NewClient[v1alpha1.DeleteConnectionRequest, v1alpha1.DeleteConnectionResponse](
 			httpClient,
 			baseURL+ConnectionServiceDeleteConnectionProcedure,
-			connect.WithSchema(connectionServiceDeleteConnectionMethodDescriptor),
+			connect.WithSchema(connectionServiceMethods.ByName("DeleteConnection")),
 			connect.WithClientOptions(opts...),
 		),
 		isConnectionNameAvailable: connect.NewClient[v1alpha1.IsConnectionNameAvailableRequest, v1alpha1.IsConnectionNameAvailableResponse](
 			httpClient,
 			baseURL+ConnectionServiceIsConnectionNameAvailableProcedure,
-			connect.WithSchema(connectionServiceIsConnectionNameAvailableMethodDescriptor),
+			connect.WithSchema(connectionServiceMethods.ByName("IsConnectionNameAvailable")),
 			connect.WithClientOptions(opts...),
 		),
 		checkConnectionConfig: connect.NewClient[v1alpha1.CheckConnectionConfigRequest, v1alpha1.CheckConnectionConfigResponse](
 			httpClient,
 			baseURL+ConnectionServiceCheckConnectionConfigProcedure,
-			connect.WithSchema(connectionServiceCheckConnectionConfigMethodDescriptor),
+			connect.WithSchema(connectionServiceMethods.ByName("CheckConnectionConfig")),
 			connect.WithClientOptions(opts...),
 		),
 		checkConnectionConfigById: connect.NewClient[v1alpha1.CheckConnectionConfigByIdRequest, v1alpha1.CheckConnectionConfigByIdResponse](
 			httpClient,
 			baseURL+ConnectionServiceCheckConnectionConfigByIdProcedure,
-			connect.WithSchema(connectionServiceCheckConnectionConfigByIdMethodDescriptor),
+			connect.WithSchema(connectionServiceMethods.ByName("CheckConnectionConfigById")),
 			connect.WithClientOptions(opts...),
 		),
 		checkSqlQuery: connect.NewClient[v1alpha1.CheckSqlQueryRequest, v1alpha1.CheckSqlQueryResponse](
 			httpClient,
 			baseURL+ConnectionServiceCheckSqlQueryProcedure,
-			connect.WithSchema(connectionServiceCheckSqlQueryMethodDescriptor),
+			connect.WithSchema(connectionServiceMethods.ByName("CheckSqlQuery")),
 			connect.WithClientOptions(opts...),
 		),
 		checkSSHConnection: connect.NewClient[v1alpha1.CheckSSHConnectionRequest, v1alpha1.CheckSSHConnectionResponse](
 			httpClient,
 			baseURL+ConnectionServiceCheckSSHConnectionProcedure,
-			connect.WithSchema(connectionServiceCheckSSHConnectionMethodDescriptor),
+			connect.WithSchema(connectionServiceMethods.ByName("CheckSSHConnection")),
 			connect.WithClientOptions(opts...),
 		),
 		checkSSHConnectionById: connect.NewClient[v1alpha1.CheckSSHConnectionByIdRequest, v1alpha1.CheckSSHConnectionByIdResponse](
 			httpClient,
 			baseURL+ConnectionServiceCheckSSHConnectionByIdProcedure,
-			connect.WithSchema(connectionServiceCheckSSHConnectionByIdMethodDescriptor),
+			connect.WithSchema(connectionServiceMethods.ByName("CheckSSHConnectionById")),
 			connect.WithClientOptions(opts...),
 		),
 	}
@@ -299,72 +284,73 @@ type ConnectionServiceHandler interface {
 // By default, handlers support the Connect, gRPC, and gRPC-Web protocols with the binary Protobuf
 // and JSON codecs. They also support gzip compression.
 func NewConnectionServiceHandler(svc ConnectionServiceHandler, opts ...connect.HandlerOption) (string, http.Handler) {
+	connectionServiceMethods := v1alpha1.File_mgmt_v1alpha1_connection_proto.Services().ByName("ConnectionService").Methods()
 	connectionServiceGetConnectionsHandler := connect.NewUnaryHandler(
 		ConnectionServiceGetConnectionsProcedure,
 		svc.GetConnections,
-		connect.WithSchema(connectionServiceGetConnectionsMethodDescriptor),
+		connect.WithSchema(connectionServiceMethods.ByName("GetConnections")),
 		connect.WithIdempotency(connect.IdempotencyNoSideEffects),
 		connect.WithHandlerOptions(opts...),
 	)
 	connectionServiceGetConnectionHandler := connect.NewUnaryHandler(
 		ConnectionServiceGetConnectionProcedure,
 		svc.GetConnection,
-		connect.WithSchema(connectionServiceGetConnectionMethodDescriptor),
+		connect.WithSchema(connectionServiceMethods.ByName("GetConnection")),
 		connect.WithIdempotency(connect.IdempotencyNoSideEffects),
 		connect.WithHandlerOptions(opts...),
 	)
 	connectionServiceCreateConnectionHandler := connect.NewUnaryHandler(
 		ConnectionServiceCreateConnectionProcedure,
 		svc.CreateConnection,
-		connect.WithSchema(connectionServiceCreateConnectionMethodDescriptor),
+		connect.WithSchema(connectionServiceMethods.ByName("CreateConnection")),
 		connect.WithHandlerOptions(opts...),
 	)
 	connectionServiceUpdateConnectionHandler := connect.NewUnaryHandler(
 		ConnectionServiceUpdateConnectionProcedure,
 		svc.UpdateConnection,
-		connect.WithSchema(connectionServiceUpdateConnectionMethodDescriptor),
+		connect.WithSchema(connectionServiceMethods.ByName("UpdateConnection")),
 		connect.WithHandlerOptions(opts...),
 	)
 	connectionServiceDeleteConnectionHandler := connect.NewUnaryHandler(
 		ConnectionServiceDeleteConnectionProcedure,
 		svc.DeleteConnection,
-		connect.WithSchema(connectionServiceDeleteConnectionMethodDescriptor),
+		connect.WithSchema(connectionServiceMethods.ByName("DeleteConnection")),
 		connect.WithHandlerOptions(opts...),
 	)
 	connectionServiceIsConnectionNameAvailableHandler := connect.NewUnaryHandler(
 		ConnectionServiceIsConnectionNameAvailableProcedure,
 		svc.IsConnectionNameAvailable,
-		connect.WithSchema(connectionServiceIsConnectionNameAvailableMethodDescriptor),
+		connect.WithSchema(connectionServiceMethods.ByName("IsConnectionNameAvailable")),
 		connect.WithHandlerOptions(opts...),
 	)
 	connectionServiceCheckConnectionConfigHandler := connect.NewUnaryHandler(
 		ConnectionServiceCheckConnectionConfigProcedure,
 		svc.CheckConnectionConfig,
-		connect.WithSchema(connectionServiceCheckConnectionConfigMethodDescriptor),
+		connect.WithSchema(connectionServiceMethods.ByName("CheckConnectionConfig")),
 		connect.WithHandlerOptions(opts...),
 	)
 	connectionServiceCheckConnectionConfigByIdHandler := connect.NewUnaryHandler(
 		ConnectionServiceCheckConnectionConfigByIdProcedure,
 		svc.CheckConnectionConfigById,
-		connect.WithSchema(connectionServiceCheckConnectionConfigByIdMethodDescriptor),
+		connect.WithSchema(connectionServiceMethods.ByName("CheckConnectionConfigById")),
 		connect.WithHandlerOptions(opts...),
 	)
 	connectionServiceCheckSqlQueryHandler := connect.NewUnaryHandler(
 		ConnectionServiceCheckSqlQueryProcedure,
 		svc.CheckSqlQuery,
-		connect.WithSchema(connectionServiceCheckSqlQueryMethodDescriptor),
+		connect.WithSchema(connectionServiceMethods.ByName("CheckSqlQuery")),
 		connect.WithHandlerOptions(opts...),
 	)
 	connectionServiceCheckSSHConnectionHandler := connect.NewUnaryHandler(
 		ConnectionServiceCheckSSHConnectionProcedure,
 		svc.CheckSSHConnection,
-		connect.WithSchema(connectionServiceCheckSSHConnectionMethodDescriptor),
+		connect.WithSchema(connectionServiceMethods.ByName("CheckSSHConnection")),
 		connect.WithHandlerOptions(opts...),
 	)
 	connectionServiceCheckSSHConnectionByIdHandler := connect.NewUnaryHandler(
 		ConnectionServiceCheckSSHConnectionByIdProcedure,
 		svc.CheckSSHConnectionById,
-		connect.WithSchema(connectionServiceCheckSSHConnectionByIdMethodDescriptor),
+		connect.WithSchema(connectionServiceMethods.ByName("CheckSSHConnectionById")),
 		connect.WithHandlerOptions(opts...),
 	)
 	return "/mgmt.v1alpha1.ConnectionService/", http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
